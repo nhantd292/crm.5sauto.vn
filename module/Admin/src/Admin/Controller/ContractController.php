@@ -1686,7 +1686,7 @@ class ContractController extends ActionController {
             $products = [];
             foreach($contract['options'] as $key => $value){
                 $pro['name'] = $value['full_name'];
-                $pro['weight'] = $value['weight']/1000;
+                $pro['weight'] = $value['weight'];
                 $pro['quantity'] = $value['numbers'];
                 $pro['product_code'] = $value['code'];
 
