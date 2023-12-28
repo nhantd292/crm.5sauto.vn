@@ -722,7 +722,7 @@ class ApiController extends ActionController {
         $response->setStatusCode(Response::STATUS_CODE_500);
         try {
             if($this->getRequest()->isPost()){
-                $hass = $this->getRequest()->getQuery('hass');
+                $hass = $this->getRequest()->getQuery('hash');
                 if($hass == HASS){
                     $this->postJson(file_get_contents('php://input'));
                     $data = json_decode(file_get_contents('php://input'), true);
@@ -779,12 +779,12 @@ class ApiController extends ActionController {
                     }
                     else{
                         $response->setStatusCode(Response::STATUS_CODE_404);
-                        $response->setContent(json_encode(array('success' => false, 'message' => 'code invalid')));
+                        $response->setContent(json_encode(array('success' => false, 'message' => 'partner_id invalid')));
                     }
                 }
                 else{
                     $response->setStatusCode(Response::STATUS_CODE_404);
-                    $response->setContent(json_encode(array('success' => false, 'message' => 'hass invalid')));
+                    $response->setContent(json_encode(array('success' => false, 'message' => 'hash invalid')));
                 }
             }
             else{
