@@ -240,7 +240,8 @@ class ContractController extends ActionController {
     // Thêm mới đơn hàng theo sản phẩm mới
     public function addKovAction() {
         $numberFormat = new \ZendX\Functions\Number();
-        $myForm = $this->getForm();
+//        $myForm = $this->getForm();
+        $myForm = new \Admin\Form\Contract($this, $this->_params);
         
         if($this->getRequest()->isPost()){
             $myForm->setInputFilter(new \Admin\Filter\Contract(array('data' => $this->_params['data'], 'route' => $this->_params['route'])));
@@ -329,7 +330,8 @@ class ContractController extends ActionController {
         $dateFormat = new \ZendX\Functions\Date();
         $numberFormat = new \ZendX\Functions\Number();
 
-        $myForm = new \Admin\Form\Contract\ContractEditKov($this->getServiceLocator(), $this->_params);
+//        $myForm = new \Admin\Form\Contract\ContractEditKov($this->getServiceLocator(), $this->_params);
+        $myForm = new \Admin\Form\Contract($this, $this->_params);
         if(!empty($this->params('id'))) {
             $id = $this->params('id');
             $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
@@ -358,7 +360,8 @@ class ContractController extends ActionController {
         }
 
         if($this->getRequest()->isPost()){
-            $myForm->setInputFilter(new \Admin\Filter\ContractEditKov(array('data' => $this->_params['data'], 'route' => $this->_params['route'])));
+//            $myForm->setInputFilter(new \Admin\Filter\ContractEditKov(array('data' => $this->_params['data'], 'route' => $this->_params['route'])));
+            $myForm->setInputFilter(new \Admin\Filter\Contract(array('data' => $this->_params['data'], 'route' => $this->_params['route'])));
             $myForm->setData($this->_params['data']);
             $controlAction = $this->_params['data']['control-action'];
             if($myForm->isValid()){
@@ -1664,15 +1667,21 @@ class ContractController extends ActionController {
     // Đẩy đơn sang ghtk
     public function sendGhtkAction() {
         $locations = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
-        $dclh = $this->ghtk_call('/services/shipment/list_pick_add');
-        $dclh = json_decode($dclh, true)['data'][0];
-        $address_dclh = explode(',', $dclh['address']);
+        $dclh_list = json_decode($this->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
         
         $ids = $this->_params['data']['cid'];
         $listData_ghtk = [];
         foreach($ids as $id){
             $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
             $contract['options'] = unserialize($contract['options'])['product'];
+            $dclh = [];
+            foreach($dclh_list as $key => $value){
+                if($value['pick_address_id'] == $contract['groupaddressId']){
+                    $dclh = $value;
+                    break;
+                }
+            }
+            $address_dclh = explode(',', $dclh['address']);
 
             $products = [];
             foreach($contract['options'] as $key => $value){

@@ -1362,6 +1362,10 @@ class ContractTable extends DefaultTable {
                     'sale_note'               => $arrData['sale_note'],
                     'ghtk_note'               => $arrData['ghtk_note'],
 
+                    'groupaddressId'          => $arrData['groupaddressId'],
+                    'size_product_id'         => $arrData['size_product_id'],
+                    'ORDER_SERVICE'           => $arrData['ORDER_SERVICE'],
+
                     'user_id'                 => $this->userInfo->getUserInfo('id'),
                     'sale_branch_id'          => $this->userInfo->getUserInfo('sale_branch_id'),
                     'sale_group_id'           => $this->userInfo->getUserInfo('sale_group_id'),
@@ -1481,6 +1485,9 @@ class ContractTable extends DefaultTable {
                 'marketer_id'             => $arrItem['marketer_id'],
                 'sale_note'               => $arrData['sale_note'],
                 'ghtk_note'               => $arrData['ghtk_note'],
+                'groupaddressId'          => $arrData['groupaddressId'],
+                'size_product_id'         => $arrData['size_product_id'],
+                'ORDER_SERVICE'           => $arrData['ORDER_SERVICE'],
                 'options'                 => serialize($contract_options)
             );
 
