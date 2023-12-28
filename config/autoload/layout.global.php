@@ -4,7 +4,6 @@ return array(
         'Admin' 		=> 'layout/backend',
         'Report' 		=> 'layout/backend',
         'Api' 			=> 'layout/backend',
-        'Notifycation' 	=> 'layout/backend',
     )
 );
 ?>

@@ -3,4 +3,4 @@ cache/
 *.log
 *.zip
 define.php
-global.php
+config/autoload/global.php

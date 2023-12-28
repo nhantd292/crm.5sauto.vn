@@ -1,7 +1,7 @@
 <?php
 
 return array(
-    'modules' => array('Admin', 'Report', 'Api', 'Notifycation'),
+    'modules' => array('Admin', 'Report', 'Api'),
     'module_listener_options' => array(
         'module_paths' => array(
             './module',
