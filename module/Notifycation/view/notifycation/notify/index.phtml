@@ -1,0 +1,128 @@
+<?php
+$dateFormat = new \ZendX\Functions\Date();
+
+//$myForm = $this->myForm;
+//$myForm->prepare();
+//
+//if(count($myForm->get('filter_sale_branch')->getValueOptions()) == 1) {
+//    $myForm->get('filter_sale_branch')->setEmptyOption('');
+//}
+//if(count($myForm->get('filter_sale_group')->getValueOptions()) == 1) {
+//    $myForm->get('filter_sale_group')->setEmptyOption('');
+//}
+//if(count($myForm->get('filter_user')->getValueOptions()) == 1) {
+//    $myForm->get('filter_user')->setEmptyOption('');
+//}
+//$elements = array(
+//    array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_last_action'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_number_contract'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_number_contract2'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_history_result'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+////        array('element' => $myForm->get('filter_contact_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_location_city'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_location_district'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_history_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('order')),
+//    array('element' => $myForm->get('order_by')),
+//);
+//$xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+// Head
+$xhtmlHead  = '<tr>';
+$xhtmlHead .= '<th width ="30" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+$xhtmlHead .= '<th >Nội dung thông báo</th>';
+$xhtmlHead .= $this->linkAdminSort('Ngày giờ thông báo', 'created', $this->params['ssFilter'], array('class' => 'col-150', 'width' => '110'));
+$xhtmlHead .= '</tr>';
+
+// Danh sách
+$xhtmlItems = '';
+if($this->items->count() > 0) {
+    foreach ($this->items AS $item) {
+        $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+
+        $id                     = $item->id;
+        $created                   = $dateFormat->formatToView($item->created, 'd/m/Y H:i');
+        $content                  = $item->content;
+        $link                  = $item->link;
+
+        // Link Action
+        $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+        $linkAddContract        = $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'add', 'id' => $id));
+
+        // Control Action
+        $controlView            = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Xem chi tiết', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-info', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'view')) .'\', {\'id\': \''. $id .'\'});'));
+        $controlEdit            = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+        $controlHistory         = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Thêm lịch sử chăm sóc', 'class' => 'btn btn-xs green', 'icon' => 'fa fa-volume-control-phone', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'history-add')) .'\', {\'id\': \''. $id .'\'});'));
+        $addContract            = $this->linkAdminHtml($linkAddContract, array('type' => 'icon', 'title' => 'Tạo đơn hàng', 'target' => '_blank', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-plus'));
+
+        $controls               = $controlView . $controlEdit . $controlHistory . $addContract;
+
+        $xhtmlItems .= '<tr id="tr_'. $id .'" '.$color_text_row.'>';
+        $xhtmlItems .= '<td>'. $cid .'</td>';
+        $xhtmlItems .= '<td>'. $content .'</td>';
+        $xhtmlItems .= '<td>'. $created .'</td>';
+        $xhtmlItems .= '</tr>';
+    }
+}
+
+// Control
+$arrControl = array(
+    array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+    array(
+        'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ),
+        'children' => array(
+            array( 'name' => 'transfer', 'caption' => 'Chuyển quyền quản lý', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:contactChangeUser();') ),
+            array( 'name' => 'divider' ),
+            array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');' ) ),
+            array( 'name' => 'divider' ),
+            array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o', ),
+            array( 'name' => 'import', 'caption' => 'Import dữ liệu', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-upload' ),
+        ),
+        'children-class' => 'dropdown-menu pull-right'
+    ),
+);
+?>
+    <form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+        <div class="page-control">
+            <div class="title pull-left">
+                <?php echo $this->caption;?>
+            </div>
+            <div class="control pull-right">
+<!--                --><?php //echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <?php echo $this->flashMessenger()->render();?>
+        <div class="page-filter">
+            <div class="row">
+<!--                --><?php //echo $xhtmlFilter;?>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="table-manager" id="table-manager">
+                <div class="table-scrollable">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <?php echo $xhtmlHead;?>
+                        </thead>
+                        <tbody>
+                        <?php echo $xhtmlItems;?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php
+//                echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options']));
+                ?>
+            </div>
+        </div>
+    </form>
+

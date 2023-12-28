@@ -1,0 +1,303 @@
+<?php
+$myForm = $this->myForm;
+$myForm->prepare();
+
+$arrControl = array(
+    array('name'       => 'save',
+          'caption'    => 'Lưu',
+          'link'       => 'javascript:;',
+          'icon'       => 'fa-check',
+          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');',
+                                'class'   => 'btn')),
+    array('name'       => 'save-new',
+          'caption'    => 'Lưu &amp; Mới',
+          'link'       => 'javascript:;',
+          'icon'       => 'fa-paste',
+          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');',
+                                'class'   => 'btn')),
+    array('name'       => 'save-close',
+          'caption'    => 'Lưu &amp; Đóng',
+          'link'       => 'javascript:;',
+          'icon'       => 'fa-save',
+          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');',
+                                'class'   => 'btn')),
+    array('name'       => 'close',
+          'caption'    => 'Hủy',
+          'link'       => $this->url('routeAdmin/default', array('controller' => $this->params['controller'],
+                                                                 'action'     => 'index')),
+          'onclick'    => '',
+          'icon'       => 'fa-times',
+          'attributes' => array('class' => 'btn')),
+);
+
+$elements = array(
+    array('section'  => 'Thông tin chung',
+          'boxClass' => 'col-md-12'),
+
+    array('element'  => $myForm->get('date'),
+          'label'    => 'Ngày báo cáo',
+          'validate' => array('require' => true),
+          'boxClass' => 'col-md-1'),
+
+    array('element'  => $myForm->get('name'),
+          'label'    => 'Tiêu đề báo cáo',
+          'validate' => array('require' => true),
+          'boxClass' => 'col-md-4'),
+
+    array('element'  => $myForm->get('id'),
+          'validate' => array('require' => true)),
+);
+$xhtml    = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+    <form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm"
+          class="">
+        <div class="page-control">
+            <div class="title pull-left">
+                <?php echo $this->caption; ?>
+            </div>
+            <div class="control pull-right">
+                <?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array('control' => $arrControl)); ?>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <?php echo $this->flashMessenger()->render(); ?>
+        <?php echo @$this->xViewElementErrors($elements); ?>
+
+        <div class="page-content">
+            <div class="row">
+                <?php echo $xhtml; ?>
+            </div>
+            <div class="row">
+                <div class="col-md-12"><h3 class="form-section">Chỉ tiêu chi tiết</h3></div>
+                <div class="col-md-12">
+                    <?php
+                    if (!empty($this->params['data']['control-action'])) {
+                        $params = $this->params['data']['params'];
+                    } else {
+                        $params = !empty($this->item['params']) ? unserialize($this->item['params']) : array();
+                    }
+                    ?>
+                    <div class="table-manager" id="table-manager" style="margin-bottom: 50px;">
+                        <div class="table-scrollable table-small">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                <tr>
+                                    <th class="col-150" rowspan="2">Thời gian</th>
+                                    <?php
+                                    foreach ($this->report_time AS $key => $val) {
+                                        echo '<th colspan="3" class="text-center">' . $key . '</th>';
+                                    }
+                                    ?>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class="col-150">Cơ sở - Độ nhóm - Nhân sự</td>
+                                    <?php
+                                    foreach ($this->report_time AS $key => $val) {
+                                        foreach ($val as $index => $item) {
+                                            echo '<td class="col-150 text-center">' . $item . '</td>';
+                                        }
+                                    }
+                                    ?>
+                                </tr>
+
+                                <!--Cơ sở-->
+                                <?php
+                                foreach ($this->branch AS $key_branch => $val_branch) {
+                                    ?>
+<!--                                    <tr class="success text-bold branch" id="tr_--><?php //echo $val_branch['id']; ?><!--">-->
+<!--                                        <td>--><?php //echo $val_branch['name']; ?><!--</td>-->
+<!--                                        --><?php
+//                                        $i = 1;
+//                                        foreach ($this->report_time AS $key => $val) {
+//                                            foreach ($val as $index => $item) {
+//                                                ?>
+<!--                                                <td class="column" id="column_--><?php //echo $i++; ?><!--">-->
+<!--                                                    <span class="mask_currency">0</span>-->
+<!--                                                    <input type="hidden"-->
+<!--                                                           key="--><?php //echo $index; ?><!--"-->
+<!--                                                           name="params[--><?php //echo $val_branch['id']; ?><!--][--><?php //echo $key . '_' . $index; ?><!--]"-->
+<!--                                                           value="--><?php //echo $params[$val_branch['id']][$key . '_' . $index]; ?><!--"-->
+<!--                                                           class="form-control input-xs mask_currency text-right">-->
+<!--                                                </td>-->
+<!--                                                --><?php
+//                                            }
+//                                        }
+//                                        ?>
+<!--                                    </tr>-->
+
+                                    <!--Đội nhóm-->
+                                    <?php
+                                    foreach ($this->group AS $key_group => $val_group) {
+                                        if ($val_group['document_id'] == $val_branch['id']) {
+                                            ?>
+<!--                                            <tr class="group" id="tr_--><?php //echo $val_group['id']; ?><!--"-->
+<!--                                                data-branch="tr_--><?php //echo $val_branch['id']; ?><!--"-->
+<!--                                                style="background: #eeeeee;">-->
+<!--                                                <td>--><?php //echo $val_group['name']; ?><!--</td>-->
+<!--                                                --><?php
+//                                                $i = 1;
+//                                                foreach ($this->report_time AS $key => $val) {
+//                                                    foreach ($val as $index => $item) {
+//                                                        ?>
+<!--                                                        <td class="column" id="column_--><?php //echo $i++; ?><!--">-->
+<!--                                                            <span class="mask_currency">0</span>-->
+<!--                                                            <input type="hidden"-->
+<!--                                                                   key="--><?php //echo $index; ?><!--"-->
+<!--                                                                   name="params[--><?php //echo $val_group['id']; ?><!--][--><?php //echo $key . '_' . $index; ?><!--]"-->
+<!--                                                                   value="--><?php //echo $params[$val_group['id']][$key . '_' . $index]; ?><!--"-->
+<!--                                                                   class="form-control input-xs mask_currency text-right">-->
+<!--                                                        </td>-->
+<!--                                                        --><?php
+//                                                    }
+//                                                }
+//                                                ?>
+<!--                                            </tr>-->
+
+
+                                            <?php
+                                            foreach ($this->user AS $key_user => $val_user) {
+                                                if ($val_group['id'] == $val_user['sale_group_id']) {
+                                                    ?>
+                                                    <tr class="user" id="tr_<?php echo $val_user['id']; ?>"
+                                                        data-branch ="tr_<?php echo $val_branch['id']; ?>"
+                                                        data-group ="tr_<?php echo $val_group['id']; ?>">
+                                                        <td><?php echo $val_branch['name'].' - '.$val_group['name'].' - '.$val_user['name']; ?></td>
+                                                        <?php
+                                                        $i = 1;
+                                                        foreach ($this->report_time AS $key => $val) {
+                                                            foreach ($val as $index => $item) {
+                                                                ?>
+                                                                <td class="column" id="column_<?php echo $i++; ?>">
+                                                                    <input type="text"
+                                                                           autocomplete="off"
+                                                                           key="<?php echo $index; ?>"
+                                                                           name="params[<?php echo $val_user['id']; ?>][<?php echo $key . '_' . $index; ?>]"
+                                                                           value="<?php echo $params[$val_user['id']][$key . '_' . $index]; ?>"
+                                                                           class="form-control input-xs mask_currency text-right">
+                                                                </td>
+                                                                <?php
+                                                            }
+                                                        }
+                                                        ?>
+                                                    </tr>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                        }
+                                    }
+                                }
+                                ?>
+
+
+                                <tr class="text-bold total" style="background: #d8d8d8;">
+                                    <td class="col-150">Tổng</td>
+                                    <?php
+                                    $i = 1;
+                                    foreach ($this->report_time AS $key => $val) {
+                                        foreach ($val as $index => $item) {
+                                            ?>
+                                            <td class="column text-right" id="column_<?php echo $i++; ?>">
+                                                <span class="mask_currency" style="padding-right: 6px;">0</span>
+                                                <input type="hidden"
+                                                       key="<?php echo $index; ?>"
+                                                       name="params['total'][<?php echo $key . '_' . $index; ?>]"
+                                                       value="<?php echo $params['total'][$key . '_' . $index]; ?>"
+                                                       class="form-control input-xs mask_currency text-right">
+                                            </td>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+<?php $this->headScript()->captureStart() ?>
+$(document).ready(function() {
+    function update_target() {
+        // Lấy tổng tiền cho các cơ sở
+        $('tr.branch').each(function() {
+            var id_branch = $(this).attr('id');
+            $('.column', this).each(function() {
+                var result = 0;
+                var id_column = $(this).attr('id');
+                $('tr.user[data-branch="'+ id_branch +'"]').each(function() {
+                    if($('#'+ id_column +' input', this).attr('key') != 'cp_cmt') {
+                        if($('#'+ id_column +' input', this).val() == '') {
+                            result = result + 0;
+                        } else {
+                            result = result + parseInt($('#'+ id_column +' input', this).autoNumeric('get'));
+                        }
+                    }
+                });
+                $('span.mask_currency', this).autoNumeric('set', result);
+                $('input.mask_currency', this).autoNumeric('set', result);
+            });
+        });
+
+        // Lấy tổng tiền cho các nhóm
+        $('tr.group').each(function() {
+            var id_group = $(this).attr('id');
+            $('.column', this).each(function() {
+                var result = 0;
+                var id_column = $(this).attr('id');
+                $('tr.user[data-group="'+ id_group +'"]').each(function() {
+                    if($('#'+ id_column +' input', this).attr('key') != 'cp_cmt') {
+                        if($('#'+ id_column +' input', this).val() == '') {
+                            result = result + 0;
+                        } else {
+                            result = result + parseInt($('#'+ id_column +' input', this).autoNumeric('get'));
+                        }
+                    }
+                });
+                $('span.mask_currency', this).autoNumeric('set', result);
+                $('input.mask_currency', this).autoNumeric('set', result);
+            });
+        });
+
+        // Lấy tổng tiền
+        $('tr.total').each(function() {
+            $('.column', this).each(function() {
+                var result = 0;
+                var id_column = $(this).attr('id');
+                $('tr.user').each(function() {
+                    if($('#'+ id_column +' input', this).attr('key') != 'cp_cmt') {
+                        if($('#'+ id_column +' input', this).val() == '') {
+                            result = result + 0;
+                        } else {
+                            result = result + parseInt($('#'+ id_column +' input', this).autoNumeric('get'));
+                        }
+                    }
+                });
+                $('span.mask_currency', this).autoNumeric('set', result);
+                $('input.mask_currency', this).autoNumeric('set', result);
+            });
+        });
+    }
+    $('.user input').blur(function() {
+        update_target();
+    });
+    update_target();
+
+
+    $('input[name="date"]').change(function() {
+        var date = $(this).val();
+        var title =  "Báo cáo theo giờ ngày: "+date;
+        $('input[name="name"]').val(title);
+    });
+
+
+});
+<?php $this->headScript()->captureEnd() ?>

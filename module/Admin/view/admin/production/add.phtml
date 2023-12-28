@@ -1,0 +1,185 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    // Set lại các giá trị của từng element
+    $myForm->get('location_district_id')->setAttributes(array('data-parent' => $myForm->get('location_city_id')->getValue()));
+    
+    $elements = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('phone'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('source_group_id'), 'label' => 'Nguồn liên hệ', 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('source_known_id'), 'label' => 'Nguồn biết đến', 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('identify'), 'label' => 'CMND/Thẻ căn cước', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_district_id'), 'label' => 'Quận huyện', 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('email'), 'label' => 'Email', 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('birthday_year'), 'label' => 'Năm sinh', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address'), 'label' => 'Địa chỉ nơi ở', 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('facebook'), 'label' => 'Facebook', 'boxClass' => 'col-md-2'),
+
+        array('section' => 'Thông tin người nhận', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('name_received'), 'label' => 'Họ và tên', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('phone_received'), 'label' => 'Số điện thoại', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address_received'), 'label' => 'Địa chỉ nhận hàng', 'boxClass' => 'col-md-4'),
+
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('date'), 'label' => 'Ngày ký', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        // array('element' => $myForm->get('product_id'), 'label' => 'Sản phẩm', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('product_name'), 'label' => 'Tên xe - Năm sản xuất', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+		array('element' => $myForm->get('stock'), 'label' => 'Hàng có sẵn', 'boxClass' => 'col-md-2'),
+		array('element' => $myForm->get('production_type_id'), 'label' => 'Loại đơn sản xuất', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+		array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => $myForm->get('transport_id'), 'label' => 'Vận chuyển', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('type_of_carpet_id'), 'label' => 'Loại thảm', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('carpet_color_id'), 'label' => 'Màu sắc thảm', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('tangled_color_id'), 'label' => 'Màu rối', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('row_seats_id'), 'label' => 'Số hàng ghế', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('flooring_id'), 'label' => 'Lót sàn cốp', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('status_id'), 'label' => 'Trạng thái', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sales', 'boxClass' => 'col-md-4'),
+		
+		array('div' => '', 'boxClass' => 'col-xs-12'),
+		array('element' => $myForm->get('price_carpet'), 'label' => 'Tiền hàng thảm', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+		array('element' => $myForm->get('price_nano'), 'label' => 'Tiền hàng nano', 'boxClass' => 'col-md-2'),
+		array('element' => $myForm->get('vat'), 'label' => 'VAT', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('price_promotion'), 'label' => 'Giảm giá', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('price_total'), 'label' => 'Thành tiền', 'boxClass' => 'col-md-2'),
+
+        array('section' => 'Thông tin sản xuất', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('production_department_type'), 'label' => 'Bộ phận sản xuất', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('production_note'), 'label' => 'Ghi chú sản xuất', 'boxClass' => 'col-md-4'),
+		
+        array('section' => 'Thông tin hoá đơn', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('bill_type_id'), 'label' => 'Hình thức thanh toán', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 box-required'),
+        array('element' => $myForm->get('bill_date'), 'label' => 'Ngày thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 box-required'),
+        array('element' => $myForm->get('bill_paid_number'), 'label' => 'Số phiếu thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 box-bill_paid_number box-required'),
+        array('element' => $myForm->get('bill_bank_id'), 'label' => 'Ngân hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 box-bill_bank_id box-required'),
+        array('element' => $myForm->get('bill_paid_price'), 'label' => 'Tiền thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 bill_paid_price box-required'),
+        array('element' => $myForm->get('bill_paid_type_id'), 'label' => 'Phân loại thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 box-required'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true))
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+	// Xử lý load tỉnh thành
+	$('select[name="location_city_id"]').change(function() {
+		var select = 'input[name="location_district_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+    
+    $('input[name="price_carpet"]').change(function() {
+        update_price_contract();
+    });
+    $('input[name="price_nano"]').change(function() {
+        update_price_contract();
+    });
+    $('input[name="price_promotion"]').change(function() {
+        update_price_contract();
+    });
+
+    function update_price_contract() {
+    	var price_carpet 			= $('input[name="price_carpet"]').autoNumeric('get');
+    	var price_nano 				= $('input[name="price_nano"]').autoNumeric('get');
+		var price_promotion 		= $('input[name="price_promotion"]').autoNumeric('get');
+
+		var total = 0;
+        var vat = 0;
+		total = parseInt(total) + parseInt(price_carpet);
+		if (price_nano > 0) {
+			total = total + parseInt(price_nano);
+            
+		}
+        vat = total * 10/100;
+        total = total + vat;
+        $('input[name="vat"]').autoNumeric('set', vat);
+		if (price_promotion > 0) {
+			total = total - parseInt(price_promotion);
+		}
+		$('input[name="price_total"]').autoNumeric('set', total);
+    }
+    
+    // Kiểm tra thông tin khách hàng
+    if($('input[name="phone"]').val()) {
+        var val = $('input[name="phone"]').val().trim();
+        checkContactToElement(val, null);
+    }
+    
+    $('input[name="phone"]').blur(function() {
+        var val = $(this).val().trim();
+        checkContactToElement(val, 'element');
+    });
+    
+    $('input[name="phone"]').keypress(function (event) {
+		if(event.charCode == 13) {
+			$('input[name="phone"]').blur();
+		}
+	});
+
+	function optionBill(item) {
+        if (item == '' || item == null) {
+            $('.box-bill_bank_id').addClass('box-hidden');
+            $('.box-required').each(function() {
+                $(this).find('label span').addClass('box-hidden');
+            });
+        }
+    	if(item == 'cod' || item == 'truc-tiep' ) {
+    		$('.box-bill_paid_number').removeClass('box-hidden');
+        	$('.box-bill_paid_number .control-label').html('Số phiếu thu<span class="required">*</span>');
+    		$('.box-bill_bank_id').addClass('box-hidden');
+            $('.box-required').each(function() {
+                $(this).find('label span').removeClass('box-hidden');
+            });
+    	}
+    	if(item == 'quet-the') {
+    		$('.box-bill_paid_number').removeClass('box-hidden');
+        	$('.box-bill_paid_number .control-label').html('Số bill<span class="required">*</span>');
+    		$('.box-bill_bank_id').addClass('box-hidden');
+    	}
+    	if(item == 'chuyen-khoan') {
+    		$('.box-bill_bank_id').removeClass('box-hidden');
+        	$('.box-bill_paid_number').addClass('box-hidden');
+            $('.box-required').each(function() {
+                $(this).find('label span').removeClass('box-hidden');
+            });
+    	}
+    }
+    optionBill('<?php echo $myForm->get('bill_type_id')->getValue();?>');
+    $('select[name="bill_type_id"]').change(function() {
+    	optionBill($(this).val());
+    });
+<?php $this->headScript()->captureEnd() ?>

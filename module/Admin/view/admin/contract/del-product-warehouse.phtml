@@ -1,0 +1,107 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $options = unserialize($this->contract['options']);
+    $myForm->get('name_received')->setValue($options['contract_received']['name']);
+    $myForm->get('phone_received')->setValue($options['contract_received']['phone']);
+    $myForm->get('address_received')->setValue($options['contract_received']['address']);
+
+    $elementsBottom = array(
+        array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('contact_id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+
+    $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsBottom);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+        <div class="contract_product table-scrollable">
+            <table class="table table-striped table-bordered table-hover table-product">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Hàng có sẵn</th>
+                        <th>Tên xe - năm sản xuất</th>
+                        <th>Màu thảm</th>
+                        <th>Màu rối</th>
+                        <th>Loại sản phẩm</th>
+                    </tr>
+                </thead>
+                <tbody class="product_body">
+                <?php
+                $numbers = 0;
+                $total_price = 0;
+                if (count($options['product']) > 0) {
+                    foreach ($options['product'] as $product_detail){
+                        ?>
+                        <tr class="product_row">
+                            <td class="hidden"><input type="hidden" name="contract_product[key_id][]" value="<?php echo $product_detail['key_id']; ?>"></td>
+
+                            <td class="products text-middle"><?php echo $this->product_type[$product_detail['product_id']]->name; ?></td>
+                            <td class="stock text-middle"><?php echo $product_detail['stock']; ?></td>
+                            <td class="product-name text-middle"><?php echo $product_detail['product_name']; ?></td>
+                            <td class="carpet-color text-middle"><?php echo $this->carpet_color[$product_detail['carpet_color_id']]->name; ?></td>
+                            <td class="tangled-color text-middle"><?php echo $this->tangled_color[$product_detail['tangled_color_id']]->name; ?></td>
+                            <td class="flooring text-middle"><?php echo $this->flooring[$product_detail['flooring_id']]->name; ?></td>
+                            <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                        </tr>
+                    <?php
+                    }
+                } else {
+                ?>
+                <tr align="center">
+                    <td colspan="5" >Không có sản phẩm</td>
+                </tr>
+                <?php
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+    	<div class="row">
+			<?php echo $xhtmlBottom;?>
+		</div>
+    </form>
+<?php
+if(!empty($this->contract['status_guarantee_id'])) {
+    echo '<style>.code-old{display:block}</style>';
+}
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+
+<style>
+    tr td{
+        line-height: 30px;
+    }
+</style>
+
+<script>
+    $('body').on('click', '.delete-row', function(){
+        if(confirm("Kiểm tra kỹ đơn hàng trước khi xóa sản phẩm. bạn có chắc chắn muốn xóa sản phẩm này!")){
+            $(this).parents('tr').remove();
+        }
+    });
+</script>

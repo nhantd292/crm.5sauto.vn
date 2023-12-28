@@ -1,0 +1,81 @@
+<?php
+
+    $this->_userInfo = new \ZendX\System\UserInfo();
+    $curent_user = $this->_userInfo->getUserInfo();
+    $permission_ids = explode(',', $curent_user['permission_ids']);
+    $view_price_production = false;
+
+    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids) || in_array(ACCOUNTING, $permission_ids)){
+        $view_price_production = true;
+    }
+
+    $dateFormat = new \ZendX\Functions\Date();
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th>Sản phẩm</th>';
+    $xhtmlHead .= '<th>CM sản phẩm</th>';
+    $xhtmlHead .= '<th>Hàng sẵn có</th>';
+    $xhtmlHead .= '<th>Tên xe - Năm sản xuất</th>';
+    $xhtmlHead .= '<th>Màu sắc thảm</th>';
+    $xhtmlHead .= '<th>CM thảm</th>';
+    $xhtmlHead .= '<th>Màu rối</th>';
+    $xhtmlHead .= '<th>CM rối</th>';
+    $xhtmlHead .= '<th>Loại sản phẩm</th>';
+    $xhtmlHead .= '<th>Giá niêm yết</th>';
+    $xhtmlHead .= '<th>Giá bán</th>';
+    $xhtmlHead .= '<th>Giảm giá</th>';
+    $xhtmlHead .= '<th>VAT</th>';
+    $xhtmlHead .= '<th>Thành tiền bán</th>';
+    if($view_price_production){
+        $xhtmlHead .= '<th>Thành tiền giá vốn</th>';
+        $xhtmlHead .= '<th>Giá vốn mặc định</th>';
+    }
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    $options = $this->items['options'] ? unserialize($this->items['options']) : array();
+    if(count($options['product']) > 0) {
+        foreach ($options['product'] AS $item) {
+            if($view_price_production){
+                $price_production = '<td><span class="mask_currency">'. $item['total_production'] .'</span></td>
+    							    <td><span class="mask_currency">'. $item['capital_default'] .'</span></td>';
+            }
+            $xhtmlItems .= '<tr>
+    							<td>'. $this->product[$item['product_id']]['name'] .'</td>
+    							<td>'. $item['number_production'] .'</td>
+    							<td>'. $item['stock'] .'</td>
+    							<td>'. $item['product_name'] .'</td>
+    							<td>'. $this->carpet_color[$item['carpet_color_id']]['name'] .'</td>
+    							<td>'. $item['number_carpet'] .'</td>
+                                <td>'. $this->tangled_color[$item['tangled_color_id']]['name'] .'</td>
+                                <td>'. $item['number_tangled'] .'</td>
+    							<td>'. $this->flooring[$item['flooring_id']]['name'] .'</td>
+    							<td><span class="mask_currency">'. $item['listed_price'] .'</span></td>
+    							<td><span class="mask_currency">'. $item['price'] .'</span></td>
+    							<td><span class="mask_currency">'. $item['sale_price'] .'</span></td>
+    							<td><span class="mask_currency">'. $item['vat'] .'</span></td>
+    							<td><span class="mask_currency">'. $item['total'] .'</span></td>
+    							'.$price_production.'
+    						</tr>';
+        }
+?>
+<?php echo $this->flashMessenger()->render();?>
+<div class="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+    } else {
+        echo '<span class="text-danger">Không có dữ liệu</span>';
+    } 
+?>

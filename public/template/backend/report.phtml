@@ -1,0 +1,19 @@
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+<?php include_once $this->arrParams['template']['pathHtml'] . '/header.php';?>
+<body data-module="<?php echo str_replace('/', '', $this->arrParams['module']);?>" data-controller="<?php echo $this->arrParams['controller'];?>" data-action="<?php echo $this->arrParams['action'];?>">
+    <?php include_once $this->arrParams['template']['pathHtml'] . '/top.php';?>
+    <div class="page-container">
+        <a href="#" id="show_menu_report"><i class="fa fa-bars" aria-hidden="true"></i></a>
+        <div class="page-sidebar-wrapper">
+            <?php include_once $this->arrParams['template']['pathHtml'] . '/report/'. $this->arrParams['module'] .'.php';?>
+    	</div>
+    	<div class="page-content-wrapper">
+    		<?php echo $this->content; ?>
+    	</div>
+    </div>
+    <?php include_once $this->arrParams['template']['pathHtml'] . '/footer.php';?>
+</body>

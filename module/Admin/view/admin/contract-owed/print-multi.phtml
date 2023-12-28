@@ -1,0 +1,277 @@
+<script src="/public/template/backend/js/form.js?v='. date('YmdHi');?>" type="text/javascript"></script>
+<?php
+$dateFormat = new \ZendX\Functions\Date();
+$number = new \ZendX\Functions\Number();
+$i = 0;
+foreach ($this->items as $item) {
+    $code = $item['code'];
+    $user = $this->user[$item['created_by']]['name'];
+    $user_phone = $this->user[$item['created_by']]['phone'];
+    $shiper = $this->shipper[$item['shipper_id']]['name'];
+    $options = !empty($item['options']) ? unserialize($item['options']) : array();
+    $contact_name = $item['contact_name'];
+    $contact_phone = $item['contact_phone'];
+//    $price_deposits = $item['price_deposits'];
+    $price_deposits = $item['price_paid'];
+    $contact_license_plate = $item['contact_license_plate'];
+    $note = $options['sale_note'];
+    $date = date('d/m/Y');
+    $contact_phone = substr_replace($contact_phone, "****", 3, 4);
+    $contact_options = !empty($item['contact_options']) ? unserialize($item['contact_options']) : array();
+//    $contact_address = $contact_options['address'];// địa chỉ khách hàng
+    $contact_address = $options['contract_received']['address'];// địa chỉ nhận hàng
+    $products = $options['product'];
+
+    $infor_contact =   '
+                        <div class="label">
+                            <p><span class="title">Ngày tháng:</span> </span> '. $date .'</p>
+                            <p><span class="title">Tên khách hàng:</span> '. $contact_name .'</p>
+                        </div>
+                        <div class="label">
+                            <p><span class="title">Mã đơn hàng:</span> '. $code .'</p>
+                            <p><span class="title">SĐT khách hàng:</span> '. $contact_phone .'</p>
+                        </div>
+                        ';
+
+    $product_html = '';
+    $total_listed_price = $total_sale_price = $total_total = $total_vat = $total_price_base = 0;
+
+    foreach($products as $key => $value){
+        $product_name = $this->product[$value['product_id']]['name'];
+        $product_number = $value['numbers'];
+        $driver = $value['product_name'];
+        $product_carpet = $this->carpet_color[$value['carpet_color_id']]['name'];
+        $product_tangled = $this->tangled_color[$value['tangled_color_id']]['name'];
+        $product_flooring = $this->flooring[$value['flooring_id']]['name'];
+        $listed_price = $value['listed_price'];$total_listed_price += $listed_price;
+        $percenter = $value['percenter'];
+        $price_base = $listed_price / (100 - $percenter) * 100;
+        $price_base = $price_base == $listed_price ? $price_base : floor($price_base / 100000) * 100000 +100000;
+        $total_price_base += $price_base;
+        $total = $value['price']; $total_total += $total;
+        $sale_price = $price_base - $total; $total_sale_price += $sale_price;
+        $total_vat += $value['vat'];
+
+        $product_html .=   '<tr>
+                                <td>'. $product_name .'</td>
+                                <td>'. $driver .'</td>
+                                <td>'. $product_carpet .'</td>
+                                <td>'. $product_tangled .'</td>
+                                <td>'. $product_flooring .'</td>
+                                <td class="text-center">'. $product_number .'</td>
+                                <td class="text-right mask_currency">'. number_format($price_base) .'</td>
+                                <!--<td class="text-right mask_currency">'. number_format($listed_price) .'</td>-->
+                                <td class="text-right">'. number_format($sale_price) .'</td>
+                                <td class="text-right">'. number_format($total) .'</td>
+                            </tr>
+		                    ';
+    }
+    $total_pay = $total_total + $total_vat - $price_deposits;
+    ?>
+
+    <div class="content-print">
+        <div class="head-print">
+            <div class="logo">
+                <img src="/public/files/upload/default/images/logo-ok2.png">
+            </div>
+            <div class="company">
+                <h3>CÔNG TY TNHH SẢN XUẤT VÀ THƯƠNG MẠI XUẤT<br>NHẬP KHẨU FOREWIN</h3>
+                <p>Showroom: 256, nguyễn xiển, p. Hạ đình, q. thanh xuân, hà nội</p>
+                <p>Hotline: 0936 119 887 - 0968 233 117 - 0961 793845</p>
+            </div>
+        </div>
+        <div class="infor-contact">
+            <h4>Hóa đơn thanh toán</h4>
+            <?php echo $infor_contact; ?>
+        </div>
+        <div class="infor-order">
+            <table border="1">
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Tên xe - Năm sản xuất</th>
+                    <th>Thương hiệu</th>
+                    <th>Mã sản phẩm</th>
+                    <th>Loại sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá niêm yết</th>
+<!--                    <th>Đơn giá cũ</th>-->
+                    <th>Chiết khấu</th>
+                    <th>Thành tiền</th>
+                </tr>
+                <?php echo $product_html;?>
+
+                <tr>
+                    <td colspan="4" class="text-right">Tổng giá niêm yết</td>
+<!--                    <td colspan="7" class="text-right">--><?php //echo number_format($total_listed_price); ?><!--</td>-->
+                    <td colspan="7" class="text-right"><?php echo number_format($total_price_base); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">Tổng chiết khấu</td>
+                    <td colspan="7" class="text-right"><?php echo number_format($total_sale_price); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">Tổng thành tiên <span class="text-red">(1)</span></td>
+                    <td colspan="7" class="text-right"><?php echo number_format($total_total); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">Tổng tiền đã thanh toán <span class="text-red">(2)</span></td>
+                    <td colspan="7" class="text-right"><?php echo number_format($price_deposits); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">Tiền thuế GTGT (VAT 10%) <span class="text-red">(3)</span></td>
+                    <td colspan="7" class="text-right"><?php echo number_format($total_vat); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right">Tổng Tiền thanh toán <span class="text-red">(1) - (2) + (3)</span></td>
+                    <td colspan="7" class="text-right"><?php echo number_format($total_pay);?></td>
+                </tr>
+            </table>
+
+            <p class="pb-5 pt-5">Số tiền viết bằng chữ: <span style="color: red"><?php echo $number->convertString($total_pay); ?></span></p>
+            <i>(Ghi chú : sản phẩm được bảo hành bằng sđt. Biển số trên phần mềm Forewin)</i>
+            <p class="text-right"><span>Ngày..........</span><span>Tháng..........</span><span>Năm..........</span></p>
+            <div class="chu-ky d-flex pb-80 pt-20">
+                <p class="w-25 text-center">Khách hàng</p>
+                <p class="w-25 text-center">Kế toán</p>
+                <p class="w-25 text-center">Người lập</p>
+                <p class="w-25 text-center">Thủ quỹ</p>
+            </div>
+        </div>
+    </div>
+    <br clear="all" style="page-break-before:always" />
+    <?php
+}
+?>
+
+<style>
+    .text-red{
+        color: red;
+    }
+    *{
+        margin:0px;
+        padding:0px;
+        box-sizing:border-box;
+        moz-box-sizing:border-box;
+        webkit-box-sizing:border-box;
+    }
+    .w-25{
+        width: 25%;
+    }
+    .d-flex{
+        display: flex;
+    }
+    .pt-20{
+        padding-top: 20px;
+    }
+    .pb-80{
+        padding-bottom: 80px;
+    }
+    .pt-5{
+        padding-top: 5px;
+    }
+    .pb-5{
+        padding-bottom: 5px;
+    }
+    .pl-25{
+        padding-right: 40px;
+    }
+    body{
+        background: rgba(0,0, 0, 0.7);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    table{
+        border-collapse: collapse;
+        width: 100%;
+    }
+    table th{
+        padding: 5px;
+        text-transform: capitalize;
+        font-size: 14px;
+    }
+    table td{
+        padding: 5px;
+        text-transform: capitalize;
+        font-size: 13px;
+        font-weight: bold;
+    }
+    .content-print {
+        min-width: 210mm;
+        max-width: 297mm;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        background: #fff url("/public/files/upload/default/images/bg.png") no-repeat center;
+    }
+    .content-print .head-print{
+        width: 100%;
+        display: flex;
+    }
+    .content-print .head-print .logo{
+        width: 30%;
+        text-align: center;
+    }
+    .content-print .head-print .logo img {
+        width: 70%;
+    }
+    .content-print .head-print .company {
+        width: 70%;
+        padding: 0 20px;
+        text-align: center;
+    }
+    .content-print .head-print .company h3{
+        font-weight: bold;
+        font-size: 18px;
+        text-transform: uppercase;
+        margin: 5px 0px;
+        width: 100%;
+    }
+    .content-print .head-print .company p {
+        padding: 3px 0;
+        font-size: 14px;
+        text-transform: capitalize;
+        margin: 0;
+    }
+    .content-print .infor-contact{
+        width: 100%;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    .content-print .infor-contact h4{
+        text-align: center;
+        font-size: 20px;
+        text-transform: capitalize;
+        padding: 10px 0 20px;
+    }
+    .content-print .infor-contact .label{
+        width: 50%;
+        float: left;
+    }
+    .content-print .infor-contact p {
+        margin: 5px 15px;
+        font-size: 15px;
+        display: flex;
+        text-transform: capitalize;
+        border-bottom: 1px dotted #000;
+    }
+    .content-print .infor-contact p span{
+        /*min-width: 160px;*/
+        display: inline-block;
+        background: #fff;
+        margin-bottom: -1px;
+        margin-right: 20px;
+    }
+    .text-right{
+        text-align: right;
+    }
+    .text-center{
+        text-align: center;
+    }
+
+    @media print {
+        tr.title{
+            background-color: #d8d8d8 !important;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+
+</style>

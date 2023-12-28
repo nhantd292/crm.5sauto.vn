@@ -1,0 +1,143 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    $total_day = $this->total_day;
+    
+    $myForm	= $this->myForm;
+    $myForm->prepare();
+
+    $elements = array(
+        array('element' => $myForm->get('filter_year'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_month'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('color_group_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th width="40" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+	$xhtmlHead .= '<th width="250" class="text-center">Nguyên liệu</th>';
+	$xhtmlHead .= '<th width="300" class="text-center">Số lượng đầu kỳ</th>';
+	$xhtmlHead .= '<th width="250" class="text-center">Đơn vị tính</th>';
+	$xhtmlHead .= '<th width="100" class="text-center">Công cụ</th>';
+	$xhtmlHead .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if(!empty($this->items)) {
+        foreach ($this->items AS $index => $item) {
+            $cid           = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            $id            = $item->id;
+            $params        = $item->params ? unserialize($item->params) : array();
+            $number        = str_replace(',', '', $params['number']);
+            $name_material = $this->list_name[$item->material_id]['name'];
+
+            if($item->type == 'product'){
+                $unit = $this->units[$this->list_name[$item->material_id]['unit_id']];
+            }
+            else{
+                $unit = $this->units[$this->color_group[$this->list_name[$item->material_id]['parent']]['unit_id']];
+            }
+
+            // Link Action
+            $linkEdit  = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            $tool_edit ='<span class="btn_edit btn_ctl" data-id="'.$id.'">Sửa</span>';
+            $tool_save ='<span class="btn_save btn_ctl" data-id="'.$id.'">Lưu</span>';
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">';
+            $xhtmlItems .= '<td>'. $cid .'</td>';
+    		$xhtmlItems .= '<td class="text-bold">'. $name_material .'</td>';
+            $xhtmlItems .= '<td><input style="min-width: 80px;" type="text" disabled autocomplete="off" name="params[number]" value="'.$number.'" class="form-control input-xs mask_currency text-right"></td>';
+            $xhtmlItems .= '<td class="text-center">'. $unit .'</td>';
+            $xhtmlItems .= '<td class="text-center">'. $tool_edit.$tool_save .'</td>';
+            $xhtmlItems .= '</tr>';
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array('name' => 'addall', 'caption' => 'Tạo bảng nguyên liệu đầu kỳ', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'addAll')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+        array('name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link',
+              'attributes' => array('class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown',),
+              'children' => array(
+                  array('name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => '', ) ),
+                  array('name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array('onclick' => 'javascript:deleteItem(\'multi\', \'all\');',)),
+              ),
+              'children-class' => 'dropdown-menu pull-right'
+        ),
+
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable table-fixed">
+    			<table class="table table-striped table-bordered">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>
+
+<style>
+    table tbody tr td{
+        vertical-align: middle !important;
+    }
+    .form-control[disabled]{
+        border: none;
+        background: none !important;
+    }
+</style>
+<?php $this->headScript()->captureStart() ?>
+    $(document).ready(function() {
+        $('.btn_edit').click(function() {
+            var id = $(this).attr("data-id");
+            $('tr#tr_'+id).find('input').prop("disabled", false);
+        });
+
+        $('.btn_save').click(function() {
+            var id = $(this).attr("data-id");
+            $('tr#tr_'+id).find('input').prop("disabled", true);
+
+            var data_array = new Array();
+            $('tr#tr_'+id +' input').each(function(){
+            data_array.push($(this).val());
+        });
+
+        $.ajax({
+            url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'Material', 'action' => 'save-ajax'));?>',
+            type: 'POST',
+            data: {data_array},
+            success: function(result) {}
+            });
+        });
+    });
+<?php $this->headScript()->captureEnd() ?>

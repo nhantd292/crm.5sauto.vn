@@ -1,0 +1,55 @@
+<?php
+    $arrControl = array(
+        //array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdminNested/index', array('controller' => $this->params['controller'], 'code' => $this->params['route']['code'])), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+?>
+
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-content">
+    	<div class="row">
+			<div class="col-md-3">
+    			<div class="form-group"><label class="control-label">Chuyên mục</label>
+    				<div class="control-element">
+    					<select name="parent" class="form-control select2 select2_basic">
+    						<?php
+    						foreach ($this->setting AS $key => $value) {
+    						    $selected = '';
+    						    if($key == $this->item['parent']) {
+    						        $selected = ' selected="selected"';
+    						    }
+    						?>
+    						<option value="<?php echo $key;?>"<?php echo $selected;?>><?php echo $value;?></option>
+    						<?php
+    						}
+    						?>
+						</select>
+    				</div>
+    			</div>
+			</div>
+			<div class="col-md-3">
+    			<div class="form-group"><label class="control-label">Phương thức</label>
+    				<div class="control-element">
+    					<select name="type" class="form-control select2 select2_basic">
+    						<option value="left">Con đầu tiên</option>
+    						<option value="right" selected="selected">Con cuối cùng</option>
+    						<option value="before">Phía trước</option>
+    						<option value="after">Phía sau</option>
+						</select>
+    				</div>
+    			</div>
+			</div>
+		</div>
+	</div>
+</form>

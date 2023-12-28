@@ -1,0 +1,67 @@
+<?php
+
+    $this->_userInfo = new \ZendX\System\UserInfo();
+    $curent_user = $this->_userInfo->getUserInfo();
+    $permission_ids = explode(',', $curent_user['permission_ids']);
+    $view_price_production = false;
+
+    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids) || in_array(ACCOUNTING, $permission_ids)){
+        $view_price_production = true;
+    }
+
+    $dateFormat = new \ZendX\Functions\Date();
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th>Sản phẩm</th>';
+    $xhtmlHead .= '<th>SL</th>';
+    $xhtmlHead .= '<th>Giá bán</th>';
+    $xhtmlHead .= '<th>Giảm giá</th>';
+    $xhtmlHead .= '<th>VAT</th>';
+    $xhtmlHead .= '<th>Thành tiền bán</th>';
+    if($view_price_production){
+//        $xhtmlHead .= '<th>Thành tiền giá vốn</th>';
+        $xhtmlHead .= '<th>Giá vốn mặc định</th>';
+    }
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    $options = $this->items['options'] ? unserialize($this->items['options']) : array();
+    if(count($options['product']) > 0) {
+        foreach ($options['product'] AS $item) {
+            $productName = $this->items['kov_status'] ? $this->kovProduct[$item['product_id']]->fullName : $this->product[$item['product_id']]['name'];
+            if($view_price_production){
+                $price_production = '<!--<td class="text-right"><span class="mask_currency">'. $item['total_production'] .'</span></td>-->
+    							    <td class="text-right"><span class="mask_currency">'. ($item['capital_default']) .'</span></td>';
+            }
+            $item_price = $this->items['kov_status'] ? $item['price'] * $item['numbers'] : $item['price'];
+            $xhtmlItems .= '<tr>
+    							<td>'. $item['full_name'].'</td>
+    							<td class="text-right">'. number_format($item['numbers'],0) .'</td>
+    							<td class="text-right"><span class="mask_currency">'. $item_price .'</span></td>
+    							<td class="text-right"><span class="mask_currency">'. $item['sale_price'] .'</span></td>
+    							<td class="text-right"><span class="mask_currency">'. $item['vat'] .'</span></td>
+    							<td class="text-right"><span class="mask_currency">'. $item['total'] .'</span></td>
+    							'.$price_production.'
+    						</tr>';
+        }
+?>
+<?php echo $this->flashMessenger()->render();?>
+<div class="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+    } else {
+        echo '<span class="text-danger">Không có dữ liệu</span>';
+    } 
+?>

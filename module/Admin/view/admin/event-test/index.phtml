@@ -1,0 +1,117 @@
+<?php
+    // Filter
+    $myForm				= $this->myForm;
+    $myForm->prepare();
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th class="col-50">STT</th>';
+    $xhtmlHead .= $this->linkAdminSort('Tên', 'name', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Ngày diễn ra', 'public_date', $this->params['ssFilter'], null);
+	$xhtmlHead .= $this->linkAdminSort('Cở sở', 'company_branch_id', $this->params['ssFilter'], null);
+	$xhtmlHead .= $this->linkAdminSort('Người test', 'teacher', $this->params['ssFilter'], null);
+	$xhtmlHead .= $this->linkAdminSort('Chi phí', 'price_expected', $this->params['ssFilter'], null);
+    $xhtmlHead .= '<th class="col-80">Công cụ</th>';
+	$xhtmlHead .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if(!empty($this->items)) {
+        $index = 0;
+        foreach ($this->items AS $item) {
+            $index++;
+            $id             		= $item->id;
+            $name           		= $item->name;
+            $public_date    		= date_format(date_create($item->public_date), 'd/m/Y');
+            $company_branch_id 		= $item->company_branch_id ? $this->company_branch[$item->company_branch_id]['name'] : '';
+            $price_expected    		= $item->price_expected;
+            $contact_total 		    = $item->contact_total;
+            
+            $str_teacher = '';
+            if (!empty($item->teacher_ids)) {
+            	$teachers           	= unserialize($item->teacher_ids);
+	            foreach ($teachers AS $teacher){
+	            	$str_teacher 	   .= $this->user[$teacher]['fullname'] . ', ';
+	            }
+            }
+            $str_teacher			= substr($str_teacher, 0, -2);
+            $created_by     		= $this->user[$item->created_by]['fullname'];
+            $ordering       		= @$this->xFormInput('ordering['. $id .']', $item->ordering, array('class' => 'form-control input-xs'));
+            $cid            		= @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            // Link Action
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            $linkContact	        = $this->url('routeAdmin/default', array('controller' => 'event-contact', 'action' => 'index', 'id' => $id));
+            
+            // Control Action
+            $controlEdit            = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+            $controlStatus          = $this->linkAdminStatus($id, $item->status);
+            $controls               = $controlStatus . $controlEdit;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $cid .'</td>
+    							<td>'. $index .'</td>
+    							<td><a href="'. $linkContact .'">'. $name .'</a> (<span class="text-bold">'. $contact_total .'</span>)</td>
+    							<td>'. $public_date .'</td>
+    							<td>'. $company_branch_id .'</td>
+    							<td>'. $str_teacher .'</td>
+    							<td class="mask_currency">'. $price_expected .'</td>
+							    <td>'. $controls .'</td>
+    						</tr>';
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+        array( 'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ), 'children' => array( array( 'name' => 'sort', 'caption' => 'Sắp xếp', 'link' => 'javascript:;', 'icon' => 'fa-sort-alpha-asc', 'attributes' => array( 'onclick' => 'javascript:changeOrdering();', ) ), array( 'name' => 'divider' ), array( 'name' => 'active', 'caption' => 'Hiển thị', 'link' => 'javascript:;', 'icon' => 'fa-check-square-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 0);', ) ), array( 'name' => 'inactive', 'caption' => 'Không hiển thị', 'link' => 'javascript:;', 'icon' => 'fa-circle-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 1);', ) ), array( 'name' => 'divider' ), array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');', ) ), array( 'name' => 'divider' ), array( 'name' => 'print', 'caption' => 'In', 'link' => 'javascript:;', 'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:printPage();', ) ), array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o' ), ), 'children-class' => 'dropdown-menu pull-right' ),
+        array( 'name' => 'config', 'caption' => 'Cài đặt', 'link' => 'javascript:;', 'icon' => 'fa-cogs', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>

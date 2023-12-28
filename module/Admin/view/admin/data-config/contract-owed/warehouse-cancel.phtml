@@ -1,0 +1,230 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $userInfo = new \ZendX\System\UserInfo();
+    $permissions = $userInfo->getPermission();
+
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-2 col-xs-6'),
+//        array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by'))
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th width="30" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th width="35"></th>';
+    $xhtmlHead .= '<th width="100">Mã vận đơn</th>';
+    $xhtmlHead .= '<th width="90">Mã số đơn</th>';
+    $xhtmlHead .= '<th width="80">Ngày</th>';
+    $xhtmlHead .= '<th width="150">Nhân viên</th>';
+    $xhtmlHead .= '<th width="150">Tên khách hàng</th>';
+    $xhtmlHead .= '<th width="90">Điện thoại</th>';
+    $xhtmlHead .= '<th width="150">Địa chỉ</th>';
+//    $xhtmlHead .= '<th width="80">VAT</th>';
+    $xhtmlHead .= '<th width="80">Tổng tiền</th>';
+    $xhtmlHead .= '<th width="100">Vận chuyển</th>';
+    $xhtmlHead .= '<th width="100">Hàng sẵn có</th>';
+    $xhtmlHead .= '<th width="200">Sản phẩm</th>';
+    $xhtmlHead .= '<th width="180">Tên xe - Năm sản xuất</th>';
+    $xhtmlHead .= '<th width="180">Màu sắc thảm</th>';
+    $xhtmlHead .= '<th width="100">Màu rối</th>';
+    $xhtmlHead .= '<th width="150">Loại sản phẩm</th>';
+    $xhtmlHead .= '<th width="150">Ghi chú sales</th>';
+    $xhtmlHead .= '<th width="150">Ghi chú sản xuất</th>';
+//    $xhtmlHead .= '<th width="100">Hàng hoàn</th>';
+//    $xhtmlHead .= '<th width="100">Giảm giá</th>';
+    $xhtmlHead .= '<th width="140">NV giao hàng</th>';
+    $xhtmlHead .= '<th width="140">Người quản lý</th>';
+    $xhtmlHead .= '<th width="140">Người tạo</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+
+    if($this->items->count() > 0) {
+        $stt = 0;
+        $sum = 0;
+        foreach ($this->items AS $key => $item) {
+        	$stt++;
+        	$cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+        	
+        	$id                     = $item->id;
+        	$code                   = $item->code;
+            $date                   = $dateFormat->formatToView($item->date);
+            $contact_phone          = $item->contact_phone;
+            $contact_name           = $item->contact_name;
+            $vat                    = number_format($item->vat);
+            $price_promotion        = number_format($item->price_promotion);
+            $price_total            = $item->price_total;
+            $price_paid             = $item->price_paid;
+            $price_accrued          = $item->price_accrued;
+            $price_owed             = $item->price_owed;
+            $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
+            $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
+            $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
+            $bill_code              = $item->bill_code;
+            $product_return         = $item->product_return;
+            $shipper_id             = $this->shipper[$item->shipper_id];
+
+            $sale_group_id          = $item->sale_group_id ? '<br>'. $this->sale_group[$item->sale_group_id]['name'] : '';
+            $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+            $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+            $created_by             = $this->user[$item->created_by]['name'];
+            $sale_group_created_by  = $this->user[$item->created_by]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
+            $sale_branch_created_by = $this->user[$item->created_by]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
+            $options                = $item->options ? unserialize($item['options']) : array();
+            $contact_options        = $item->contact_options ? unserialize($item['contact_options']) : array();
+
+            $color_price_owed       = '';
+            // Link Action
+//            $linkView               = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'view')) .'\', {\'id\': \''. $id .'\'});';
+            $linkView               = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'view')) .'\', {\'id\': \''. $id .'\'});';
+            $linkEdit               = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit')) .'\', {\'id\': \''. $id .'\'});';
+            $linkEditNote           = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-note')) .'\', {\'id\': \''. $id .'\'});';
+            $linkDelete             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'delete', 'id' => $id));
+            $linkBillAdd            = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $id .'\'});';
+            $linkContactEdit        = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $item['contact_id'] .'\'});';
+            
+            // Control Action
+            $controlView            = '<a href="javascript:;" onclick="'. $linkView .'" title="Xem chi tiết" class="btn btn-xs blue"><i class="fa fa-info"></i></a>';
+            
+            $controls               = $controlView;
+            if (!empty($options['contact_info'])) {
+                $contact_phone          = $options['contact_info']['phone'];
+                $contact_name           = $options['contact_info']['name'];
+            }
+
+            $number_product = 0; // Tổng số sản phẩm còn lại trong đơn hàng.
+            $countProduct = count($options['product']);
+            if ($countProduct > 0) {
+                $rowSpan = 'rowspan="'.$countProduct.'"';
+
+                foreach ($options['product'] as $keyp => $valuep){
+                    $number_product += $valuep['numbers'];
+                }
+            } else {
+                $rowSpan = '';
+            }
+
+            if($number_product > 0){
+                $xhtmlItems .= '<tr id="tr_'. $id .'" data-id="'. $id .'">
+                                    <td '.$rowSpan.'>'. $cid .'</td>
+                                    <td '.$rowSpan.' class="controls">'. $controls .'</td>
+                                    <td '.$rowSpan.'>'. $bill_code .'</td>
+                                    <td '.$rowSpan.' class="text-bold">'. $code .'</td>
+                                    <td '.$rowSpan.'>'. $date .'</td>
+                                    <td '.$rowSpan.'>'. $user_name .'</td>
+                                    <td '.$rowSpan.'>'. $contact_name .'</td>
+                                    <td '.$rowSpan.'>'. $contact_phone .'</td>
+                                    <td '.$rowSpan.'>'. $contact_options['address'] .'</td>
+                                    <td '.$rowSpan.'>'. number_format($price_total) .'</td>
+                                    <td '.$rowSpan.'>'. $transport .'</td>';
+                if (count($options['product']) > 0) {
+                    foreach($options['product'] as $key => $item_product) {
+                        if ($key == 0) :
+                            $carpet_color  = $item_product['carpet_color_id'] ? $this->carpet_color[$item_product['carpet_color_id']]['name'] : '';
+                            $tangled_color = $item_product['tangled_color_id'] ? $this->tangled_color[$item_product['tangled_color_id']]['name'] : '';
+                            $flooring      = $item_product['flooring_id'] ? $this->flooring[$item_product['flooring_id']]['name'] : '';
+                            $style_class   = $item_product['numbers'] > 0 ? '' : 'text-gray';
+
+                            $xhtmlItems .= '
+                                        <td class="'.$style_class.'">'. $item_product['stock'] .'</td>
+                                        <td class="'.$style_class.'">'. $this->product[$item_product['product_id']]['name'] .'</td>
+                                        <td class="'.$style_class.'" title = "'.$item_product['product_name'].'">'. $item_product['product_name'] .'</td>
+                                        <td class="'.$style_class.'">'. $carpet_color .'</td>
+                                        <td class="'.$style_class.'">'. $tangled_color .'</td>
+                                        <td class="'.$style_class.'">'. $flooring .'</td>
+                                        ';
+                        endif;
+                    }
+                } else {
+                    $xhtmlItems .= '<td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>';
+                }
+                $xhtmlItems .= '
+                                    <td '.$rowSpan.'>'. $options['sale_note'] .'</td>
+                                    <td '.$rowSpan.'>'. $options['production_note'] .'</td>
+                                    <td '.$rowSpan.'>'. $shipper_id .'</td>
+                                    <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by .'</td>
+                                    <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by .'</td>
+                                </tr>';
+
+                if (count($options['product']) > 0) {
+                    foreach($options['product'] as $key => $item_product) {
+                        if ($key > 0) :
+                            $carpet_color           = $item_product['carpet_color_id'] ? $this->carpet_color[$item_product['carpet_color_id']]['name'] : '';
+                            $tangled_color          = $item_product['tangled_color_id'] ? $this->tangled_color[$item_product['tangled_color_id']]['name'] : '';
+                            $flooring               = $item_product['flooring_id'] ? $this->flooring[$item_product['flooring_id']]['name'] : '';
+                            $style_class   = $item_product['numbers'] > 0 ? '' : 'text-gray';
+
+                            $xhtmlItems .= '<tr>
+                                        <td class="'.$style_class.'">'. $item_product['stock'] .'</td>
+                                        <td class="'.$style_class.'">'. $this->product[$item_product['product_id']]['name'] .'</td>
+                                        <td class="'.$style_class.'" title = "'.$item_product['product_name'].'">'. $item_product['product_name'] .'</td>
+                                        <td class="'.$style_class.'">'. $carpet_color .'</td>
+                                        <td class="'.$style_class.'">'. $tangled_color .'</td>
+                                        <td class="'.$style_class.'">'. $flooring .'</td>
+                                        </tr>';
+                        endif;
+                    }
+                }
+            }
+        }
+    }
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+            <input type="hidden" name="filter_action" value="warehouseCancel">
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable table-fixed-head">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+        	?>
+    	</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+resize_col_table('#table-manager');
+<?php $this->headScript()->captureEnd() ?>

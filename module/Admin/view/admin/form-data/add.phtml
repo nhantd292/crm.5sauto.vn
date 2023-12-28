@@ -1,0 +1,82 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $elements = array(
+        array('div' => '', 'boxClass' => 'col-md-12', 'id' => 'form_section', 'boxId' => 'result_check_contact'),
+        array('section' => 'Nhập thông tin chung', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('phone'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('marketing_channel_id'), 'label' => 'Kênh marketing', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+//        array('element' => $myForm->get('product_group_id'), 'label' => 'Sản phẩm quan tâm', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address'), 'label' => 'Địa chỉ', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('city_id'), 'label' => 'Tỉnh thành', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('district_id'), 'label' => 'Quận huyện', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('job'), 'label' => 'Nghề nghiệp', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('note'), 'label' => 'Tên hãng xe - năm sản xuất', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('content'), 'label' => 'Nội dung cần tư vấn', 'boxClass' => 'col-md-4'),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+
+    <?php echo $this->flashMessenger()->render();?>
+
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row" id="info_data">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+	// Xử lý load tỉnh thành
+	$('select[name="city_id"]').change(function() {
+		var select = 'input[name="district_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+    
+    <?php if(empty($myForm->get('id')->getValue())) {?>
+    // Kiểm tra thông tin khách hàng
+    if($('input[name="phone"]').val()) {
+        var val = $('input[name="phone"]').val();
+        checkContactExists(val, 'check-exists', true);
+    }
+    
+	$('input[name="phone"]').blur(function() {
+        var val = $(this).val();
+        checkContactExists(val, 'check-exists', true);
+    });
+    
+    $('input[name="phone"]').keypress(function (event) {
+		if(event.charCode == 13) {
+			$('input[name="phone"]').blur();
+		}
+	});
+
+    <?php }?>
+
+<?php $this->headScript()->captureEnd() ?>

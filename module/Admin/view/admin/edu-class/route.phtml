@@ -1,0 +1,142 @@
+<?php 
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    // Thông tin lớp học
+    $infoClass              = $this->item;
+    $edu_class_note         = !empty($this->item['note']) ? unserialize($this->item['note']) : array();
+    $edu_class_sessions     = $infoClass['sessions'];
+    $edu_class_route        = $infoClass['route'] ? unserialize($infoClass['route']) : array();
+    $edu_class_muster       = $infoClass['muster'] ? unserialize($infoClass['muster']) : array();
+    $edu_class_exercise     = $infoClass['exercise'] ? unserialize($infoClass['exercise']) : array();
+    
+    $teacher_ids            = $infoClass['teacher_ids'] ? explode(',', $infoClass['teacher_ids']) : null;
+    $coach_ids              = $infoClass['coach_ids'] ? explode(',', $infoClass['coach_ids']) : null;
+    
+    $xhtml = '';
+    if(!empty($edu_class_route)) {
+        $i = 0;
+        foreach ($edu_class_route AS $key => $value){
+            $i++;
+            
+            $disabled = ' disabled="disabled"';
+            if(empty($edu_class_muster['day-'. $i])) {
+                $disabled = '';
+            }
+            
+            $route_teacher = explode(',', $value['teacher_id']);
+            $selectTeacher = '';
+            if(!empty($teacher_ids)) {
+                $selectTeacher = '<select name="route['. $key .'][teacher_id][]" class="select2 select2_basic" multiple="multiple">';
+                foreach ($teacher_ids AS $teacher) {
+                    $selected_teacher = '';
+                    if(in_array($teacher, $route_teacher)) {
+                        $selected_teacher = ' selected="selected"';
+                    }
+                    $selectTeacher .= '<option value="'. $this->user[$teacher]['id'] .'"'. $selected_teacher .'>'. $this->user[$teacher]['name'] .'</option>';
+                }
+                $selectTeacher .= '</select>';
+            }
+            
+            $route_coach = explode(',', $value['coach_id']);
+            $selectCoach = '';
+            if(!empty($coach_ids)) {
+                $selectCoach = '<select name="route['. $key .'][coach_id][]" class="select2 select2_basic" multiple="multiple">';
+                foreach ($coach_ids AS $coach) {
+                    $selected_coach = '';
+                    if(in_array($coach, $route_coach)) {
+                        $selected_coach = ' selected="selected"';
+                    }
+                    $selectCoach .= '<option value="'. $this->user[$coach]['id'] .'"'. $selected_coach .'>'. $this->user[$coach]['name'] .'</option>';
+                }
+                $selectCoach .= '</select>';
+            }
+            
+            $teacher_note = '<textarea name="route['. $key .'][teacher_note]" class="textArea">'. $value['teacher_note'] .'</textarea>';
+            $manage_note = '<textarea name="route['. $key .'][manage_note]" class="textArea">'. $value['manage_note'] .'</textarea>';
+            
+            $muster = !empty($edu_class_muster[$key]['success']) ? '<span class="text-bold text-success">Đã hoàn thành</span>' : '';
+            
+            $xhtml .= '<tr>
+                        <td>Buổi '. $i .'</td>
+                        <td><input type="text" name="route['. $key .'][day]" value="'. $value['day'] .'" class="input date-picker"></td>
+                        <td>'. $selectTeacher .'</td>
+                        <td>'. $selectCoach .'</td>
+                        <td>'. $teacher_note .'</td>
+                        <td>'. $manage_note .'</td>
+                        <td>'. $muster .'</td>
+                     </tr>';
+        }
+    }
+?>
+<form method="post" action="" role="form" name="adminFormAjaxRouteStudy" id="adminFormAjaxRouteStudy">
+    <input type="hidden" name="id" value="<?php echo $infoClass['id'];?>">
+    <table class="table table-striped table-bordered table-nowrap routeStudy" style="margin-bottom: 40px !important;">
+        <thead>
+            <tr>
+                <th class="col-60">STT</th>
+                <th class="col-80"><div class="col-80">Ngày</div></th>
+                <th>Giáo viên</th>
+                <th>Trợ giảng</th>
+                <th>Ghi chú của giáo viên</th>
+                <th>Ghi chú của giáo vụ</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php echo $xhtml; ?>
+        </tbody>
+    </table>
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+	function submitFormRouteStudyAjax(element) {
+		$.ajax({
+			url: '<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action']));?>',
+			type: 'POST',
+			data: $(element).serialize(),
+			beforeSend: function() {
+				pageLoading('loading', '.page-container');
+			},
+			success: function(result) {
+				if(result != '') {
+					xToastr('error', result, '');
+				}
+				pageLoading('close', '.page-container');
+				$('.tableMuster .textContent').css({'display' : 'none'});
+	        	$('.body-backgroud').remove();
+			}
+		});
+    }
+
+    $("#adminFormAjaxRouteStudy textArea").on("keydown keyup click", function(){
+        this.style.height = "1px";
+        this.style.height = (this.scrollHeight) + 3 + "px"; 
+    });
+
+    // Bat su kien select
+	$('#adminFormAjaxRouteStudy select').change(function() {
+		var name = $(this).attr('name');
+    	submitFormRouteStudyAjax('select[name="'+ name +'"], input[name="id"]');
+
+		var value = $(this).val();
+		if(value == '' || value == '0'){
+            $(this).css({'background-color': '#FFF', 'color': '#000'});
+        } else if(value == '1') {
+            $(this).css({'background-color': '#8cfd8c', 'color': '#000'});
+        }
+    });
+
+	// Bat su kien text box
+    $('#adminFormAjaxRouteStudy textArea').change(function() {
+    	var name = $(this).attr('name');
+    	submitFormRouteStudyAjax('textarea[name="'+ name +'"], input[name="id"]');
+	});
+	
+    // Bat su kien text box
+    $('#adminFormAjaxRouteStudy input').change(function() {
+    	var name = $(this).attr('name');
+    	submitFormRouteStudyAjax('input[name="'+ name +'"], input[name="id"]');
+	});
+});
+</script>
+	

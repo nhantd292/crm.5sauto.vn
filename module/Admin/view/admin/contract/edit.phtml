@@ -1,0 +1,554 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    $userInfo = new \ZendX\System\UserInfo();
+    $user_info = $userInfo->getUserInfo();
+    $can_edit = in_array(ADMIN,explode(',',$user_info['permission_ids'])) || in_array(SYSTEM,explode(',',$user_info['permission_ids'])) || !$this->contract['production_department_type'];
+    $options = unserialize($this->contract['options']);
+    $myForm->get('name_received')->setValue($options['contract_received']['name']);
+    $myForm->get('phone_received')->setValue($options['contract_received']['phone']);
+    $myForm->get('address_received')->setValue($options['contract_received']['address']);
+
+    $elementsTop = array(
+        array('section' => 'Thông tin người nhận', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('name_received'), 'label' => 'Họ và tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('phone_received'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address_received'), 'label' => 'Địa chỉ nhận hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
+
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('date'), 'label' => 'Ngày đơn hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('production_type_id'), 'label' => 'Loại đơn sản xuất', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('transport_id'), 'label' => 'Vận chuyển', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('status_guarantee_id'), 'label' => 'Đơn bảo hành', 'boxClass' => 'col-md-1 guarantee hidden'),
+		array('element' => $myForm->get('code_old'), 'label' => 'Mã đơn cũ', 'boxClass' => 'col-md-2 code-old'),
+        array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sales', 'boxClass' => 'col-md-3'),
+    );
+
+    $elementsBottom = array(
+        array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => $myForm->get('price_total'), 'label' => 'Tổng tiền', 'boxClass' => 'col-md-2 hidden'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('contact_id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+
+    $xhtmlTop = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsTop);
+    $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsBottom);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+    <?php if (!$can_edit) { ?>
+    <p class="alert alert-danger">Không thể sửa đơn đã được cập nhật trạng thái Sản xuất.</p>
+    <?php } else { ?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtmlTop;?>
+		</div>
+        <div class="contract_product table-scrollable">
+
+            <div id="form-product-return" data-url="<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'get-contract-available')); ?>">
+                <input type="text" id="hang-co-san" value="" placeholder="Nhập mã đơn hàng có sẵn">
+                <input type="hidden" id="contract_sale_branch_id" value="<?php echo $this->contract['sale_branch_id'];?>" >
+                <input type="button" value="Tìm">
+            </div>
+            <p class="text-alert"></p>
+            <?php
+                if(!empty($this->check_product_id)){
+                    ?>
+                    <div class="alert alert-block alert-danger">
+                        <button type="button" class="close" data-dismiss="alert"></button>
+                        <p><?php echo $this->check_product_id; ?></p>
+                    </div>
+                    <?php
+                }
+            ?>
+
+            <table class="table table-striped table-bordered table-hover table-product" style="min-width:1920px">
+                <thead>
+                    <tr>
+                        <th width="200px">Sản phẩm</th>
+                        <th width="150px">Hàng có sẵn</th>
+                        <th width="230px">Tên xe - năm sản xuất</th>
+                        <th width="200px">Màu thảm</th>
+                        <th width="200px">Màu rối</th>
+                        <th width="200px">Loại sản phẩm</th>
+                        <th class="hidden">Giá vốn mặc định</th>
+                        <th>Số lượng</th>
+                        <th width="">Giá niêm yết</th>
+                        <th>Giá bán</th>
+                        <th>Giảm giá</th>
+                        <th>VAT</th>
+                        <th>Thành tiền</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody class="product_body">
+                <?php
+                $numbers = 0;
+                $total_price = 0;
+                if (count($options['product']) > 0) {
+                    foreach ($options['product'] as $product_detail){
+                        $numbers = $numbers + $product_detail['numbers'];
+                        $total_price = $total_price + $product_detail['total'];
+                        if (!empty($product_detail['sale_price'])) {
+                            $salePrice = $product_detail['sale_price'];
+                        } else {
+                            $salePrice = 0;
+                        }
+
+                        $disabled = '';
+                        if(!empty($product_detail['stock'])){
+                            $disabled = 'disabled';
+                        }
+
+                        if (!empty($product_detail['vat'])) {
+                            $vat = $product_detail['vat'];
+                        } else {
+                            $vat = 0;
+                        }
+                        ?>
+                        <tr class="product_row ">
+                            <input class="form-control" type="hidden" name="contract_product[key_id][]" value="<?php echo $product_detail['key_id']; ?>">
+                            <td class="products">
+                                <select class="select-product select2 select2_basic form-control" onchange="changeOption(this)" <?php echo $disabled; ?> name="contract_product[product_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php 
+                                        foreach ($this->product_type as $value) {
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-product="<?php echo $value['id']; ?>" data-price="<?php echo $value['price']; ?>" <?php echo ($product_detail['product_id'] == $value['id'])?'selected': false;?>><?php echo $value["name"] ?></option>
+                                    <?php
+                                        }
+                                    ?>
+                                </select>
+
+                            </td>
+                            <td class="stock"><input class="form-control" type="text" name="contract_product[stock][]" readonly value="<?php echo $product_detail['stock']; ?>"></td>
+                            <td class="product-name"><input class="form-control" type="text" name="contract_product[product_name][]" title="<?php echo $product_detail['product_name']; ?>" value="<?php echo $product_detail['product_name']; ?>"></td>
+                            <td class="carpet-color">
+                                <select class="select-product select2 select2_basic form-control" <?php echo $disabled; ?> onchange="changeOption(this)" name="contract_product[carpet_color_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php 
+                                    foreach ($this->carpet_color as $value) {  
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-carpet-color="<?php echo $value['id']; ?>" data-price="<?php echo $value['price']; ?>" <?php echo ($product_detail['carpet_color_id'] == $value['id'])?'selected': false;?>><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="tangled-color">
+                                <select class="select-product select2 select2_basic form-control" <?php echo $disabled; ?> onchange="changeOption(this)" name="contract_product[tangled_color_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php 
+                                    foreach ($this->tangled_color as $value) {  
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-tangled-color="<?php echo $value['id']; ?>" data-price="<?php echo $value['price']; ?>" <?php echo ($product_detail['tangled_color_id'] == $value['id'])?'selected': false;?>><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="flooring">
+                                <select class="select-product select2 select2_basic form-control" <?php echo $disabled; ?> onchange="changeOption(this)" name="contract_product[flooring_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php 
+                                    foreach ($this->flooring as $value) {  
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-flooring="<?php echo $value['id']; ?>" data-price="<?php echo $value['price']; ?>" <?php echo ($product_detail['flooring_id'] == $value['id'])?'selected': false;?>><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="capital_default hidden"><input class="form-control text-right" readonly type="text" name="contract_product[capital_default][]" value="<?php echo number_format($product_detail['capital_default']); ?>" min="1"></td>
+                            <td class="numbers"><input class="form-control text-right" type="text" onchange="changeOption(this)" name="contract_product[numbers][]" value="<?php echo number_format($product_detail['numbers']); ?>" min="1"></td>
+                            <td class="listed_price"><input class="form-control text-right" readonly type="text" name="contract_product[listed_price][]" value="<?php echo number_format($product_detail['listed_price']); ?>" min="1"></td>
+                            <td class="price"><input class="form-control text-right money" type="text" name="contract_product[price][]" min="0" value="<?php echo number_format($product_detail['price']); ?>"></td>
+                            <td class="sale_price"><input class="form-control text-right money" type="text" name="contract_product[sale_price][]" readonly value="<?php echo number_format($salePrice); ?>" min="0"></td>
+                            <td class="vat"><input class="form-control text-right money" type="text" name="contract_product[vat][]" value="<?php echo number_format($vat); ?>" min="0"></td>
+                            <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" readonly value="<?php echo number_format($product_detail['total']); ?>"></td>
+                            <td class="icon_delete"><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+
+<!--                            --><?php
+//                                if(empty($product_detail['stock'])){
+//                                    ?>
+<!--                                    <td class="icon_delete"><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>-->
+<!--                                    --><?php
+//                                }
+//                            ?>
+                            <?php
+                                if(!empty($product_detail['stock'])){
+                                    ?>
+                                    <input class="remove-add-row" type="hidden" name="contract_product[product_id][]" value="<?php echo $product_detail['product_id'];?>" />
+                                    <input class="remove-add-row" type="hidden" name="contract_product[tangled_color_id][]" value="<?php echo $product_detail['tangled_color_id'];?>" />
+                                    <input class="remove-add-row" type="hidden" name="contract_product[carpet_color_id][]" value="<?php echo $product_detail['carpet_color_id'];?>" />
+                                    <input class="remove-add-row" type="hidden" name="contract_product[flooring_id][]" value="<?php echo $product_detail['flooring_id'];?>" />
+                                    <?php
+                                }
+                            ?>
+
+                            <input class="empty-value" type="hidden" name="contract_product[keyUpdate][]" value="<?php echo $product_detail['keyUpdate'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[sale_branch_id][]" value="<?php echo $product_detail['sale_branch_id'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[type][]" value="<?php echo $product_detail['type'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[number_production][]" value="<?php echo $product_detail['number_production'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[number_carpet][]" value="<?php echo $product_detail['number_carpet'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[number_tangled][]" value="<?php echo $product_detail['number_tangled'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[price_production][]" value="<?php echo $product_detail['price_production'];?>" />
+                            <input class="empty-value" type="hidden" name="contract_product[total_production][]" value="<?php echo $product_detail['total_production'];?>" />
+                        </tr>
+                    <?php
+                    }
+                } else {
+                ?>
+                <tr align="center">
+                    <td colspan="5" >Không có sản phẩm</td>
+                </tr>
+                <?php
+                }
+                ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Tổng</td>
+                        <td></td>
+                        <td></td>
+                        <td><?php //echo $numbers; ?></td> 
+                        <td></td>
+                        <td></td> 
+                        <td></td> 
+                        <td></td> 
+                        <td></td> 
+                        <td></td> 
+                        <td></td>
+                        <td class="total_price text-right" style="padding: 10px 18px;"><?php echo number_format($total_price); ?></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <a href="javascript:void(0);" class="btn btn-default" id="add_row_product" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm sản phẩm</a>
+        </div>
+        <div class="hidden">
+            <input type="hidden" name="total_price_product" value="" >
+            <input type="hidden" name="total_price_not_vat" value="<?php echo $total_price; ?>" >
+        </div>
+    	<div class="row">
+			<?php echo $xhtmlBottom;?>
+		</div>
+    </form>
+<?php } ?>
+<?php
+if(!empty($this->contract['status_guarantee_id'])) {
+    echo '<style>.code-old{display:block}</style>';
+}
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+    <?php if ($can_edit) { ?>
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+    <?php } ?>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+<style>
+.custom-modal {
+    width: 90% !important;
+    margin-left: -45% !important;
+}
+
+#form-product-return {
+    padding: 5px 0 10px 0;
+    overflow: hidden;
+}
+#form-product-return input[type="text"] {
+    float: left;
+    padding: 4px 5px;
+    border-right: 0px;
+    border: 1px #ccc solid;
+    font-size: 14px;
+}
+#form-product-return input[type="button"] {
+    float: left;
+    padding: 5px 10px 3px 10px;
+    border-left: 0;
+    border: 1px #5cb85c solid;
+    background: #5cb85c;
+    font-size: 14px;
+    color: #fff;
+}
+</style>
+
+<script>
+    // Gọi hàm định dạng tiền tệ
+    format_to_money();
+    
+    $('.guarantee input[type="checkbox"]').on('click', function() {
+		$('.code-old').toggle(this.checked);
+	})
+
+    var product_setting = [];
+    var setting_data = [];
+    $.ajax({
+        url:'/xadmin/api/product-setting',data:{pagination:false},method:'POST',dataType:'json',
+        success:function(resp) {
+            product_setting = resp.setting;
+            setting_data = resp.data;
+        }
+    })
+    function changeOption(elm){
+        var total = 0;
+        var tr_parent = $(elm).parents('tr');
+        var product = tr_parent.find('.products select option:selected').attr('data-product');
+        var carpet = tr_parent.find('.carpet-color select option:selected').attr('data-carpet-color');
+        var tangled = tr_parent.find('.tangled-color select option:selected').attr('data-tangled-color');
+        var flooring = tr_parent.find('.flooring select option:selected').attr('data-flooring');
+        var quantity = (tr_parent.find('.numbers input').val()||'1')*1;
+        console.log(tr_parent);
+        if (product_setting && product_setting.length) {
+            var key = null;
+            var index = 0;
+            var parent = $(elm).parents('td').attr('class');
+            if (parent == 'products') {//product || 
+                key = 'carpet-color';
+                index = 1;
+            }
+            if (parent == 'carpet-color') {//product && carpet
+                key = 'tangled-color';
+                index = 2;
+            }
+            if (parent == 'tangled-color') {//product && carpet && tangled
+                key = 'flooring';
+                index = 3;
+            }
+            if (key) {
+                var options = null;
+                var allowed_ids = product_setting.filter(x => x.indexOf(product)>=0).map(x => x.split('-')[index]);
+                if (index == 1) {
+                    allowed_ids = product_setting.filter(x => x.indexOf(product)>=0).map(x => x.split('-')[index]);
+                    options = setting_data.carpet_color.filter(x => allowed_ids.includes(x.id));
+                    $(tr_parent).find('.'+key+' select').html(`<option value="">- Chọn -</option>`+options.map(x => `<option value="${x.id}" data-${key}="${x.id}">${x.name}</option>`).join(''));
+                    $(tr_parent).find('.tangled-color select').html(`<option value="">- Chọn -</option>`).val('').trigger('change');
+                    $(tr_parent).find('.flooring select').html(`<option value="">- Chọn -</option>`).val('').trigger('change');
+                }
+                if (index == 2) {
+                    allowed_ids = product_setting.filter(x => x.indexOf(product)>=0 && x.indexOf(carpet)>=0).map(x => x.split('-')[index]);
+                    options = setting_data.tangled_color.filter(x => allowed_ids.includes(x.id));
+                    $(tr_parent).find('.'+key+' select').html(`<option value="">- Chọn -</option>`+options.map(x => `<option value="${x.id}" data-${key}="${x.id}">${x.name}</option>`).join(''));
+                    $(tr_parent).find('.flooring select').html(`<option value="">- Chọn -</option>`).val('').trigger('change');
+                }
+                if (index == 3) {
+                    allowed_ids = product_setting.filter(x => x.indexOf(product)>=0 && x.indexOf(carpet)>=0 && x.indexOf(tangled)>=0).map(x => x.split('-')[index]);
+                    options = setting_data.flooring.filter(x => allowed_ids.includes(x.id));
+                    $(tr_parent).find('.'+key+' select').html(`<option value="">- Chọn -</option>`+options.map(x => `<option value="${x.id}" data-${key}="${x.id}">${x.name}</option>`).join(''));
+                }
+                $(tr_parent).find('.'+key+' select').select2({placeholder: "- Chọn -",allowClear: true});
+            }
+        }
+        
+        $.ajax({
+            url: '/xadmin/api/get-product-listed',
+            type: 'POST',
+            data: {
+                product: product, carpet_color: carpet, tangled_color: tangled, flooring: flooring, type: 'price'
+            },
+            success: function(data) {
+                tr_parent.find('.listed_price input').val(formatNumber(parseInt(data)*quantity));
+                updateTotal();
+            }
+        })
+
+        $.ajax({
+            url: '/xadmin/api/get-product-listed',
+            type: 'POST',
+            data: {
+                product: product, carpet_color: carpet, tangled_color: tangled, flooring: flooring, type: 'default'
+            },
+            success: function(data) {
+                tr_parent.find('.capital_default input').val(formatNumber(parseInt(data)*quantity));
+                updateTotal();
+            }
+        })
+        
+    }
+
+    // Check đơn hàng có sẵn
+    $('#form-product-return input[type=button]').on('click', function() {
+        var url = $('#form-product-return').data('url');
+        var code = $('#form-product-return').find('input[type=text]').val();
+        var contract_sale_branch_id = $('#form-product-return').find('input[type=hidden]').val();
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                code: code,
+                contract_sale_branch_id: contract_sale_branch_id,
+            },
+            success: function(data) {
+                $('.text-alert').html();
+                if (data) {
+                    $('.text-alert').addClass('text-success');
+                    var message = 'Tìm đơn hàng có sẵn thành công';
+                } else {
+                    $('.text-alert').addClass('text-danger');
+                    var message = 'Đơn hàng không có trong kho hàng có sẵn';
+                }
+                $('.text-alert').html(message);
+                $('.product_body tr[data-code="'+code+'"]').remove();
+                $('.product_body').prepend(data);
+                $('.product_body').find('select.select2').select2();
+                updateTotal();
+            }
+        })
+    });
+
+    function update_price_contract() {
+		var total_price 		    = $('input[name="total_price_product"]').val();
+		var total = 0;
+		total = parseInt(total) + parseInt(total_price);
+		$('input[name="price_total"]').autoNumeric('set', total);
+    }
+
+    //tổng tiền của mỗi sản phảm
+    function updatePrice(){
+        var tr_parent = element.parents("tr");
+        var number = parseInt(tr_parent.find(".numbers input").val());
+        if(!number || number < 0){
+            number = 1;
+            tr_parent.find(".numbers input").val(number);
+        }      
+        var price = parseInt(tr_parent.find(".price input").val());   
+        if(!price || price < 0){
+            price = 0;
+            tr_parent.find(".price input").val(price);
+        } 
+        tr_parent.find(".total input").val(formatNumber(number*price));
+    };
+
+    //tổng tiền của tất cả sác sản phẩm chưa trừ chiết khấu
+    function updatePriceProduct(){
+        var total_price_product = 0;
+        $.each($('.product_row'), function (index, value) {
+            var p = $(this).find('.price input').val() ? $(this).find('.price input').val() : 0;
+            var numbs = $(this).find('.numbers input').val() ? $(this).find('.numbers input').val() : 0;
+            total_price_product += (parseInt(p)*parseInt(numbs));
+        });
+        // $(".total_price_product").html(total_price_product);
+        $("input[name=total_price_product]").val(total_price_product);
+    }
+
+    //tổng số lượng của tất cả sác sản phẩm 
+    function updateNumberProduct(){
+        var total_number_product = 0;
+        $.each($('.product_row'), function (index, value) {
+            var numbs = $(this).find('.numbers input').val() ? $(this).find('.numbers input').val() : 0;
+            total_number_product += parseInt(numbs);
+        });
+        $(".total_number_product").html(total_number_product);
+        $("input[name=total_number_product]").val(total_number_product);
+            
+    }
+
+    // Khi thay đổi giá bán
+    $("body").on("change", ".price input", function(){
+        var total = 0;
+        var tr_parent = $(this).parents("tr"); 
+        var price = parseInt(format_number_to_data($(this).val()));
+        var vat = parseInt(format_number_to_data(tr_parent.find(".vat input").val()));
+        if (isNaN(vat) || vat <= 0) {
+            vat = 0;
+        }
+
+        total = price + vat;
+        tr_parent.find(".total input").val(formatNumber(total));
+        var listed_price = parseInt(format_number_to_data(tr_parent.find(".listed_price input").val()));
+        tr_parent.find(".sale_price input").val(formatNumber(listed_price - price));
+
+        updatePriceProduct(); 
+        updateNumberProduct();
+        updateTotal();
+    });
+
+    // Khi thay đổi vat
+    $("body").on("change", ".vat input", function(){
+        var total = 0;
+        var tr_parent = $(this).parents("tr");    
+        var vat = parseInt(format_number_to_data($(this).val()));
+        var price = format_number_to_data(tr_parent.find('.price input').val());
+        if (isNaN(vat) || vat <= 0) {
+            vat = 0;
+        }
+
+        total = parseInt(price) + vat;
+        tr_parent.find(".total input").val(formatNumber(total));
+        updatePriceProduct();
+        updateTotal();
+    });
+
+    //Nút thêm một hàng trong bảng sản phẩm
+    $('#add_row_product').on('click', function(){
+        var table = $(this).parent().find('.table-product');
+        table.find('select.select2').select2('destroy');
+        var tr    = $(".product_row:last");
+
+        var clone = tr.clone();
+        // var icon_del = '<td class="icon_delete"><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>';
+        // clone.find('td.icon_delete').remove();
+        // clone.append(icon_del);
+
+        clone.appendTo('.product_body');
+        clone.find('input').val('');
+        clone.find('select.select2').val('');
+        table.find('select.select2').select2();
+
+        var tr_new    = $(".product_row:last");
+        tr_new.find('select').removeAttr('disabled');
+        tr_new.find('input.numbers').attr('value', 1);
+        tr_new.find('input.remove-add-row').remove();
+        tr_new.find('input.empty-value').attr('value', '');
+
+        // Gọi hàm định dạng tiền tệ
+        format_to_money();
+    });
+
+    //Xóa hàng trong bảng sản phẩm
+    $('body').on('click', '.delete-row', function(){
+        var row = $('.product_row').length;
+        if(row > 1){
+            $(this).parents('tr').remove();
+        }else{
+            $(this).parents('tr').find('.price input').val('');
+            $(this).parents('tr').find('.numbers input').val('');
+            $(this).parents('tr').find('.total input').val('');
+            $(this).parents('tr').find('.select2').val(null).trigger('change');
+        }
+        updatePriceProduct();
+        updateNumberProduct();
+        updateTotal();
+    });
+
+    //tổng tiền của hóa đơn sau khi trừ chiết khấu
+    function updateTotal(){
+        var total_price = 0;
+        $.each($('.product_row'), function (index, value) {
+            var t = $(this).find('.total input').val() ? $(this).find('.total input').val() : 0;
+            total_price += parseInt(unFormatNumber(t));
+        });
+
+        $(".total_price").html(formatNumber(total_price));
+        $('input[name=total_price]').val(total_price);
+        $('input[name=price_total]').autoNumeric('set', total_price);
+    }
+</script>

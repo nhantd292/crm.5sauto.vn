@@ -1,0 +1,131 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    $myForm	= $this->myForm;
+    $myForm->prepare();
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_year'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_month'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    $xhtmlBodyHead  = '<tr style="background: #e8e8e8;">';
+    $xhtmlBodyHead  .= '<th class="fix-head"></th>';
+    $xhtmlBodyHead  .= '<th class="fix-head">Nhân viên</th>';
+    for ($i = 1; $i <= $this->number_day; $i++){
+        $xhtmlBodyHead  .= '<th width ="85" class="text-center text-bold">'.$i.'</th>';
+    }
+    $xhtmlBodyHead  .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if(!empty($this->items)) {
+        $date_old      = '';
+        foreach ($this->items AS $index => $item) {
+            $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            $id                     = $item->id;
+            $name                   = $item->user_name;
+            $time                   = $item->month.'/'.$item->year;
+            $branch                 = $this->sale_branch[$item->user_sale_branch_id]->name;
+            $group                  = $this->sale_branch[$item->user_sale_group_id]->name;
+
+            $in                     = $this->time_checkin_department[$item->user_company_department_id]['in'];
+            $out                    = $this->time_checkin_department[$item->user_company_department_id]['out'];
+
+            $params                 = $item->params ? unserialize($item->params) : array();
+            $params_out             = $item->params_out ? unserialize($item->params_out) : array();
+
+            // Link Action
+//            $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            $linkEdit               = "";
+
+            $xhtmlItems .= '<tr id="tr_'. $id .'">';
+            $xhtmlItems .= '<th>'. $cid .'</th>';
+    		$xhtmlItems .= '<th class="text-bold" style="min-width: 150px;"><a href="'. $linkEdit .'">'.$name.'</a></th>';
+    		for ($i = 1; $i <= $this->number_day; $i++){
+                $i = $i < 10 ? '0'.$i : $i;
+                $bg_color = '';
+
+                $class_in  = $params[$i] > $in ? 'text-red' : '';
+                $class_out = $params_out[$i] < $out ? 'text-red' : '';
+
+                $time_in  = '<p class="'.$class_in.'">'.(!empty($params[$i]) ? $params[$i].'(vào)' : '').'</p>';
+                $time_out = '<p class="'.$class_out.'">'.(!empty($params_out[$i]) ? $params_out[$i].'(ra)' : '').'</p>';
+
+                $xhtmlItems  .= '<td style="min-width: 58px;">'.$time_in.$time_out.'</td>';
+            }
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array('name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link',
+              'attributes' => array('class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown',),
+              'children' => array(
+                      array('name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array('onclick' => 'javascript:deleteItem(\'multi\', \'all\');',)),
+                      array('name' => 'divider'),
+                      array('name' => 'addall', 'caption' => 'Tạo bảng chấm công', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'addAll')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', ) ),
+              ),
+              'children-class' => 'dropdown-menu pull-right'
+        ),
+
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable table-fixed">
+    			<table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <?php echo $xhtmlBodyHead;?>
+                    </thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options']));
+            ?>
+    	</div>
+	</div>
+</form>
+
+<!--Tạo cố định cột và dòng-->
+<style>
+    div.table-fixed tbody th:nth-child(1),
+    div.table-fixed thead th:nth-child(1)
+    {
+        left: 0;
+    }
+    div.table-fixed tbody th:nth-child(2),
+    div.table-fixed thead th:nth-child(2)
+    {
+        left: 23px;
+    }
+</style>
+

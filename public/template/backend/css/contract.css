@@ -1,0 +1,112 @@
+@media (min-width: 1367px){
+    .col-xl-2 {
+        width: 20%;
+    }
+}
+tfoot tr {
+    border-bottom: 1px solid #d8d8d8;
+}
+.gift {
+    color: #f70;
+    font-size: 20px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+#gift{
+    display: inline;
+    position: relative;
+}
+#gift .gift-detail{
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #d8d8d8;
+    padding: 0px 15px 10px;
+    right: 0;
+    z-index: 100;
+    width: 350px;
+}
+.form-control {
+    min-width: 100px;
+}
+
+#form-product-return {
+    padding: 5px 0 10px 0;
+    overflow: hidden;
+}
+#form-product-return input[type="text"] {
+    float: left;
+    padding: 4px 5px;
+    border-right: 0px;
+    border: 1px #ccc solid;
+    font-size: 14px;
+}
+#form-product-return input[type="button"] {
+    float: left;
+    padding: 5px 10px 3px 10px;
+    border-left: 0;
+    border: 1px #5cb85c solid;
+    background: #5cb85c;
+    font-size: 14px;
+    color: #fff;
+}
+.product_body tr:last-child{
+    border-bottom: 1px solid #d8d8d8;
+}
+
+span.show-price{
+    display: block;
+    padding: 5px;
+    border-bottom: 1px solid #d8d8d8;
+}
+span.show_discount{
+    padding: 2px 5px;
+    color: #f00;
+}
+.box-price{
+    position: relative;
+}
+.box-price .price-detail{
+    position: absolute;
+    width: 250px;
+    border: 1px solid #d8d8d8;
+    background: #fff;
+    padding: 10px;
+    right: 100%;
+    top: 0;
+    text-align: left;
+    display: none;
+    z-index: 10;
+}
+.box-price .price-detail p .desc{
+    width: 60px;
+    display: inline-block;
+}
+.box-price .price-detail p input[type="text"]{
+    border: none;
+    border-bottom: 1px solid #f8f8f8;
+    text-align: right;
+    width: 165px;
+    outline: none;
+    background-color: #fff !important;
+}
+.box-price .price-detail p.type-discount input[type="text"]{
+    width: 80px;
+}
+.box-price .price-detail p.type-discount label {
+    font-size: 12px;
+    padding: 3px;
+    background: #d8d8d8;
+    border-radius: 5px;
+    position: relative;
+    padding-left: 15px;
+    width: 38px;
+}
+.box-price .price-detail p.type-discount label input{
+    width: 10px;
+    position: absolute;
+    margin: 0;
+    left: 3px;
+    top: 4px;
+
+}

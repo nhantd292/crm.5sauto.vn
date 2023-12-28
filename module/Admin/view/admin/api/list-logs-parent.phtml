@@ -1,0 +1,147 @@
+<?php
+if($this->items->count() > 0) {
+    $dateFormat = new \ZendX\Functions\Date();
+    $numberFormat = new \ZendX\Functions\Number();
+    
+    // Định nghĩa
+    $arrName = array(
+        'user_id' => 'Người quản lý',
+        'sale_branch_id' => 'Cơ sở',
+        'sale_group_id' => 'Nhóm',
+        'date' => 'Ngày',
+        'index' => 'Mã',
+        'code' => 'Mã',
+        'type' => 'Phân loại',
+        'type_id' => 'Phân loại',
+        'price' => 'Giá',
+        'price_unit' => 'Đơn vị',
+        'price_promotion' => 'Giá ưu đãi',
+        'price_promotion_percent' => 'Giảm %',
+        'price_promotion_price' => 'Giảm giá',
+        'promotion_content' => 'Lý do giảm giá',
+        'price_total' => 'Thành tiền',
+        'paid_price' => 'Tiền thu',
+        'accrued_price' => 'Tiền chi',
+        'product_id' => 'Sản phẩm',
+        'edu_class_id' => 'Lớp học',
+        'promotion_id' => 'Ưu đãi',
+        'phone' => 'Điện thoại',
+        'name' => 'Tên',
+        'email' => 'Email',
+        'source_group_id' => 'Nguồn khách hàng',
+        'source_known_id' => 'Nguồn biết đến',
+        'contact_ids' => 'Số khách hàng',
+        'content' => 'Nội dung',
+        'bill_type_id' => 'Hình thức',
+        'note' => 'Nội dung/Ghi chú',
+        'location_city_id' => 'Tỉnh thành',
+        'location_district_id' => 'Quận huyện',
+        'birthday' => 'Ngày sinh',
+        'birthday_year' => 'Năm sinh',
+        'created' => 'Ngày tạo',
+        'created_by' => 'Người tạo',
+        'matter_ids' => 'Vật phẩm',
+        'reserve_sessions' => 'Số buổi đã học',
+        'reserve_date_begin' => 'Bảo lưu từ ngày',
+        'reserve_date_end' => 'Hạn cuối bảo lưu',
+        'reserve_content' => 'Lý do bảo lưu',
+        'reserve_cancel_content' => 'Lý do hủy',
+        'reserve_from' => 'Bảo lưu từ',
+        'reserve_to' => 'Bảo lưu tới',
+        'leave_cancel_content' => 'Lý do hủy',
+        'leave_sessions' => 'Số buổi đã học',
+        'leave_date' => 'Từ ngày',
+        'leave_content' => 'Lý do nghỉ',
+        'action_id' => 'Hành động',
+        'result_id' => 'Kết quả',
+        'return' => 'Hẹn lại',
+        'move_content' => 'Lý do chuyển',
+        'relearn_content' => 'Lý do đăng ký học lại',
+        'edu_class_from' => 'Từ lớp',
+        'edu_class_to' => 'Sang lớp',
+        'status' => 'Trạng thái',
+        'note_log' => 'Lý do',
+        'date_register' => 'Ngày đăng ký thi',
+        'date_speaking' => 'Ngày thi speaking',
+    );
+    
+    $arrSource = array_merge($this->document, $this->user, $this->product, $this->edu_class);
+    
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th>STT</th>';
+    $xhtmlHead .= '<th>Ngày thực hiện</th>';
+    $xhtmlHead .= '<th>Người thực hiện</th>';
+    $xhtmlHead .= '<th>Tiêu đề</th>';
+    $xhtmlHead .= '<th>Hành động</th>';
+    $xhtmlHead .= '<th>Người quản lý mới</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    $index = 0;
+    foreach ($this->items AS $item) {
+        $index++;
+        
+        $id                 = $item->id;
+        $title              = $item->title;
+        $phone              = $item->phone;
+        $name               = $item->name;
+        $action             = $item->action;
+        $created            = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+        $created_by         = $this->user[$item->created_by]['name'];
+        $created_by_branch  = !empty($this->user[$item->created_by]['sale_branch_id']) ? ' - '. $this->document[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
+        $created_by_group   = !empty($this->user[$item->created_by]['sale_group_id']) ? ' - '. $this->document[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
+        $options            = !empty($item->options) ? unserialize($item->options) : array();
+        $content            = '';
+        if(count($options) > 0) {
+            foreach ($options AS $k => $v) {
+                $check_date = explode('-', $v);
+                if(strlen($numberFormat->formatToNumber($check_date[0])) == 4) {
+                    $v = $dateFormat->formatToView($v);
+                }
+                if(is_array($v)) {
+                    $v = count($v);
+                }
+                $text = !empty($arrSource[$v]) ? $arrSource[$v]['name'] : $v;
+                $content .= $arrName[$k] .': '. $text .'<br>';
+            }
+        }
+        
+        // Link Action
+        $linkEdit       = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+        
+        // Control Action
+        $controlEdit    = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+        $controlStatus  = $this->linkAdminStatus($id, $item->status);
+        $controls       = $controlStatus . $controlEdit;
+        
+        $xhtmlItems .= '<tr id="tr_'. $id .'">
+							<td>'. $index .'</td>
+							<td>'. $created .'</td>
+							<td>'. $created_by . $created_by_group . $created_by_branch .'</td>
+							<td>'. $title .'</td>
+							<td>'. $action .'</td>
+							<td>'. $content .'</td>
+						</tr>';
+    }
+
+?>
+    <div class="table-manager">
+    	<div class="table-scrollable">
+    		<table class="table table-striped table-bordered table-hover">
+    			<thead>
+    				<?php echo $xhtmlHead;?>
+    			</thead>
+    			<tbody>
+    				<?php echo $xhtmlItems;?>
+    			</tbody>
+    		</table>
+    	</div>
+    </div>
+<?php
+	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator-ajax.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-logs')), 'ajax_content_id' => '#load_logs', 'options' => array('contact_id' => $this->params['data']['contact_id']))); 
+} else {
+    echo '<span class="text-danger">Không có dữ liệu</span>';
+} 
+?>

@@ -1,0 +1,544 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $elementsTop = array(
+//        array('section' => 'Thông tin combo sản phẩm', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('name'), 'label' => 'Tên combo sản phẩm', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
+        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'validate' => array('require' => false), 'boxClass' => 'col-md-8'),
+    );
+    
+    $xhtmlTop = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsTop);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elementsTop);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtmlTop;?>
+            <div class="col-md-12">
+                <h3 class="form-section">Thông tin sản phẩm</h3>
+                <?php
+                    if(!empty($this->check_product_id)){
+                    ?>
+                    <div class="alert alert-block alert-danger">
+                        <button type="button" class="close" data-dismiss="alert"></button>
+                        <p><?php echo $this->check_product_id; ?></p>
+                    </div>
+                    <?php
+                    }
+                ?>
+            </div>
+		</div>
+        <div class="contract_product table-scrollable" >
+            <table class="table table-striped table-bordered table-hover table-product" style="min-width:1920px">
+                <thead>
+                    <tr>
+                        <th width="200px">Sản phẩm</th>
+                        <th width="200px">Màu thảm</th>
+                        <th width="200px">Màu rối</th>
+                        <th width="200px">Loại sản phẩm</th>
+                        <th class="hidden">Giá vốn mặc định</th>
+                        <th>Số lượng</th>
+                        <th>Giá niêm yết</th>
+                        <th>Giá bán</th>
+                        <th>Giảm giá</th>
+                        <th>Thành tiền</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody class="product_body">
+                    <?php
+                    if (!empty($productList)) {
+                        for($i = 0; $i < count($productList['product_id']) - 1; $i++) {
+                        ?>
+                        <tr class="product_row">
+                            <td class="products text-middle <?php if(trim($productList['product_id'][$i]) == "") echo "has-error"?>">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[product_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                        foreach ($this->product as $value) {
+                                            ?>
+                                            <option <?php if($productList['product_id'][$i] == $value['id']){ echo 'selected'; } ?> value="<?php echo $value['id'] ?>" data-product="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                            <?php
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+
+                            <td class="carpet-color text-middle <?php if(trim($productList['carpet_color_id'][$i]) == "") echo "has-error"?>">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[carpet_color_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                        foreach ($this->carpet_color as $value) {
+                                            ?>
+                                            <option <?php if($productList['carpet_color_id'][$i] == $value['id']){ echo 'selected'; } ?> value="<?php echo $value['id'] ?>" data-carpet-color="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                            <?php
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="tangled-color text-middle <?php if(trim($productList['tangled_color_id'][$i]) == "") echo "has-error"?>">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[tangled_color_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                        foreach ($this->tangled_color as $value) {
+                                            ?>
+                                            <option <?php if($productList['tangled_color_id'][$i] == $value['id']){ echo 'selected'; } ?> value="<?php echo $value['id'] ?>" data-tangled-color="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                            <?php
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="flooring text-middle <?php if(trim($productList['flooring_id'][$i]) == "") echo "has-error"?>">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[flooring_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                        foreach ($this->flooring as $value) {
+                                            ?>
+                                            <option <?php if($productList['flooring_id'][$i] == $value['id']){ echo 'selected'; } ?> value="<?php echo $value['id'] ?>" data-flooring="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                            <?php
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+
+                            <td class="capital_default hidden"><input class="form-control text-right" readonly type="text" name="contract_product[capital_default][]" value="<?php if(!empty($productList['capital_default'][$i])){ echo $productList['capital_default'][$i]; } ?>" min="1"></td>
+                            <td class="numbers"><input class="form-control text-right money" type="text" name="contract_product[numbers][]" value="<?php echo $productList['numbers'][$i]?:'1';?>" min="1"></td>
+                            <td class="listed_price"><input class="form-control text-right" readonly type="text" name="contract_product[listed_price][]" value="<?php if(!empty($productList['listed_price'][$i])){ echo $productList['listed_price'][$i]; } ?>" min="1"></td>
+                            <td class="price  <?php if(trim($productList['price'][$i]) == "") echo "has-error"?>"><input class="form-control text-right money" type="text" name="contract_product[price][]" value="<?php echo $productList['price'][$i]; ?>" min="0"></td>
+                            <td class="sale_price"><input class="form-control text-right money" readonly type="text" name="contract_product[sale_price][]" value="<?php if(!empty($productList['sale_price'][$i])){ echo $productList['sale_price'][$i]; } ?>" min="0"></td>
+                            <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" value="<?php if(!empty($productList['total'][$i])){ echo $productList['total'][$i]; } ?>" readonly></td>
+                            <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                        </tr>
+                        <?php
+                        }
+                    }
+                    else {
+                        ?>
+                        <tr class="product_row">
+                            <td class="products">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[product_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                    foreach ($this->product as $value) {
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-product="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+
+                            <td class="carpet-color">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[carpet_color_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                    foreach ($this->carpet_color as $value) {
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-carpet-color="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="tangled-color">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[tangled_color_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                    foreach ($this->tangled_color as $value) {
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-tangled-color="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="flooring">
+                                <select class="select-product select2 select2_basic form-control" name="contract_product[flooring_id][]">
+                                    <option value="">- Chọn -</option>
+                                    <?php
+                                    foreach ($this->flooring as $value) {
+                                    ?>
+                                        <option value="<?php echo $value['id'] ?>" data-flooring="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="capital_default hidden"><input class="form-control text-right" readonly type="text" name="contract_product[capital_default][]" value="" min="1"></td>
+                            <td class="numbers"><input class="form-control text-right money" type="text" name="contract_product[numbers][]" value="1" min="1"></td>
+                            <td class="listed_price"><input class="form-control text-right" readonly type="text" name="contract_product[listed_price][]" value="" min="1"></td>
+                            <td class="price"><input class="form-control money text-right" type="text" name="contract_product[price][]" value="" min="0"></td>
+                            <td class="sale_price"><input class="form-control text-right money" readonly type="text" name="contract_product[sale_price][]" value="" min="0"></td>
+                            <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" value="" readonly></td>
+                            <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                    <!-- Dòng dữ liệu mặc định khi thêm mới một sản phẩm-->
+                    <tr class="row_product_add hidden">
+                        <td class="products">
+                            <select class="select-product select2 select2_basic form-control" name="contract_product[product_id][]">
+                                <option value="">- Chọn -</option>
+                                <?php
+                                    foreach ($this->product as $value) {
+                                        ?>
+                                        <option value="<?php echo $value['id'] ?>" data-product="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                        <?php
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="carpet-color">
+                            <select class="select-product select2 select2_basic form-control" name="contract_product[carpet_color_id][]">
+                                <option value="">- Chọn -</option>
+                                <?php
+                                    foreach ($this->carpet_color as $value) {
+                                        ?>
+                                        <option value="<?php echo $value['id'] ?>" data-carpet-color="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                        <?php
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="tangled-color">
+                            <select class="select-product select2 select2_basic form-control" name="contract_product[tangled_color_id][]">
+                                <option value="">- Chọn -</option>
+                                <?php
+                                    foreach ($this->tangled_color as $value) {
+                                        ?>
+                                        <option value="<?php echo $value['id'] ?>" data-tangled-color="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                        <?php
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="flooring">
+                            <select class="select-product select2 select2_basic form-control" name="contract_product[flooring_id][]">
+                                <option value="">- Chọn -</option>
+                                <?php
+                                    foreach ($this->flooring as $value) {
+                                        ?>
+                                        <option value="<?php echo $value['id'] ?>" data-flooring="<?php echo $value['id']; ?>"><?php echo $value["name"] ?></option>
+                                        <?php
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="capital_default hidden"><input class="form-control text-right" readonly type="text" name="contract_product[capital_default][]" value="" min="1"></td>
+                        <td class="numbers"><input class="form-control text-right money" type="text" name="contract_product[numbers][]" value="1" min="1"></td>
+                        <td class="listed_price"><input class="form-control text-right" readonly type="text" name="contract_product[listed_price][]" value="" min="1"></td>
+                        <td class="price"><input class="form-control money text-right" type="text" name="contract_product[price][]" value="" min="0"></td>
+                        <td class="sale_price"><input class="form-control text-right money" readonly type="text" name="contract_product[sale_price][]" value="" min="0"></td>
+                        <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" value="" readonly></td>
+                        <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Tổng</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="total-listed-price text-right" style="padding: 10px 18px;"></td>
+                        <td class="total-price-sell text-right" style="padding: 10px 18px;"></td>
+                        <td></td>
+                        <td class="total_price text-right" style="padding: 10px 18px;"></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <a href="javascript:void(0);" class="btn btn-default" id="add_row_product" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm sản phẩm</a>
+        </div>
+        <div class="hidden">
+            <input type="hidden" name="total_price_product" value="" >
+        </div>
+	</div>
+</form>
+
+<div class="hidden" id="contactPhone">
+    <?php echo $this->contactPhone;?>
+</div>
+<div class="hidden" id="contactId">
+    <?php echo $this->contactId;?>
+</div>
+
+<style>
+#form-product-return {
+    padding: 5px 0 10px 0;
+    overflow: hidden;
+}
+#form-product-return input[type="text"] {
+    float: left;
+    padding: 4px 5px;
+    border-right: 0px;
+    border: 1px #ccc solid;
+    font-size: 14px;
+}
+#form-product-return input[type="button"] {
+    float: left;
+    padding: 5px 10px 3px 10px;
+    border-left: 0;
+    border: 1px #5cb85c solid;
+    background: #5cb85c;
+    font-size: 14px;
+    color: #fff;
+}
+</style>
+
+
+<?php $this->headScript()->captureStart() ?>
+    var product_setting = [];
+    var setting_data = [];
+    $.ajax({
+        url:'/xadmin/api/product-setting',method:'POST',data:{pagination:false},dataType:'json',
+        success:function(resp) {
+            product_setting = resp.setting;
+            setting_data = resp.data;
+        }
+    })
+    $('body').delegate(".products select, .carpet-color select, .tangled-color select, .flooring select,.numbers input",'change',function(e){
+        var total = 0;
+        var tr_parent = $(this).parents('tr');
+        var product = tr_parent.find('.products select option:selected').attr('data-product');
+        var carpet = tr_parent.find('.carpet-color select option:selected').attr('data-carpet-color');
+        var tangled = tr_parent.find('.tangled-color select option:selected').attr('data-tangled-color');
+        var flooring = tr_parent.find('.flooring select option:selected').attr('data-flooring');
+        var quantity = (tr_parent.find('.numbers input').val()||'1')*1;
+        if (product_setting && product_setting.length) {
+            var key = null;
+            var index = 0;
+            var parent = $(e.target).parents('td').attr('class');
+            if (parent == 'products') {//product || 
+                key = 'carpet-color';
+                index = 1;
+            }
+            if (parent == 'carpet-color') {//product && carpet
+                key = 'tangled-color';
+                index = 2;
+            }
+            if (parent == 'tangled-color') {//product && carpet && tangled
+                key = 'flooring';
+                index = 3;
+            }
+            if (key) {
+                var options = null;
+                var allowed_ids = product_setting.filter(x => x.indexOf(product)>=0).map(x => x.split('-')[index]);
+                if (index == 1) {
+                    allowed_ids = product_setting.filter(x => x.indexOf(product)>=0).map(x => x.split('-')[index]);
+                    options = setting_data.carpet_color.filter(x => allowed_ids.includes(x.id));
+                    $(tr_parent).find('.carpet-color select').html(`<option value="">- Chọn -</option>`+options.map(x => `<option value="${x.id}" data-${key}="${x.id}">${x.name}</option>`).join(''));
+                    $(tr_parent).find('.tangled-color select').html(`<option value="">- Chọn -</option>`).val('').trigger('change');
+                    $(tr_parent).find('.flooring select').html(`<option value="">- Chọn -</option>`).val('').trigger('change');
+                }
+                if (index == 2) {
+                    allowed_ids = product_setting.filter(x => x.indexOf(product)>=0 && x.indexOf(carpet)>=0).map(x => x.split('-')[index]);
+                    options = setting_data.tangled_color.filter(x => allowed_ids.includes(x.id));
+                    $(tr_parent).find('.tangled-color select').html(`<option value="">- Chọn -</option>`+options.map(x => `<option value="${x.id}" data-${key}="${x.id}">${x.name}</option>`).join(''));
+                    $(tr_parent).find('.flooring select').html(`<option value="">- Chọn -</option>`).val('').trigger('change');
+                }
+                if (index == 3) {
+                    allowed_ids = product_setting.filter(x => x.indexOf(product)>=0 && x.indexOf(carpet)>=0 && x.indexOf(tangled)>=0).map(x => x.split('-')[index]);
+                    options = setting_data.flooring.filter(x => allowed_ids.includes(x.id));
+                    $(tr_parent).find('.flooring select').html(`<option value="">- Chọn -</option>`+options.map(x => `<option value="${x.id}" data-${key}="${x.id}">${x.name}</option>`).join(''));
+                }
+                $(tr_parent).find('.'+key+' select').select2({placeholder: "- Chọn -",allowClear: true});
+            }
+        }
+
+        $.ajax({
+            url: '/xadmin/api/get-product-listed',
+            method: 'POST',
+            data: {
+                product: product, carpet_color: carpet, tangled_color: tangled, flooring: flooring, type:'price'
+            },
+            success: function(data) {
+                tr_parent.find('.listed_price input').val(formatNumber(parseInt(data)*quantity));
+                updateTotal();
+            }
+        })
+
+        $.ajax({
+            url: '/xadmin/api/get-product-listed',
+            method: 'POST',
+            data: {
+                product: product, carpet_color: carpet, tangled_color: tangled, flooring: flooring, type:'default'
+            },
+            success: function(data) {
+                if (product&&carpet&&tangled&&flooring&&data==='0') {
+                    toastr['error']('Sản phẩm chưa có giá vốn mặc định');
+                }
+                tr_parent.find('.capital_default input').val(formatNumber(parseInt(data)*quantity));
+                updateTotal();
+            }
+        })
+    });
+    $("body").on("change", ".products select, .carpet-color select, .tangled-color select, .flooring select,.numbers input", function(){
+    });
+
+    function update_price_contract() {
+		var total_price 		    = $('input[name="total_price_product"]').val();
+		var total = 0;
+		total = parseInt(total) + parseInt(total_price);
+		$('input[name="price_total"]').autoNumeric('set', total);
+    }
+
+    //tổng tiền của mỗi sản phảm
+    function updatePrice(){
+        var tr_parent = element.parents("tr");
+        var number = parseInt(tr_parent.find(".numbers input").val());
+        if(!number || number < 0){
+            number = 1;
+            tr_parent.find(".numbers input").val(number);
+        }      
+        var price = parseInt(tr_parent.find(".price input").val().replace(/,/gm,'')*1);
+        if(!price || price < 0){
+            price = 0;
+            tr_parent.find(".price input").val(price);
+        } 
+        tr_parent.find(".total input").val(formatNumber(number*price));
+    };
+
+    //tổng tiền của tất cả sác sản phẩm chưa trừ chiết khấu
+    function updatePriceProduct(){
+        var total_price_product = 0;
+        $.each($('.product_row'), function (index, value) {
+            var p = $(this).find('.price input').val() ? $(this).find('.price input').val().replace(/,/gm,'')*1 : 0;
+            var numbs = $(this).find('.numbers input').val() ? $(this).find('.numbers input').val() : 0;
+            total_price_product += (parseInt(p)*parseInt(numbs));
+        });
+        //$(".total_price_product").html(total_price_product);
+        $("input[name=total_price_product]").val(total_price_product);
+    }
+
+    //tổng số lượng của tất cả sác sản phẩm 
+    function updateNumberProduct(){
+        var total_number_product = 0;
+        $.each($('.product_row'), function (index, value) {
+            var numbs = $(this).find('.numbers input').val() ? $(this).find('.numbers input').val() : 0;
+            total_number_product += parseInt(numbs);
+        });
+        $(".total_number_product").html(total_number_product);
+        $("input[name=total_number_product]").val(total_number_product);
+            
+    }
+
+    // Cập nhật lại giảm giá cho từng sản phẩm - NTD
+    function updateSalePriceProduct(){
+        var salePrice = 0;
+        $.each($('.product_row'), function (index, value) {
+            var numbs = $(this).find('.numbers input').val() ? $(this).find('.numbers input').val() : 0;
+            total_number_product += parseInt(numbs);
+        });
+        $(".total_number_product").html(total_number_product);
+        $("input[name=total_number_product]").val(total_number_product);
+
+    }
+
+    // hàm tính tiền cho bảng sản phẩm
+    $("body").on("change", ".price input", function(){
+        var tr_parent = $(this).parents("tr");
+        var price = parseInt(tr_parent.find(".price input").val().replace(/,/gm,'')*1);
+        if(!price || price < 0){
+            price = 0;
+            tr_parent.find(".price input").val(price);
+        } 
+        tr_parent.find(".total input").val(formatNumber(price));
+        var listed_price = parseInt(tr_parent.find(".listed_price input").val().replace(/,/gm,'')*1);
+        var sale_price = listed_price - price;
+        console.log(listed_price,price,sale_price);
+        tr_parent.find(".sale_price input").val(formatNumber(sale_price));
+
+        total = price;
+        tr_parent.find(".total input").val(formatNumber(total));
+
+
+        updatePriceProduct();
+        updateNumberProduct();
+        updateTotal();
+    });
+
+    //Nút thêm một hàng trong bảng sản phẩm
+    $('#add_row_product').on('click', function(){
+        var table = $(this).parent().find('.table-product');
+        table.find('select.select2').select2('destroy');
+        var tr    = $(".row_product_add");
+
+        var clone = tr.clone();
+        clone.attr('class','product_row');
+        clone.insertBefore(".row_product_add");
+        clone.find('input').val('');
+        clone.find('select.select2').val('');
+        table.find('select.select2').select2();
+
+        format_to_money();
+    });
+
+    //Xóa hàng trong bảng sản phẩm
+    $('body').on('click', '.delete-row', function(){
+        deleteTr($(this).parents('tr'));
+    });
+
+    function deleteTr(tr_parent){
+        var row = $('.product_row').length;
+        if(row > 1){
+            tr_parent.remove();
+        }else{
+            tr_parent.find('.price input').val('');
+            tr_parent.find('.numbers input').val('');
+            tr_parent.find('.total input').val('');
+            tr_parent.find('.select2').val(null).trigger('change');
+        }
+        updatePriceProduct();
+        updateNumberProduct();
+        updateTotal();
+    }
+
+    //tổng tiền của hóa đơn sau khi trừ chiết khấu
+    function updateTotal(){
+        var total_price = 0;
+        var total_price_sell = 0;
+        var total_listed_price = 0;
+        $.each($('.product_row'), function (index, value) {
+            var price = $(this).find('.total input').val() ? $(this).find('.total input').val() : 0;
+            var price_sell = $(this).find('.price input').val() ? $(this).find('.price input').val().replace(/,/gm,'')*1 : 0;
+            var price_listed = $(this).find('.listed_price input').val() ? $(this).find('.listed_price input').val().replace(/,/gm,'')*1 : 0;
+            total_price += parseInt(unFormatNumber(price));
+            total_price_sell += parseInt(unFormatNumber(price_sell));
+            total_listed_price += parseInt(unFormatNumber(price_listed));
+        });
+
+        $(".total_price").html(formatNumber(total_price));
+        $(".total-listed-price").html(formatNumber(total_listed_price));
+        $(".total-price-sell").html(formatNumber(total_price_sell));
+        $('input[name=total_price]').val(total_price);
+        $('input[name=price_total]').autoNumeric('set', total_price);
+    }
+
+    $(document).ready(function() {
+        updateTotal();
+    })
+<?php $this->headScript()->captureEnd() ?>
+

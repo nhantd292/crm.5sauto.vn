@@ -1,0 +1,14 @@
+<?php
+    $label      = '<label class="control-label">' . $this->label . '</label>';
+    $boxId      = !empty($this->boxId) ? ' id="'. $this->boxId .'"' : '';
+    $boxClass   = !empty($this->boxClass) ? $this->boxClass : 'col-md-2';
+    
+    $xhtml = sprintf('<div class="%s">%s<p class="form-control-info text-orange text-bold">%s</p></div>', $boxClass, $label, $this->element);
+    if(isset($this->section)) {
+        $xhtml = sprintf('<div class="%s"><h3 class="form-section view">%s</h3></div>', $boxClass, $this->section);
+    } else if(isset($this->div)) {
+        $xhtml = sprintf('<div class="%s"%s>%s</div>', $boxClass, $boxId, $this->div);
+    }
+    
+    echo $xhtml;
+?>

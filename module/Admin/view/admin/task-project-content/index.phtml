@@ -1,0 +1,184 @@
+<?php
+    $dateFormat = new ZendX\Functions\Date();
+    
+    // Filter
+    $myForm				= $this->myForm;
+    $myForm->prepare();
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_task_project'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th class="col-50">STT</th>';
+    $xhtmlHead .= '<th>Ngày</th>';
+    $xhtmlHead .= '<th>Tiêu đề</th>';
+    $xhtmlHead .= '<th>Kịch bản</th>';
+    $xhtmlHead .= '<th>Quay</th>';
+    $xhtmlHead .= '<th>Dựng</th>';
+    $xhtmlHead .= '<th>Thống kê Youtube</th>';
+    $xhtmlHead .= '<th>Thống kê Facebook</th>';
+    $xhtmlHead .= '<th>Tình trạng</th>';
+	$xhtmlHead .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+        foreach ($this->items AS $index => $item) {
+            $id                     = $item->id;
+            $name                   = $item->name;
+            $date                   = $item->date ? $dateFormat->formatToView($item->date) : '';
+            $cid                    = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            $content = '';
+            if(!empty($item->content_status)) {
+                if($item->content_status == 1) {
+                    $content .= '<span class="btn btn-xs green"><i class="fa fa-pencil-square-o"></i> Đã hoàn thành</span>';
+                } elseif ($item->content_status == 2) {
+                    $content .= '<span class="btn btn-xs red"><i class="fa fa-pencil-square-o"></i> Chưa hoàn thành</span>';
+                }
+                $content .= $item->content_date ? '<span class="btn btn-xs default"><i class="fa fa-calendar"></i> '. $dateFormat->formatToView($item->content_date) .'</span>' : '';
+                $content .= '<div style="padding-top: 5px;"></div>';
+                $content .= $item->content_by ? '<span class="btn btn-xs default"><i class="fa fa-user"></i> '. $this->user[$item->content_by]['name'] .'</span>' : '';
+                $content .= $item->content_link ? '<a href="'. $item->content_link .'" class="btn btn-xs default" target="_blank"><i class="fa fa-link"></i> Xem chi tiết</a>' : '';
+            }
+            
+            $camera = '';
+            if(!empty($item->camera_status)) {
+                if($item->camera_status == 1) {
+                    $camera .= '<span class="btn btn-xs green"><i class="fa fa-pencil-square-o"></i> Đã hoàn thành</span>';
+                } elseif ($item->camera_status == 2) {
+                    $camera .= '<span class="btn btn-xs red"><i class="fa fa-pencil-square-o"></i> Chưa hoàn thành</span>';
+                }
+                $camera .= $item->camera_date ? '<span class="btn btn-xs default"><i class="fa fa-calendar"></i> '. $dateFormat->formatToView($item->camera_date) .'</span>' : '';
+                $camera .= '<div style="padding-top: 5px;"></div>';
+                $camera .= $item->camera_by ? '<span class="btn btn-xs default"><i class="fa fa-user"></i> '. $this->user[$item->camera_by]['name'] .'</span>' : '';
+            }
+            
+            $editor = '';
+            if(!empty($item->editor_status)) {
+                if($item->editor_status == 1) {
+                    $editor .= '<span class="btn btn-xs green"><i class="fa fa-pencil-square-o"></i> Đã hoàn thành</span>';
+                } elseif ($item->editor_status == 2) {
+                    $editor .= '<span class="btn btn-xs red"><i class="fa fa-pencil-square-o"></i> Chưa hoàn thành</span>';
+                }
+                $editor .= $item->editor_date ? '<span class="btn btn-xs default"><i class="fa fa-calendar"></i> '. $dateFormat->formatToView($item->editor_date) .'</span>' : '';
+                $editor .= '<div style="padding-top: 5px;"></div>';
+                $editor .= $item->editor_by ? '<span class="btn btn-xs default"><i class="fa fa-user"></i> '. $this->user[$item->editor_by]['name'] .'</span>' : '';
+            }
+            
+            $youtube = '';
+            if(!empty($item->youtube_status)) {
+                if($item->youtube_status == 1) {
+                    $youtube .= '<span class="btn btn-xs green"><i class="fa fa-pencil-square-o"></i> Đã hoàn thành</span>';
+                } elseif ($item->youtube_status == 2) {
+                    $youtube .= '<span class="btn btn-xs red"><i class="fa fa-pencil-square-o"></i> Chưa hoàn thành</span>';
+                }
+                $youtube .= $item->youtube_date ? '<span class="btn btn-xs default"><i class="fa fa-calendar"></i> '. $dateFormat->formatToView($item->youtube_date) .'</span>' : '';
+                $youtube .= $item->youtube_by ? '<span class="btn btn-xs default"><i class="fa fa-user"></i> '. $this->user[$item->youtube_by]['name'] .'</span>' : '';
+                $youtube .= $item->youtube_link ? '<a href="'. $item->youtube_link .'" class="btn btn-xs default" target="_blank"><i class="fa fa-link"></i> Xem chi tiết</a>' : '';
+                $youtube .= '<div style="padding-top: 5px;"></div>';
+                $youtube .= '<span class="btn btn-xs default">View: <b class="mask_currency">'. $item->youtube_view .'</b></span>';
+                $youtube .= '<span class="btn btn-xs default">Comment: <b class="mask_currency">'. $item->youtube_comment .'</b></span>';
+                $youtube .= '<span class="btn btn-xs default">Like: <b class="mask_currency">'. $item->youtube_like .'</b></span>';
+                $youtube .= '<span class="btn btn-xs default">Dislike: <b class="mask_currency">'. $item->youtube_dislike .'</b></span>';
+            }
+            
+            $facebook = '';
+            if(!empty($item->facebook_status)) {
+                if($item->facebook_status == 1) {
+                    $facebook .= '<span class="btn btn-xs green"><i class="fa fa-pencil-square-o"></i> Đã hoàn thành</span>';
+                } elseif ($item->facebook_status == 2) {
+                    $facebook .= '<span class="btn btn-xs red"><i class="fa fa-pencil-square-o"></i> Chưa hoàn thành</span>';
+                }
+                $facebook .= $item->facebook_date ? '<span class="btn btn-xs default"><i class="fa fa-calendar"></i> '. $dateFormat->formatToView($item->facebook_date) .'</span>' : '';
+                $facebook .= $item->facebook_by ? '<span class="btn btn-xs default"><i class="fa fa-user"></i> '. $this->user[$item->facebook_by]['name'] .'</span>' : '';
+                $facebook .= $item->facebook_link ? '<a href="'. $item->facebook_link .'" class="btn btn-xs default" target="_blank"><i class="fa fa-link"></i> Xem chi tiết</a>' : '';
+                $facebook .= '<div style="padding-top: 5px;"></div>';
+                $facebook .= '<span class="btn btn-xs default">Like: <b class="mask_currency">'. $item->facebook_like .'</b></span>';
+                $facebook .= '<span class="btn btn-xs default">Comment: <b class="mask_currency">'. $item->facebook_comment .'</b></span>';
+                $facebook .= '<span class="btn btn-xs default">Share: <b class="mask_currency">'. $item->facebook_share .'</b></span>';
+            }
+            
+            $status = '<span class="btn btn-xs default">Chưa triển khai</span>';
+            if($item->status == 1) {
+                $status = '<span class="btn btn-xs green">Đã hoàn thành</span>';
+            } else if($item->status == 2) {
+                $status = '<span class="btn btn-xs yellow">Đang thực hiện</span>';
+            }
+            
+            // Link Action
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $cid .'</td>
+    							<td>'. ($index + 1) .'</td>
+    							<td>'. $date .'</td>
+    							<td><a href="'. $linkEdit .'"><b>'. $name .'</b></a></td>
+    							<td>'. $content .'</td>
+    							<td>'. $camera .'</td>
+    							<td>'. $editor .'</td>
+    							<td>'. $youtube .'</td>
+    							<td>'. $facebook .'</td>
+    							<td>'. $status .'</td>
+    						</tr>';
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+        array( 'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ), 'children' => array( array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');', ) ), array( 'name' => 'divider' ), array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array( 'onclick' => 'javascript:exportList();', ) ), ), 'children-class' => 'dropdown-menu pull-right' ),
+        array( 'name' => 'back', 'caption' => 'Quay lại quản lý', 'link' => $this->url('routeAdmin/default', array('controller' => 'task-project', 'action' => 'index')), 'icon' => 'fa-arrow-left', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>
+<?php $this->headScript()->captureStart() ?>
+    $('#adminForm select').change(function() {
+		$('#adminForm').submit();
+    });
+    
+    // https://www.googleapis.com/youtube/v3/videos?part=statistics&id=SO1G_WzRYNo&key=AIzaSyAOkNM6Dt4Oi1WMD86sFvXD-vh-T5fW_1Y
+<?php $this->headScript()->captureEnd() ?>

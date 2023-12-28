@@ -1,0 +1,12 @@
+<?php
+    $xhtml = '';
+    foreach ($this->elements AS $key => $val) {
+        if(!empty($val) && !empty($val['element']->getMessages())) {
+            $xhtml .= sprintf('<p><b>%s:</b> %s</p>', ucfirst($val->label), current($val['element']->getMessages()));
+        }
+    }
+    
+    if(!empty($xhtml)) {
+        echo '<div class="note note-danger">' . $xhtml . '</div>';
+    }
+?>

@@ -1,0 +1,89 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    // Set lại các giá trị của từng element
+    $myForm->get('location_district_id')->setAttributes(array('data-parent' => $myForm->get('location_city_id')->getValue()));
+    
+    $elements = array(
+        array('section' => 'Thông tin khách hàng được chuyển nhượng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('phone'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('source_group_id'), 'label' => 'Nguồn liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_district_id'), 'label' => 'Quận huyện', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
+        array('element' => $myForm->get('email'), 'label' => 'Email', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('birthday'), 'label' => 'Ngày sinh', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address'), 'label' => 'Địa chỉ nơi ở', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('facebook'), 'label' => 'Facebook', 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('subject_id'), 'label' => 'Đối tượng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('school_id'), 'label' => 'Trường', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('major_id'), 'label' => 'Chuyên ngành', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('note_log'), 'label' => 'Lý do chuyển nhượng', 'validate' => array('require' => true), 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id')),
+        array('element' => $myForm->get('modal')),
+    );
+
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+<script type="text/javascript">
+    var idForm = '#adminFormModal';
+    
+    // Xử lý load tỉnh thành
+	$('select[name="location_city_id"]').change(function() {
+		var select = 'input[name="location_district_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+
+	// Kiểm tra thông tin khách hàng
+    if($('input[name="phone"]').val()) {
+        var val = $('input[name="phone"]').val().trim();
+        checkContactToElement(val, null);
+    }
+    
+    $('input[name="phone"]').blur(function() {
+        var val = $(this).val().trim();
+        checkContactToElement(val, 'element');
+    });
+    
+    $('input[name="phone"]').keypress(function (event) {
+		if(event.charCode == 13) {
+			$('input[name="phone"]').blur();
+		}
+	});
+</script>

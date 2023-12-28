@@ -1,0 +1,63 @@
+<div class="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right"></div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+		<div class="row">
+            <div class="col-md-3 col-sm-4 col-xs-6">
+                <div class="form-group">
+                    <div class="control-element">
+                        <input type="text" name="keyword" placeholder="Nhập thông tin tìm kiếm" class="form-control input-sm" id="keyword" value="<?php echo $this->keyword;?>">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1 col-sm-4 col-xs-6">
+                <div class="form-group">
+                    <div class="control-element">
+                        <input type="button" name="submit" class="btn btn-sm red" value="Tìm kiếm" onclick="javascript:load_contact();">
+                    </div>
+                </div>
+            </div>
+    	</div>
+    </div>
+    <div class="page-content">
+        <div id="load_contact"></div>
+	</div>
+</div>
+
+<?php $this->headScript()->captureStart() ?>
+
+    // Load contact
+    function load_contact() {
+        if($(formAdmin + ' input[name="keyword"]').val()) {
+            $.ajax({
+    			url: '<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'search'));?>',
+    			type: 'POST',
+    			data: {
+    				keyword: $(formAdmin + ' input[name="keyword"]').val(),
+    				type: 'contact'
+    			},
+    			beforeSend: function() {
+    				pageLoading('loading', '.page-container');
+    			},
+    			success: function(result) {
+    				$('#load_contact').html(result);
+    				pageLoading('close', '.page-container');
+    			}
+    		});
+		}
+    }
+    load_contact();
+    
+    $(formAdmin + ' input[name="keyword"]').keypress(function (event) {
+		if(event.charCode == 13) {
+            load_contact();
+		}
+	});
+    
+<?php $this->headScript()->captureEnd() ?>

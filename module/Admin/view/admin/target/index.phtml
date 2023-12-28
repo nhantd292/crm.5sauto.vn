@@ -1,0 +1,324 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    $total_day = $this->total_day;
+    $data_sales = $this->data_sales;
+    
+    $myForm	= $this->myForm;
+    $myForm->prepare();
+
+    $this->_userInfo = new \ZendX\System\UserInfo();
+    $curent_user = $this->_userInfo->getUserInfo();
+    $permission_ids = explode(',', $curent_user['permission_ids']);
+    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
+        $elements = array(
+            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+            array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('order')),
+            array('element' => $myForm->get('order_by')),
+        );
+    }
+    else{
+        $elements = array(
+            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+            array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('order')),
+            array('element' => $myForm->get('order_by')),
+        );
+    }
+
+    $edit_target = false;
+    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
+        $edit_target = true;
+    }
+    $manager = false; // quyền giám đốc chi nhánh
+    if(in_array(GDCN, $permission_ids) || in_array(GROUP_SALES_LEADER, $permission_ids)){
+        $manager = true;
+    }
+
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th style="width: 23px;" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+	$xhtmlHead .= '<th style="min-width: 90px;" class="text-center fix-head">Ngày</th>';
+	$xhtmlHead .= '<th class="text-center fix-head">Nhân viên</th>';
+	$xhtmlHead .= '<th style="min-width: 180px;" class="text-center">Mục tiêu doanh số</th>';
+	$xhtmlHead .= '<th style="min-width: 180px;" class="text-center">Doanh số chốt được</th>';
+	$xhtmlHead .= '<th style="min-width: 180px;" class="text-center">% Hoàn thành</th>';
+    $xhtmlHead .= '<th class="text-center"> Công cụ</th>';
+	$xhtmlHead .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if(!empty($this->items)) {
+
+        $total_sales_day        = 0;
+        $total_sales_finish_day = 0;
+
+        $date_old      = '';
+        foreach ($this->items AS $index => $item) {
+            $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            $id                     = $item->id;
+            $name                   = $item->user_name;
+            $user_id                = $item->user_id;
+            $date                   = $date_old != $item->date ? $dateFormat->formatToView($item->date) : '';
+            $params                 = $item->params ? unserialize($item->params) : array();
+
+            $sales        = str_replace(',', '', $params['sales']);
+            $sales_finish = $data_sales[$item->date][$user_id] ? $data_sales[$item->date][$user_id] : 0;
+
+            $tool_edit ='';
+            $tool_save ='<span class="btn_save btn_ctl" data-id="'.$id.'">Lưu</span>';
+            $disable ='';
+            if($edit_target){
+                $tool_edit ='<span class="btn_edit btn_ctl" data-id="'.$id.'">Sửa</span>';
+                $disable ='disabled';
+            }
+            else{
+                if($manager){
+                    $disable ='disabled';
+                    $tool_save ='';
+                }
+            }
+            // Nếu nhân sự có trong danh sách báo cáo theo giờ thì vẫn được sửa báo cáo của chính mình
+            if($curent_user['id'] == $item->user_id){
+                $tool_save ='<span class="btn_save btn_ctl" data-id="'.$id.'">Lưu</span>';
+                $disable ='';
+            }
+
+            // Hiển thị tổng cuối ngày
+            if($date_old != $item->date and $index > 0 and $total_day){
+                $xhtmlItems .= '<tr style="background: #dff0d8;">';
+                    $xhtmlItems .= '<th style="background: #fff"></th>';
+                    $xhtmlItems .= '<th style="background: #fff"></th>';
+                    $xhtmlItems .= '<th class=" text-bold">Tổng</a></th>';
+                    $xhtmlItems .= '<td class="text-right text-bold mask_currency">'.$total_sales_day.'</td>';
+                    $xhtmlItems .= '<td class="text-right text-bold mask_currency">'.$total_sales_finish_day.'</td>';
+                    $xhtmlItems .= '<td class="text-right text-bold mask_currency">'.($total_sales_day > 0 ? round($total_sales_finish_day / $total_sales_day  * 100, 2).'%': '').'</td>';
+                    $xhtmlItems .= '<td class="text-right text-bold mask_currency"></td>';
+                $xhtmlItems .= '</tr>';
+
+                $total_request_day      = 0;
+                $total_phone_day        = 0;
+                $total_sales_day        = 0;
+                $total_sales_finish_day = 0;
+            }
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">';
+            $xhtmlItems .= '<th>'. $cid .'</th>';
+            $xhtmlItems .= '<th class="text-center text-bold">'. $date .'</th>';
+    		$xhtmlItems .= '<th class="text-bold">'. $name .'</th>';
+
+            if($edit_target || empty($params['sales'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text" '.$disable.' autocomplete="off" name="sales" value="'.$sales.'" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td style="min-width: 80px;" class="text-right mask_currency">'. $params['sales'] .'</td>';
+            }
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $sales_finish .'</td>';
+            $xhtmlItems .= '<td class="text-right mask_currency">'. ($sales > 0 ? round($sales_finish / $sales * 100, 2) : 0) .'%</td>';
+
+            $xhtmlItems .= '<td class="text-center">'. $tool_edit.$tool_save .'</td>';
+            $xhtmlItems .= '</tr>';
+
+            $date_old  = $item->date;
+            // Tính tổng ngày
+            $total_sales_day   += $sales;
+            $total_sales_finish_day   += $sales_finish;
+
+            // Tính tổng theo user
+            $total_by_user[$user_id]['user_name']    = $name;
+            $total_by_user[$user_id]['sales']        += $sales;
+            $total_by_user[$user_id]['sales_finish'] += $sales_finish;
+
+//             Tính tổng tất cả
+            $total_sales   += $sales;
+            $total_sales_finish   += $sales_finish;
+        }
+        // Hiển thị tổng ngày cuối cùng
+        if($total_day){
+            $xhtmlItems .= '<tr style="background: #dff0d8;">';
+                $xhtmlItems .= '<th style="background: #fff"></th>';
+                $xhtmlItems .= '<th style="background: #fff"></th>';
+                $xhtmlItems .= '<th class="text-bold">Tổng</a></th>';
+                $xhtmlItems .= '<td class="text-right text-bold mask_currency">'.$total_sales_day.'</td>';
+                $xhtmlItems .= '<td class="text-right text-bold mask_currency">'.$total_sales_finish_day.'</td>';
+                $xhtmlItems .= '<td class="text-right text-bold mask_currency">'.($total_sales_day > 0 ? round($total_sales_finish_day / $total_sales_day  * 100, 2).'%': '').'</td>';
+                $xhtmlItems .= '<td class="text-right text-bold mask_currency"></td>';
+            $xhtmlItems .= '</tr>';
+        }
+
+        //Hiển thị tổng tất cả
+        $xhtmlItems_total_all .= '<tr style="border-bottom: 1px solid #d8d8d8; background: #d8d8d8;">';
+            $xhtmlItems_total_all .= '<th></th>';
+            $xhtmlItems_total_all .= '<th></th>';
+            $xhtmlItems_total_all .= '<th class="text-bold text-red">Tổng tất cả</th>';
+            $xhtmlItems_total_all .= '<td class="text-right mask_currency text-bold text-red"">'.($total_sales > 0 ? $total_sales : '').'</td>';
+            $xhtmlItems_total_all .= '<td class="text-right mask_currency text-bold text-red"">'.($total_sales_finish > 0 ? $total_sales_finish : '') .'</td>';
+            $xhtmlItems_total_all .= '<td class="text-right mask_currency text-bold text-red"">'.($total_sales > 0 ? round($total_sales_finish / $total_sales  * 100, 2).'%': '').'</td>';
+            $xhtmlItems_total_all .= '<td class="text-right mask_currency text-bold text-red""></td>';
+        $xhtmlItems_total_all .= '</tr>';
+
+        $i = 0;
+        foreach ($total_by_user as $index => $item) {
+            $title = $i == 0 ? 'Tổng' : '';
+            $xhtmlItems_total .= '<tr style="border-bottom: 1px solid #d8d8d8;">';
+            $xhtmlItems_total .= '<th></th>';
+            $xhtmlItems_total .= '<th class="text-center text-bold text-green">'.$title.'</th>';
+            $xhtmlItems_total .= '<th class="text-bold text-green">'.$item['user_name'].'</th>';
+            $xhtmlItems_total .= '<td class="text-right mask_currency text-bold text-green">'.$item['sales'].'</td>';
+            $xhtmlItems_total .= '<td class="text-right mask_currency text-bold text-green">'.$item['sales_finish'].'</td>';
+            $xhtmlItems_total .= '<td class="text-right mask_currency text-bold text-green">'.($item['sales'] > 0 ? round($item['sales_finish'] / $item['sales']  * 100, 2).'%': '').'</td>';
+            $xhtmlItems_total .= '<td class="text-right mask_currency text-bold text-green"></td>';
+            $xhtmlItems_total .= '</tr>';
+            $i++;
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array('name' => 'addall', 'caption' => 'Tạo chỉ tiêu', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'addAll')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+        array('name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link',
+              'attributes' => array('class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown',),
+              'children' => array(
+                      array('name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array('onclick' => 'javascript:deleteItem(\'multi\', \'all\');',)),
+                      array('name' => 'divider'),
+              ),
+              'children-class' => 'dropdown-menu pull-right'
+        ),
+
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+<!--    	<div class="table-manager" id="table-manager">-->
+<!--    		<div class="table-scrollable table-fixed-head">-->
+<!--    			<table class="table table-striped table-bordered">-->
+<!--    				<thead>-->
+<!--    					--><?php //echo $xhtmlHead;?>
+<!--    				</thead>-->
+<!--    				<tbody>-->
+<!--    					--><?php //echo $xhtmlBodyHead;?>
+<!--    					--><?php //if($total_day){echo $xhtmlItems_total;}?>
+<!--    					--><?php //echo $xhtmlItems_total_all;?>
+<!--    					--><?php //echo $xhtmlItems;?>
+<!--    				</tbody>-->
+<!--    			</table>-->
+<!--    		</div>-->
+<!--    		--><?php
+////            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options']));
+//            ?>
+<!--    	</div>-->
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable table-fixed">
+    			<table class="table table-striped table-bordered">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlBodyHead;?>
+    					<?php if($total_day){echo $xhtmlItems_total;}?>
+    					<?php echo $xhtmlItems_total_all;?>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+//            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options']));
+            ?>
+    	</div>
+	</div>
+</form>
+
+<style>
+    table tbody tr td{
+        vertical-align: middle !important;
+    }
+    .form-control[disabled]{
+        border: none;
+        background: none !important;
+    }
+</style>
+<!--Tạo cố định cột và dòng-->
+<style>
+    div.table-fixed thead tr:nth-child(1) th {
+        top: 0;
+    }
+
+    div.table-fixed thead th:nth-child(2),
+    div.table-fixed tbody th:nth-child(2) {
+        left: 23px;
+    }
+
+    div.table-fixed thead tr th:nth-child(3),
+    div.table-fixed tbody th:nth-child(3) {
+        left: 113px;
+    }
+</style>
+
+
+<?php $this->headScript()->captureStart() ?>
+    $(document).ready(function() {
+        $('.btn_edit').click(function() {
+            var id = $(this).attr("data-id");
+            $('tr#tr_'+id).find('input').prop("disabled", false);
+        });
+
+        $('.btn_save').click(function() {
+            var id = $(this).attr("data-id");
+            <!--            $('tr#tr_'+id).find('input').prop("disabled", true);-->
+
+            $('tr#tr_'+id +' input').each(function(){
+                if($(this).val() != ''){
+                    $(this).prop("disabled", true);
+                }
+            });
+
+            var data_array = {};
+            $('tr#tr_'+id +' input').each(function(){
+                var key = $(this).attr('name');
+                if($(this).attr('name') == 'cid[]'){
+                    key = 'id';
+                }
+                data_array[key] = $(this).val();
+            });
+
+            $.ajax({
+                url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'Target', 'action' => 'save-ajax'));?>',
+                type: 'POST',
+                data: data_array,
+                success: function(result) {
+                }
+            });
+        });
+    });
+
+<!--    resize_col_table('#table-manager');-->
+
+<?php $this->headScript()->captureEnd() ?>

@@ -1,0 +1,129 @@
+<?php
+$dateFormat = new \ZendX\Functions\Date();
+
+$myForm = $this->myForm;
+$myForm->prepare();
+$myForm->get('filter_action')->setValue($this->params['action']);
+$elements = array(
+    array('element' => $myForm->get('filter_branches'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_categoryId'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_name_year'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+    array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_action')),
+    array('element' => $myForm->get('order')),
+    array('element' => $myForm->get('order_by')),
+);
+$xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+// Head
+$xhtmlHead  = '<tr>';
+$xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+$xhtmlHead .= '<th class="text-center" width="60">STT</th>';
+$xhtmlHead .= '<th>Chi nhánh CRM</th>';
+$xhtmlHead .= '<th>Kho hàng</th>';
+$xhtmlHead .= '<th>Nhóm hàng</th>';
+$xhtmlHead .= $this->linkAdminSort('Mã đơn hàng', 'contract_code', $this->params['ssFilter'], array('class' => 'col-150'));
+$xhtmlHead .= $this->linkAdminSort('Mã sản phẩm', 'code', $this->params['ssFilter'], array('class' => 'col-150'));
+$xhtmlHead .= '<th>Tên sản phẩm</th>';
+$xhtmlHead .= '<th>Tên xe - Năm sản xuất</th>';
+$xhtmlHead .= '<th class="text-center">Số lượng</th>';
+$xhtmlHead .= '<th class="text-center">Giá bán</th>';
+$xhtmlHead .= '<th class="text-center" width="70">Trạng thái</th>';
+$xhtmlHead .= '</tr>';
+
+// Danh sách
+$xhtmlItems = '';
+if($this->items->count() > 0) {
+    $stt = 0;
+    foreach ($this->items AS $key => $item) {
+        $levels = [];
+        $stt++;
+        $id             = $item->id;
+        $code           = $item->code;
+        $fullName       = $item->fullName;
+        $categoryId     = $this->categories[$item->categoryId];
+        $basePrice      = $item->basePrice;
+        $branch_cost        = $item->branch_cost;
+        $branch_cost_new    = $item->branch_cost_new;
+        $branch_fee         = $item->branch_fee;
+        $branch_cost_crm    = $branch_cost + ($branch_cost * $item->branch_cost_new / 100) + $branch_fee;
+        $quantity      = $item->quantity;
+        $name_year    = $item->name_year;
+        $contract_code    = $item->contract_code;
+        $branch_kov    = $this->kov_branch[$item->branchId]['branchName'];
+        $branch_crm   = $this->sale_branch[$item->sale_branch_id]['name'];
+
+
+        $cid            = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+        $controlStatus  = $this->linkAdminStatus($id, $item->status);
+        $linkEdit       = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit', 'id' => $id));
+        $controlEdit    = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+        $controls       = $controlStatus.$controlEdit;
+        $unit = $branch_cost_new ? '%' : '';
+
+        $xhtmlItems .= '<tr id="tr_'.$id.'">
+    							<td>'. $cid .'</td>
+                                <td  class="text-center">'. $stt .'</td>
+                                <td>'.$branch_crm.'</td>
+                                <td>'.$branch_kov.'</td>
+                                <td>'.$categoryId.'</td>
+                                <td class="text-center">'.$contract_code.'</td>
+                                <td class="text-center">'.$code.'</td>
+                                <td>'.$fullName.'</td>
+                                <td>'.$name_year.'</td>
+                                <td class="text-center">'.$quantity.'</td>
+                                <td class="text-right"><span class="mask_currency">'. $basePrice .'</span></td>
+    							<td class="text-center">'. $controls .'</td>
+                           </tr>';
+    }
+}
+
+// Control
+$arrControl = array(
+    array( 'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ),
+        'children' => array(
+            array( 'name' => 'active', 'caption' => 'Sử dụng', 'link' => 'javascript:;', 'icon' => 'fa-check-square-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 0);', ) ),
+            array( 'name' => 'inactive', 'caption' => 'Ngừng bán', 'link' => 'javascript:;', 'icon' => 'fa-circle-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 1);', ) ),
+            array( 'name' => 'import', 'caption' => 'Import dữ liệu', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-upload' ),
+//            array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');' ) ),
+        ), 'children-class' => 'dropdown-menu pull-right'
+    ),
+);
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+        <div class="title pull-left">
+            <?php echo $this->caption;?>
+        </div>
+        <div class="control pull-right">
+            <?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+        <div class="row">
+            <?php echo $xhtmlFilter;?>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="table-manager" id="table-manager">
+            <div class="table-scrollable table-fixed">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <?php echo $xhtmlHead;?>
+                    </thead>
+                    <tbody>
+                    <?php echo $xhtmlItems;?>
+                    </tbody>
+                </table>
+            </div>
+            <?php
+            echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])), 'options' => $this->params['paginator']['options']));
+            ?>
+        </div>
+    </div>
+</form>

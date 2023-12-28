@@ -1,0 +1,74 @@
+<?php
+	$date_formart 	= new \ZendX\Functions\Date();
+	$string_formart = new \ZendX\Functions\StringHelper();
+
+	$all 	= $this->data['type'] == 'all' ? 'active' : '';
+	$readed = $this->data['type'] == 'readed' ? 'active' : '';
+	$unread = $this->data['type'] == 'unread' ? 'active' : '';
+
+	$display = $this->data['load'] == 'sub' ? 'block' : 'none';
+
+	if(count($this->items)){
+	    $numberNotify = 0;
+	    $xhtmlNofity  = "";
+
+		foreach ($this->items as $key => $value) {
+			$attr = '';
+	    	if (strpos($value['user_readed'], $this->curent_id) === false) {
+    			$numberNotify++;
+	    		$attr = 'style="background: #edf2fa;"';
+			}
+			$type_n = '';
+			if(!empty($value['type'])){
+				$type_n = 'type/'.$value['type'].'/';
+			}
+	    	$xhtmlNofity .= '<li title="'.$value['content'].'"">';
+	    		$xhtmlNofity .= '<a '.$attr.' href="'.$value['link'].'nid/'.$value['id'].'/'.$type_n.'">';
+	    		$xhtmlNofity .= $string_formart->getSummary($value['content'], 20);
+	    		$xhtmlNofity .= '<span title="'.$value['created'].'">';
+	    		$xhtmlNofity .= '<i class="fa fa-clock-o" aria-hidden="true"></i>'.$date_formart->date_to_string($value['created']);
+	    		$xhtmlNofity .= '</span>';
+	    		$xhtmlNofity .= '</a>';
+	    	$xhtmlNofity .= '</li>';
+		}
+		$numberNotify = $numberNotify > 0 ? $numberNotify : '';
+	}
+	else {
+		$xhtmlNofity = "<li><a>Không có thông báo</a><li>";
+	}
+?>
+
+<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+	<i class="fa fa-bell"></i>
+	<span class="badge"><?php echo $numberNotify; ?></span>
+</a>
+<div id="lists-notify" style="display: <?php echo $display; ?> ">
+	<span class="option-read">
+		<span class="<?php echo $all;?> subNotify" id="notify-all">Tất cả</span>
+		<span class="<?php echo $readed;?> subNotify" id="notify-readed">Đã đọc</span>
+		<span class="<?php echo $unread;?> subNotify" id="notify-unread">Chưa đọc</span>
+	</span>
+	<ul data-simplebar>
+		<?php echo $xhtmlNofity;?>
+	</ul>
+</div>
+
+
+<script type="text/javascript">
+	$('#load_notifycation > a').click(function() {
+        showHiddenToggle('#lists-notify', 200);
+    });
+
+	$('#notify-all').click(function() {
+        load_notify('#load_notifycation', '<?php echo $this->url('routeNotifycation/default', array('controller' => 'api', 'action' => 'list-notify'));?>', 'all,sub');
+    });
+
+	$('#notify-readed').click(function() {
+        load_notify('#load_notifycation', '<?php echo $this->url('routeNotifycation/default', array('controller' => 'api', 'action' => 'list-notify'));?>', 'readed,sub');
+    });
+
+	$('#notify-unread').click(function() {
+        load_notify('#load_notifycation', '<?php echo $this->url('routeNotifycation/default', array('controller' => 'api', 'action' => 'list-notify'));?>', 'unread,sub');
+    });
+</script>
+	

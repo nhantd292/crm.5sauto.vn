@@ -1,0 +1,21 @@
+<?php 
+if ($this->pageCount > 1) {
+	// Link
+	$linkNext  = array('page' => $this->next);
+	$nextXhtml = '';
+	
+	if($this->current != $this->last){
+		$nextXhtml = sprintf('<a class="btn default" style="padding-left: 50px; padding-right: 50px; " href="javascript:;" onclick="javascript:ajax_load_page_append(\'%s\', \'%s\', \'%s\');">Xem thêm <i class="fa fa-angle-right"></i></a>', $this->ajax_content_id, $this->currentURL, str_replace('"', "\'", json_encode(array_merge($this->options, $linkNext))));
+	}
+?>
+<div class="row paginations" id="paginator-append">
+	<div class="col-sm-12">
+		<div class="pull-center">
+			<?php echo $nextXhtml;?>
+		</div>
+	</div>
+</div>
+<?php
+} 
+?>
+

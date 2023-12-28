@@ -1,0 +1,193 @@
+<?php
+	// Xử lý lấy các ngày trong tuần
+	$arrDay		= array('Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật');
+	$arrWeek	= array();
+	$dateFormat = new \ZendX\Functions\Date();
+	for ($i = 0; $i < count($arrDay); $i++) {
+		$date = date_create($dateFormat->formatToData($this->params['ssFilter']['filter_date_begin']));
+		date_add($date, date_interval_create_from_date_string($i .' days'));
+		$tmpArr = array(
+			'day'	=>	$arrDay[$i],
+			'date'	=>	date_format($date, 'd/m/Y'),
+			'items' => array()
+		);
+		$arrWeek[] = $tmpArr;
+	}
+
+	// Formart lại dữ liệu hiển thị
+	$items = $this->items->toArray();
+	foreach ($arrWeek AS $key => $value){
+		$arrWeek[$key]['items'] = array();
+		$arrWeek[$key]['main_hour'] = 0;
+		foreach ($items AS $keys => $values){
+			if($value['date'] == $values['date_begin']){
+				$arrWeek[$key]['items'][] = $values;
+				$arrWeek[$key]['main_hour'] += $values['main_hour'];
+				unset($items[$keys]);
+			}
+		}
+	}
+	$items = $arrWeek;
+	
+    // Filter
+    $myForm				= $this->myForm;
+    $myForm->prepare();
+   
+    $date = date_create($this->params['ssFilter']['filter_year'] .'-01-01');
+    date_sub($date, date_interval_create_from_date_string(date_format($date, 'N') - 1 . ' days'));
+    $start_week = date_format($date, 'd/m/Y');
+    date_add($date, date_interval_create_from_date_string('6 days'));
+    $end_week = date_format($date, 'd/m/Y');
+    $arrWeek = array(
+    	$start_week . '-' . $end_week => 'Tuần 1 '  . '(' .$start_week . ' - ' . $end_week . ')'
+    );
+    for ($i = 2; $i <= 53; $i++) {
+    	date_add($date, date_interval_create_from_date_string('1 days'));
+    	if(date_format($date, 'Y') > $this->params['ssFilter']['filter_year']) {
+    		break;
+    	}
+    	$start_week = date_format($date, 'd/m/Y');
+    	date_add($date, date_interval_create_from_date_string('6 days'));
+    	$end_week = date_format($date, 'd/m/Y');
+    
+    	$arrWeek[$start_week . '-' . $end_week] = 'Tuần ' . $i . ' (' .$start_week . ' - ' . $end_week . ')';
+    }
+    $myForm->get('filter_week_year')->setValue($this->params['ssFilter']['filter_date_begin'] . '-' . $this->params['ssFilter']['filter_date_end']);
+    $myForm->get('filter_week_year')->setValueOptions($arrWeek);
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_type_list'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_task_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_task_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_year'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_week_year'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= $this->linkAdminSort('Tên', 'name', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Danh mục', 'task_category_id', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Dự án', 'task_project_id', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('MH', 'main_hour', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Trạng thái', 'task_status_id', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Ngày thực hiện', 'date_begin', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Ngày kết thúc', 'date_end', $this->params['ssFilter'], null);
+	$xhtmlHead .= $this->linkAdminSort('Người thực hiện', 'user_id', $this->params['ssFilter'], null);
+    $xhtmlHead .= '<th class="col-80">Công cụ</th>';
+	$xhtmlHead .= '</tr>';
+
+	//danh sách tuần
+    // Danh sách
+    $xhtmlItems = '';
+        foreach ($items AS $item => $value) {
+            $day				= $value['day'];
+            $date				= $value['date'];
+            $xhtmlItems 	   .= '<tr style="background-color: #efefef; color: #a94442;"><td colspan="10"><b>'. $day . ' - ' . $date .'</b></td></tr>';
+            
+            if(!empty($value['items'])) {
+	            foreach ($value['items'] AS $keys => $values){
+	            	$id                 = $values['id'];
+	            	$cid				= @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+	            	$name				= $values['name'];
+	            	$main_hour			= $values['main_hour'];
+	            	$date_begin			= $values['date_begin'];
+	            	$date_end			= $values['date_end'];
+	            	$task_category_id   = $values['task_category_id'] ? $this->task_category[$values['task_category_id']]['name'] : '';;
+	            	$task_project_id    = $values['task_project_id'] ? $this->task_project[$values['task_project_id']]['name'] : '';
+	            	$task_status_id     = $values['task_status_id'] ? $this->task_status[$values['task_status_id']]['name'] : '';
+	            	$task_status_color  = $values['task_status_id'] ? ' style="background-color: '. $this->task_status_color[$values['task_status_id']]['color'] .';"' : '';
+	            	$user_id         	= $this->user[$values['user_id']]['name'];
+	            	$modified           = date_format(date_create($values['modified']), 'd/m/Y H:i:s');
+	            	$modified_by        = $this->user[$values['modified_by']]['name'];
+	            	
+	            	// Link Action
+	            	$linkEdit       = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+	            	
+	            	// Control Action
+	            	$controlEdit    = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+	            	$controls       = $controlEdit;
+	            	$xhtmlItems    .= '<tr id="tr_'. $id .'">
+		    							<td>'. $cid .'</td>
+		    							<td><a href="'. $linkEdit .'">'. $name .'</a></td>
+		    							<td>'. $task_category_id .'</td>
+		    							<td>'. $task_project_id .'</td>
+		    							<td>'. $main_hour .'</td>
+		    							<td'. $task_status_color .'>'. $task_status_id .'</td>
+		    							<td>'. $date_begin .'</td>
+		    							<td>'. $date_end .'</td>
+		    							<td>'. $user_id .'</td>
+									    <td>'. $controls .'</td>
+								  	</tr>';
+	            }
+            	$xhtmlItems .= '<tr><td colspan="3"></td><td style="text-align: right;"><b>Tổng:</b></td><td colspan="7" style="color: #a94442;"><b>'. $value['main_hour'] .'</b></td></tr>';
+            } else {
+            	$xhtmlItems .= '<tr><td colspan="10">Không có công việc nào</td></tr>';
+            }
+        }
+    
+    // Control
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+        array( 'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ), 'children' => array( array( 'name' => 'sort', 'caption' => 'Sắp xếp', 'link' => 'javascript:;', 'icon' => 'fa-sort-alpha-asc', 'attributes' => array( 'onclick' => 'javascript:changeOrdering();', ) ), array( 'name' => 'divider' ), array( 'name' => 'active', 'caption' => 'Hiển thị', 'link' => 'javascript:;', 'icon' => 'fa-check-square-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 0);', ) ), array( 'name' => 'inactive', 'caption' => 'Không hiển thị', 'link' => 'javascript:;', 'icon' => 'fa-circle-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 1);', ) ), array( 'name' => 'divider' ), array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');', ) ), array( 'name' => 'divider' ), array( 'name' => 'print', 'caption' => 'In', 'link' => 'javascript:;', 'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:printPage();', ) ), array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array( 'onclick' => 'javascript:exportList();', ) ), ), 'children-class' => 'dropdown-menu pull-right' ),
+        array( 'name' => 'config', 'caption' => 'Cài đặt', 'link' => 'javascript:;', 'icon' => 'fa-cogs', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+    );
+?>
+
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminForm" id="adminForm" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    	</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+	$('select[name="filter_year"], select[name="filter_week_year"], select[name="filter_type_list"], select[name="filter_task_category"], select[name="filter_task_project"], select[name="filter_user"]').change(function() {
+		$('#adminForm').submit();
+    });
+<?php $this->headScript()->captureEnd() ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

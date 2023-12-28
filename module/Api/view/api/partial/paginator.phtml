@@ -1,0 +1,75 @@
+<?php 
+    if($this->totalItemCount <= 0) {
+        echo '<div class="paginations">Không có dữ liệu</div>'; return false;
+    }
+    
+	// Link
+	$this->currentURL	= $this->currentURL . 'page/';
+	$linkStart		    = $this->currentURL . $this->first;
+	$linkEnd		    = $this->currentURL . $this->last;
+	$linkNext		    = $this->currentURL . $this->next;
+	$linkPrevious	    = $this->currentURL . $this->previous;
+	
+	// Button
+	$startXhtml         = '<li class="prev disabled"><a href="javascript:;"><i class="fa fa-angle-double-left"></i></a></li>';
+	$previousXhtml	    = '<li class="prev disabled"><a href="javascript:;"><i class="fa fa-angle-left"></i></a></li>';
+	$nextXhtml          = '<li class="next disabled"><a href="javascript:;"><i class="fa fa-angle-right"></i></a></li>';
+	$endXhtml		    = '<li class="next disabled"><a href="javascript:;"><i class="fa fa-angle-double-right"></i></a></li>';
+	
+	if($this->current != 1){
+		$startXhtml		= sprintf('<li class="prev"><a href="%s"><i class="fa fa-angle-double-left"></i></a></li>', $linkStart);
+		$previousXhtml	= sprintf('<li class="prev"><a href="%s"><i class="fa fa-angle-left"></i></a></li>', $linkPrevious);
+	}
+	
+	if($this->current != $this->last){
+		$nextXhtml		= sprintf('<li class="next"><a href="%s"><i class="fa fa-angle-right"></i></a></li>', $linkNext);
+		$endXhtml		= sprintf('<li class="next"><a href="%s"><i class="fa fa-angle-double-right"></i></a></li>', $linkEnd);
+	}
+	
+	$pagesInRange	= '';
+	foreach ($this->pagesInRange as $key) {
+		$linkPage	=	$this->currentURL . $key;
+		
+		if($this->current == $key) {
+			$pagesInRange	.= sprintf('<li class="active"><a href="javascript:;">%s</a></li>',$key);
+		}else{
+			$pagesInRange	.= sprintf('<li><a href="%s">%s</a></li>', $linkPage, $key);
+		}
+	}
+	
+	$options = '';
+	if(!empty($this->options)) {
+	    $options .= '<li><select class="form-control" name="pagination_option" id="pagination_option">';
+	    foreach ($this->options AS $option) {
+	        $option_select = '';
+	        if($option == $this->itemCountPerPage) {
+	            $option_select = ' selected="selected"';
+	        }
+	        $options .= '<option value="'. $option .'"'. $option_select .'>'. $option .'</option>';
+	    }
+	    $options .= '</select></li>';
+	}
+?>
+<div class="row paginations">
+	<div class="col-sm-3">
+		<?php echo sprintf('Hiển thị %s đến %s - tổng %s', $this->firstItemNumber, $this->lastItemNumber, $this->totalItemCount);?>
+	</div>
+	<?php
+	//if ($this->pageCount > 1) {
+	?>
+	<div class="col-sm-9">
+		<div class="pull-right">
+			<ul class="pagination pagination-sm">
+				<?php echo $options;?>
+				<?php echo $startXhtml;?>
+            	<?php echo $previousXhtml;?>
+            	<?php echo $pagesInRange;?>
+            	<?php echo $nextXhtml;?>
+            	<?php echo $endXhtml;?>
+			</ul>
+		</div>
+	</div>
+	<?php
+	//}
+	?>
+</div>

@@ -1,0 +1,15 @@
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+<?php include_once $this->arrParams['template']['pathHtml'] . '/header.php';?>
+<body class="page-full-width" data-module="<?php echo $this->arrParams['module'];?>" data-controller="<?php echo $this->arrParams['controller'];?>" data-action="<?php echo $this->arrParams['action'];?>">
+    <?php include_once $this->arrParams['template']['pathHtml'] . '/top.php';?>
+    <div class="page-container">
+    	<div class="page-content-wrapper">
+    		<?php echo $this->content; ?>
+    	</div>
+    </div>
+    <?php include_once $this->arrParams['template']['pathHtml'] . '/footer.php';?>
+</body>

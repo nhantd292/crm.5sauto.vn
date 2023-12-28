@@ -1,0 +1,58 @@
+<?php 
+    $dateFormat = new \ZendX\Functions\Date();
+    $options = $this->item['options'] ? unserialize($this->item['options']) : array();
+    
+    $teacher_ids = !empty($this->item['teacher_ids']) ? explode(',', $this->item['teacher_ids']) : '';
+    $teacher_html = '';
+    if(!empty($teacher_ids)) {
+        foreach ($teacher_ids AS $id) {
+            $teacher_html .= ', '. $this->user[$id]['name'];
+        }
+        $teacher_html = substr($teacher_html, 2);
+    }
+    
+    $coach_ids = !empty($this->item['coach_ids']) ? explode(',', $this->item['coach_ids']) : '';
+    $coach_html = '';
+    if(!empty($coach_ids)) {
+        foreach ($coach_ids AS $id) {
+            $coach_html .= ', '. $this->user[$id]['name'];
+        }
+        $coach_html = substr($coach_html, 2);
+    }
+?>
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="4" class="text-center">THÔNG TIN CHUNG LỚP HỌC <span class="text-red"><?php echo $this->item['name'];?></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Khoá học: <span class="text-red"><?php echo $this->product['name'];?></span></b></td>
+                    <td><b>Ngày khai giảng: <span class="text-red"><?php echo $dateFormat->formatToView($this->item['public_date']);?></span></b></td>
+                    <td><b>Ca học: <span class="text-red"><?php echo $this->item['time'];?></span></b></td>
+                </tr>
+                <tr>
+                    <td><b>Số học viên: <span class="text-red"><?php echo $this->item['student_total'];?></span></b></td>
+                    <td><b>Số học viên tối đa: <span class="text-red"><?php echo $this->item['student_max'];?></span></b></td>
+                    <td><b>Giảng viên: <span class="text-red"><?php echo $teacher_html;?></span></b></td>
+                </tr>
+                <tr>
+                    <td><b>Địa điểm học: <span class="text-red"><?php echo $this->location['name'];?></span></b></td>
+                    <td><b>Phòng học: <span class="text-red"><?php echo $this->room['name'];?></span></b></td>
+                    <td><b>Trợ giảng: <span class="text-red"><?php echo $coach_html;?></span></b></td>
+                </tr>
+                <tr>
+                    <td><b>Số buổi học: <span class="text-red"><?php echo $this->item['sessions'];?></span></b></td>
+                    <td><b>Lịch học: <span class="text-red"><?php echo $this->item['schedule'];?></span></b></td>
+                    <td><b>Tình trạng lớp học: <span class="text-red"><?php echo $this->public_status[$this->item['public_status']]['name'];?></span></b></td>
+                </tr>
+                <tr>
+                    <td colspan="3"><b>Ghi chú: <span class="text-red"><?php echo $options['note'];?></span></b></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

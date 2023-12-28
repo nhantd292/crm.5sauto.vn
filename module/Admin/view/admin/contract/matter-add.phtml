@@ -1,0 +1,83 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $elementContact = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $this->contact['phone'], 'label' => 'Số điện thoại', 'boxClass' => 'col-md-3'),
+        array('element' => $this->contact['name'], 'label' => 'Họ tên', 'boxClass' => 'col-md-3'),
+        array('element' => $this->contact['email'], 'label' => 'Email', 'boxClass' => 'col-md-3'),
+    );
+    $xhtmlContact = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elementContact);
+    
+    $color_price_owed       = 'text-info';
+    if(($this->contract['price_paid'] / $this->contract['price_total'] * 100) < 60) {
+        $color_price_owed   = 'text-red';
+    } elseif (($this->contract['price_paid'] / $this->contract['price_total'] * 100) < 100) {
+        $color_price_owed   = 'text-purple';
+    }
+    $elementContract = array(
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => '<span class="mask_currency text-info">'. $this->contract['price'] .'</span>', 'label' => 'Đơn giá', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->contract['price_promotion'] .'</span>', 'label' => 'Chiết khấu', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->contract['price_total'] .'</span>', 'label' => 'Thành tiền', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-purple">'. $this->contract['price_paid'] .'</span>', 'label' => 'Đã thanh toán', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->contract['price_accrued'] .'</span>', 'label' => 'Đã chi', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency '. $color_price_owed .'">'. $this->contract['price_owed'] .'</span>', 'label' => 'Công nợ', 'boxClass' => 'col-md-2'),
+    );
+    $xhtmlContract = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elementContract);
+    
+    $arrMatter = $myForm->get('matter_ids')->getValueOptions();
+    foreach ($this->items AS $item) {
+        unset($arrMatter[$item['matter_id']]);
+    }
+    $myForm->get('matter_ids')->setValueOptions($arrMatter);
+    $content_matter = '';
+    if(empty($arrMatter)) {
+        $content_matter = '<div class="alert alert-block alert-danger"><p>Tất cả vật phẩm đã được phát. Vui lòng kiểm tra lại danh sách</p></div>';
+    }
+    $elements = array(
+        array('section' => 'Danh sách vật phẩm chưa phát', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('date'), 'label' => 'Ngày phát', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('matter_ids'), 'label' => 'Chọn vật phẩm', 'validate' => array('require' => true), 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id')),
+        array('element' => $myForm->get('modal'))
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtmlContact;?>
+		</div>
+    	<div class="row">
+			<?php echo $xhtmlContract;?>
+		</div>
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>

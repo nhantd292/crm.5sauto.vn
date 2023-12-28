@@ -1,0 +1,93 @@
+<?php 
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $string = new \ZendX\Functions\Gid();
+    $random = $string->random();
+    
+    $elements = array(
+        array('element' => $myForm->get('edu_location_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('edu_time'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+    
+?>
+<div class="report" id="adminReport_<?php echo $random; ?>">
+    <div class="report-control">
+    	<div class="title pull-left"><?php echo $this->caption;?></div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="report-wrapper">
+    	<div class="report-filter">
+    	    <form>
+        	    <div class="row">
+                    <?php echo $xhtmlFilter;?>
+                </div>
+            </form>
+    	</div>
+    	<div class="report-content">
+    		<div class="alert alert-danger hidden">Không có dữ liệu</div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="report-table">
+                        <div class="table-scrollable table-report table-report-route">
+                			<table class="table table-striped table-bordered table-hover">
+                				<?php echo $this->reportTable;?>
+                			</table>
+            			</div>
+        			</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var idReport = '#adminReport_<?php echo $random; ?>';
+
+        // Sự kiện thay đổi cơ sở
+        $(idReport + ' select[name="sale_branch_id"]').change(function() {
+    		var select = 'input[name="sale_group_id"]';
+    		var parent = $(select).parent();
+    		$('.select2-container', parent).select2('val', '');
+    		$(select).attr('data-parent', $(this).val());
+        });
+        
+        function report_<?php echo $random?>() {
+            $.ajax({
+        		url: '<?php echo $this->url('routeReport/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])); ?>',
+        		type: 'POST',
+        		data: $(idReport + ' form').serialize(),
+        		beforeSend: function() {
+        			pageLoading('loading', idReport + ' .report-content');
+        		},
+        		success: function(result) {
+            		if(result == 'null') {
+                		$(idReport + ' .report-content .alert-danger').removeClass('hidden');
+                		$(idReport + ' .report-content .row').addClass('hidden');
+            		} else {
+            			$(idReport + ' .report-content .alert-danger').addClass('hidden');
+            			$(idReport + ' .report-content .row').removeClass('hidden');
+            			
+            			result = JSON.parse(result);
+    
+            			// Load dữ liệu ra table
+            			$(idReport + ' .report-table table').html(result.reportTable);
+            		}
+
+            		pageLoading('close', idReport + ' .report-content');
+        			Form.init();
+        		}
+        	});
+        }
+        report_<?php echo $random?>();
+
+        $(idReport + ' form button[name="submit"]').click(function() {
+        	report_<?php echo $random?>();
+        });
+        $(idReport + ' .select2').change(function() {
+        	report_<?php echo $random?>();
+        });
+    });
+</script>

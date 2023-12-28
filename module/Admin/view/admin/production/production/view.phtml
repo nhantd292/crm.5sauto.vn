@@ -1,0 +1,156 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    $contact_options = !empty($this->contact['options']) ? unserialize($this->contact['options']) : array();
+    $contract_options = !empty($this->item['options']) ? unserialize($this->item['options']) : array();
+    $contract_pending = !empty($this->item['pending']) ? unserialize($this->item['pending']) : array();
+    
+    // Học lại
+    // Chuyển lớp
+    $arrControl = array(
+        array('name' => 'bill', 'caption' => 'Thêm hóa đơn', 'link' => 'javascript:;', 'icon' => 'fa-dollar', 'attributes' => array('onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $this->item['id'] .'\'});', 'class' => 'btn')),
+        array('name' => 'matter', 'caption' => 'Thêm vật phẩm', 'link' => 'javascript:;', 'icon' => 'fa-book', 'attributes' => array('onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'matter-add')) .'\', {\'id\': \''. $this->item['id'] .'\'});', 'class' => 'btn hidden')),
+        array('name' => 'contact', 'caption' => 'Khách hàng', 'link' => 'javascript:;', 'icon' => 'fa-user', 'attributes' => array('onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $this->item['contact_id'] .'\'});', 'class' => 'btn hidden')),
+        array('name' => 'contract', 'caption' => 'đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa-file-text-o', 'attributes' => array( 'class' => 'btn dropdown-toggle hidden', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown'),
+            'children' => array(
+                array( 'name' => 'transfer', 'caption' => 'Chuyển nhượng', 'link' => 'javascript:;', 'icon' => 'fa-retweet', 'attributes' => array( 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'transfer')) .'\', {\'id\': \''. $this->item['id'] .'\'});')),
+                array( 'name' => 'edit-product', 'caption' => 'Sửa sản phẩm', 'link' => 'javascript:;', 'icon' => 'fa-file-text-o', 'attributes' => array( 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-product')) .'\', {\'id\': \''. $this->item['id'] .'\'});')),
+                array( 'name' => 'edit-promotion', 'caption' => 'Sửa ưu đãi', 'link' => 'javascript:;', 'icon' => 'fa-file-text-o', 'attributes' => array( 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-promotion')) .'\', {\'id\': \''. $this->item['id'] .'\'});')),
+                array( 'name' => 'edit-note', 'caption' => 'Sửa ghi chú', 'link' => 'javascript:;', 'icon' => 'fa-file-text-o', 'attributes' => array( 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-note')) .'\', {\'id\': \''. $this->item['id'] .'\'});')),
+                array( 'name' => 'edit-test-score', 'caption' => 'Sửa điểm test', 'link' => 'javascript:;', 'icon' => 'fa-file-text-o', 'attributes' => array( 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-test-score')) .'\', {\'id\': \''. $this->item['id'] .'\'});')),
+                array( 'name' => 'edit', 'caption' => 'Sửa đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa-file-text-o', 'attributes' => array( 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit')) .'\', {\'id\': \''. $this->item['id'] .'\'});')),
+            ), 'children-class' => 'dropdown-menu pull-right' ),
+        array('name' => 'class', 'caption' => 'Lớp học', 'link' => 'javascript:;', 'icon' => 'fa-slideshare', 'attributes' => array( 'class' => 'btn dropdown-toggle hidden', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown'),
+            'children' => array(
+                $edu_class_add,
+                $edu_class_reserve,
+                $edu_class_reserve_cancel,
+                $edu_class_reserve_register,
+                $edu_class_move,
+                $edu_class_relearn,
+                $edu_class_leave,
+                $edu_class_leave_cancel,
+            ), 'children-class' => 'dropdown-menu pull-right' ),
+        array('name' => 'close', 'caption' => 'Quay lại', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-arrow-left', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $color_price_owed = 'text-info';
+    if($this->item['price_total'] > 0) {
+        if(($this->item['price_paid'] / $this->item['price_total'] * 100) < 60) {
+            $color_price_owed   = 'text-red';
+        } elseif (($this->item['price_paid'] / $this->item['price_total'] * 100) < 100) {
+            $color_price_owed   = 'text-purple';
+        }
+    }
+    $options = unserialize($this->item['options']);
+    
+    $elements = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $this->contact['phone'], 'label' => 'Số điện thoại'),
+        array('element' => $this->contact['name'], 'label' => 'Họ và tên'),
+        array('element' => $this->location_city[$this->contact['location_city_id']]['name'], 'label' => 'Tỉnh thành'),
+        array('element' => $this->location_district[$this->contact['location_district_id']]['name'], 'label' => 'Quận huyện'),
+        array('element' => $contact_options['address'], 'label' => 'Địa chỉ nơi ở'),
+
+        array('section' => 'Thông tin người nhận', 'boxClass' => 'col-md-12'),
+        array('element' => $contract_options['contract_received']['name'], 'label' => 'Họ và tên'),
+        array('element' => $contract_options['contract_received']['phone'], 'label' => 'Số điện thoại'),
+        array('element' => $contract_options['contract_received']['address'], 'label' => 'Địa chỉ nhận hàng', 'boxClass' => 'col-md-4'),
+        
+        array('section' => 'Thông tin người quản lý', 'boxClass' => 'col-md-12'),
+        array('element' => $this->user[$this->item['user_id']]['name'], 'label' => 'Người quản lý'),
+        array('element' => $this->sale_group[$this->item['sale_group_id']]['name'], 'label' => 'Đội nhóm'),
+        array('element' => $this->sale_branch[$this->item['sale_branch_id']]['name'], 'label' => 'Cơ sở'),
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $dateFormat->formatToView($this->item['created'], 'd/m/Y H:i:s'), 'label' => 'Ngày tạo'),
+        array('element' => $dateFormat->formatToView($this->item['date'], 'd/m/Y'), 'label' => 'Ngày đơn hàng'),
+        array('element' => $contract_options['product_name'], 'label' => 'Tên xe - Năm sản xuất'),
+        array('element' => $this->item['stock'], 'label' => 'Hàng có sẵn'),
+        array('element' => $this->production_type[$this->item['production_type_id']]['name'], 'label' => 'Loại đơn sản xuất'),
+        array('div' => '', 'boxClass' => 'col-md-12'),
+        array('element' => $this->transport[$this->item['transport_id']]['name'], 'label' => 'Vận chuyển'),
+        array('element' => $this->type_of_carpet[$this->item['type_of_carpet_id']]['name'], 'label' => 'Loại thảm'),
+        array('element' => $this->carpet_color[$this->item['carpet_color_id']]['name'], 'label' => 'Màu sắc thảm'),
+        array('element' => $this->tangled_color[$this->item['tangled_color_id']]['name'], 'label' => 'Màu rối'),
+        array('element' => $this->row_seats[$this->item['row_seats_id']]['name'], 'label' => 'Số hàng ghế'),
+        array('element' => $this->flooring[$this->item['flooring_id']]['name'], 'label' => 'Lót sàn cốp'),
+        array('element' => $this->status[$this->item['status_id']]['name'], 'label' => 'Trạng thái'),
+        array('element' => $options['sale_note'], 'label' => 'Ghi chú sales'),
+        array('div' => '', 'boxClass' => 'col-md-12'),
+        array('element' => number_format($this->item['price_carpet']), 'label' => 'Tiền hàng thảm'),
+		array('element' => number_format($this->item['price_nano']), 'label' => 'Tiền hàng nano'),
+		array('element' => number_format($this->item['vat']), 'label' => 'VAT'),
+        array('element' => number_format($this->item['price_promotion']), 'label' => 'Giảm giá'),
+        array('element' => number_format($this->item['price_total']), 'label' => 'Thành tiền'),
+        array('section' => 'Thông tin sản xuất', 'boxClass' => 'col-md-12'),
+        array('element' => $this->production_department[$this->item['production_department_type']]['name'], 'label' => 'Bộ phận sản xuất'),
+        array('element' => $options['production_note'], 'label' => 'Ghi chú sản xuất'),
+        array('section' => 'Thông tin thanh toán', 'boxClass' => 'col-md-12'),
+        // array('element' => '<span class="mask_currency text-info">'. $this->item['price'] .'</span> '. $this->item['price_unit'], 'label' => 'Đơn giá', 'boxClass' => 'col-md-2'),
+        // array('element' => '<span class="mask_currency text-info">'. $this->item['price_promotion'] .'</span>', 'label' => 'Ưu đãi', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price_total'] .'</span>', 'label' => 'Thành tiền', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-purple">'. $this->item['price_paid'] .'</span>', 'label' => 'Đã thanh toán', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price_accrued'] .'</span>', 'label' => 'Đã chi', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency '. $color_price_owed .'">'. $this->item['price_owed'] .'</span>', 'label' => 'Công nợ', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price_surcharge'] .'</span>', 'label' => 'Phụ phí', 'boxClass' => 'col-md-2'),
+        array('section' => 'Danh sách hóa đơn của đơn hàng', 'boxClass' => 'col-md-12'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'load_bill'),
+        // array('section' => 'Danh sách vật phẩm đã phát', 'boxClass' => 'col-md-12'),
+        // array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'load_matter'),
+        array('section' => 'Danh sách đơn hàng của khách hàng', 'boxClass' => 'col-md-12'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'load_contract', 'boxStyle' => 'margin-bottom: 20px;'),
+        array('section' => 'Lịch sử đơn hàng', 'boxClass' => 'col-md-12'),
+        array('div' => '<a href="javascript:;" id="btn_load_logs_contract" class="btn btn-sm blue">Nhân vào đây để xem chi tiết</a>', 'boxClass' => 'col-md-12', 'boxId' => 'load_logs_contract', 'boxStyle' => 'margin-bottom: 20px;'),
+        array('section' => 'Lịch sử chăm sóc', 'boxClass' => 'col-md-12'),
+        array('div' => '<a href="javascript:;" id="btn_load_history" class="btn btn-sm blue">Nhân vào đây để xem chi tiết</a>', 'boxClass' => 'col-md-12', 'boxId' => 'load_history', 'boxStyle' => 'margin-bottom: 20px;'),
+        // array('section' => 'Lịch sử liên hệ', 'boxClass' => 'col-md-12'),
+        // array('div' => '<a href="javascript:;" id="btn_load_logs_contact" class="btn btn-sm blue">Nhân vào đây để xem chi tiết</a>', 'boxClass' => 'col-md-12', 'boxId' => 'load_logs_contact', 'boxStyle' => 'margin-bottom: 50px;'),
+    );
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+    // Load danh sách hóa đơn của đơn hàng
+    load_action('#load_bill', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-bill'));?>', {contract_id: '<?php echo $this->item['id'];?>'});
+    
+    // Load danh sách vật phẩm đã phát
+    //load_action('#load_matter', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-matter'));?>', {contract_id: '<?php echo $this->item['id'];?>'});
+    
+    // Load danh sách đơn hàng
+    load_action('#load_contract', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-contract'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>'});
+    
+    // Load lịch sử chăm sóc
+    $('#btn_load_history').click(function() {
+    	load_action('#load_history', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-history'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>'});
+    });
+    
+    // Load lịch sử hệ thống đơn hàng
+    $('#btn_load_logs_contract').click(function() {
+    	load_action('#load_logs_contract', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-logs'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>', contract_id: '<?php echo $this->item['id'];?>', 'box_id': '#load_logs_contract'});
+    });
+    
+    // Load lịch sử hệ thống liên hệ
+    $('#btn_load_logs_contact').click(function() {
+    	load_action('#load_logs_contact', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-logs'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>', contract_id: '', 'box_id': '#load_logs_contact'});
+    });
+<?php $this->headScript()->captureEnd() ?>

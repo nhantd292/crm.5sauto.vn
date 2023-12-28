@@ -1,0 +1,19 @@
+<?php
+$xhtml = '';
+$sale_group_hidden = explode(',', $this->params['data']['sale_group_hidden']);
+if($this->items->count() > 0) {
+    foreach ($this->items AS $item) {
+
+        $selected = $item->alias == $this->discounts_option ? 'selected="selected"' : '';
+
+        $xhtml .= sprintf('
+                <option value="%s" %s>%s</option>
+                ', $item->alias, $selected,  $item->name
+        );
+    }
+    ?>
+
+    <?php echo $xhtml;?>
+    <?php
+}
+?>

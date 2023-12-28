@@ -1,0 +1,88 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    // $xhtmlHead .= '<th class="col-80">Công cụ</th>';
+    $xhtmlHead .= '<th>Ngày</th>';
+    $xhtmlHead .= '<th>Phân loại</th>';
+    $xhtmlHead .= '<th>Số chứng từ</th>';
+    $xhtmlHead .= '<th>Mã hóa đơn</th>';
+    $xhtmlHead .= '<th>Thu</th>';
+    $xhtmlHead .= '<th>Chi</th>';
+    $xhtmlHead .= '<th>Hình thức</th>';
+    $xhtmlHead .= '<th>Số điện thoại</th>';
+    $xhtmlHead .= '<th>Tên khách hàng</th>';
+    $xhtmlHead .= '<th>Người tạo</th>';
+    $xhtmlHead .= '<th>Người quản lý</th>';
+    $xhtmlHead .= '<th>Ghi chú</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+        foreach ($this->items AS $item) {
+            $id                     = $item->id;
+            $index                  = !empty($item->paid_price) ? 'PT'. $item['index'] : 'PC'. $item['index'];
+            $options                = !empty($item->options) ? unserialize($item->options) : array();
+            $date                   = $dateFormat->formatToView($item->date, 'd/m/Y');
+            $code                   = $item->code;
+            $type                   = $this->type[$item->type];
+            $paid_price             = $item->paid_price;
+            $accrued_price          = $item->accrued_price;
+            $bill_type_id           = $this->bill_type[$item->bill_type_id]['name'];
+            $contact_phone          = $item->contact_phone;
+            $contact_name           = $item->contact_name;
+            $created_by             = $this->user[$item->created_by]['name'];
+            $user_id                = $this->user[$item->user_id]['name'];
+            $sale_group_id          = $item->sale_group_id ? ' - '. $this->sale_group[$item->sale_group_id]['name'] : '';
+            $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+            $checked_id             = $item->checked_id ? $this->user[$item->checked_id]['name'] : '';
+            $checked                = $options['checked'] ? ' - '. $dateFormat->formatToView($options['checked']) : '';
+            $note                   = $options['note'];
+            
+            // Link Action
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => 'bill', 'action' => 'edit', 'id' => $id));
+            $linkDelete             = $this->url('routeAdmin/default', array('controller' => 'bill', 'action' => 'delete', 'id' => $id));
+            $linkPrint              = $this->url('routeAdmin/default', array('controller' => 'bill', 'action' => 'print', 'id' => $id));
+            
+            // Control Action
+            $controlEdit            = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'bill-edit')) .'\', {\'id\': \''. $item['id'] .'\'});'));
+            $controlDelete          = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Xóa', 'class' => 'btn btn-xs red', 'icon' => 'fa fa-trash', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'bill-delete')) .'\', {\'id\': \''. $item['id'] .'\'});'));
+            $controlPrint           = $this->linkAdminHtml($linkPrint, array('type' => 'icon', 'title' => 'In hóa đơn', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-print', 'target' => '_blank'));
+            $controls               = $controlEdit . $controlDelete;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $date .'</td>
+    							<td>'. $type.'</td>
+    							<td>'. $index .'</td>
+    							<td>'. $code .'</td>
+    							<td><span class="mask_currency">'. $paid_price .'</span></td>
+    							<td><span class="mask_currency">'. $accrued_price .'</span></td>
+    							<td>'. $bill_type_id .'</td>
+    							<td>'. $contact_phone .'</td>
+    							<td>'. $contact_name .'</td>
+							    <td>'. $created_by .'</td>
+							    <td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>
+							    <td>'. $note .'</td>
+    						</tr>';
+        }
+?>
+<?php echo $this->flashMessenger()->render();?>
+<div class="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+    } else {
+        echo '<span class="text-danger">Không có dữ liệu</span>';
+    } 
+?>

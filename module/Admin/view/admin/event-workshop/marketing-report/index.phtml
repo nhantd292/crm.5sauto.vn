@@ -1,0 +1,364 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    $myForm	= $this->myForm;
+    $myForm->prepare();
+
+    $this->_userInfo = new \ZendX\System\UserInfo();
+    $curent_user = $this->_userInfo->getUserInfo();
+    $permission_ids = explode(',', $curent_user['permission_ids']);
+
+    if(in_array('system', $permission_ids) || in_array('admin', $permission_ids)){
+        $elements = array(
+            array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+
+            array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('order')),
+            array('element' => $myForm->get('order_by')),
+        );
+    }
+    else{
+        $elements = array(
+            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+
+            array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('order')),
+            array('element' => $myForm->get('order_by')),
+        );
+    }
+
+    $edit_target = false;
+    if(in_array('system', $permission_ids) || in_array('admin', $permission_ids)){
+        $edit_target = true;
+    }
+    $ch_permission = false; // quyền giám đốc chi nhánh
+    if(in_array('ch', $permission_ids)){
+        $ch_permission = true;
+    }
+
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlBodyHead  = '<tr>';
+    $xhtmlBodyHead .= '<th width ="30" class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlBodyHead .= '<th width ="100" colspan="2" class="text-center">Thời gian báo cáo</th>';
+    $xhtmlBodyHead .= '<th width ="150" colspan="3" class="text-center">9h30</th>';
+    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">11h00</th>';
+    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">15h00</th>';
+    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">17h30</th>';
+    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">22h00</th>';
+    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">Total</th>';
+    $xhtmlBodyHead .= '<th width ="90" class="text-center">Công cụ</th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="90" class="hidden"></th>';
+    $xhtmlBodyHead .= '<th width ="100" class="hidden"></th>';
+    $xhtmlBodyHead .= '</tr>';
+
+    $xhtmlBodyHead .= '<tr>';
+    $xhtmlBodyHead  .= '<th width ="30"></th>';
+    $xhtmlBodyHead  .= '<th width ="100">Ngày</th>';
+    $xhtmlBodyHead  .= '<th width ="150">Nhân viên</th>';
+    for($i = 0; $i < 6; $i++) {
+        $xhtmlBodyHead .= '<th width ="90" class="col-100 text-center">SDT</th>';
+        $xhtmlBodyHead .= '<th width ="90" class="col-100 text-center">Chi phí</th>';
+        $xhtmlBodyHead .= '<th width ="90" class="col-100 text-center">Chi phí/SDT</th>';
+    }
+    $xhtmlBodyHead .= '<th width ="100" class="col-100 text-center"></th>';
+    $xhtmlBodyHead  .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if(!empty($this->items)) {
+        $date_old = '';
+        $total_9h30_sdt  = 0;
+        $total_9h30_cp   = 0;
+        $total_11h00_sdt = 0;
+        $total_11h00_cp  = 0;
+        $total_15h00_sdt = 0;
+        $total_15h00_cp  = 0;
+        $total_17h30_sdt = 0;
+        $total_17h30_cp  = 0;
+        $total_22h00_sdt = 0;
+        $total_22h00_cp  = 0;
+        $total_17h30_cp  = 0;
+        $total_total_sdt = 0;
+        $total_total_cp  = 0;
+
+        foreach ($this->items AS $item) {
+            $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            $id                     = $item->id;
+            $name                   = $item->user_name;
+            $date                   = $date_old != $item->date ? $dateFormat->formatToView($item->date) : '';
+            $month                  = $item->month;
+            $year                   = $item->year;
+            $params                 = $item->params ? unserialize($item->params) : array();
+            $total                  = current($params);
+            $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i');
+            $created_by             = $this->user[$item->created_by]['name'];
+
+            // tỉnh tổng
+            $total_9h30_sdt  += str_replace(',','',$params['9h30_sdt']);
+            $total_9h30_cp   += str_replace(',','',$params['9h30_cp']);
+            $total_11h00_sdt += str_replace(',','',$params['11h00_sdt']);
+            $total_11h00_cp  += str_replace(',','',$params['11h00_cp']);
+            $total_15h00_sdt += str_replace(',','',$params['15h00_sdt']);
+            $total_15h00_cp  += str_replace(',','',$params['15h00_cp']);
+            $total_17h30_sdt += str_replace(',','',$params['17h30_sdt']);
+            $total_17h30_cp  += str_replace(',','',$params['17h30_cp']);
+            $total_22h00_sdt += str_replace(',','',$params['22h00_sdt']);
+            $total_22h00_cp  += str_replace(',','',$params['22h00_cp']);
+            $total_total_sdt += str_replace(',','',$params['total_sdt']);
+            $total_total_cp  += str_replace(',','',$params['total_cp']);
+            
+            // Link Action
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            
+            // Control Action
+            $controlEdit            = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+            $controls               = $controlEdit;
+
+            $tool_edit ='';
+            $tool_save ='<span class="btn_save btn_ctl" data-id="'.$id.'">Lưu</span>';
+            $disable ='';
+            if($edit_target){
+                $tool_edit ='<span class="btn_edit btn_ctl" data-id="'.$id.'">Sửa</span>';
+                $disable ='disabled';
+            }
+            else{ // nếu là giám đốc chi nhánh thì chỉ được xem báo cáo của các nhân sự trong chi nhánh
+                if($ch_permission){
+                    $disable ='disabled';
+                    $tool_save ='';
+                }
+            }
+            // Nếu nhân sự có trong danh sách báo cáo theo giờ thì vẫn được sửa báo cáo của chính mình
+            if($curent_user['id'] == $item->marketer_id){
+                $tool_save ='<span class="btn_save btn_ctl" data-id="'.$id.'">Lưu</span>';
+                $disable ='';
+            }
+
+            $bg = "";
+            if(!empty($date)){
+                $bg = "";
+            }
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'" style="background: '.$bg.';">';
+            $xhtmlItems .= '<td>'. $cid .'</td>';
+            $xhtmlItems .= '<td><b>'. $date .'</b></td>';
+    		$xhtmlItems .= '<td><b>'. $name .'</b></td>';
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['9h30_sdt'] .'</td>';
+            if($edit_target || empty($params['9h30_cp'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text"  '.$disable.' autocomplete="off" name="9h30_cp" value="' . $params['9h30_cp'] . '" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td style="min-width: 80px;" class="text-right mask_currency">'. $params['9h30_cp'] .'</td>';
+            }
+            $xhtmlItems .= '<td class="text-right mask_currency text-green">'. ($params['9h30_sdt'] > 0 ? (int)(str_replace(',','',$params['9h30_cp'])/ str_replace(',','',$params['9h30_sdt'])) : '') .'</td>';
+
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['11h00_sdt'] .'</td>';
+            if($edit_target || empty($params['11h00_cp'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text"  '.$disable.' autocomplete="off" name="11h00_cp" value="'.$params['11h00_cp'].'" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td class="text-right mask_currency">'. $params['11h00_cp'] .'</td>';
+            }
+            $xhtmlItems .= '<td class="text-right mask_currency text-green">'. ($params['11h00_sdt'] > 0 ? (int)(str_replace(',','',$params['11h00_cp']) / str_replace(',','',$params['11h00_sdt'])) : '') .'</td>';
+
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['15h00_sdt'] .'</td>';
+            if($edit_target || empty($params['15h00_cp'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text"  '.$disable.' autocomplete="off" name="15h00_cp" value="'.$params['15h00_cp'].'" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td class="text-right mask_currency">'. $params['15h00_cp'] .'</td>';
+            }
+            $xhtmlItems .= '<td class="text-right mask_currency text-green">'. ($params['15h00_sdt'] > 0 ? (int)(str_replace(',','',$params['15h00_cp']) / str_replace(',','',$params['15h00_sdt'])) : '') .'</td>';
+
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['17h30_sdt'] .'</td>';
+            if($edit_target || empty($params['17h30_cp'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text"  '.$disable.' autocomplete="off" name="17h30_cp" value="'.$params['17h30_cp'].'" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td class="text-right mask_currency">'. $params['17h30_cp'] .'</td>';
+            }
+            $xhtmlItems .= '<td class="text-right mask_currency text-green">'. ($params['17h30_sdt'] > 0 ? (int)(str_replace(',','',$params['17h30_cp']) / str_replace(',','',$params['17h30_sdt'])) : '') .'</td>';
+
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['22h00_sdt'] .'</td>';
+            if($edit_target || empty($params['22h00_cp'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text"  '.$disable.' autocomplete="off" name="22h00_cp" value="'.$params['22h00_cp'].'" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td class="text-right mask_currency">'. $params['22h00_cp'] .'</td>';
+            }
+            $xhtmlItems .= '<td class="text-right mask_currency text-green">'. ($params['22h00_sdt'] > 0 ? (int)(str_replace(',','',$params['22h00_cp']) / str_replace(',','',$params['22h00_sdt'])) : '') .'</td>';
+
+
+            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['total_sdt'] .'</td>';
+            if($edit_target || empty($params['total_cp'])) {
+                $xhtmlItems .= '<td><input style="min-width: 80px;" type="text"  '.$disable.' autocomplete="off" name="total_cp" value="'.$params['total_cp'].'" class="form-control input-xs mask_currency text-right"></td>';
+            }
+            else{
+                $xhtmlItems .= '<td class="text-right mask_currency">'. $params['total_cp'] .'</td>';
+            }
+            $xhtmlItems .= '<td class="text-right mask_currency text-green">'. ($params['total_sdt'] > 0 ? (int)(str_replace(',','',$params['total_cp']) / str_replace(',','',$params['total_sdt'])) : '') .'</td>';
+
+
+            $xhtmlItems .= '<td class="text-center">'. $tool_edit.$tool_save .'</td>';
+    		$xhtmlItems .= '</tr>';
+
+            $date_old  = $item->date;
+        }
+
+        $xhtmlItems .= '<tr style="border-bottom: 1px solid #d8d8d8;">';
+        $xhtmlItems .= '<td class="text-center text-red" colspan=""><b></b></td>';
+        $xhtmlItems .= '<td class="text-center text-red" colspan=""><b></b></td>';
+        $xhtmlItems .= '<td class="text-center text-red" colspan=""><b>Tổng</b></td>';
+
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_9h30_sdt > 0 ? $total_9h30_sdt : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_9h30_cp > 0 ? $total_9h30_cp : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_9h30_sdt > 0 ? (int)($total_9h30_cp / $total_9h30_sdt) : '') .'</td>';
+
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_11h00_sdt > 0 ? $total_11h00_sdt : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_11h00_cp > 0 ? $total_11h00_cp : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_11h00_sdt > 0 ? (int)($total_11h00_cp / $total_11h00_sdt) : '') .'</td>';
+
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_15h00_sdt > 0 ? $total_15h00_sdt : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_15h00_cp > 0 ? $total_15h00_cp : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_15h00_sdt > 0 ? (int)($total_15h00_cp / $total_15h00_sdt) : '') .'</td>';
+
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_17h30_sdt > 0 ? $total_17h30_sdt : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_17h30_cp > 0 ? $total_17h30_cp : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_17h30_sdt > 0 ? (int)($total_17h30_cp / $total_17h30_sdt) : '') .'</td>';
+
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_22h00_sdt > 0 ? $total_22h00_sdt : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_22h00_cp > 0 ? $total_22h00_cp : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_22h00_sdt > 0 ? (int)($total_22h00_cp / $total_22h00_sdt) : '') .'</td>';
+
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_total_sdt > 0 ? $total_total_sdt : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_total_cp > 0 ? $total_total_cp : '') .'</td>';
+        $xhtmlItems .= '<td class="text-right mask_currency text-red text-bold">'. ($total_total_sdt > 0 ? (int)($total_total_cp / $total_total_sdt) : '') .'</td>';
+        $xhtmlItems .= '<td></td>';
+        $xhtmlItems .= '</tr>';
+    }
+    
+    // Control
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Tạo báo cáo', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'addAll')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+
+        array('name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link',
+              'attributes' => array('class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown',),
+              'children' => array(
+                      array('name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array('onclick' => 'javascript:deleteItem(\'multi\', \'all\');',)),
+                      array('name' => 'divider'),
+              ),
+              'children-class' => 'dropdown-menu pull-right'
+        ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable table-fixed-head">
+    			<table class="table table-striped table-bordered">
+    				<thead>
+                        <?php echo $xhtmlBodyHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>
+
+<style>
+    table tbody tr td{
+        vertical-align: middle !important;
+    }
+    table tbody tr td{
+        vertical-align: middle !important;
+    }
+    .form-control[disabled]{
+        border: none;
+        background: none !important;
+    }
+</style>
+
+<?php $this->headScript()->captureStart() ?>
+$(document).ready(function() {
+    $('.btn_edit').click(function() {
+        var id = $(this).attr("data-id");
+        $('tr#tr_'+id).find('input').prop("disabled", false);
+    });
+
+    $('.btn_save').click(function() {
+        var id = $(this).attr("data-id");
+<!--            $('tr#tr_'+id).find('input').prop("disabled", true);-->
+
+        $('tr#tr_'+id +' input').each(function(){
+            if($(this).val() != ''){
+                $(this).prop("disabled", true);
+            }
+        });
+
+        var data_array = {};
+        $('tr#tr_'+id +' input').each(function(){
+            var key = $(this).attr('name');
+            if($(this).attr('name') == 'cid[]'){
+                key = 'id';
+            }
+            data_array[key] = $(this).val();
+        });
+
+        $.ajax({
+            url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'MarketingReport', 'action' => 'save-ajax'));?>',
+            type: 'POST',
+            data: data_array,
+            success: function(result) {
+            }
+        });
+    });
+});
+
+resize_col_table('#table-manager');
+
+<?php $this->headScript()->captureEnd() ?>

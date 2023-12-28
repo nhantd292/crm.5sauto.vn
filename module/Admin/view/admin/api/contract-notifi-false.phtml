@@ -1,0 +1,43 @@
+<?php
+$date_formart 	= new \ZendX\Functions\Date();
+$string_formart = new \ZendX\Functions\StringHelper();
+
+if(count($this->items)){
+    $xhtmlNofity  = "";
+    foreach ($this->items as $key => $value) {
+        $attr = $value['status'] == 0 ? 'style="background: #edf2fa;"' : '';
+        $xhtmlNofity .= '<li title="'.$value['notifi_content'].'"">';
+        $xhtmlNofity .= '<a '.$attr.' href="javascript:;" onclick="javascript:popupAction(\'/xadmin/contract/view/\', {\'id\': \''.$value['notifi_link'].'\'});">';
+        $xhtmlNofity .= $string_formart->getSummary($value['notifi_content'], 20);
+        $xhtmlNofity .= '<span title="'.$value['created'].'">';
+        $xhtmlNofity .= '<i class="fa fa-clock-o" aria-hidden="true"></i>'.$date_formart->date_to_string($value['created']);
+        $xhtmlNofity .= '</span>';
+        $xhtmlNofity .= '</a>';
+        $xhtmlNofity .= '</li>';
+    }
+}
+else {
+    $xhtmlNofity = "<li><a>Không có thông báo</a><li>";
+}
+?>
+
+<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true" title="Thông báo đơn hàng bán sai">
+    <i class="fa fa-exclamation-circle"></i>
+    <?php if($this->count > 0){ ?>
+    <span class="badge"><?php echo $this->count; ?></span>
+    <?php } ?>
+</a>
+<div id="lists-notifi" >
+    <ul  data-simplebar>
+        <?php echo $xhtmlNofity;?>
+        <li class="normal"><a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'notifi-user', 'action' => 'index'));?>">Tất cả</a></li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    $('#notification_contract_false > a').click(function() {
+        showHiddenToggle('#lists-notifi', 200);
+    });
+</script>
+
+

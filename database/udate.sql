@@ -1,0 +1,65 @@
+-- ALTER TABLE `x_contact`
+--     CHANGE COLUMN `location_city_id` `location_city_id` CHAR(22) NULL DEFAULT NULL COLLATE 'utf8_general_ci' AFTER `phone`,
+--     CHANGE COLUMN `location_district_id` `location_district_id` VARCHAR(22) NULL DEFAULT NULL COLLATE 'utf8_general_ci' AFTER `location_city_id`,
+--     ADD COLUMN `location_town_id` VARCHAR(22) NULL DEFAULT NULL AFTER `location_district_id`,
+--     ADD COLUMN `address` TINYTEXT NULL AFTER `location_town_id`,
+--     CHANGE COLUMN `user_id` `user_id` CHAR(22) NOT NULL COLLATE 'utf8_general_ci' AFTER `address`,
+--     CHANGE COLUMN `marketer_id` `marketer_id` CHAR(25) NULL DEFAULT NULL COLLATE 'utf8_general_ci' AFTER `user_id`,
+--     CHANGE COLUMN `license_plate` `license_plate` CHAR(50) NULL COMMENT 'Biển số xe' COLLATE 'utf8_general_ci' AFTER `marketer_id`,
+--     CHANGE COLUMN `history_number` `history_number` TINYINT(3) NULL DEFAULT '0' COMMENT 'Số lần phát sinh lịch sử chăm sóc' AFTER `history_success`,
+--     CHANGE COLUMN `created` `created` DATETIME NULL AFTER `last_history_action_id`,
+--     CHANGE COLUMN `created_by` `created_by` CHAR(22) NULL COLLATE 'utf8_general_ci' AFTER `created`;
+
+-- ALTER TABLE `x_contract`
+-- 	ADD COLUMN `ghtk_code` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Mã đơn hàng HGTK' AFTER `code`,
+-- 	ADD COLUMN `ghtk_result` TEXT NULL COMMENT 'Thông tin ghtk trả về khi đẩy thành công' AFTER `ghtk_code`,
+-- 	ADD COLUMN `ghtk_status` TINYINT(3) NULL DEFAULT NULL COMMENT 'Trạng thái đơn của GHTK' AFTER `ghtk_result`;
+--
+-- ALTER TABLE `x_contract`
+-- 	CHANGE COLUMN `send_ghtk` `send_ghtk` TINYINT(1) NULL DEFAULT '0' COMMENT 'Đã gửi sang hệ thống giao hàng tiết kiệm chưa 1: đã gửi, 0:chưa gửi' AFTER `shipped_date`,
+-- 	ADD COLUMN `delete` TINYINT(1) NULL DEFAULT '0' COMMENT 'Xóa 1 chưa xóa 0' AFTER `created_by`;
+
+-- ALTER TABLE `x_contract`
+-- 	CHANGE COLUMN `sale_note` `sale_note` TEXT NULL COMMENT 'Ghi chú đơn hàng' COLLATE 'utf8_general_ci' AFTER `marketer_id`,
+-- 	ADD COLUMN `ghtk_note` TEXT NULL AFTER `sale_note`;
+
+-- CREATE TABLE `x_contract_detail` (
+--                                      `id` CHAR(25) NOT NULL COLLATE 'utf8_general_ci',
+--                                      `contract_id` CHAR(25) NULL DEFAULT NULL COMMENT 'id đơn hàng' COLLATE 'utf8_general_ci',
+--                                      `full_name` TINYTEXT NULL DEFAULT NULL COMMENT 'Tên sản phẩm' COLLATE 'utf8_general_ci',
+--                                      `product_id` CHAR(50) NULL DEFAULT NULL COMMENT 'id sản phẩm kiotviet' COLLATE 'utf8_general_ci',
+--                                      `code` VARCHAR(255) NULL DEFAULT NULL COMMENT 'mã sản phẩm' COLLATE 'utf8_general_ci',
+--                                      `numbers` INT(11) NULL DEFAULT NULL COMMENT 'Số lượng đặt',
+--                                      `price` INT(11) NULL DEFAULT NULL COMMENT 'Giá sản phẩm',
+--                                      `total` INT(11) NULL DEFAULT NULL COMMENT 'Tổng tiền',
+--                                      `cost` INT(11) NULL DEFAULT NULL COMMENT 'giá vốn',
+--                                      `weight` INT(11) NULL DEFAULT NULL COMMENT 'khối lượng (gram)',
+--                                      `categoryId` CHAR(50) NULL DEFAULT NULL COMMENT 'Danh mục' COLLATE 'utf8_general_ci',
+--                                      `categoryName` CHAR(50) NULL DEFAULT NULL COMMENT 'Tên danh mục' COLLATE 'utf8_general_ci',
+--                                      `status` TINYINT(1) NULL DEFAULT '1',
+--                                      `created` DATETIME NULL DEFAULT NULL COMMENT 'Ngày tạo',
+--                                      `created_by` CHAR(25) NULL DEFAULT NULL COMMENT 'Người tạo combo' COLLATE 'utf8_general_ci',
+--                                      PRIMARY KEY (`id`) USING BTREE
+-- )
+--     COMMENT='Quản lý kho hàng sản phẩm kioviet'
+-- COLLATE='utf8_general_ci'
+-- ENGINE=InnoDB
+-- ;
+--
+-- ALTER TABLE `x_contract`
+--     ADD COLUMN `unit_transport` VARCHAR(255) NULL DEFAULT 'ghtk' COMMENT 'Đơn vị vận chuyển' AFTER `index`;
+-- ALTER TABLE `x_contract`
+--     ADD COLUMN `kov_code` CHAR(50) NULL DEFAULT NULL COMMENT 'Mã đơn hàng bên kov' AFTER `id_kov`;
+--
+-- ALTER TABLE `x_contract`
+--     ADD COLUMN `price_reduce_sale` INT(11) NULL DEFAULT '0' COMMENT 'Giảm trừ doanh thu' AFTER `price_transport`,
+-- 	ADD COLUMN `compare` TINYINT(1) NULL DEFAULT '0' COMMENT 'Đã đối soát tiền hàng với ghtk chưa' AFTER `send_ghtk`;
+-- ALTER TABLE `x_contract`
+--     ADD COLUMN `note_accounting` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Ghi chú giảm trừ doanh thu' AFTER `price_reduce_sale`;
+-- ALTER TABLE `x_contract`
+-- 	ADD COLUMN `history_contract` TEXT NULL DEFAULT NULL COMMENT 'Lịch sử chăm sóc đơn hàng' AFTER `options`;
+-- ALTER TABLE `x_contract`
+-- 	CHANGE COLUMN `compare` `returned` TINYINT(1) NULL DEFAULT '0' COMMENT 'Xác nhận đã nhận hoàn' AFTER `send_ghtk`;
+
+ALTER TABLE `x_contract`
+	ADD COLUMN `shipping_fee` INT(11) NULL DEFAULT '0' COMMENT 'Tiền phí shipp khách hỗ trợ khi không nhận hàng' AFTER `price_paid`;

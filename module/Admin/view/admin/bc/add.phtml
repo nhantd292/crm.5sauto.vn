@@ -1,0 +1,141 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    // Set lại các giá trị của từng element
+    $location_city_id = $myForm->get('location_city_id')->getValue() ? $myForm->get('location_city_id')->getValue() : current(array_keys($myForm->get('location_city_id')->getValueOptions()));
+    $myForm->get('location_district_id')->setAttributes(array('data-parent' => $location_city_id));
+    
+    $elements = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('phone'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('source_group_id'), 'label' => 'Nguồn liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('identify'), 'label' => 'CMND/Thẻ căn cước', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('passport'), 'label' => 'Hộ chiếu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
+        array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_district_id'), 'label' => 'Quận huyện', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('email'), 'label' => 'Email', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('birthday'), 'label' => 'Ngày sinh', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address'), 'label' => 'Địa chỉ nơi ở', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('facebook'), 'label' => 'Facebook', 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('subject_id'), 'label' => 'Đối tượng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('school_id'), 'label' => 'Trường', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('major_id'), 'label' => 'Chuyên ngành', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-12'),
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('date'), 'label' => 'Ngày đơn hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('date_register'), 'label' => 'Ngày đăng ký thi', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('date_speaking'), 'label' => 'Ngày thi speaking', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => $myForm->get('price'), 'label' => 'Đơn giá', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('price_promotion_percent'), 'label' => 'Giảm theo %', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('price_promotion_price'), 'label' => 'Giảm theo giá', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('promotion_content'), 'label' => 'Lý do giảm giá', 'boxClass' => 'col-md-4'),
+        array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => $myForm->get('price_promotion'), 'label' => 'Hưởng ưu đãi', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('price_total'), 'label' => 'Thành tiền sau ưu đãi', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('contract_note'), 'label' => 'Ghi chú đơn hàng', 'boxClass' => 'col-md-6', 'boxStyle' => 'margin-bottom: 50px;'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('product_type'), 'validate' => array('require' => true)),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+	// Xử lý load tỉnh thành
+	$('select[name="location_city_id"]').change(function() {
+		var select = 'input[name="location_district_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+    
+    $('input[name="price_promotion_percent"]').change(function() {
+        update_price_contract();
+    });
+    
+    $('input[name="price_promotion_price"]').change(function() {
+        update_price_contract();
+    });
+    
+    $('input[name="price"]').change(function() {
+        update_price_contract();
+    });
+    
+    function update_price_contract() {
+    	var price 					= $('input[name="price"]').autoNumeric('get');
+    	var price_promotion_percent	= $('input[name="price_promotion_percent"]').val() ? $('input[name="price_promotion_percent"]').val() : 0;
+    	var price_promotion_price	= $('input[name="price_promotion_price"]').autoNumeric('get');
+    	
+    	if(price > 0) {
+    		var price_promotion = 0;
+    		if(price_promotion_percent > 0) {
+    			price_promotion = price_promotion_percent / 100 * price;
+    		}
+    		if(price_promotion_price > 0) {
+    			price_promotion = price_promotion + parseInt(price_promotion_price);
+    		}
+    		
+	    	var price_total = price - price_promotion;
+	    	if(price_total < 0) {
+	    		price_total = 0;
+	    	}
+	        $('input[name="price_promotion"]').autoNumeric('set', price_promotion);
+	        $('input[name="price_total"]').autoNumeric('set', price_total);
+    	} else {
+    		$('input[name="price"]').autoNumeric('set', 0);
+	        $('input[name="price_promotion"]').autoNumeric('set', 0);
+	        $('input[name="price_total"]').autoNumeric('set', 0);
+    	}
+    }
+    
+    // Kiểm tra thông tin khách hàng
+    if($('input[name="phone"]').val()) {
+        var val = $('input[name="phone"]').val().trim();
+        checkContactToElement(val, null);
+    }
+    
+    $('input[name="phone"]').blur(function() {
+        var val = $(this).val().trim();
+        checkContactToElement(val, 'element');
+    });
+    
+    $('input[name="phone"]').keypress(function (event) {
+		if(event.charCode == 13) {
+			$('input[name="phone"]').blur();
+		}
+	});
+<?php $this->headScript()->captureEnd() ?>

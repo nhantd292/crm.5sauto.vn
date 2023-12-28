@@ -1,0 +1,102 @@
+<?php 
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $string = new \ZendX\Functions\Gid();
+    $random = $string->random();
+    
+    $elements = array(
+        array('element' => $myForm->get('date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('sale_branch_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+    
+?>
+<div class="report" id="adminReport_<?php echo $random; ?>">
+    <div class="report-control">
+    	<div class="title pull-left"><?php echo $this->caption;?></div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="report-wrapper">
+    	<div class="report-filter">
+    	    <form>
+        	    <div class="row">
+                    <?php echo $xhtmlFilter;?>
+                </div>
+            </form>
+    	</div>
+    	<div class="report-content">
+            <div class="row">
+            	<div class="alert alert-danger">Không có dữ liệu</div>
+                <div class="col-sm-6">
+                    <div class="report-table">
+                        <div class="table-scrollable table-report">
+                			<table class="table table-striped table-bordered table-hover">
+                				<?php echo $this->reportTable;?>
+                			</table>
+            			</div>
+        			</div>
+                </div>
+                <?php
+                if(!isset($_GET['hideChart']) || $_GET['hideChart'] == 0) { 
+                ?>
+                <div class="col-sm-6">
+                    <div class="report-chart"></div>
+                </div>
+                <?php
+                } 
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(idReport + ' .alert-danger').hide();
+        var idReport = '#adminReport_<?php echo $random; ?>';
+        var ajaxUrl = "<?php echo $this->url('routeReport/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])); ?>";
+        function report_<?php echo $random?>() {
+            $.ajax({
+        		url: ajaxUrl,
+        		type: 'POST',
+        		data: $(idReport + ' form').serialize(),
+        		beforeSend: function() {
+        			pageLoading('loading', idReport + ' .report-content');
+        		},
+        		success: function(result) {
+        			result = JSON.parse(result);
+					if(result.status == 1){
+						
+						// Load dữ liệu ra table
+	        			$(idReport + ' .report-table table').html(result.reportTable);
+
+	        			// Load dữ liệu ra biểu đồ
+	        			if($(idReport + ' .report-chart').length) {
+	        				$(idReport + ' .report-chart').html('');
+	            			$.each(result.reportChart, function(key, value) {
+	                			$(idReport + ' .report-chart').append('<div id="chart_'+ key +'_<?php echo $random;?>"></div>');
+	                    		reportChart(value, 'chart_'+ key +'_<?php echo $random;?>', 'bar', null);
+	            			});
+	        			}
+	        			$(idReport + ' .alert-danger').hide()
+	        			pageLoading('close', idReport + ' .report-content');
+	        			Form.init();
+					}else{
+						$(idReport + ' .alert-danger').show()
+						$(idReport + ' .report-table table').html('');
+						$(idReport + ' .report-chart').html('');
+						pageLoading('close', idReport + ' .report-content');
+	        			Form.init();
+					}
+        			
+        		}
+        	});
+        }
+        report_<?php echo $random?>();
+        $(idReport + ' form button[name="submit"]').click(function() {
+        	report_<?php echo $random?>();
+        });
+    });
+</script>

@@ -1,0 +1,9 @@
+<?php
+	echo $this->doctype();
+	
+    $layout = 'default';
+    if(!empty($this->arrParams['layout'])) {
+        $layout = $this->arrParams['layout'];
+    }
+    include_once $this->arrParams['template']['pathTheme'] . '/'. $layout .'.phtml'; 
+?>

@@ -1,0 +1,106 @@
+<?php
+    $arrControl = array(
+        array('name' => 'close', 'caption' => 'Quay lại', 'link' => $this->url('routeAdmin/paginator', array('controller' => $this->params['controller'], 'page' => $this->params['paginator']['currentPageNumber'])), 'onclick' => '', 'icon' => 'fa-arrow-left', 'attributes' => array('class' => 'btn')),
+    );
+?>
+
+<div class="page-control">
+	<div class="title pull-left">
+		<?php echo $this->caption;?>
+	</div>
+	<div class="control pull-right">
+		<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+	</div>
+	<div class="clearfix"></div>
+</div>
+<div class="page-tabs">
+	<ul class="nav nav-tabs">
+		<li>
+			<a href="#tab_0" data-toggle="tab" onclick="loadTab('<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'info-general', 'id' => $this->edu_class_id));?>', '#tab_0')">Thông tin chung</a>
+		</li>
+		<li class="">
+			<a href="#tab_1" data-toggle="tab" onclick="loadTab('<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'student', 'id' => $this->edu_class_id));?>', '#tab_1')">Danh sách học viên</a>
+		</li>
+		<li class="">
+			<a href="#tab_2" data-toggle="tab" onclick="loadTab('<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'route', 'id' => $this->edu_class_id));?>', '#tab_2')">Lộ trình học</a>
+		</li>
+		<li class="">
+			<a href="#tab_3" data-toggle="tab" onclick="loadTab('<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'muster', 'id' => $this->edu_class_id));?>', '#tab_3')">Điểm danh</a>
+		</li>
+		<li class="">
+			<a href="#tab_4" data-toggle="tab" onclick="loadTab('<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'test', 'id' => $this->edu_class_id));?>', '#tab_4')">Điểm học phần</a>
+		</li>
+	</ul>
+</div>
+<div class="page-content" id="wrapper-content" style="overflow: auto;">
+	<div class="tab-content">
+		<div class="tab-pane" id="tab_0"></div>
+		<div class="tab-pane" id="tab_1"></div>
+		<div class="tab-pane" id="tab_2"></div>
+		<div class="tab-pane" id="tab_3"></div>
+		<div class="tab-pane" id="tab_4"></div>
+	</div>
+</div>
+<?php $this->headScript()->captureStart() ?>
+        
+    function loadTab(ajaxUrl, tab) {
+        if(window.location.hash != tab) {
+            window.location.href = window.location.pathname + tab;
+        }
+        
+        //if($(tab).html() == '' || $(tab).html() == null) {
+        	jQuery.ajax({
+        		url: ajaxUrl,
+        		type: 'GET',
+        		data: {},
+        		beforeSend: function() {
+                    pageLoading('loading', '.page-container');
+        		},
+        		success: function(result) {
+        			$(tab).html(result);
+        		    pageLoading('close', '.page-container');
+        		    Form.init();
+        		},
+        	});
+    	//}
+    }
+
+    if(!window.location.hash) {
+        window.location.href = window.location.pathname + '#tab_0';
+	}
+	
+	//Tính khoảng cách chiều cao phần nội dung
+    var h_window = $(window).height();
+    var h_content = h_window - 36 - 36 - 40;
+    jQuery('#wrapper-content').css({'height': h_content + 'px'});
+    $( window ).resize(function() {
+    	var h_window = $(window).height();
+    	var h_content = h_window - 36 - 36 - 40;
+    	jQuery('#wrapper-content').css({'height': h_content + 'px'});
+    });
+<?php $this->headScript()->captureEnd() ?>
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

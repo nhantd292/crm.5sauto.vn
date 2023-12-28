@@ -1,0 +1,151 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    $userInfo = new \ZendX\System\UserInfo();
+    $user_info = $userInfo->getUserInfo();
+    $can_edit = in_array(ADMIN,explode(',',$user_info['permission_ids'])) || in_array(SYSTEM,explode(',',$user_info['permission_ids'])) || in_array(ACCOUNTING,explode(',',$user_info['permission_ids']));
+
+    $options = unserialize($this->contract['options']);
+
+    $elementsBottom = array(
+        array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+    $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsBottom);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+    <?php if (!$can_edit) { ?>
+    <p class="alert alert-danger">Không thể sửa đơn đã được cập nhật trạng thái Sản xuất.</p>
+    <?php } else { ?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+        <div class="contract_product table-scrollable">
+            <?php
+                if(!empty($this->check_product_id)){
+                    ?>
+                    <div class="alert alert-block alert-danger">
+                        <button type="button" class="close" data-dismiss="alert"></button>
+                        <p><?php echo $this->check_product_id; ?></p>
+                    </div>
+                    <?php
+                }
+            ?>
+
+            <table class="table table-striped table-bordered table-hover table-product">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Tên xe - năm sản xuất</th>
+                        <th>Số lượng hàng hoàn</th>
+                        <th>Số lượng hủy không lưu kho</th>
+                    </tr>
+                </thead>
+                <tbody class="product_body">
+                <?php
+                $numbers = 0;
+                $total_price = 0;
+                if (count($options['product']) > 0) {
+                    foreach ($options['product'] as $product_detail){
+                        $numbers = $numbers + $product_detail['numbers'];
+                        $total_price = $total_price + $product_detail['total'];
+                        if (!empty($product_detail['sale_price'])) {
+                            $salePrice = $product_detail['sale_price'];
+                        } else {
+                            $salePrice = 0;
+                        }
+
+                        if (!empty($product_detail['vat'])) {
+                            $vat = $product_detail['vat'];
+                        } else {
+                            $vat = 0;
+                        }
+                        ?>
+                        <tr class="product_row ">
+                            <input class="form-control" type="hidden" name="key_id[]" value="<?= $product_detail['key_id'] ?>">
+                            <input class="form-control" type="hidden" name="product_id[]" value="<?= $product_detail['product_id'] ?>">
+                            <input class="form-control" type="hidden" name="branch_id[]" value="<?= $product_detail['branch_id'] ?>">
+                            <input class="form-control" type="hidden" name="price[]" value="<?= $product_detail['price'] ?>">
+                            <input class="form-control" type="hidden" name="cost[]" value="<?= $product_detail['cost'] ?>">
+                            <td class="products"><input class="form-control" type="text" name="full_name[]" title="<?= $product_detail['full_name'] ?>" readonly value="<?= $product_detail['full_name']; ?>"></td>
+                            <td class="product-name"><input class="form-control" type="text" name="product_name[]" title="<?= $product_detail['product_name'] ?>" value="<?= $product_detail['product_name'] ?>"></td>
+                            <td class="numbers"><input class="form-control text-right" readonly type="text" onchange="changeOption(this)" name="numbers[]" value="<?= number_format($product_detail['numbers']) ?>" min="1"></td>
+                            <td class="numbers-cancle"><input class="form-control text-right money" type="text" name="numbers_cancle[]" value="0"></td>
+                        </tr>
+                    <?php
+                    }
+                } else {
+                ?>
+                <tr align="center">
+                    <td colspan="5" >Không có sản phẩm</td>
+                </tr>
+                <?php
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            <?php echo $xhtmlBottom;?>
+        </div>
+    </form>
+<?php } ?>
+<?php
+if(!empty($this->contract['status_guarantee_id'])) {
+    echo '<style>.code-old{display:block}</style>';
+}
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+    <?php if ($can_edit) { ?>
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+    <?php } ?>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+
+<style>
+.custom-modal {
+    width: 90% !important;
+    margin-left: -45% !important;
+}
+
+#form-product-return {
+    padding: 5px 0 10px 0;
+    overflow: hidden;
+}
+#form-product-return input[type="text"] {
+    float: left;
+    padding: 4px 5px;
+    border-right: 0px;
+    border: 1px #ccc solid;
+    font-size: 14px;
+}
+#form-product-return input[type="button"] {
+    float: left;
+    padding: 5px 10px 3px 10px;
+    border-left: 0;
+    border: 1px #5cb85c solid;
+    background: #5cb85c;
+    font-size: 14px;
+    color: #fff;
+}
+</style>
+<script>
+    format_to_money();
+</script>

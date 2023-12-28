@@ -1,0 +1,27 @@
+<?php
+    use ZendX\Functions\CreateAttribute;
+    use ZendX\Functions\CreateIcon;
+    
+    $xhtmlControl = '';
+    if(count($this->control) > 0) {
+        foreach ($this->control AS $control) {
+            if(empty($control['children'])) {
+                $xhtmlControl .= sprintf(' <div class="btn-group"><a href="%s"%s>%s%s</a></div>', $control['link'], CreateAttribute::create($control['attributes']), CreateIcon::create($control['icon']), $control['caption']);
+            } else {
+                $xhtmlChildren = '<ul class="'. $control['children-class'] .'">';
+                foreach ($control['children'] AS $children) {
+                    if($children['name'] != 'divider') {
+                        $xhtmlChildren .= sprintf('<li><a href="%s"%s>%s%s</a></li>', $children['link'], CreateAttribute::create($children['attributes']), CreateIcon::create($children['icon']), $children['caption']);
+                    } else {
+                        $xhtmlChildren .= '<li class="divider"></li>';
+                    }
+                }
+                $xhtmlChildren .= '</ul>';
+                
+                $xhtmlControl .= sprintf(' <div class="btn-group"><a href="%s"%s>%s%s <i class="fa fa-angle-down"></i></a>%s</div>', $control['link'], CreateAttribute::create($control['attributes']), CreateIcon::create($control['icon']), $control['caption'], $xhtmlChildren);
+            }
+        }
+    }
+    
+    echo $xhtmlControl;
+?>

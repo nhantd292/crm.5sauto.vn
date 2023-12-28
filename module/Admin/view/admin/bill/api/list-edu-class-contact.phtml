@@ -1,0 +1,60 @@
+<?php
+if($this->items->count() > 0) {
+	$dateFormat = new \ZendX\Functions\Date();
+
+	// Head
+	$xhtmlHead  = '<tr>';
+	$xhtmlHead .= '<th class="col-80">Công cụ</th>';
+	$xhtmlHead .= '<th>STT</th>';
+	$xhtmlHead .= '<th>Ngày đăng ký</th>';
+	$xhtmlHead .= '<th>Lớp</th>';
+	$xhtmlHead .= '<th>Khai giảng</th>';
+	$xhtmlHead .= '<th>Trạng thái</th>';
+	$xhtmlHead .= '<th>Người thêm</th>';
+	$xhtmlHead .= '</tr>';
+	
+	$xhtmlItems = '';
+	$index = 0;
+	foreach ($this->items AS $item) {
+		$index++;
+		$id                   = $item->id;
+		$created              = $dateFormat->formatToView($item->created, 'd/m/Y H:i');
+		$edu_class_id         = $this->edu_class[$item->edu_class_id]['name'];
+		$edu_class_public     = $dateFormat->formatToView($this->edu_class[$item->edu_class_id]['public_date']);
+		$join                 = !empty($item['join']) ? 'Đã tham gia' : 'Chưa tham gia';
+		$created_by           = $this->user[$item->created_by]['name'];
+
+		$controlDelete        = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Xóa đăng ký', 'class' => 'btn btn-xs red', 'icon' => 'fa fa-trash', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => 'contact', 'action' => 'delete-register-class', 'id' => $id)) .'\', {\'id\': \''. $id .'\'});'));
+		$controls             = $controlDelete;
+		if($dateFormat->diff(date('Y-m-d'), $this->edu_class[$item->edu_class_id]['public_date']) < 2) {
+		    $controls = '';
+		}
+		
+		$xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $controls .'</td>
+    							<td>'. $index .'</td>
+    							<td>'. $created .'</td>
+    							<td>'. $edu_class_id .'</td>
+    							<td>'. $edu_class_public .'</td>
+    							<td>'. $join .'</td>
+    							<td>'. $created_by .'</td>
+    						</tr>';
+	}
+?>
+<div class="table-manager" id="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+} else {
+    echo '<span class="text-danger">Không có dữ liệu</span>';
+} 
+?>

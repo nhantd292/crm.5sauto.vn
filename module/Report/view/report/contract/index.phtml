@@ -1,0 +1,11 @@
+<div class="page-content">
+	<div class="row">
+		<div class="col-sm-12">
+			<div id="revenue-branch">Đang tải biểu đồ...</div>
+		</div>
+	</div>
+</div>
+
+<?php $this->headScript()->captureStart() ?>
+    load_report('#revenue-branch', '<?php echo $this->url('routeReport/default', array('controller' => $this->params['controller'], 'action' => $this->params['route']['id']));?>', null);
+<?php $this->headScript()->captureEnd() ?>

@@ -1,0 +1,59 @@
+<?php
+    $myForm				= $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Chuyển quản lý', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $myForm->get('contact_ids')->setValue($this->contact_ids);
+    $elements = array(
+        array('element' => $myForm->get('sale_branch_id'), 'label' => 'Cơ sở', 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('sale_group_id'), 'label' => 'Đội nhóm', 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('user_id'), 'label' => 'Nhân sự được chuyển quyền', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('contact_ids')),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+
+
+<?php $this->headScript()->captureStart() ?>
+// Sự kiện thay đổi cơ sở
+$('select[name="sale_branch_id"]').change(function() {
+    var select = 'input[name="sale_group_id"]';
+    var parent = $(select).parent();
+    $('.select2-container', parent).select2('val', '');
+    $(select).attr('data-parent', $(this).val());
+});
+
+// Sự kiện thay đổi đội nhóm
+$('input[name="sale_group_id"]').change(function() {
+    var select = 'input[name="user_id"]';
+    var parent = $(select).parent();
+    $('.select2-container', parent).select2('val', '');
+    $(select).attr('data-parent', $(this).val());
+});
+<?php $this->headScript()->captureEnd() ?>

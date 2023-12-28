@@ -1,0 +1,103 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    // $xhtmlHead .= '<th>Công cụ</th>';
+    $xhtmlHead .= '<th>Mã số đơn</th>';
+    $xhtmlHead .= '<th>Ngày ĐH</th>';
+    $xhtmlHead .= '<th>Điện thoại</th>';
+    $xhtmlHead .= '<th>Tên khách hàng</th>';
+    $xhtmlHead .= '<th>Đơn giá</th>';
+    $xhtmlHead .= '<th>Giảm giá</th>';
+    $xhtmlHead .= '<th>Thành tiền</th>';
+    $xhtmlHead .= '<th>Đã đóng</th>';
+    $xhtmlHead .= '<th>Đã chi</th>';
+    $xhtmlHead .= '<th>Công nợ</th>';
+    $xhtmlHead .= '<th>Sales chăm sóc</th>';
+    $xhtmlHead .= '<th>Người tạo</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+        foreach ($this->items AS $item) {
+            $id                     = $item->id;
+            $code                   = $item->code;
+            $date                   = $dateFormat->formatToView($item->date);
+            $contact_phone          = $item->contact_phone;
+            $contact_name           = $item->contact_name;
+            $price                  = $item->price;
+            $price_promotion        = $item->price_promotion;
+            $price_total            = $item->price_total;
+            $price_paid             = $item->price_paid;
+            $price_accrued          = $item->price_accrued;
+            $price_owed             = $item->price_owed;
+            $price_surcharge        = $item->price_surcharge;
+            $user_id                = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+            $sale_group_id          = $item->sale_group_id ? '<br>'.  $this->sale_group[$item->sale_group_id]['name'] : '';
+            $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+            $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+            $created_by             = $this->user[$item->created_by]['name'];
+            $sale_group_created_by  = $this->user[$item->created_by]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
+            $sale_branch_created_by = $this->user[$item->created_by]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
+            
+            $options                = $item->options ? unserialize($item['options']) : array();
+            $pending                = $item->pending ? unserialize($item['pending']) : array();
+
+            $color_price_owed       = '';
+            if($price_total > 0){
+                if(($price_paid / $price_total * 100) < 60) {
+                    $color_price_owed   = ' text-red';
+                } elseif (($price_paid / $price_total * 100) < 100) {
+                    $color_price_owed   = ' text-purple';
+                }
+            }
+            
+            // Link Action
+            $linkView               = $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'view', 'id' => $id));
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'edit', 'id' => $id));
+            
+            // Control Action
+            $controlView            = $this->linkAdminHtml($linkView, array('type' => 'icon', 'title' => 'Xem chi tiết', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-info'));
+            $controlEdit            = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+            $controls               = $controlView;
+            
+            if($item->cancel == 1) {
+                $contact_phone .= '<br><span class="text-red">(Đã hủy)</span>';
+            }
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $code .'</td>
+    							<td>'. $date .'</td>
+    							<td>'. $contact_phone .'</td>
+    							<td>'. $contact_name .'</td>
+    							<td><span class="mask_currency">'. $price .'</span></td>
+    							<td><span class="mask_currency">'. $price_promotion .'</span></td>
+    							<td><span class="mask_currency text-primary">'. $price_total .'</span></td>
+    							<td><span class="mask_currency">'. $price_paid .'</span></td>
+    							<td><span class="mask_currency">'. $price_accrued .'</span></td>
+    							<td><span class="mask_currency'. $color_price_owed .'">'. $price_owed .'</span></td>
+							    <td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>
+							    <td>'. $created_by . $sale_group_created_by . $sale_branch_created_by .'</td>
+    						</tr>';
+        }
+?>
+<?php echo $this->flashMessenger()->render();?>
+<div class="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+    } else {
+        echo '<span class="text-danger">Không có dữ liệu</span>';
+    } 
+?>

@@ -1,0 +1,102 @@
+<?php
+    $myForm 		= $this->myForm;
+
+    $elements 		= array(
+        array('element' => $myForm->get('numbers_data'), 'label' => 'Số lượng data được chọn', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('list_data_id'), 'label' => 'Danh sách data được chọn', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sale_level'), 'label' => 'Level nhân viên', 'boxClass' => 'col-sm-2'),
+        array('element' => $myForm->get('user_hidden'), 'label' => 'Level nhân viên', 'boxClass' => 'col-sm-2'),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true)),
+    );
+
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form  method="post"  class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+	        <?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+<script type="text/javascript">
+    $("body").on("click", "input[name=options]", function(){
+        if($(this).attr('checked')){
+            $(this).parents(".modal-body").find('input[type="checkbox"]').attr('checked', true);
+        }else{
+            $(this).parents(".modal-body").find('input[type="checkbox"]').attr('checked', false);
+        }
+    });
+
+    var data_id = new Array();
+    $("#table-manager tbody tr input.checkboxes").each(function(){
+        if($(this).is(':checked')){
+            var item_data = {
+                id: $(this).val(),
+                contact_id: $(this).parents('tr').data('contact')
+            };
+            data_id.push(item_data);
+        }
+    });
+    if(data_id.length > 0){
+        $('input[name="numbers_data"]').val(data_id.length);
+        $('input[name="list_data_id"]').val(JSON.stringify(data_id));
+    }
+
+
+    $('select[name="sale_level"]').on('change', function userLevel(){
+        $.ajax({
+            url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'user-level'));?>',
+            type: 'POST',
+            beforeSend: function() {
+                $('#load_user_level').remove();
+            }, 
+            data: {
+                sale_level: $('select[name="sale_level"]').val(),
+                user_hidden: $('input[name="user_hidden"]').val(),
+            },
+            success: function(result) {
+                $(result).insertBefore('input[name="user_hidden"]');
+            }
+        });
+    });
+
+    function userLevel() {
+        $.ajax({
+            url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'user-level'));?>',
+            type: 'POST',
+            beforeSend: function() {
+                $('#load_user_level').remove();
+            }, 
+            data: {
+                sale_level: $('select[name="sale_level"]').val(),
+                user_hidden: $('input[name="user_hidden"]').val(),
+            },
+            success: function(result) {
+                $(result).insertBefore('input[name="user_hidden"]');
+            }
+        });
+    };
+    userLevel();
+</script>

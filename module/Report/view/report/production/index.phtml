@@ -1,0 +1,19 @@
+<div class="page-content">
+	<div class="row">
+		<div class="col-sm-12">
+			<div id="revenue-branch">Đang tải biểu đồ...</div>
+		</div>
+		<div class="col-sm-12">
+			<div id="revenue-group">Đang tải biểu đồ...</div>
+		</div>
+		<div class="col-sm-12">
+			<div id="revenue-user">Đang tải biểu đồ...</div>
+		</div>
+	</div>
+</div>
+
+<?php $this->headScript()->captureStart() ?>
+    load_report('#revenue-branch', '<?php echo $this->url('routeReport/default', array('controller' => 'revenue', 'action' => 'branch'));?>', null);
+    load_report('#revenue-group', '<?php echo $this->url('routeReport/default', array('controller' => 'revenue', 'action' => 'group'));?>', null);
+    load_report('#revenue-user', '<?php echo $this->url('routeReport/default', array('controller' => 'revenue', 'action' => 'user'));?>', null);
+<?php $this->headScript()->captureEnd() ?>

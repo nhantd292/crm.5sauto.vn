@@ -1,0 +1,259 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $myForm->get('id')->setValue($this->event['id']);
+   
+    $dateDiff           = new \ZendX\Functions\Date();
+    $subDate            = $dateDiff->diff((date("d/m/Y")), $this->event['public_date']);
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+        array('element' => $myForm->get('id')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    $event_options = !empty($this->event['options']) ? explode(',', $this->event['options']) : array($this->event['name']);
+    
+    // Thống kê
+    $totalAll           = $this->item_all->count();
+    $totalContract      = 0;
+    $totalJoinDiLam     = 0;
+    $totalJoinSinhVien  = 0;
+    $event_report       = array();
+    foreach ($this->item_all AS $item) {
+        $agree = explode(',', $item->agree);
+        $ticket = explode(',', $item->ticket);
+        $confirm = explode(',', $item->confirm);
+        $join = explode(',', $item->join);
+        foreach ($event_options AS $key => $val) {
+            $event_report[$key]['name'] = $val;
+            $event_report[$key]['total_agree'] += $agree[$key] ? $agree[$key] : 0;
+            $event_report[$key]['total_ticket'] += $ticket[$key] ? $ticket[$key] : 0;
+            $event_report[$key]['total_confirm'] += $confirm[$key] ? $ticket[$key] : 0;
+            $event_report[$key]['total_join'] += $join[$key] ? $join[$key] : 0;
+            if($item->contact_subject == 1){
+                $event_report[$key]['total_join_sinhvien'] += $join[$key] ? $join[$key] : 0;
+            }
+            if($item->contact_subject == 2){
+                $event_report[$key]['total_join_dilam'] += $join[$key] ? $join[$key] : 0;
+            }
+        }
+        
+        if(!empty($item->contact_contract)) { $totalContract++; }
+    }
+    
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th class="col-50">STT</th>';
+    $xhtmlHead .= '<th>Ngày thêm</th>';
+    $xhtmlHead .= '<th>Số điện thoại</th>';
+    $xhtmlHead .= '<th>Họ tên</th>';
+    $xhtmlHead .= '<th>Người quản lý</th>';
+    $xhtmlHead .= '<th>Đội nhóm</th>';
+    $xhtmlHead .= '<th>Cơ sở</th>';
+    if ($this->event['type'] == 'test' ){
+        $xhtmlHead .= '<th>Vấn đề</th>';
+        $xhtmlHead .= '<th>Tester</th>';
+    } 
+    $xhtmlHead .= '<th>Chương trình</th>';
+    if ($this->event['type'] == 'demo' ){
+        $xhtmlHead .= '<th>Reson to buy/Reson not to buy</th>';
+        $xhtmlHead .= '<th>Phản hồi sau demo</th>';
+    }
+    if ($this->event['type'] == 'advisory' ){
+        $xhtmlHead .= '<th>Reson to buy/Reson not to buy</th>';
+        $xhtmlHead .= '<th>Phản hồi sau tư vấn</th>';
+    }
+    $xhtmlHead .= '<th>đơn hàng</th>';
+	$xhtmlHead .= '</tr>';
+	
+    $xhtmlItems         = '';
+    if($this->items->count() > 0) {
+        $index = 0;
+        foreach ($this->items AS $item) {
+            $index++;
+            $id                         = $item->id;
+            $event_id                   = $item->event_id;
+            $contact_phone              = $item->contact_phone;
+            $contact_name               = $item->contact_name;
+            $contact_user_id            = $item->contact_user_id ? $this->user[$item->contact_user_id]['fullname'] : '';
+            $contact_company_group_id   = $item->contact_company_group_id ? $this->company_group[$item->contact_company_group_id]['name'] : '';
+            $contact_company_branch_id  = $item->contact_company_branch_id ? $this->company_branch[$item->contact_company_branch_id]['name'] : '';
+            
+            $created                    = date_format(date_create($item->created), 'd/m/Y H:i:s');
+            $created_by                 = $this->user[$item->created_by]['fullname'];
+            $cid                        = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            //Vấn đề
+            $options = unserialize($item->contact_options);
+            $problem = str_replace( ',', '<br>' ,$options['problem']);
+            
+            $ticket = explode(',', $item->ticket);
+            $confirm = explode(',', $item->confirm);
+            $join = explode(',', $item->join);
+            $agree = explode(',', $item->agree);
+            
+            $controls = '';
+            foreach ($event_options AS $key_option => $val_option) {
+                $event_name         = (count($event_options) > 1) ? trim($val_option) : '';
+                
+                // Class CSS trạng thái
+                $classTicket        = $ticket[$key_option] ? 'green' : 'default';
+                $classConfirm       = $confirm[$key_option] ? 'green' : 'default';
+                $classJoin          = $join[$key_option] ? 'green' : 'default';
+                $classAgree         = $agree[$key_option] ? 'green' : 'default';
+                
+                // Class CSS trạng thái
+                $onclickAgree       = $subDate < 0 ? 'xToastr(\'error\', \'Sự kiện đã kết thúc\', \'\')' : 'updateEventContact(\''. $event_id .'\', \''. $id .'\', \'agree\', '. $key_option .', this)';
+                $onclickTicket      = $subDate < 0 ? 'xToastr(\'error\', \'Sự kiện đã kết thúc\', \'\')' : 'updateEventContact(\''. $event_id .'\', \''. $id .'\', \'ticket\', '. $key_option .', this)';
+                $onclickConfirm     = $subDate < 0 ? 'xToastr(\'error\', \'Sự kiện đã kết thúc\', \'\')' : 'updateEventContact(\''. $event_id .'\', \''. $id .'\', \'confirm\', '. $key_option .', this)';
+                $onclickJoin        = $subDate < 0 ? 'xToastr(\'error\', \'Sự kiện đã kết thúc\', \'\')' : 'updateEventContact(\''. $event_id .'\', \''. $id .'\', \'join\', '. $key_option .', this)';
+    
+                // Control Action
+                $controlAgree       = $this->linkAdminHtml('javascript:;', array('onclick' => $onclickAgree, 'type' => 'text', 'value' => 'Đồng ý', 'class' => 'btn btn-xs ' . $classAgree));
+                $controlTicket      = $this->linkAdminHtml('javascript:;', array('onclick' => $onclickTicket, 'type' => 'text', 'value' => 'Nhận vé', 'class' => 'btn btn-xs ' . $classTicket));
+                $controlConfirm     = $this->linkAdminHtml('javascript:;', array('onclick' => $onclickConfirm, 'type' => 'text', 'value' => 'Chắc chắn', 'class' => 'btn btn-xs ' . $classConfirm));
+                $controlJoin        = $this->linkAdminHtml('javascript:;', array('onclick' => $onclickJoin, 'type' => 'text', 'value' => 'Tham gia', 'class' => 'btn btn-xs ' . $classJoin));
+                $controls          .= '<div style="padding-bottom: 3px;">'. $controlAgree . $controlTicket . $controlConfirm . $controlJoin .' '. $event_name .'</div>';
+            }
+            
+            // Trạng thái đơn hàng
+            $classContract      = $item->contact_contract ? 'green' : 'default';
+            $controlContract    = $this->linkAdminHtml('javascript:;', array('onclick' => 'xToastr(\'error\', \'Trạng thái này sẽ được cập nhật tự động khi thêm mới đơn hàng\', \'\')', 'type' => 'text', 'value' => 'đơn hàng', 'class' => 'btn btn-xs ' . $classContract));
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">';
+            $xhtmlItems .= '<td>'. $cid .'</td>';
+			$xhtmlItems .= '<td>'. $index .'</td>';
+			$xhtmlItems .= '<td>'. $created .'</td>';
+			$xhtmlItems .= '<td>'. $contact_phone .'</td>';
+			$xhtmlItems .= '<td>'. $contact_name .'</td>';
+			$xhtmlItems .= '<td>'. $contact_user_id .'</td>';
+			$xhtmlItems .= '<td>'. $contact_company_group_id .'</td>';
+			$xhtmlItems .= '<td>'. $contact_company_branch_id .'</td>';
+			if ($this->event['type'] == 'test' ){
+    			$xhtmlItems .= '<td>'. $problem .'</td>';
+    			if ($dateFormat->diff(date('Y-m-d'), $this->event['public_date']) >= 0 ){
+    			    $xhtmlItems .= '<td><input type="text" name="tester" class="form-control input-xs" value="'. $item['tester'] .'" data-id="'. $item['id'] .'"></td>';
+    			}else {
+    			    $xhtmlItems .= '<td>'. $item['tester'] .'</td>';
+    			}
+			}
+			$xhtmlItems .= '<td>'. $controls .'</td>';
+			if ($this->event['type'] == 'demo' ){
+			    $xhtmlItems .= '<td><input type="text" name="note" class="form-control input-xs" value="'. $item['note'] .'" data-id="'. $item['id'] .'"></td>';
+			    $xhtmlItems .= '<td><input type="text" name="feedback" class="form-control input-xs" value="'. $item['feedback'] .'" data-id="'. $item['id'] .'"></td>';
+			}
+			if ($this->event['type'] == 'advisory' ){
+			    $xhtmlItems .= '<td><input type="text" name="note" class="form-control input-xs" value="'. $item['note'] .'" data-id="'. $item['id'] .'"></td>';
+			    $xhtmlItems .= '<td><input type="text" name="feedback" class="form-control input-xs" value="'. $item['feedback'] .'" data-id="'. $item['id'] .'"></td>';
+			}
+			$xhtmlItems .= '<td>'. $controlContract .'</td>';
+			$xhtmlItems .= '</tr>';
+        }
+    }
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add', 'id' => $this->params['route']['id'])), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
+        array( 
+            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ), 
+            'children' => array( 
+                array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');', ) ), 
+                array( 'name' => 'divider' ), 
+                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export', 'id' => $this->idEvent)), 'icon' => 'fa-file-excel-o') 
+            ), 
+            'children-class' => 'dropdown-menu pull-right' 
+        ),
+    );
+    
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+        <div class="row">
+            <div class="col-sm-6">
+            	<div class="row">
+            		<?php echo $xhtmlFilter;?>
+            	</div>
+        	</div>
+            <div class="col-sm-6">
+                <table class="table table-striped table-bordered table-hover" style="width: auto;">
+                    <tr>
+                        <td>Tổng data: <span class="value text-red"><?php echo $totalAll; ?></span></td>
+                        <td colspan="3">đơn hàng: <span class="value text-red"><?php echo $totalContract;?></span></td>
+                    </tr>
+                    <?php
+                    foreach ($event_report AS $key => $val) { 
+                    ?>
+                    <tr>
+                        <td><?php echo $val['name'];?></td>
+                        <td>Đồng ý: <span class="value text-red"><?php echo $val['total_agree'];?></span></td>
+                        <td>Nhận vé: <span class="value text-red"><?php echo $val['total_ticket'];?></span></td>
+                        <td>Chắc chắn: <span class="value text-red"><?php echo $val['total_confirm'];?></span></td>
+                        <td>Tham gia: <span class="value text-red"><?php echo $val['total_join'];?></td>
+                    </tr>
+                    <?php
+                    } 
+                    ?>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+	// Bat su kien text box
+    $('#adminForm #table-manager table .form-control').change(function() {
+    	$.ajax({
+			url: '<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-ajax'));?>',
+			type: 'POST',
+			data: {
+			    id: $(this).attr('data-id'),
+			    data_value: $(this).val(),
+			    data_field: $(this).attr('name'),
+			},
+			beforeSend: function() {
+				pageLoading('loading', '.page-container');
+			},
+			success: function(result) {
+				if(result != '') {
+					xToastr('error', 'Lỗi không thể xử lý yêu cầu', '');
+				}
+				pageLoading('close', '.page-container');
+			}
+		});
+	});
+<?php $this->headScript()->captureEnd() ?>

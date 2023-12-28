@@ -1,0 +1,54 @@
+<?php
+if (count($this->items) > 0) {
+    $this->curent_sale_branch_id;
+    foreach ($this->items as $key => $product_detail) {
+        if ($product_detail['numbers'] > 0) {
+            // Khi sửa đơn của một người khác mà có thêm sản phẩm từ đơn hàng có sẵn thì cần so sánh đơn hàng đang sửa của cơ sở nào với cơ sở của đơn hàng có sẵn chư không lấy cơ sở của người đang sửa để so sánh.
+            if(isset($this->data['contract_sale_branch_id'])){
+                $capital_default = ($this->data['contract_sale_branch_id'] == $this->sale_branch) ? 0 : (int)($product_detail['capital_default'] / 2);
+            }
+            else{
+                $capital_default = ($this->curent_sale_branch_id == $this->sale_branch) ? 0 : (int)($product_detail['capital_default'] / 2);
+            }
+?>
+<tr class="product_row" data-code="<?php echo $this->code; ?>">
+    <!-- Khởi tạo những giá có sẵn của đơn hàng có sẵn.-->
+    <td class="hidden">
+        <input type="hidden" name="contract_product[key_id][]" value="<?php echo $product_detail['key_id']; ?>">
+
+        <input type="hidden" name="contract_product[product_id][]" value="<?php echo $product_detail['product_id']; ?>">
+        <input type="hidden" name="contract_product[carpet_color_id][]" value="<?php echo $product_detail['carpet_color_id']; ?>">
+        <input type="hidden" name="contract_product[tangled_color_id][]" value="<?php echo $product_detail['tangled_color_id']; ?>">
+
+        <input type="hidden" name="contract_product[flooring_id][]" value="<?php echo $product_detail['flooring_id']; ?>">
+        <input type="hidden" name="contract_product[keyUpdate][]" value="<?php echo $key; ?>">
+        <input type="hidden" name="contract_product[sale_branch_id][]" value="<?php echo $this->sale_branch; ?>">
+        <input type="hidden" name="contract_product[numbers][]" min="1" value="1">
+        <input type="hidden" name="contract_product[type][]" value="avaiable">
+        <input type="hidden" name="contract_product[number_production][]" value="<?php echo $product_detail['number_production']; ?>">
+        <input type="hidden" name="contract_product[number_carpet][]" value="<?php echo $product_detail['number_carpet']; ?>">
+        <input type="hidden" name="contract_product[number_tangled][]" value="<?php echo $product_detail['number_tangled']; ?>">
+        <input type="hidden" name="contract_product[price_production][]" value="<?php echo $product_detail['price_production']; ?>">
+        <input type="hidden" name="contract_product[total_production][]" value="<?php echo $product_detail['total_production']; ?>">
+    </td>
+    <!-- end -->
+
+    <td class="products text-middle"><?php echo $this->product[$product_detail['product_id']]["name"]; ?></td>
+    <td class="stock"><input readonly class="form-control" type="text" name="contract_product[stock][]" value="<?php echo $this->code; ?>"></td>
+    <td class="product-name"><input class="form-control" type="text" name="contract_product[product_name][]" value="<?php echo $product_detail['product_name']; ?>"></td>
+    <td class="carpet-color text-middle"><?php echo $this->carpet_color[$product_detail['carpet_color_id']]["name"]; ?></td>
+    <td class="tangled-color text-middle"><?php echo $this->tangled_color[$product_detail['tangled_color_id']]["name"]; ?></td>
+    <td class="flooring text-middle"><?php echo $this->flooring[$product_detail['flooring_id']]["name"]; ?></td>
+    <td class="capital_default hidden"><input readonly class="form-control text-right" readonly type="text" name="contract_product[capital_default][]" value="<?php echo number_format($capital_default); ?>"></td>
+    <td class="listed_price"><input readonly class="form-control text-right" readonly type="text" name="contract_product[listed_price][]" value="<?php echo number_format($product_detail['listed_price']); ?>" ></td>
+    <td class="price"><input class="form-control text-right" type="text" name="contract_product[price][]" min="0" value="<?php echo number_format($product_detail['price']); ?>"></td>
+    <td class="sale_price"><input readonly class="form-control text-right" type="text" name="contract_product[sale_price][]" value="<?php echo number_format($product_detail['sale_price']); ?>" min="0"></td>
+    <td class="vat"><input class="form-control text-right" type="text" name="contract_product[vat][]" value="<?php echo number_format($product_detail['vat']); ?>" min="0"></td>
+    <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" readonly value="<?php echo number_format($product_detail['total']); ?>"></td>
+    <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+</tr>
+<?php
+        }
+    }
+}
+?>

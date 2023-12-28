@@ -1,0 +1,28 @@
+<?php
+if($this->params['route']['type'] == 'modal') {
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+	<div class="alert alert-danger" role="alert">
+    	Chỉ người tạo mới có thể thao tác chức năng này. Hoặc liên hệ Admin
+    </div>
+</div>
+<div class="modal-footer">
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} else {
+?>
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-content">
+        <div class="alert alert-danger" role="alert">
+        	Chỉ người tạo mới có thể thao tác chức năng này. Hoặc liên hệ Admin
+        </div>
+    </div>
+</form>
+<?php
+} 
+?>

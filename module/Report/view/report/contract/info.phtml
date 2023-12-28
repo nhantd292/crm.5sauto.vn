@@ -1,0 +1,6 @@
+<div class="page-content" id="load-report_1">Đang tải báo cáo</div>
+<div class="page-content" id="load-report_2">Đang tải báo cáo</div>
+<?php $this->headScript()->captureStart() ?>
+    load_report('#load-report_1', '<?php echo $this->url('routeReport/default', array('controller' => 'contract', 'action' => 'info1'));?>', null);
+    load_report('#load-report_2', '<?php echo $this->url('routeReport/default', array('controller' => 'contract', 'action' => 'info2'));?>', null);
+<?php $this->headScript()->captureEnd() ?>

@@ -1,0 +1,194 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_edu_class'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th>Công cụ</th>';
+    $xhtmlHead .= '<th>Số HĐ</th>';
+    $xhtmlHead .= '<th>Ngày HĐ</th>';
+    $xhtmlHead .= '<th>Điện thoại</th>';
+    $xhtmlHead .= '<th>Tên khách hàng</th>';
+    $xhtmlHead .= '<th>Đơn giá</th>';
+    $xhtmlHead .= '<th>Ưu đãi</th>';
+    $xhtmlHead .= '<th>Thành tiền</th>';
+    $xhtmlHead .= '<th>Đã đóng</th>';
+    $xhtmlHead .= '<th>Đã chi</th>';
+    $xhtmlHead .= '<th>Công nợ</th>';
+    $xhtmlHead .= '<th>Sản phẩm</th>';
+    $xhtmlHead .= '<th>Lớp học</th>';
+    $xhtmlHead .= '<th>Người quản lý</th>';
+    $xhtmlHead .= '<th>Người tạo</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+    	$stt = 0;
+        foreach ($this->items AS $key => $item) {
+        	$stt++;
+        	$cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+        	
+        	$id                     = $item->id;
+        	$index                  = $item->index;
+            $date                   = $dateFormat->formatToView($item->date);
+            $contact_phone          = $item->contact_phone;
+            $contact_name           = $item->contact_name;
+            $price                  = $item->price;
+            $price_promotion        = $item->price_promotion;
+            $price_total            = $item->price_total;
+            $price_paid             = $item->price_paid;
+            $price_accrued          = $item->price_accrued;
+            $price_owed             = $item->price_owed;
+            $product_id             = $item->product_id ? $this->product[$item->product_id]['name'] : '';
+            $edu_class_id           = $item->edu_class_id ? $this->edu_class[$item->edu_class_id]['name'] : '';
+            $user_id                = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+            $sale_group_id          = $item->sale_group_id ? '<br>'.  $this->sale_group[$item->sale_group_id]['name'] : '';
+            $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+            $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+            $created_by             = $this->user[$item->created_by]['name'];
+            $sale_group_created_by  = $this->user[$item->created_by]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
+            $sale_branch_created_by = $this->user[$item->created_by]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
+            
+            $options                = $item->options ? unserialize($item['options']) : array();
+            $pending                = $item->pending ? unserialize($item['pending']) : array();
+            $edu_class_ids          = !empty($item['edu_class_ids']) ? unserialize($item['edu_class_ids']) : array();
+
+            $color_price_owed       = '';
+            if($price_total > 0){
+                if(($price_paid / $price_total * 100) < 60) {
+                    $color_price_owed   = ' text-red';
+                } elseif (($price_paid / $price_total * 100) < 100) {
+                    $color_price_owed   = ' text-purple';
+                }
+            }
+            
+            $edu_class_info = '';
+            if(!empty($edu_class_ids[$item['edu_class_id']]['reserve_sessions'])) {
+                $edu_class_info .= '<div class="text-purple text-normal">Bảo lưu: '. $dateFormat->formatToView($item['reserve_date_begin']) .'</div>';
+            }
+            if(!empty($edu_class_ids[$item['edu_class_id']]['reserve_from'])) {
+                $edu_class_info .= '<div class="text-purple text-normal">Học bảo lưu từ: '. $this->edu_class[$edu_class_ids[$item['edu_class_id']]['reserve_from']]['name'] .'</div>';
+            }
+            if(!empty($edu_class_ids[$item['edu_class_id']]['leave_sessions'])) {
+                $edu_class_info .= '<div class="text-red text-normal">Nghỉ học từ: '. $dateFormat->formatToView($item['leave_date']) .'</div>';
+            }
+            
+            $pending_type = '';
+            if(!empty($pending['edu_class_move'])) {
+                $pending_type = 'edu_class_move';
+                $edu_class_info .= '<div class="text-purple text-normal">Chuyển lớp: '. $this->edu_class[$pending['edu_class_move']['edu_class_id']]['name'] .'</div>';
+                $edu_class_info .= '<div class="text-purple text-normal">Lý do: '. $pending['edu_class_move']['move_content'] .'</div>';
+                $edu_class_info .= '<div class="text-red text-normal">Chờ duyệt</div>';
+            } elseif (!empty($pending['edu_class_relearn'])) {
+                $pending_type = 'edu_class_relearn';
+                $edu_class_info .= '<div class="text-purple text-normal">Đăng ký học lại: '. $this->edu_class[$pending['edu_class_relearn']['edu_class_id']]['name'] .'</div>';
+                $edu_class_info .= '<div class="text-purple text-normal">Lý do: '. $pending['edu_class_relearn']['relearn_content'] .'</div>';
+                $edu_class_info .= '<div class="text-red text-normal">Chờ duyệt</div>';
+            }
+            
+            $test_in = '';
+            if(!empty($options['test_ielts_listen'])) {
+                $test_in  = 'L: '. $options['test_ielts_listen'];
+                $test_in .= ', S: '. $options['test_ielts_speak'];
+                $test_in .= ', R: '. $options['test_ielts_read'];
+                $test_in .= ', W: '. $options['test_ielts_write'];
+            }
+            
+            // Link Action
+            $linkAccept             = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'accept')) .'\', {\'id\': \''. $id .'\', \'pending_type\': \''. $pending_type .'\'});';
+            $linkUnAccept           = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'un-accept')) .'\', {\'id\': \''. $id .'\', \'pending_type\': \''. $pending_type .'\'});';
+            
+            // Control Action
+            $controlAccept          = $this->linkAdminHtml('javascript:;', array('type' => 'text', 'value' => 'Duyệt', 'title' => 'Duyệt', 'class' => 'btn btn-xs green', 'icon' => 'fa fa-info', 'onclick' => $linkAccept));
+            $controlUnAccept        = $this->linkAdminHtml('javascript:;', array('type' => 'text', 'value' => 'Không duyệt', 'title' => 'Không duyệt', 'class' => 'btn btn-xs red', 'icon' => 'fa fa-info', 'onclick' => $linkUnAccept));
+            
+            $controls               = $controlAccept . $controlUnAccept;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'" data-id="'. $id .'">
+    							<td>'. $cid .'</td>
+							    <td class="controls">'. $controls .'</td>
+    							<td>'. $index .'</td>
+    							<td>'. $date .'</td>
+    							<td>'. $contact_phone .'</td>
+    							<td>'. $contact_name .'</td>
+    							<td><span class="mask_currency">'. $price .'</span></td>
+    							<td><span class="mask_currency">'. $price_promotion .'</span></td>
+    							<td><span class="mask_currency text-primary">'. $price_total .'</span></td>
+    							<td><span class="mask_currency">'. $price_paid .'</span></td>
+    							<td><span class="mask_currency">'. $price_accrued .'</span></td>
+    							<td><span class="mask_currency'. $color_price_owed .'">'. $price_owed .'</span></td>
+    							<td>'. $product_id .'</td>
+    							<td>'. $edu_class_id . $edu_class_info .'</td>
+							    <td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>
+							    <td>'. $created_by . $sale_group_created_by . $sale_branch_created_by .'</td>
+    						</tr>';
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
+        array( 
+            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ), 
+            'children' => array( 
+                array('name' => 'transfer',
+                    'caption' => 'Chuyển quyền quản lý',
+                    'link' => 'javascript:;',
+                    'icon' => 'fa-refresh',
+                    'attributes' => array( 'onclick' => 'javascript:contactChangeUser();') ),
+                array( 'name' => 'divider' ), 
+                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o') 
+            ), 'children-class' => 'dropdown-menu pull-right' ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+  
+        	?>
+    	</div>
+	</div>
+</form>

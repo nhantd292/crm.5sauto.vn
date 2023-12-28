@@ -1,0 +1,109 @@
+<?php
+$dateFormat = new \ZendX\Functions\Date();
+
+$myForm = $this->myForm;
+$myForm->prepare();
+$myForm->get('filter_action')->setValue($this->params['action']);
+$elements = array(
+    array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+    array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    array('element' => $myForm->get('filter_action')),
+    array('element' => $myForm->get('order')),
+    array('element' => $myForm->get('order_by')),
+);
+$xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+// Head
+$xhtmlHead  = '<tr>';
+$xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+$xhtmlHead .= '<th class="text-center" width="60">STT</th>';
+$xhtmlHead .= '<th class="text-center" width="150">Ngày thông báo</th>';
+$xhtmlHead .= '<th >Nội dung thông báo</th>';
+$xhtmlHead .= '<th class="text-center" width="150">Trạng thái đọc</th>';
+$xhtmlHead .= '</tr>';
+
+// Danh sách
+$xhtmlItems = '';
+if($this->items->count() > 0) {
+    $stt = 0;
+    foreach ($this->items AS $key => $item) {
+        $levels = [];
+        $stt++;
+        $id             = $item->id;
+        $content        = $item->notifi_content;
+        $link           = $item->notifi_link;
+        $date           = $dateFormat->formatToView($item->created, 'd/m/Y H:i');
+        $cid            = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+        $controlStatus  = $this->linkAdminStatus($id, $item->status);
+        $controls       = $controlStatus;
+
+        $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $cid .'</td>
+                                <td  class="text-center">'. $stt .'</td>
+                                <td  class="text-center">'. $date .'</td>
+                                <td ><a href="javascript:;" onclick="javascript:popupAction(\'/xadmin/contract/view/\', {\'id\': \''.$link.'\'});" >'.$content.'</a></td>
+    							<td class="text-center">'. $controls .'</td>
+                           </tr>';
+    }
+}
+$blank = "'blank'";
+// Control
+$arrControl = array(
+    // array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
+//    array(
+//        'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
+//        'children' => array(
+//            array( 'name' => 'print-production', 'caption' => 'In sản xuất', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrintProduction('.$blank.');') ),
+//            array( 'name' => 'print-ship', 'caption' => 'In giao hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint('.$blank.');') ),
+//            array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array( 'onclick' => 'javascript:contractExport();')) ,
+//                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o')
+//        ), 'children-class' => 'dropdown-menu pull-right' ),
+);
+?>
+    <form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+        <div class="page-control">
+            <div class="title pull-left">
+                <?php echo $this->caption;?>
+            </div>
+            <div class="control pull-right">
+                <?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <?php echo $this->flashMessenger()->render();?>
+        <div class="page-filter">
+            <div class="row">
+                <?php echo $xhtmlFilter;?>
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="table-manager" id="table-manager">
+                <div class="table-scrollable table-fixed">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <?php echo $xhtmlHead;?>
+                        </thead>
+                        <tbody>
+                        <?php echo $xhtmlItems;?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php
+                echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])), 'options' => $this->params['paginator']['options']));
+                ?>
+            </div>
+        </div>
+    </form>
+
+<?php $this->headScript()->captureStart() ?>
+    <!-- resize_col_table('#table-manager'); -->
+    $('.btn-edit-check').on('click', function() {
+    var parent_td = $(this).parent('td');
+    var parent_tr = parent_td.parent('tr');
+    parent_tr.find('input[name="cid[]"]').attr('checked', 'checked');
+    });
+<?php $this->headScript()->captureEnd() ?>

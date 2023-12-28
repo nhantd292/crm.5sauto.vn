@@ -1,0 +1,64 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    $elementItem = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => '<span class="text-info">'. $this->contact['name'] .'</span>', 'label' => 'Họ và tên', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="text-info">'. $this->contact['phone'] .'</span>', 'label' => 'Điện thoại', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="text-info">'. $this->contact['email'] .'</span>', 'label' => 'Email', 'boxClass' => 'col-md-2'),
+        
+    );
+    $xhtmlItem = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elementItem);
+    
+    $elements = array(
+        array('section' => 'Nhập thông tin lịch sử chăm sóc', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('history_status'), 'label' => 'Trạng thái chăm sóc','validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('level'), 'label' => 'Level chăm sóc','validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sick_group'), 'label' => 'Nhóm bệnh', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sick_time'), 'label' => 'Thời gian bệnh','validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('living_habits'), 'label' => 'Thói quen sinh hoạt', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sick_attach'), 'label' => 'Bệnh kèm theo', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('symptom_sick'), 'label' => 'Triệu chứng bệnh', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('prehistoric_sick'), 'label' => 'Tiền sử bệnh', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('dosage'), 'label' => 'Liều dùng tư vấn', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('objects_used'), 'label' => 'Đối tượng sử dụng', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('call_info'), 'label' => 'Thông tin cuộc gọi', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('history_return'), 'label' => 'Ngày hẹn gọi lại','validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('history_content'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-12','validate' => array('require' => true)),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true)),
+    );
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+		<div class="row">
+			<?php echo $xhtmlItem;?>
+		</div>
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>

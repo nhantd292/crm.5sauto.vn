@@ -1,0 +1,164 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+* { box-sizing: border-box; -moz-box-sizing: border-box; }
+body { margin: 0; padding: 30px 0; font: 14px; background-color: #333; font-family: "Roboto";}
+.box_title{font-weight: 700; text-align: center; padding-bottom: 20px; font-size: 21px;}
+.address_company{font-weight: 500; text-align: center; padding-bottom: 20px; font-size: 18px;}
+.title{font-weight: 700; text-align: center; padding-bottom: 20px; font-size: 25px; text-transform: uppercase;}
+.wrapper{ padding: 30px 50px;}
+.page { width: 30cm; min-height: 20cm; padding: 0; margin: 10px auto; border: 0; background-color: #FFF; position: relative;}
+.page .company{ padding: 0 0 20px; font-size: 11pt; line-height: 15pt;}
+.page .table{width: 100%; margin-bottom: 20px;}
+.page .table_top tbody tr td{width: 25%;border: 1px solid #ddd; padding: 10px 15px; margin: 0;} 
+.page .table_top tbody tr td.colspan{width: 100%;padding: 10px 0} 
+.page .table_top tbody tr td.col-50{width: 50%;} 
+.col-25{width:25%;}
+.col-75{width:75%;}
+.page .table tbody tr td{border: 1px solid #ddd; padding: 5px 15px; margin: 0;font-size: 14px;} 
+.page .table th{font-size: 14px;} 
+.item{text-align: center; font-weight: 500; font-size: 21px;}
+.item .note{text-align: center; font-weight: 400; font-size: 15px;}
+.name{font-size:17px;font-weight:bold}
+
+</style>
+<?php 
+foreach ($this->items as $item) {
+$dateFormat = new \ZendX\Functions\Date();
+$number = new \ZendX\Functions\Number();
+
+    $code                   = $item['code'];
+    $user                   = $this->user[$item['user_id']]['name'];
+    $shipper                = $this->shipper[$item['shipper_id']]['name'];
+    $bill                   = $this->bill[$item['id']]['bill_type_id'];
+    $bill_type              = $this->bill_type[$bill]['name'];
+    $company_branch_id      = $this->user[$item['user_id']]['company_branch_id'];
+    $company_branch         = $this->company_branch[$company_branch_id]['name'];
+    $created                = $dateFormat->formatToView($item['created'], 'd/m/Y');
+    $production_date        = $dateFormat->formatToView($item['production_date'], 'd/m/Y');
+    $options                = !empty($item['options']) ? unserialize($item['options']) : array();
+    $contact_options        = !empty($item['contact_options']) ? unserialize($item['contact_options']) : array();
+    $products               = $options['product']; 
+    if (!empty($options['contract_received']['name'])) {
+        $name           = $options['contract_received']['name'];
+        $address        = $options['contract_received']['address'];
+        $phone          = $options['contract_received']['phone'];
+    } else {
+        $optionsContact = !empty($this->contact['options']) ? unserialize($this->contact['options']) : array();
+        $name           = $this->contact['name'];
+        $address        = $optionsContact['address'];
+        $phone          = $this->contact['phone'];
+    }
+
+?>
+<div class="page">
+    <div class="wrapper">
+        <h2 class="box_title">Công Ty TNHH Sản Xuất Và Thương Mại Xuất Nhập Khẩu Fore Win</h2>
+        <table class="table table_top table-striped table-bordered table-hover table-product">
+            <tbody class="product_body">
+                <tr class="product_row">
+                    <td><strong>Hotline</strong></td>
+                    <td>0976714729</td>
+                    <td><strong>Địa chỉ</strong></td>
+                    <td>U08 Khu Đô Thị Đô Nghĩa , Hà Đông , Hà Nội</td>
+                </tr>
+                <tr class="product_row" align="center">
+                    <td colspan="4" class="colspan"><strong>Phiếu Lắp Đặt Hà Nội</strong></td>
+                </tr>
+                <tr class="product_row">
+                    <td><strong>Ngày tháng</strong></td>
+                    <td><?php echo $production_date; ?></td>
+                    <td><strong>Mã đơn hàng</strong></td>
+                    <td><?php echo $code; ?></strong></td>
+                </tr>
+                <tr class="product_row">
+                    <td><strong>Tên Sales</strong></td>
+                    <td><?php echo $user; ?></td>
+                    <td><strong>Nhân viên giao hàng</strong></td>
+                    <td><?php echo $shipper; ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td><strong>Tên khách hàng</strong></td>
+                    <td><?php echo $name; ?></td>
+                    <td><strong>SĐT khách hàng</strong></td>
+                    <td><?php echo $phone; ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td><strong>Địa chỉ</strong></td>
+                    <td><?php echo $address; ?></td>
+                    <td><strong>GIÁ TRỊ TIỀN HÀNG</strong></td>
+                    <td><?php echo number_format($item['price_total'], 0, ',', '.'); ?> đ</td>
+                </tr>
+                <tr class="product_row">
+                    <td><strong>CHUYỂN KHOẢN</strong></td>
+                    <td><?php echo number_format($item['price_paid'], 0, ',', '.'); ?> đ</td>
+                    <td><strong>TIỀN MẶT</strong></td>
+                    <td><?php echo number_format($item['price_owed'], 0, ',', '.'); ?> đ</td>
+                </tr>
+                <tr class="product_row">
+                    <td class="col-25"><strong>Ghi chú</strong></td>
+                    <td class="col-75" colspan="3"><?php echo $options['sale_note']; ?></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="table table-striped table-bordered table-hover table-product">
+        	<thead>
+        		<tr>
+                    <th width="">Tên xe - năm sản xuất</th>
+                    <th>Màu thảm</th>
+                    <th>Màu rối</th>
+                    <th>Loại sản phẩm</th>
+                    <th>Giá bán</th>
+                    <th>Giảm giá</th>
+                    <th>VAT</th>
+                    <th>Thành tiền</th>
+        		</tr>
+        	</thead>
+            <tbody class="product_body">
+            <?php
+            if (count($products) > 0) {
+                foreach ($products as $product_detail){
+            ?>
+            <?php
+            echo   '<tr>
+                        <td>'. $product_detail['product_name'] .'</td>
+                        <td>'. $this->carpet_color[$product_detail['carpet_color_id']]['name'] .'</td>
+                        <td>'. $this->tangled_color[$product_detail['tangled_color_id']]['name'] .'</td>
+                        <td>'. $this->flooring[$product_detail['flooring_id']]['name'] .'</td>
+                        <td><span class="mask_currency">'. number_format($product_detail['price'], 0, ',', '.') .'</span></td>
+                        <td><span class="mask_currency">'. number_format($product_detail['sale_price'], 0, ',', '.') .'</span></td>
+                        <td><span class="mask_currency">'. number_format($product_detail['vat'], 0, ',', '.') .'</span></td>
+                        <td><span class="mask_currency">'. number_format($product_detail['total'], 0, ',', '.') .'</span></td>
+                    </tr>';
+                ?>
+            <?php
+                }
+            } else {
+            ?>
+                <tr align="center">
+                    <td colspan="8" >Không có sản phẩm</td>
+                </tr>
+            <?php
+            }
+            ?>
+            </tbody>
+        </table>
+        
+        <div class="sign">
+        	<div class="col-sm-6">
+        		<div class="item">
+        			<div class="name">Xác nhận khách hàng</div>
+        		</div>
+        	</div>
+        	<div class="col-sm-6">
+        		<div class="item">
+        			<div class="name">Xác nhận nhân viên lắp đặt</div>
+        		</div>
+        	</div>
+        </div>
+    </div>
+</div>
+<?php
+}
+?>

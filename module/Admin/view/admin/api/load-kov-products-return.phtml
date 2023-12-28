@@ -1,0 +1,121 @@
+<?php
+    $count = $this->count;
+    $itemPerpage = $this->itemPerpage;
+    $curentPage = $this->curentPage;
+    $textItemPerpage = $count > $itemPerpage ? $itemPerpage : $count;
+    $xhtml = '';
+    $show_infor = $count > 0 ? '<p class="page">Hiển thị '.$textItemPerpage.' / '.$count.' sản phẩm</p>' : 'Không có sản phẩm tìm kiếm';
+
+    if($count / $itemPerpage > 1){
+        $page = (int)($count / $itemPerpage);
+        if($count % $itemPerpage > 0)
+            $page = $page + 1;
+    }
+    if($page > 1){
+        $pageText = '<ul class="pages">';
+        for($p = 1; $p <= $page; $p++){
+            $active = $p == $curentPage ? "active" : '';
+            $pageText .= '<li class="'.$active.'">'.$p.'</li>';
+        }
+        $pageText .= '</ul>';
+    }
+    $xhtml .= '<div class="pagination">'.$show_infor.$pageText.'</div>';
+    $xhtml .= '<div class="listProduct" >';
+    foreach ($this->kovProducts as $pro) {
+        $image = unserialize($pro->images);
+        $xhtml .= '<div class="col-xl-2 col-sm-3 col-xs-6 item">
+                <div class="product col-xs-12" data-id="' . $pro->productId . '" data-branch-id="' . $pro->branch_id . '" product_return_id="' . $pro->id . '" number="' . $pro->quantity . '">
+                    <div class="img col-sm-3 col-xs-3">
+                        <img src="' . $image[0] . '" width="100%">
+                    </div>
+                    <div class="infor col-sm-9 col-xs-9">
+                        <p class="code-product text-bold">' . $pro->code .' <span class="text-green">('.$pro->contract_code. ')</span></p>
+                        <p class="name-product">' . $pro->fullName.': <br><span class="text-red">xe '.$pro->name_year . ' số lượng '.$pro->quantity.'</span></p>
+                        <p class="price-product">' . number_format($pro->basePrice) . '</p>
+                    </div>
+                </div>
+            </div>';
+    }
+    $xhtml .= '</div>';
+    echo $xhtml;
+
+?>
+<style>
+    .pagination{width: 100%;float: left;margin: 10px 0px; border-bottom: 1px solid #d8d8d8;}
+    .pagination p{float: left;margin-right: 20px;line-height: 24px;}
+    .pagination ul li {list-style: none;display: inline-block;width: 24px;height: 24px;text-align: center;line-height: 22px;border: 1px solid #d8d8d8;margin: 0px 3px;border-radius: 3px !important;cursor: pointer;}
+    .pagination ul li.active {background: #f70;color: #fff;}
+    .pagination ul li:hover {background: #f70;color: #fff;}
+</style>
+
+<script>
+    $('#loadProductsReturn .item .product').on('click', function () {
+        resetDiscounts();
+        var id = $(this).attr('data-id');
+        var branch_id = $(this).attr('data-branch-id');
+        var product_return_id = $(this).attr('product_return_id');
+        var numbers_return = $(this).attr('number');
+        if ($('#tr_' + id).length) {
+            var number = $('#tr_' + id).find('.numbers input').val();
+            if(number < numbers_return) {
+                var price = $('#tr_' + id).find('.price > input').val();
+                $('#tr_' + id).find('.numbers input').val(parseInt(number) + 1);
+                $('#tr_' + id).find('.total input').val(formatNumber(parseInt(unFormatNumber(price)) * (parseInt(unFormatNumber(number)) + 1)));
+                updateTotal()
+            }
+        } else {
+            $.ajax({
+                url: '/xadmin/api/add-product-to-list/',
+                method: 'POST',
+                data: {id: id, branch_id: branch_id, product_return_id : product_return_id},
+                success: function (data) {
+                    $('.list-product-contract').append(data);
+                    format_to_money();
+                    updateTotal()
+                }
+            })
+        }
+    });
+    $('#loadProductsReturn .pagination ul li').on('click', function () {
+        var curentPage = parseInt($(this).text());
+        var data = {categoriId: $(`select[name="kov_product_return_category"]`).val(), filter_keyword: $(`input[name="filter_keyword_return"]`).val(), curentPage : curentPage};
+        load_action('#loadProductsReturn', '<?php echo $this->url('routeAdmin/default',array('controller' => 'api', 'action' => 'loadKovProductsReturn'));?>', data);
+    });
+
+    $("input[name='filter_keyword_return']").on('keydown', function (e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            var data = {categoriId: $(`select[name="kov_product_return_category"]`).val(), filter_keyword: $(this).val()};
+            load_action('#loadProductsReturn', '<?php echo $this->url('routeAdmin/default',array('controller' => 'api', 'action' => 'loadKovProductsReturn'));?>', data);
+            return false;
+        }
+    });
+    // Load danh sach san pham theo doanh muc
+    $(`select[name="kov_product_return_category"]`).change(function () {
+        var data = {categoriId: $(this).val(), filter_keyword: $(`input[name="filter_keyword_return"]`).val()};
+        load_action('#loadProductsReturn', '<?php echo $this->url('routeAdmin/default',array('controller' => 'api', 'action' => 'loadKovProductsReturn'));?>', data);
+    });
+
+    $('body').delegate(".price > input , .numbers input",'change',function(e){
+        var total = 0;
+        var tr_parent = $(this).parents('tr');
+        var number = tr_parent.find('.numbers input').val().replace(/,/gm,'');
+        var price = tr_parent.find('.price > input').val().replace(/,/gm,'');
+        tr_parent.find('.total input').val(formatNumber(parseInt(number) * parseInt(price)));
+        updateTotal();
+    });
+
+    $('body').delegate(".total_contract_vat input, .fee_other input, .total_contract_discount input",'change',function(e){
+        updateTotal();
+    });
+
+    //Xóa hàng trong bảng sản phẩm
+    $('body').on('click', '.delete-row', function(){
+        deleteTr($(this).parents('tr'));
+    });
+
+    function deleteTr(tr_parent){
+        tr_parent.remove();
+        resetDiscounts();
+        updateTotal();
+    }
+</script>

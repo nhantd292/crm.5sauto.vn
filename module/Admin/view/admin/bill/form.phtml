@@ -1,0 +1,156 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    // Set lại các giá trị của từng element
+    $location_city_id = $myForm->get('location_city_id')->getValue() ? $myForm->get('location_city_id')->getValue() : current(array_keys($myForm->get('location_city_id')->getValueOptions()));
+    $myForm->get('location_district_id')->setAttributes(array('data-parent' => $location_city_id));
+    $myForm->get('source_channel_id')->setAttributes(array('data-parent' => $myForm->get('source_group_id')->getValue()));
+    $myForm->get('history_result_id')->setAttributes(array('data-parent' => $myForm->get('history_purpose_id')->getValue()));
+    
+    // Nếu tồn tại id thì sẽ không cho sửa số điện thoại
+    if(!empty($myForm->get('id')->getValue()) && empty($this->params['data']['control-action'])) {
+        $myForm->get('phone')->setAttributes(array('disabled' => 'disabled'));
+        $myForm->get('history_action_id')->setValue('');
+        $myForm->get('history_purpose_id')->setValue('');
+        $myForm->get('history_result_id')->setValue('');
+        $myForm->get('history_time_return')->setValue('');
+        $myForm->get('history_content')->setValue('');
+    }
+    
+    $elementDefault = array(
+        array('section' => 'Thông tin chung', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('phone'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('source_group_id'), 'label' => 'Nhóm nguồn liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('source_channel_id'), 'label' => 'Kênh nguồn liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
+        array('section' => 'Phân loại', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('subject'), 'label' => 'Đối tượng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('student_school_id'), 'label' => 'Trường học', 'boxClass' => 'col-md-2 load_by_subject subject_1 subject_2 subject_3'),
+        array('element' => $myForm->get('student_major_id'), 'label' => 'Ngành học', 'boxClass' => 'col-md-2 load_by_subject subject_1 subject_2 subject_3'),
+        array('element' => $myForm->get('company_name'), 'label' => 'Tên công ty', 'boxClass' => 'col-md-2 load_by_subject subject_2'),
+        array('element' => $myForm->get('company_department'), 'label' => 'Phòng ban', 'boxClass' => 'col-md-2 load_by_subject subject_2'),
+        array('element' => $myForm->get('company_position'), 'label' => 'Vị trí/Chức vụ', 'boxClass' => 'col-md-2 load_by_subject subject_2'),
+        array('element' => $myForm->get('student_class_id'), 'label' => 'Lớp', 'boxClass' => 'col-md-2 load_by_subject subject_4'),
+        array('section' => 'Mở rộng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('email'), 'label' => 'Email', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('birthday_year'), 'label' => 'Năm sinh', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_district_id'), 'label' => 'Quận huyện', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address'), 'label' => 'Địa chỉ', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('facebook'), 'label' => 'Facebook', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('content'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+    );
+    
+    $requireHistory = ($this->params['route']['code'] == 'history') ? true : false;
+    $elementHistory = array(
+        array('section' => 'Thêm lịch sử chăm sóc', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('history_action_id'), 'label' => 'Hành động', 'validate' => array('require' => $requireHistory), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('history_purpose_id'), 'label' => 'Mục đích', 'validate' => array('require' => $requireHistory), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('history_result_id'), 'label' => 'Kết quả', 'validate' => array('require' => $requireHistory), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('type'), 'label' => 'Phân loại khách hàng', 'validate' => array('require' => $requireHistory), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('history_time_return'), 'label' => 'Hẹn ngày chăm sóc lại', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('history_content'), 'label' => 'Nội dung/Ghi chú', 'validate' => array('require' => $requireHistory), 'boxClass' => 'col-md-12')
+    );
+    
+    if($this->params['route']['code'] == 'history') {
+        $elements = array_merge($elementHistory, $elementDefault);
+    } else {
+        $elements = array_merge($elementDefault, $elementHistory);
+    }
+
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+    
+    // Xử lý hiển thị đối tượng
+    var subject_id = $('select[name="subject"]').val();
+    $('.subject_' + subject_id).show();
+	$('select[name="subject"]').change(function() {
+		var subject_id = $(this).val();
+        $('.load_by_subject').hide();
+        $('.subject_' + subject_id).show();
+    });
+    
+	// Xử lý load tỉnh thành
+	$('select[name="location_city_id"]').change(function() {
+		var select = 'input[name="location_district_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+    
+	// Xử lý load nguồn liên hệ
+	$('select[name="source_group_id"]').change(function() {
+		var select = 'input[name="source_channel_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+		
+		/*if($(this).val()) {
+		    $('.select2-container', parent).select2('enable', true);
+		} else {
+		    $('.select2-container', parent).select2('enable', false);
+		}*/
+    });
+    
+	// Xử lý load mục đích lịch sử chăm sóc
+	$('select[name="history_purpose_id"]').change(function() {
+		var select = 'input[name="history_result_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+    
+    <?php if(empty($myForm->get('id')->getValue())) {?>
+    // Kiểm tra thông tin khách hàng
+    if($('input[name="phone"]').val()) {
+        var val = $('input[name="phone"]').val();
+        checkContactExists(val, 'check-exists');
+    }
+    
+	$('input[name="phone"]').blur(function() {
+        var val = $(this).val();
+        checkContactExists(val, 'check-exists');
+    });
+    
+    $('input[name="phone"]').keypress(function (event) {
+		if(event.charCode == 13) {
+			$('input[name="phone"]').blur();
+		}
+	});
+    <?php }?>
+    
+<?php $this->headScript()->captureEnd() ?>

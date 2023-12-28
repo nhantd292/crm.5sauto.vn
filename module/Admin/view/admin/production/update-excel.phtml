@@ -1,0 +1,79 @@
+<?php
+
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" enctype="multipart/form-data">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <div class="page-content">
+    	<div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Chọn file cần import dữ liệu 
+                        <a href="/public/files/template/cap-nhat-trang-thai-san-xuat-don-hang.xlsx"><b>(Tải file mẫu)</b></a>
+                        <span class="required">*</span>
+                    </label>
+                    <div class="control-element">
+                        <input type="file" name="file_import" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <div class="control-element">
+                        <button type="submit" class="btn btn-sm green" id="btn_submit" style="border: 1px solid #35aa47;">Bắt đầu import</button>
+                    </div>
+                </div>
+            </div>
+			<div class="col-md-12" id="results">
+            </div>
+        </div>
+		<div class="alert alert-danger">Không có dữ liệu import</div></div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+$('#adminForm').submit(function(e){
+    e.preventDefault();
+    $('#btn_submit').html('<i class="fa fa-spinner fa-spin"></i> Bắt đầu import');
+    $.ajax({
+        url: moduleAdmin+'/api/update-contract',
+        method :'POST',
+        data: new FormData(this),
+        contentType:false,processData:false,
+        dataType:'json',
+        success:function(resp) {
+            $('#btn_submit').html('Bắt đầu import');
+            $('#adminForm .alert').remove();
+            if (resp.success) {
+                var columns = resp.labels.map(x => `<th>${x.label}</th>`).join('');
+                var body = resp.data.map(x => `<tr><td>${x.success ? '<a class="btn btn-xs green">Thành công</a>' : '<a class="btn btn-xs red">'+x.msg+'</a>'}</td><td>${x.index}</td>${resp.labels.map(y => `<td>${x[y.code]}</td>`).join('')}</tr>`).join('');
+                var table = 
+'<div class="table-manager" id="table-manager">' + 
+'    <div class="table-scrollable" style="height: 351px;">' + 
+'        <table class="table table-striped table-bordered table-hover">' + 
+'            <thead>' + 
+'                <tr>' + 
+'                    <th class="col-80">Kết quả</th>' + 
+'                    <th class="col-50">STT</th>' + 
+`                    ${columns}` + 
+'                </tr>' + 
+'            </thead>' + 
+`            <tbody>${body}</tbody>` + 
+'        </table>' + 
+'    </div>' + 
+'</div>';
+                $('#results').html(table);
+            } else {
+                toastr['error'](resp.msg);
+            }
+        }
+    })
+});
+<?php $this->headScript()->captureEnd() ?>

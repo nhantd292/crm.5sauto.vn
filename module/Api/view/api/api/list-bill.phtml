@@ -1,0 +1,103 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th>Ngày</th>';
+    $xhtmlHead .= '<th>Số chứng từ</th>';
+    $xhtmlHead .= '<th>Giá tiền</th>';
+    $xhtmlHead .= '<th>Phân loại</th>';
+    $xhtmlHead .= '<th>Hình thức</th>';
+    $xhtmlHead .= '<th>Nội dung</th>';
+    $xhtmlHead .= '<th>Ngày duyệt</th>';
+    $xhtmlHead .= '<th>Người duyệt</th>';
+    $xhtmlHead .= '<th class="col-80">Công cụ</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+        foreach ($this->items AS $item) {
+            $id                     = $item->id;
+            $date                   = $dateFormat->fomartToView($item->date);
+            $paid_number            = $item->paid_number;
+            $paid_price             = $item->paid_price;
+            $accrued_number         = $item->accrued_number;
+            $accrued_price          = $item->accrued_price;
+            $bill_type_id           = $this->bill_type[$item->bill_type_id] ? $this->bill_type[$item->bill_type_id]['name'] : $this->bill_type['tructiep']['name'];
+            $bill_bank_id           = $item->bill_bank_id ? '<br>'. $this->bill_bank[$item->bill_bank_id]['name'] : '';
+            $type                   = $this->type[$item->type];
+            $status                 = $item->status ? 'Đã duyệt' : 'Chưa duyệt';
+            $content                = nl2br($item->content);
+            $checked                = $dateFormat->fomartToView($item->checked);
+            $checked_id             = $item->checked_id ? $this->user[$item->checked_id]['fullname'] : '';
+            $user_id                = $item->user_id ? $this->user[$item->user_id]['fullname'] : '';
+            $cid                    = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            if($item->bill_type_id == 'quetthe') {
+            	$bill_type_id .= '<div>Số bill: <b>'. $item['post_number'] .'</b></div>';
+            	$bill_type_id .= '<div>Chủ thẻ: <b>'. $item['post_name'] .'</b></div>';
+            	$bill_type_id .= '<div>Hình thức: <b>'. $item['post_type'] .'</b></div>';
+            	$bill_type_id .= '<div>4 số cuối mã thẻ: <b>'. $item['post_code'] .'</b></div>';
+            }
+            
+            $code                   = 'DNPT'. $item['index']; // Mã hóa đơn
+            if(!empty($item->accrued_price)) {
+            	$code               = 'DNPC'. $item['index'];
+            }
+            
+            // Điều kiện hiển thị
+            $number                 = $paid_number ? $paid_number : $accrued_number;
+            $price                  = $paid_price ? $paid_price : $accrued_price;
+            $detail                 = '';
+            if(!empty($item->paid_type_id)) {
+                $detail             = $this->paid_type[$item->paid_type_id]['name'];
+                if(!empty($item->surcharge_type_id)) {
+                    $detail         = $this->surcharge_type[$item->surcharge_type_id]['name'];
+                }
+            } elseif (!empty($item->accrued_type_id)) {
+                $detail             = $this->accrued_type[$item->accrued_type_id]['name'];
+            }
+            
+            // Link Action
+            $linkEdit               = $this->url('routeHbr/default', array('controller' => 'bill', 'action' => 'edit', 'id' => $id));
+            $linkDelete             = $this->url('routeHbr/default', array('controller' => 'bill', 'action' => 'delete', 'id' => $id));
+            $linkPrint              = $this->url('routeHbr/default', array('controller' => 'bill', 'action' => 'print', 'id' => $id));
+            
+            // Control Action
+            $controlEdit            = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit', 'onclick' => 'javascript:popupAction(\''. $this->url('routeHbr/default', array('controller' => 'contract', 'action' => 'edit-bill')) .'\', {\'id\': \''. $item['id'] .'\'});'));
+            $controlDelete          = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Xóa', 'class' => 'btn btn-xs red', 'icon' => 'fa fa-trash', 'onclick' => 'javascript:popupAction(\''. $this->url('routeHbr/default', array('controller' => 'contract', 'action' => 'delete-bill')) .'\', {\'id\': \''. $item['id'] .'\'});'));
+            $controlPrint           = $this->linkAdminHtml($linkPrint, array('type' => 'icon', 'title' => 'In hóa đơn', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-print', 'target' => '_blank'));
+            $controls               = $controlEdit . $controlDelete . $controlPrint;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $date .'</td>
+    							<td>'. $code .'<br>'. $number .'</td>
+    							<td><span class="mask_currency">'. $price .'</span></td>
+    							<td>'. $type .'</td>
+    							<td>'. $bill_type_id . $bill_bank_id .'</td>
+    							<td>'. $content .'</td>
+    							<td>'. $checked .'</td>
+    							<td>'. $checked_id .'</td>
+							    <td>'. $controls .'</td>
+    						</tr>';
+        }
+?>
+<?php echo $this->flashMessenger()->render();?>
+<div class="table-manager" id="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+    } else {
+        echo '<span class="text-danger">Không có dữ liệu</span>';
+    } 
+?>

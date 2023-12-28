@@ -1,0 +1,105 @@
+<?php 
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $string = new \ZendX\Functions\Gid();
+    $random = $string->random();
+    
+    $myForm->get('sale_group_id')->setAttributes(array('data-parent' => $myForm->get('sale_branch_id')->getValue()));
+    if(!empty($this->params['ssFilter']['sale_group_id'])) {
+        $myForm->get('sale_group_id')->setAttributes(array('data-text-label' => $this->saleGroup[$this->params['ssFilter']['sale_group_id']]['name']));
+    }
+    $elements = array(
+        array('element' => $myForm->get('date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('sale_branch_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//        array('element' => $myForm->get('sale_group_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+<div class="report1" id="adminReport_<?php echo $random; ?>">
+    <div class="report-control">
+    	<div class="title pull-left"><?php echo $this->caption;?></div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="report-wrapper">
+    	<div class="report-filter">
+    	    <form>
+        	    <div class="row">
+                    <?php echo $xhtmlFilter;?>
+                </div>
+            </form>
+    	</div>
+    	<div class="report-content">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="report-table" id="table-manager">
+                        <div class="table-scrollable table-fixed-head">
+                			<table class="table table-striped table-bordered table-hover">
+                				<?php echo $this->reportTable;?>
+                			</table>
+            			</div>
+        			</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    table thead tr th{
+        vertical-align: middle !important;
+    }
+    .report1 .report-control {
+        min-height: 36px;
+        line-height: 36px;
+        background-color: #444;
+        color: #FFF;
+        padding-left: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var idReport = '#adminReport_<?php echo $random; ?>';
+        var ajaxUrl = "<?php echo $this->url('routeReport/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])); ?>";
+        function report_<?php echo $random?>() {
+            $.ajax({
+        		url: ajaxUrl,
+        		type: 'POST',
+        		data: $(idReport + ' form').serialize(),
+        		beforeSend: function() {
+        			pageLoading('loading', idReport + ' .report-content');
+        		},
+        		success: function(result) {
+        			result = JSON.parse(result);
+        			// Load dữ liệu ra table
+        			$(idReport + ' .report-table table').html(result.reportTable);pageLoading('close', idReport + ' .report-content');
+        			Form.init();
+                    resize_col_table('#table-manager');
+        		}
+        	});
+        }
+        report_<?php echo $random?>();
+        $(idReport + ' form button[name="submit"]').click(function() {
+        	report_<?php echo $random?>();
+        });
+
+        $(idReport + ' select').change(function() {
+    		report_<?php echo $random?>();
+        });
+        //$(idReport + ' input').change(function() {
+        //	report_<?php //echo $random?>//();
+        //});
+
+        var h_window = $(window).height();
+        var h_content = h_window - $('.header.navbar').outerHeight() - $('.report-control').outerHeight() - $('.report-filter').outerHeight();
+        $('#table-manager .table-scrollable').css({'height': h_content - 31 + 'px'});
+
+        $( window ).resize(function() {
+            var h_window = $(window).height();
+            var h_content = h_window - $('.header.navbar').outerHeight() - $('.report-control').outerHeight() - $('.report-filter').outerHeight();
+            $('#table-manager .table-scrollable').css({'height': h_content - 31 + 'px'});
+        });
+    });
+</script>

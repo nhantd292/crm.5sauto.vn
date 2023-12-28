@@ -1,0 +1,120 @@
+<div class="introduce">
+    <div class="container">
+        <div class="row">
+            <div class="side">
+                <h2>A. Tạo link tracking</h2>
+                <h3>Mô tả:</h3>
+                <p>Link tracking nhằm đo lường hiệu quả thu thập thông tin khách hàng của nhân viên marketing</p>
+                <p>Mỗi một nhân viên marketing sẽ có những link UTM do nhân viên đó tự tạo ra khi khách hàng truy cập link UTM của nhân viên để đăng kí tư vấn thì sẽ ghi nhận khách hàng đó cho nhân viên tạo ra link UTM </p>
+                <h3>Các bước thực hiện:</h3>
+                <ol>
+                    <li>Vào menu Marketing -> Link tracking -> Danh sách: danh sách tất cả các link tracking của bạn</li>
+                    <li>Chọn nút Thêm ở phía trên đầu bên phải danh sách để thêm mới một link tracking của bạn</li>
+                    <li>Nhập thông tin:
+                        <ol>
+                            <li>Link Page: nhập đường dẫn tới landing page cần lấy dữ liệu</li>
+                            <li>Kênh marketing: chọn kênh marketing</li>
+                            <li>Mô tả: Nhập mô tả cho link tracking</li>
+                        </ol>
+                    </li>
+                    <li>Chọn lưu & đóng để tạo mới link tracking và quay trở về trang danh sách link tracking</li>
+                    <li>Trên danh sách hiện tại - link tracking bạn vừa tạo sẽ được tạo một link UTM tương ứng</li>
+                    <li>Dùng link UTM đó để chạy marketing(Khi khách hàng đăng kí thông tin từ link UTM của người tạo nào thì sẽ ghi nhận khách hàng cho người đó )</li>
+                </ol>
+            </div>
+            <div class="main">
+                <h2>B. Cài đặt API vào langding page</h2>
+                <h3>Để thực hiện cài đặt API vào landing page bạn cần thực hiện những bước sau:</h3>
+                <ol>
+                    <li>Tạo một landing page và tạo các form đăng kí
+                    </li>
+                    <li>
+                        Đặt tên các trường cần lấy dữ liệu trong các form như sau:
+                        <ol>
+                            <li>Họ và tên : name</li>
+                            <li>Số điện thoại : phone</li>
+                            <li>Tên xe - năm sản xuất : message</li>
+                            <div class="img">
+                                <p class="text-center"><img src="<?php echo $this->params_template['urlImg'] . "/img_introduce/form_register.png";?>" alt=""></p>
+                                <h5 class="text-center"><i>Form đăng kí landing page</i></h5>
+                            </div>
+                        </ol>
+                    </li>
+                    <li>Gắn link API vào form
+                        <ol>
+                            <li>Trên form chọn LƯU DATA
+                                <div class="img">
+                                    <p class="text-center"><img src="<?php echo $this->params_template['urlImg'] . "/img_introduce/luu_data.png";?>" alt=""></p>
+                                    <h5 class="text-center"><i>Form đăng kí landing page</i></h5>
+                                </div>
+                            </li>
+                            <li>Chọn chi tiết trong mục Cấu hình kênh lưu chữ
+                                <div class="img">
+                                    <p class="text-center"><img src="<?php echo $this->params_template['urlImg'] . "/img_introduce/p1.png";?>" alt=""></p>
+                                    <h5 class="text-center"><i>Form đăng kí landing page</i></h5>
+                                </div>
+                            </li>
+                            <li>
+                                Chọn thêm tài khoản liên kết mới
+                                <div class="img">
+                                    <p class="text-center"><img src="<?php echo $this->params_template['urlImg'] . "/img_introduce/p2.png";?>" alt=""></p>
+                                    <h5 class="text-center"><i>Form đăng kí landing page</i></h5>
+                                </div>
+                            </li>
+                            <li>Chọn nhập loại tài khoản</li>
+                            <li>
+                                Chọn API sau cho chọn thêm mới
+                                <div class="img">
+                                    <p class="text-center"><img src="<?php echo $this->params_template['urlImg'] . "/img_introduce/p3.png";?>" alt=""></p>
+                                    <h5 class="text-center"><i>Form đăng kí landing page</i></h5>
+                                </div>
+                            </li>
+                            <li>Đặt tên lưu trữ vd(Đổ dữ liệu về CRM)</li>
+                            <li>
+                                Nhập API URL là: Đường dẫn CRM + /xadmin/api/add/
+                                ví dụ đường dẫn crm là : http://forewin.langtech.vn thì API URL sẽ là: http://forewin.langtech.vn/xadmin/api/add/
+                            </li>
+                            <li>
+                                Nhập tên các trường lấy dữ liệu tương ứng name(Họ và tên) đặt là name
+                                phone(số điện thoại) đặt là phone message(Tên xe - năm sản xuất) đặt là message
+                                <div class="img">
+                                    <p class="text-center"><img src="<?php echo $this->params_template['urlImg'] . "/img_introduce/p4.png";?>" alt=""></p>
+                                    <h5 class="text-center"><i>Form đăng kí landing page</i></h5>
+                                </div>
+                            </li>
+                            <li>Chọn xong</li>
+                            <li>Tiếp đến chọn cập nhật trong chi tiết cấu hình</li>
+                            <li>Sau đó chọn cập nhật trong cấu hình Form</li>
+                            <li>Xuất bản lại langding page để hoàn thành việc gắn API URL</li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .introduce{
+        overflow: auto;
+    }
+    h2{
+        text-transform: uppercase;
+        font-size: 18px;
+    }
+    h3{
+        font-size: 16px;
+    }
+    .introduce .img{
+        padding:10px 0px;
+    }
+    .introduce .img img{
+        width: 60%;
+    }
+</style>
+
+<?php $this->headScript()->captureStart() ?>
+var h_window = $(window).height();
+var h_content = h_window - $('.header.navbar').outerHeight();
+$('.introduce').css({'height': h_content + 'px'});
+<?php $this->headScript()->captureEnd() ?>

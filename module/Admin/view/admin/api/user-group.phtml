@@ -1,0 +1,30 @@
+<?php
+    $xhtml = '';
+    if(!empty($this->items)) {
+        foreach ($this->items AS $item) {
+            if ($item['company_department_id'] == 'sales'){
+                $id     = $item['id'];
+                $name   = $item['name'];
+                $xhtml .= sprintf('
+                    <label class="checkbox-inline checkbox2 col-md-2 col-xs-12">
+                        <input type="checkbox" name="user_id[]" value="%s">%s
+                    </label>', $id, $name
+                );
+            }
+        }
+?>
+<div class="col-md-12" id="load_user_level">
+    <div class="form-group">
+    	<label class="control-label" style="padding-bottom: 5px;">Nhân viên</label>
+        <div class="control-element">
+            <label class="checkbox-inline checkbox2 col-md-2 col-xs-12">
+                <input type="checkbox" name="options" value="share-all">Chọn tất cả
+            </label>
+            <?php echo $xhtml;?>
+            <div class="clr" style="padding-bottom: 20px;"></div>
+        </div>
+    </div>
+</div>
+<?php
+    }
+?>

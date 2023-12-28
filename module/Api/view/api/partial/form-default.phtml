@@ -1,0 +1,72 @@
+<?php
+    $label      = !empty($this->label) ? '<label class="control-label">' . $this->label . '</label>' : '';
+    $boxClass   = !empty($this->boxClass) ? $this->boxClass : 'col-md-3';
+    $boxId      = !empty($this->boxId) ? ' id="'. $this->boxId .'"' : '';
+    $groupClass = 'form-group';
+    
+    if(!empty($this->element)) {
+        $element    = $this->formelement($this->element);
+        
+        if($this->validate['require'] == true && !empty($this->label)) {
+            $label  = '<label class="control-label">' . $this->label . '<span class="required">*</span></label>';
+        }
+        
+        if(!empty($this->element->getMessages())) {
+            $groupClass .= ' has-error';
+        }
+    
+        $xhtml = sprintf('<div class="%s"%s><div class="%s">%s<div class="control-element">%s</div></div></div>', $boxClass, $boxId, $groupClass, $label, $element);
+        
+        if($this->element->getOptions()['type'] == 'open-file') {
+            $openFileGroup = !empty($this->element->getOptions()['group']) ? $this->element->getOptions()['group'] : 'images';
+            $openFileStyle = 'none';
+            $openFileUrl = '';
+            if(!empty($this->element->getValue())) {
+                $openFileStyle = 'inline-block';
+                $openFileUrl = $this->element->getValue();
+            }
+            
+            $openFile  = '<span class="input-group-btn">';
+            $openFile .= '<a href="javascript:;" onclick="javascript:openFile(\''. $this->element->getName() .'\', \''. $openFileGroup .'\')" class="btn default">Chọn</a>';
+            $openFile .= '<a href="'. $openFileUrl .'" onclick="javascript:fancyboxPreview(\'fancybox\');" class="btn default preview fancybox" id="view_'. $this->element->getName() .'" style="display: '. $openFileStyle .';"><i class="fa fa-search-plus"></i></a>';
+            $openFile .= '<a onclick="javascript:removeFile(\''. $this->element->getName() .'\');" class="btn default remove" id="remove_'. $this->element->getName() .'" style="display: '. $openFileStyle .';"><i class="fa fa-trash"></i></a>';
+            $openFile .= '</span>';
+            
+            $xhtml = sprintf('<div class="%s"%s><div class="%s">%s<div class="input-group" id="open-file-'. $this->element->getName() .'">%s%s</div></div></div>', $boxClass, $boxId, $groupClass, $label, $element, $openFile);
+        }
+        
+        if($this->element->getAttributes()['type'] == 'hidden') {
+            $xhtml = sprintf('%s', $element);
+        }
+    } else if(!empty($this->elementGroup)) {
+        $elementGroup = '';
+        foreach ($this->elementGroup AS $element) {
+            $classError = '';
+            if(!empty($element->getMessages())) {
+                $classError = ' has-error';
+            }
+            $elementGroup .= '<div class="'. $this->groupColumnClass . $classError .'">'. $this->formelement($element) .'</div>';
+        }
+        
+        if($this->validate['require'] == true && !empty($this->label)) {
+            $label  = '<label class="control-label">' . $this->label . '<span class="required">*</span></label>';
+        }
+        
+        $xhtml = sprintf('<div class="%s"%s><div class="%s">%s<div class="control-element"><div class="row">%s</div></div></div></div>', $boxClass, $boxId, $groupClass, $label, $elementGroup);
+    } else if(isset($this->section)) {
+        $xhtml = sprintf('<div class="%s"%s><h3 class="form-section">%s</h3></div>', $boxClass, $boxId, $this->section);
+    } else if(isset($this->div)) {
+        if(!empty($this->label)) {
+            $required = '';
+            if($this->validate['require'] == true) {
+                $required = '<span class="required">*</span>';
+            }
+            $label = '<label class="control-label">' . $this->label . $required .'</label>';
+        } else {
+            $label = '';
+        }
+        $xhtml = sprintf('<div class="%s"%s>%s%s</div>', $boxClass, $boxId, $label, $this->div);
+    }
+    
+    echo $xhtml;
+?>

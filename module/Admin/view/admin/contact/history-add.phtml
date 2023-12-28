@@ -1,0 +1,84 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $permission_ids = explode(',', $curent_user['permission_ids']);
+    $phone_code = true;
+    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)) {
+        $phone_code = false;
+    }
+    $phone = $phone_code && $this->contact['phone'] && $this->contact['user_id'] != $curent_user['id']? substr_replace($this->contact['phone'], "***", 4, 3) : $this->contact['phone'];
+
+
+$elementItem = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => '<span class="text-info">'. $this->contact['name'] .'</span>', 'label' => 'Họ và tên', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="text-info">'. $phone .'</span>', 'label' => 'Điện thoại', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="text-info">'. $this->contact['email'] .'</span>', 'label' => 'Email', 'boxClass' => 'col-md-2'),
+    );
+    $xhtmlItem = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elementItem);
+    
+    $elements = array(
+        array('section' => 'Nhập thông tin chăm sóc', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('history_action_id'), 'label' => 'Hành động', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('history_result_id'), 'label' => 'Kết quả', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('history_type_id'), 'label' => 'Phân loại', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('sales_expected'), 'label' => 'Doanh số tạm tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-3 hidden', 'boxId' => 'sales_expected'),
+        array('element' => $myForm->get('history_return'), 'label' => 'Ngày chăm sóc lại', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('history_success'), 'label' => 'Trạng thái chăm sóc', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('history_content'), 'label' => 'Nội dung/Ghi chú', 'validate' => array('require' => true), 'boxClass' => 'col-md-6'),
+        array('div' => '', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+		<div class="row">
+			<?php echo $xhtmlItem;?>
+		</div>
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+
+<script type="text/javascript">
+    function optionBill(type) {
+        if(type == '<?php echo DA_CHOT;?>') {
+            $('#sales_expected').removeClass('hidden');
+        }
+        else {
+            $('#sales_expected').addClass('hidden');
+        }
+    }
+
+    optionBill($('select[name="history_type_id"]').find('option:selected').attr('data-code'));
+
+    $('select[name="history_type_id"]').change(function() {
+        optionBill($(this).find('option:selected').attr('data-code'));
+    });
+</script>

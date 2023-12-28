@@ -1,0 +1,157 @@
+<?php
+$myForm = $this->myForm;
+$myForm->prepare();
+
+$arrControl = array(
+    array('name'       => 'save',
+          'caption'    => 'Lưu',
+          'link'       => 'javascript:;',
+          'icon'       => 'fa-check',
+          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');',
+                                'class'   => 'btn')),
+    array('name'       => 'save-new',
+          'caption'    => 'Lưu &amp; Mới',
+          'link'       => 'javascript:;',
+          'icon'       => 'fa-paste',
+          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');',
+                                'class'   => 'btn')),
+    array('name'       => 'save-close',
+          'caption'    => 'Lưu &amp; Đóng',
+          'link'       => 'javascript:;',
+          'icon'       => 'fa-save',
+          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');',
+                                'class'   => 'btn')),
+    array('name'       => 'close',
+          'caption'    => 'Hủy',
+          'link'       => $this->url('routeAdmin/default', array('controller' => $this->params['controller'],
+                                                                 'action'     => 'index')),
+          'onclick'    => '',
+          'icon'       => 'fa-times',
+          'attributes' => array('class' => 'btn')),
+);
+
+$elements = array(
+    array('section'  => 'Thông tin chung',
+          'boxClass' => 'col-md-12'),
+
+    array('element'  => $myForm->get('date'),
+          'label'    => 'Ngày báo cáo',
+          'validate' => array('require' => true),
+          'boxClass' => 'col-md-2',
+    ),
+
+    array('element'  => $myForm->get('marketer_id'),
+          'label'    => 'Nhân viên marketing',
+          'validate' => array('require' => true),
+          'boxClass' => 'col-md-2'),
+
+    array('element'  => $myForm->get('id'),
+          'validate' => array('require' => true)),
+);
+$xhtml    = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+    <form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm"
+          class="">
+        <div class="page-control">
+            <div class="title pull-left">
+                <?php echo $this->caption; ?>
+            </div>
+            <div class="control pull-right">
+                <?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array('control' => $arrControl)); ?>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <?php echo $this->flashMessenger()->render(); ?>
+        <?php echo @$this->xViewElementErrors($elements); ?>
+
+        <div class="page-content">
+            <div class="row">
+                <?php echo $xhtml; ?>
+            </div>
+            <div class="row">
+                <div class="col-md-12"><h3 class="form-section">Số liệu báo cáo</h3></div>
+                <div class="col-md-12">
+                    <?php
+                    if (!empty($this->params['data']['control-action'])) {
+                        $params = $this->params['data']['params'];
+                    } else {
+                        $params = !empty($this->item['params']) ? unserialize($this->item['params']) : array();
+                    }
+                    ?>
+                    <div class="table-manager" id="table-manager" style="margin-bottom: 50px;">
+<!--                        <div class="table-scrollable table-small">-->
+                        <div>
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                <tr>
+                                    <?php
+                                    foreach ($this->report_time AS $key => $val) {
+//                                        echo '<th colspan="2" class="text-center">' . $key . '</th>';
+                                        echo '<th class="text-center">' . $key . '</th>';
+                                    }
+                                    ?>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <?php
+                                    foreach ($this->report_time AS $key => $val) {
+//                                        foreach ($val as $index => $item) {
+//                                            echo '<td class="col-150 text-center">' . $item . '</td>';
+//                                        }
+                                        echo '<td class="col-150 text-center">Chi Phí</td>';
+                                    }
+                                    ?>
+                                </tr>
+                                <tr>
+                                    <?php
+                                    $i = 1;
+                                    foreach ($this->report_time AS $key => $val) {
+                                        ?>
+<!--                                        <td class="column " id="column_--><?php //echo $i++; ?><!--">-->
+<!--                                            <input type="text"-->
+<!--                                                   autocomplete="off"-->
+<!--                                                   name="params[--><?php //echo $key . '_sdt'; ?><!--]"-->
+<!--                                                   value="--><?php //echo $params[$key . '_sdt']; ?><!--"-->
+<!--                                                   class="form-control input-xs mask_currency text-right">-->
+<!---->
+<!--                                        </td>-->
+                                        <td class="column" id="column_<?php echo $i++; ?>">
+                                            <input type="text"
+                                                   autocomplete="off"
+                                                   name="params[<?php echo $key . '_cp'; ?>]"
+                                                   value="<?php echo $params[$key . '_cp']; ?>"
+                                                   class="form-control input-xs mask_currency text-right">
+                                        </td>
+                                        <?php
+                                    }
+                                    ?>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+<?php $this->headScript()->captureStart() ?>
+$(document).ready(function() {
+    $('select[name="month"]').change(function() {
+        var month = $(this).val();
+        var year  = $('select[name="year"]').val();
+        var title =  "Báo cáo theo giờ: "+ month +"/"+ year;
+        $('input[name="name"]').val(title);
+    });
+
+    $('select[name="year"]').change(function() {
+        var month  = $('select[name="month"]').val();
+        var year = $(this).val();
+        var title =  "Báo cáo theo giờ: "+ month +"/"+ year;
+        $('input[name="name"]').val(title);
+    });
+});
+<?php $this->headScript()->captureEnd() ?>

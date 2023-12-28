@@ -1,0 +1,96 @@
+<?php
+    $myForm				= $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $elements = array(
+        array('element' => $myForm->get('code'), 'label' => 'Mã', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('name'), 'label' => 'Tên', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('ordering'), 'label' => 'Thứ tự'),
+        array('element' => $myForm->get('status'), 'label' => 'Hiển thị'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+    <div class="page-content">
+		<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+		<div class="permission-choice">
+    		<?php
+    		$permission_list_ids = array();
+    		
+    		if(!empty($this->item['permission_list_ids'])) {
+    		    $permission_list_ids = explode(',', $this->item['permission_list_ids']);
+    		}
+    		
+    		if(!empty($this->params['data']['permission_list_ids'])) {
+    		    $permission_list_ids = $this->params['data']['permission_list_ids'];
+    		}
+    		
+    		$wordFirst = new \ZendX\Functions\WordFirst('-', ' ');
+    		$i = 0;
+    	    foreach ($this->permission_list AS $module => $controllers) {
+    	        echo '<div class="row"><div class="col-md-12"><h3 class="form-section view">'. $wordFirst->upperFirst($module) .'</h3></div></div>';
+    	        if($module == 'admin') {
+        		    $arrSystem = array('system' => array('index' => array('id' => 'full', 'name' => 'Toàn quyền hệ thống')));
+        		    $controllers = array_merge($arrSystem, $controllers);
+    	        }
+    		    
+    		    foreach ($controllers AS $controller => $actions) {
+    		        $i++;
+    		        $xhtmlController = $wordFirst->upperFirst($controller);
+    		        $xhtmlAction = '';
+    		        foreach ($actions AS $action) {
+    		            $checked = '';
+    		            if(in_array($action['id'], $permission_list_ids)) {
+    		                $checked = ' checked="checked"';
+    		            }
+    		            $checkBox = '<label class="checkbox-inline"><input type="checkbox" class="checkboxes" name="permission_list_ids[]" value="'. $action['id'] .'"'. $checked .'> '. $action['name'] .'</label>';
+    		            $xhtmlAction .= sprintf('<div class="col-md-2 col-sm-6"><div class="form-group"><div class="control-element">%s</div></div></div>', $checkBox);
+    		        }
+    		        
+    		        echo sprintf('<div class="row" id="group_action_'. $i .'"><div class="col-md-12"><a href="javascript:void(0)" onclick="javascript:checkAllGroup(\'group_action_'. $i .'\');" class="title group-check"><b>%s</b></a><div class="row">%s</div></div></div>', $xhtmlController, $xhtmlAction);
+    		    }
+    	    }
+    		?>
+		</div>
+	</div>
+</form>
+<?php $this->headScript()->captureStart() ?>
+    function checkAllGroup(group_id) {
+		jQuery('#' + group_id + ' .group-check').toggleClass('check');
+		
+		var set = '#' + group_id + ' .checkboxes';
+		var group_check = jQuery('#' + group_id + ' .group-check.check').size();
+		
+	    jQuery(set).each(function () {
+	    	$(this).attr("checked", true);
+	        if (group_check) {
+	        	jQuery(this).attr("checked", true);
+	        } else {
+	        	jQuery(this).attr("checked", false);
+	        }
+	    });
+	}
+<?php $this->headScript()->captureEnd() ?>

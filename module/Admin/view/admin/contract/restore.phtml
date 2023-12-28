@@ -1,0 +1,43 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $elements = array(
+//        array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sales', 'boxClass' => 'col-md-12'),
+//        array('element' => $myForm->get('production_note'), 'label' => 'Ghi chú sản xuất', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+            <p class="text-red" style="padding: 15px;">Bạn có chắc chắn muốn khôi phục đơn hàng đã xóa?</p>
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Đồng ý</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Hủy</button>
+</div>
+<?php
+} 
+?>

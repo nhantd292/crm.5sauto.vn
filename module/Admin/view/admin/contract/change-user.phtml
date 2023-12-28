@@ -1,0 +1,193 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'close', 'caption' => 'Quay lại danh sách', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-arrow-left', 'attributes' => array('class' => 'btn')),
+    );
+    
+    // Form
+    $elements = array(
+        array('section' => 'Thông tin chuyển quản lý', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('user_id'), 'label' => 'Nhân sự được chuyển quyền', 'validate' => array('require' => true), 'boxClass' => 'col-md-6'),
+        array('element' => $myForm->get('transfer_bill'), 'label' => 'Chuyển quản lý toàn bộ hóa đơn', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('transfer_contact'), 'label' => 'Chuyển quản lý liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row" id="row_1">
+			<?php echo $xhtml;?>
+		</div>
+		<div class="row" id="row_2">
+		    <div class="col-md-4"><a href="javascript:;" class="btn btn-md green" id="btn-change-user">Bắt đầu chuyển</a></div>
+		</div>
+		<div class="row" id="row_3">
+		    <div class="col-md-12"><h3 class="form-section">Danh sách đơn hàng chuyển</h3></div>
+		    <div class="col-md-12">
+    		<?php
+                // Head
+                $xhtmlHead  = '<tr>';
+                $xhtmlHead .= '<th>STT</th>';
+                $xhtmlHead .= '<th>Công cụ</th>';
+                $xhtmlHead .= '<th>Số HĐ</th>';
+                $xhtmlHead .= '<th>Ngày HĐ</th>';
+                $xhtmlHead .= '<th>Điện thoại</th>';
+                $xhtmlHead .= '<th>Tên khách hàng</th>';
+                $xhtmlHead .= '<th>Đơn giá</th>';
+                $xhtmlHead .= '<th>Ưu đãi</th>';
+                $xhtmlHead .= '<th>Thành tiền</th>';
+                $xhtmlHead .= '<th>Đã đóng</th>';
+                $xhtmlHead .= '<th>Đã chi</th>';
+                $xhtmlHead .= '<th>Công nợ</th>';
+                $xhtmlHead .= '<th>Sản phẩm</th>';
+                $xhtmlHead .= '<th>Lớp học</th>';
+                $xhtmlHead .= '<th>Người quản lý</th>';
+                $xhtmlHead .= '<th>Người tạo</th>';
+            	$xhtmlHead .= '</tr>';
+                
+                // Danh sách
+                $xhtmlItems = '';
+                if($this->items->count() > 0) {
+                    $stt = 0;
+                    foreach ($this->items AS $key => $item) {
+                        $stt++;
+                        
+                        $id                     = $item->id;
+                        $index                  = $item->index;
+                        $date                   = $dateFormat->formatToView($item->date);
+                        $contact_phone          = $item->contact_phone;
+                        $contact_name           = $item->contact_name;
+                        $price                  = $item->price;
+                        $price_promotion        = $item->price_promotion;
+                        $price_total            = $item->price_total;
+                        $price_paid             = $item->price_paid;
+                        $price_accrued          = $item->price_accrued;
+                        $price_owed             = $item->price_owed;
+                        $price_surcharge        = $item->price_surcharge;
+                        $product_id             = $item->product_id ? $this->product[$item->product_id]['name'] : '';
+                        $edu_class_id           = $item->edu_class_id ? $this->edu_class[$item->edu_class_id]['name'] : '';
+                        $user_id                = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+                        $sale_group_id          = $item->sale_group_id ? '<br>'.  $this->sale_group[$item->sale_group_id]['name'] : '';
+                        $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+                        $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+                        $created_by             = $this->user[$item->created_by]['name'];
+                        $sale_group_created_by  = $this->user[$item->created_by]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
+                        $sale_branch_created_by = $this->user[$item->created_by]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
+                        
+                        $options                = $item->options ? unserialize($item['options']) : array();
+                        $edu_class_ids          = !empty($item['edu_class_ids']) ? unserialize($item['edu_class_ids']) : array();
+                        
+                        $color_price_owed       = '';
+                        if($price_total > 0){
+                            if(($price_paid / $price_total * 100) < 60) {
+                                $color_price_owed   = ' text-red';
+                            } elseif (($price_paid / $price_total * 100) < 100) {
+                                $color_price_owed   = ' text-purple';
+                            }
+                        }
+                        
+                        $edu_class_info = '';
+                        if(!empty($edu_class_ids[$item['edu_class_id']]['reserve_sessions'])) {
+                            $edu_class_info .= '<div class="text-purple text-normal">Bảo lưu: '. $dateFormat->formatToView($item['reserve_date_begin']) .'</div>';
+                        }
+                        if(!empty($edu_class_ids[$item['edu_class_id']]['reserve_from'])) {
+                            $edu_class_info .= '<div class="text-purple text-normal">Học bảo lưu từ: '. $this->edu_class[$edu_class_ids[$item['edu_class_id']]['reserve_from']]['name'] .'</div>';
+                        }
+                        
+                        $xhtmlItems .= '<tr id="tr_'. $stt .'" data-id="'. $id .'">
+                							<td>'. $stt .'</td>
+                							<td class="result_action"><span class="btn btn-xs"></span></td>
+                							<td>'. $index .'</td>
+                							<td>'. $date .'</td>
+                							<td>'. $contact_phone .'</td>
+                							<td>'. $contact_name .'</td>
+                							<td><span class="mask_currency">'. $price .'</span></td>
+                							<td><span class="mask_currency">'. $price_promotion .'</span></td>
+                							<td><span class="mask_currency text-primary">'. $price_total .'</span></td>
+                							<td><span class="mask_currency">'. $price_paid .'</span></td>
+                							<td><span class="mask_currency">'. $price_accrued .'</span></td>
+                							<td><span class="mask_currency'. $color_price_owed .'">'. $price_owed .'</span></td>
+                							<td>'. $product_id .'</td>
+                							<td>'. $edu_class_id . $edu_class_info .'</td>
+            							    <td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>
+            							    <td>'. $created_by . $sale_group_created_by . $sale_branch_created_by .'</td>
+                						</tr>';
+                    }
+                }
+            ?>
+                <div class="table-scrollable">
+        			<table class="table table-striped table-bordered table-hover" id="tableData">
+        				<thead>
+        					<?php echo $xhtmlHead;?>
+        				</thead>
+        				<tbody>
+        					<?php echo $xhtmlItems;?>
+        				</tbody>
+        			</table>
+        		</div>
+            </div>
+		</div>
+	</div>
+</form>
+<?php $this->headScript()->captureStart() ?>
+    function startChangeUser(index) {
+		var item = '#tr_'+ index;
+		
+		if($(item).size() > 0) {
+            $.ajax({
+    			url: "<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'change-user'));?>",
+    			type: 'POST',
+    			data: {
+                    id: $(item).attr('data-id'),
+                    user_id: $('select[name="user_id"]').val(),
+                    transfer_bill: $('select[name="transfer_bill"]').val(),
+                    transfer_contact: $('select[name="transfer_contact"]').val(),
+    			},
+    			beforeSend: function() {
+    				$(item + ' .result_action .btn').html('Đang chuyển...').addClass('yellow');
+    			},
+    			success: function(result) {
+    				setTimeout(function(){
+    					$(item + ' .result_action .btn').html('Thành công').removeClass('yellow').addClass('green');
+    				    index = index + 1;
+    				    startChangeUser(index); 
+    			    }, 100);
+    			}
+    		});
+		} else {
+		    alert('Đã chuyển quản lý thành công');
+		    $('#row_2 div').html('<span class="text-success">Đã chuyển quản lý thành công</span>');
+		}
+	}
+	
+    $('#btn-change-user').click(function() {
+        if($('select[name="user_id"]').val() == null || $('select[name="user_id"]').val() == '') {
+            alert('Vui lòng chọn nhân viên được chuyển quản lý');
+        } else {
+    		var total = $('#tableData tbody tr').length;
+        	startChangeUser(1);
+        	$('#row_1').hide();
+        	$('#row_2 div').html('<span class="text-danger">Đang chuyển quản lý... Vui lòng đợi đến khi hệ thống báo hoàn thành</span>');
+    	}
+    });
+<?php $this->headScript()->captureEnd() ?>
+        

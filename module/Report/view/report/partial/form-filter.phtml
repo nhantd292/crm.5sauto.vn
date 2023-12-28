@@ -1,0 +1,17 @@
+<?php
+    $myForm = new \Zend\Form\Form();
+    
+    $xhtml = '<div class="row">';
+    foreach ($this->form AS $field) {
+        $myForm->add($field);
+        if($field['type'] != 'hidden') {
+            $boxClass = !empty($this->boxClass) ? $this->boxClass : 'col-md-1 col-sm-4 col-xs-6';
+            $xhtml .= sprintf('<div class="btn-group %s">%s</div>', $boxClass, $this->formelement($myForm->get($field['name'])));
+        } else {
+            $xhtml .= $this->formelement($myForm->get($field['name']));
+        }
+    }
+    $xhtml .= '</div>';
+    
+    echo $xhtml;
+?>

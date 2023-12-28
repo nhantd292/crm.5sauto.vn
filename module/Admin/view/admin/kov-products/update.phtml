@@ -1,0 +1,108 @@
+<?php
+$dateFormat = new \ZendX\Functions\Date();
+
+// Head
+$xhtmlHead  = '<tr>';
+$xhtmlHead .= '<th class="table-checkbox">Trạng thái</th>';
+$xhtmlHead .= '<th class="text-center" width="60">STT</th>';
+$xhtmlHead .= '<th class="text-center">Mã sản phẩm</th>';
+$xhtmlHead .= '<th>Tên sản phẩm</th>';
+$xhtmlHead .= '<th>Nhóm hàng</th>';
+$xhtmlHead .= '</tr>';
+
+// Danh sách
+$xhtmlItems = '';
+if($this->count > 0) {
+    $stt = 0;
+    foreach ($this->items AS $key => $item) {
+        $stt++;
+        $id             = $item['id'];
+        $code           = $item['code'];
+        $name           = $item['fullName'];
+        $categoryName   = $item['categoryName'];
+
+        $xhtmlItems .= '<tr id="tr_'. $id .'"  class="tr_'. $stt .'" data-id="'. $id .'">
+    							<td  class="td-status text-center"></td>
+    							<td class="text-center">'. $stt .'</td>
+    							<td class="text-center">'. $code .'</td>
+                                <td>'. $name .'</td>
+                                <td>'.$categoryName.'</td>
+                           </tr>';
+    }
+}
+
+// Control
+$arrControl = array(
+    array( 'name' => 'start', 'caption' => ' Bắt đầu', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:startImport(1);', 'class' => 'btn' ) ),
+
+);
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+        <div class="title pull-left">
+            <?php echo $this->caption;?>
+        </div>
+        <div class="control pull-right">
+            <?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+        <div class="row">
+<!--            --><?php //echo $xhtmlFilter;?>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="table-manager" id="table-manager">
+            <div class="table-scrollable table-fixed">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <?php echo $xhtmlHead;?>
+                    </thead>
+                    <tbody>
+                    <?php echo $xhtmlItems;?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+<style>
+    .td-status i.success{
+        font-size: 18px;
+        color: #00bcd4;
+    }
+    .td-status i.error{
+        font-size: 18px;
+        color: #f44336;
+    }
+</style>
+
+
+<?php $this->headScript()->captureStart() ?>
+    function startImport(index) {
+        var item = '.tr_'+ index;
+        if($(item).length > 0) {
+            var data = {};
+            data['id'] = $(item).attr('data-id');
+            $.ajax({
+                url: "<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action']));?>",
+                type: 'POST',
+                data: data,
+                beforeSend: function() {
+
+                },
+                success: function(result) {
+                    setTimeout(function(){
+                        $(item + ' td.td-status').html(result);
+                        $('.title.pull-left').html("Cập nhật sản phẩm từ kiotviet: "+index+'/<?=$this->count ?>');
+                        var index_next = parseInt(index) + 1;
+                        startImport(index_next);
+                    }, 100);
+                }
+            });
+        }
+    }
+<?php $this->headScript()->captureEnd() ?>
+

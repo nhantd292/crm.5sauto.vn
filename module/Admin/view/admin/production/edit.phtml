@@ -1,0 +1,393 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    $dateFormat = new \ZendX\Functions\Date();
+    $contact_options = !empty($this->contact['options']) ? unserialize($this->contact['options']) : array();
+    $contract_options = !empty($this->contract['options']) ? unserialize($this->contract['options']) : array();
+    $contract_product = $this->contract_product;
+
+$permission_ids = explode(',', $curent_user['permission_ids']);
+
+$phone_code = true;
+if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)) {
+    $phone_code = false;
+}
+$received_phone = $phone_code && $contract_options['contract_received']['phone'] ? substr_replace($contract_options['contract_received']['phone'], "***", 4, 3) : $contract_options['contract_received']['phone'];
+
+
+// Trạng thái bảo hành
+    if ($this->contract['status_guarantee_id'] == 1) {
+        $productionType = 'Đơn bảo hành';
+        $codeOld = $this->contract['code_old'];
+        if (!empty($this->contract['production_type_id'])) {
+            $productionType .= '- '.$this->production_type[$this->contract['production_type_id']]['name'];
+        }
+    } else {
+        $classCode = 'hidden';
+        $productionType = $this->production_type[$this->contract['production_type_id']]['name'];
+    }
+
+    // shipper
+    if (!empty($this->contract['shipper_id'])) {
+        $shipperClass = '';
+    } else {
+        $shipperClass = 'hidden';
+    }
+
+    if ($productionType == 'Đơn Hà Nội' || $productionType == 'Đơn bảo hành- Đơn Hà Nội') {
+        $typeOfProduction = 1;
+    } else {
+        $typeOfProduction = 0;
+    }
+
+    $elementView = array(
+        array('section' => 'Thông tin người nhận', 'boxClass' => 'col-md-12'),
+        array('element' => $contract_options['contract_received']['name'], 'label' => 'Họ và tên'),
+        array('element' => $received_phone, 'label' => 'Số điện thoại'),
+        array('element' => $contract_options['contract_received']['address'], 'label' => 'Địa chỉ nhận hàng', 'boxClass' => 'col-md-4'),
+
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $dateFormat->formatToView($this->contract['created'], 'd/m/Y H:i:s'), 'label' => 'Ngày tạo'),
+        array('element' => $dateFormat->formatToView($this->contract['date'], 'd/m/Y'), 'label' => 'Ngày đơn hàng'),
+        array('element' => $productionType, 'label' => 'Loại đơn sản xuất'),
+        array('element' => $codeOld, 'label' => 'Mã đơn cũ', 'boxClass' => $classCode),
+        array('element' => $this->transport[$this->contract['transport_id']]['name'], 'label' => 'Vận chuyển'),
+        array('element' => $contract_options['sale_note'], 'label' => 'Ghi chú sales'),
+        array('div' => '', 'boxClass' => 'col-xs-12'),
+        array('element' => number_format($this->contract['price_total']), 'label' => 'Thành tiền'),
+        array('section' => 'Danh sách sản phẩm', 'boxClass' => 'col-md-12'),
+    );
+
+    $elementsForm = array(
+        array('section' => 'Thông tin sản xuất', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('production_department_type'), 'label' => 'Bộ phận sản xuất', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('production_note'), 'label' => 'Ghi chú sản xuất', 'boxClass' => 'col-md-4'),
+//        array('element' => $myForm->get('production_date'), 'label' => 'Ngày hoàn thành sản xuất', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('shipper_id'), 'label' => 'Nhân viên giao hàng', 'boxClass' => 'col-md-2 '.$shipperClass.'', 'boxId' => 'shipper'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('contact_id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+    $xhtmlView = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elementView);
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsForm);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elementsForm);?>
+    <?php 
+    if (count($this->error) > 0) {
+    ?>
+    <div class="alert alert-block alert-danger">
+        <button type="button" class="close" data-dismiss="alert"></button>
+        <p><b></b> <?php echo $this->error['content']; ?></p>
+    </div>
+    <?php
+    }
+    ?>
+    <input type="hidden" name="type_of_carpet_id" value="<?php echo $this->contract['type_of_carpet_id']; ?>">
+    <input type="hidden" name="carpet_color_id" value="<?php echo $this->contract['carpet_color_id']; ?>">
+    <input type="hidden" class="production_type" value="<?php echo $typeOfProduction; ?>">
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtmlView; ?>
+		</div>
+        <div class="contract_product table-scrollable" >
+            <table class="table table-striped table-bordered table-hover" style="min-width:1920px">
+                <thead>
+                    <tr>
+                        <th width="500px">Sản phẩm</th>
+                        <th width="200px">Số lượng</th>
+                        <th width="200px" class="hidden">CM sản phẩm</th>
+                        <th width="200px">Hàng có sẵn</th>
+                        <th width="300px">Tên xe - năm sản xuất</th>
+                        <th>Màu thảm</th>
+                        <th>Màu rối</th>
+                        <th>Loại sản phẩm</th>
+                        <th width="200px">Giá bán</th>
+                        <th width="200px">Giảm giá</th>
+                        <th width="200px">VAT</th>
+                        <th width="200px">Thành tiền bán</th>
+                    </tr>
+                </thead>
+                <tbody class="product_body">
+                <?php
+                $numbers = 0;
+                $total_price = 0;
+                $total_production = 0;
+                $total_price = 0;
+                if (count($contract_options['product']) > 0) {
+                    foreach ($contract_options['product'] as $key_product => $product_detail){
+                        $priceCarpet = 0;
+                        $priceTangled = 0;
+                        $total_production_price = 0;
+                        $type = '';
+                        $carpetColor  = $this->getHelperPluginManager()->getServiceLocator()->get('Admin\Model\CarpetColorTable')->getItem(array('id' => $product_detail['carpet_color_id']), null);
+                        $tangledColor = $this->getHelperPluginManager()->getServiceLocator()->get('Admin\Model\TangledColorTable')->getItem(array('id' => $product_detail['tangled_color_id']), null);
+                        $product      = $this->getHelperPluginManager()->getServiceLocator()->get('Admin\Model\ProductTable')->listItem(null, array('task' => 'cache'));
+                        
+                        if (!empty($carpetColor)) {
+                            $priceCarpet = $this->colorGroup[$carpetColor['parent']]['price'];
+                        }
+                        if (!empty($tangledColor)) {
+                            $priceTangled = $this->colorGroup[$tangledColor['parent']]['price'];
+                        }
+
+                        $priceProduction = $priceCarpet + $priceTangled;
+                        $total_price = $total_price + $product_detail['total'];
+
+                        // số lượng sản xuất thảm
+                        $number_carpet = !empty($product_detail['number_carpet']) || $product_detail['number_carpet'] == 0 ? $product_detail['number_carpet'] : null;
+                        // số lượng sản xuất rối
+                        $number_tangled = !empty($product_detail['number_tangled']) || $product_detail['number_tangled'] == 0 ? $product_detail['number_tangled'] : null;
+                        // số lượng sản xuất SP
+                        $number_production = !empty($product_detail['number_production']) || $product_detail['number_production'] == 0 ? $product_detail['number_production'] : null;
+                        $numbers = !empty($product_detail['numbers']) || $product_detail['numbers'] == 0 ? $product_detail['numbers'] : null;
+
+                        if(!empty($contract_product)){
+                            $number_carpet     = $contract_product['number_carpet'][$key_product];
+                            $number_tangled    = $contract_product['number_tangled'][$key_product];
+                            $number_production = $contract_product['number_production'][$key_product];
+                            $numbers = $contract_product['numbers'][$key_product];
+                        }
+
+                        $total_price_sell = !empty($product_detail['price']) ? $product_detail['price'] : 0;
+                        if (!empty($product_detail['number_carpet']) || !empty($product_detail['number_tangled'])) {
+                            $total_production_price = $number_carpet * $priceCarpet + $number_tangled * $priceTangled;
+                        } else {
+                            $total_production_price = $numbers * $product[$product_detail['product_id']]['price'];
+                        }
+                        
+                        $total_production = $total_production + $total_price_sell;
+
+                        if (!empty($product_detail['stock'])) {
+                            $type = 'readonly';
+                        }
+                        $product_name = $this->contract['kov_status'] ? $product_detail['full_name'] : $this->product[$product_detail['product_id']]['name'];
+
+                        ?>
+
+                        <tr class="product_row">
+                            <td class="products"><input class="form-control" type="text" readonly title="<?php echo $product_name; ?>" value="<?php echo $product_name; ?>"></td>
+                            <td class="numbers"><input class="form-control" <?php echo $type; ?> readonly name="contract_product[numbers][]" type="number" min="0" value="<?php echo $numbers; ?>" placeholder=""></td>
+                            <td class="hidden number_production"><input class="form-control" <?php echo $type; ?> name="contract_product[number_production][]" type="number" min="0" value="<?php echo $number_production; ?>" placeholder="cm"></td>
+                            <td class="stock"><input class="form-control" type="text" readonly value="<?php echo $this->ProductReturn[$product_detail['product_return_id']]['contract_code']; ?>"></td>
+                            <td class="product-name"><input class="form-control" type="text" readonly value="<?php echo $product_detail['product_name']; ?>" title="<?php echo $product_detail['product_name']; ?>"></td>
+                            <td class="carpet-color"><input class="form-control"  type="text" readonly value="<?php echo $this->carpet_color[$product_detail['carpet_color_id']]['name']; ?>"></td>
+<!--                            <td class="number_carpet"><input class="form-control" --><?php //echo $type; ?><!-- name="contract_product[number_carpet][]" type="number" min="0" value="--><?php //echo $number_carpet; ?><!--"></td>-->
+                            <td class="tangled-color"><input class="form-control" type="text" readonly value="<?php echo $this->tangled_color[$product_detail['tangled_color_id']]['name']; ?>"></td>
+<!--                            <td class="number_tangled"><input class="form-control" --><?php //echo $type; ?><!-- name="contract_product[number_tangled][]" type="number" min="0" value="--><?php //echo $number_tangled; ?><!--" ></td>-->
+                            <td class="flooring"><input class="form-control" type="text" readonly value="<?php echo $this->flooring[$product_detail['flooring_id']]['name']; ?>"></td>
+                            <td class="price"><input class="form-control mask" readonly type="text" value="<?php echo  number_format($product_detail['price']); ?>"></td>
+                            <td class="sale_price"><input class="form-control" readonly type="number"value="<?php echo  number_format($product_detail['sale_price']); ?>" min="0"></td>
+                            <td class="vat"><input class="form-control" readonly type="number" value="<?php echo  number_format($product_detail['vat']); ?>" min="0"></td>
+                            <td class="total"><input class="form-control" readonly type="text" readonly value="<?php echo number_format($product_detail['total']); ?>"></td>
+                            <td class="total_production hidden">
+                                <input class="form-control" name="contract_product[total_production][]" readonly type="text" readonly value="<?php if(!empty($total_production_price)) : echo number_format($total_production_price); endif; ?>">
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                } else {
+                ?>
+                <tr align="center">
+                    <td colspan="9" >Không có sản phẩm</td>
+                </tr>
+                <?php
+                }
+                ?>
+                </tbody>
+                <?php if (count($contract_options['product']) > 0) { ?>
+                <tfoot>
+                    <tr>
+                        <td>Tổng</td>
+                        <td></td>
+                        <td></td>
+                        <td ></td> 
+                        <td></td>
+                        <td></td> 
+                        <td></td> 
+                        <td style="padding: 10px 0 10px 19px;"><?php echo number_format($total_production); ?></td>
+                        <td></td> 
+                        <td></td> 
+                        <td class="total_price_product" style="padding: 10px 0 10px 19px;"><?php echo number_format($total_price); ?></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="total_price_production hidden" style="padding: 10px 0 10px 19px;"><?php echo number_format($total_production); ?></td>
+                    </tr>
+                </tfoot>
+                <?php } ?>
+            </table>
+        </div>
+        <div class="hidden">
+            <input type="hidden" name="total_price_product" value="" >
+            <input type="hidden" name="total_price_not_vat" value="<?php echo $total_price; ?>" >
+        </div>
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn blue btn-print-production" data-type="production">In sản xuất</button>
+	<button type="button" class="btn yellow btn-print-ship" data-type="ship">In giao hàng</button>
+	<button type="button" class="btn green save-close-custom">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default btn-close-modal">Đóng</button>
+</div>
+<?php
+} 
+?>
+<style>
+.custom-modal {
+    width: 90%!important;
+    margin-left: -45%!important;
+}
+</style>
+<script>
+    var $modal 	= $('#ajax-modal');
+    var $form 	= $('#adminForm');
+
+    $('.btn-close-modal').on('click', function(){
+        var table = $('#table-manager').find('table tbody');
+        $('#table-manager tbody tr').each(function() {
+            $(this).find('input[name="cid[]"]').removeAttr('checked');
+        })
+    });
+
+    $modal.on('click', '.save-close-custom, .btn-print-production, .btn-print-ship', function(){
+        var error 	= null;
+        var alertError 	= '';
+        // var type = $(this).data('type');
+        var type = $(this).attr('data-type');
+        $('.product_row').each(function() {
+            var numbers  = $(this).find('input[name="contract_product[numbers][]"]');
+            // var number_carpet      = $(this).find('input[name="contract_product[number_carpet][]"]');
+            // var number_tangled     = $(this).find('input[name="contract_product[number_tangled][]"]');
+            // if (!numbers.val() || !number_carpet.val() || !number_tangled.val()) {
+            if (!numbers.val()) {
+                if (!numbers.val()) {
+                    $(this).find('.numbers').addClass('has-error'); 
+                }
+                // if (!number_carpet.val()) {
+                //     $(this).find('.number_carpet').addClass('has-error');
+                // }
+                // if (!number_tangled.val()) {
+                //     $(this).find('.number_tangled').addClass('has-error');
+                // }
+                error = 'Vui lòng nhập đủ thông tin';
+            } else {
+                if (numbers.val()) {
+                    $(this).find('.numbers').removeClass('has-error'); 
+                }
+                // if (number_carpet.val()) {
+                //     $(this).find('.number_carpet').removeClass('has-error');
+                // }
+                // if (number_tangled.val()) {
+                //     $(this).find('.number_tangled').removeClass('has-error');
+                // }
+            }
+        })
+
+        if (error) {
+            $('.alert-danger').remove();
+            alertError = '<div class="alert alert-block alert-danger"><button type="button" class="close" data-dismiss="alert"></button><p>'+error+'</p></div>';
+            $(alertError).insertBefore('input[name="type_of_carpet_id"]');
+            // console.log(error);
+        } else {
+            $.ajax({
+                url: '/xadmin/production/edit',
+                type: 'POST',
+                data: $modal.find('form').serialize(),
+                beforeSend: function() {
+                    $modal.modal('loading');
+                    $modal.find('.btn').addClass('disabled');
+                },
+                success: function(result) {
+                    if(result == 'success') {
+                        $modal.modal('hide');
+                        if (type == 'production') {
+                            contractPrintProduction('blank');
+                        } else if (type == 'ship') {
+                            contractPrint('blank');
+                        }
+                        location.reload();
+                    } else {
+                        $modal.modal('loading');
+                        $modal.find('.btn').removeClass('disabled');
+                        $modal.find('.modal-body').html(result);
+                        reloadScript();
+                    }
+                },
+                error: function (request, status, error) {
+                    console.log(error);
+                }
+		    });
+        }
+    	
+	});
+
+    var type = $('input[class="production_type"]').val();
+    var status = $('select[name="production_department_type"]').val();
+    if (status == 'da-giao-hang' && type == 1) {
+        $('#shipper').removeClass('hidden');
+    }
+
+    $('select[name="production_department_type"]').change(function() {
+        var type = $('input[class="production_type"]').val();
+        if ($(this).val() == 'da-giao-hang' && type == 1) {
+            $('#shipper').removeClass('hidden');
+        } else {
+            $('#shipper').addClass('hidden');
+        }
+    })
+
+    $('input[name="price_promotion"]').change(function() {
+        update_price_contract();
+    });
+
+    $('input[name="contract_product[number_production][]"]').change(function() {
+        var me = $(this);
+        var price_production = me.parents('tr').find('input[name="contract_product[price_production][]"]').val();
+        total = 0;
+        total = parseInt(me.val()) * parseInt(price_production);
+        var total_production = me.parents('tr').find('input[name="contract_product[total_production][]"]');
+        total_production.val(formatNumber(total));
+        var total_price = 0;
+        $('.product_row').each(function() {
+            total_price = parseInt(total_price) + parseInt(unFormatNumber($(this).find('input[name="contract_product[total_production][]"]').val()));
+        })
+        $('.total_price_production').html(formatNumber(total_price));
+    });
+
+    function update_price_contract() {
+    	var price_carpet 			= $('input[name="price_carpet"]').autoNumeric('get');
+    	var price_nano 				= $('input[name="price_nano"]').autoNumeric('get');
+		var price_promotion 		= $('input[name="price_promotion"]').autoNumeric('get');
+
+		var total = 0;
+        var vat = 0;
+		total = parseInt(total) + parseInt(price_carpet);
+		if (price_nano > 0) {
+			total = total + parseInt(price_nano);
+		}
+        vat = total * 10/100;
+        total = total + vat;
+        $('input[name="vat"]').autoNumeric('set', vat);
+		if (price_promotion > 0) {
+			total = total - parseInt(price_promotion);
+		}
+		$('input[name="price_total"]').autoNumeric('set', total);
+    }
+</script>

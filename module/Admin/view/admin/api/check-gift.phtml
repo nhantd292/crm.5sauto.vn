@@ -1,0 +1,152 @@
+<?php
+if($this->discounts->count()){
+    $contract_value_min = $this->data['contract_value_min'];
+    $number   = new \ZendX\Functions\Number();
+    ?>
+    <a href="javascript:;"  onclick="" ><i class="fa fa-gift gift"></i></a>
+    <div class="gift-detail">
+        <?php foreach($this->discounts as $program){
+            $detail = unserialize($program->detail);
+        ?>
+            <div class="program" program-id="<?= $program->id ?>">
+                <div class="title">
+                    <h4>Chương trình <?= $program['name'] ?>
+                    <span class="desc-program">(<?php echo $this->discounts_option[$program['discounts_option']]->name.' với đơn hàng từ '.number_format($program['contract_value_total_min']); ?>)</span>
+                    </h4>
+                </div>
+                <div class="content">
+                    <?php if($program['discounts_option'] == 'giam-gia-hoa-don') { ?>
+                        <?php foreach ($detail as $ki => $item) {
+                            if ($contract_value_min >= $number->formatToData($item['contract_total'])) {
+                                ?>
+                                <div class="detail-item">
+                                    <label>
+                                        <input type="radio" name="discount_item_detail" value="<?= $program->id ?>_<?=$ki?>" data-branch="<?=$this->data['range_branch']?>">
+                                        Giảm giá <?= $item['discount_value'] ?> <?php if ($item['unit_type'] == 1)  echo 'vnđ'; else echo '%'; ?> với đơn hàng từ <?= $item['contract_total'] ?>
+                                    </label><br>
+                                </div>
+                            <?php }
+                        }
+                    }?>
+                    <?php if($program['discounts_option'] == 'tang-hang') {
+                        $pro_list_item = []?>
+                        <?php foreach ($detail as $item) {
+                            if ($contract_value_min >= $number->formatToData($item['contract_total'])) {
+                                $pro_item = unserialize($item['product_donate']);
+                                $pro_list_item = array_unique(array_merge($pro_list_item, $pro_item));
+                                ?>
+                            <?php }
+                        }
+                        foreach($pro_list_item as $p){
+                            ?>
+                            <div class="detail-item">
+                                    <label>
+                                        <input type="radio" name="discount_item_detail" value="<?= $program->id ?>_<?=$p?>" data-branch="<?=$this->data['range_branch']?>">
+                                        Tặng <?= $this->products->getItem(array('id' => $p))['fullName'] ?></label><br>
+                                </div>
+                        <?php
+                        }
+                    }?>
+                    <?php if($program['discounts_option'] == 'giam-gia-hang') {
+                        $pro_list_item = [];
+                        foreach ($detail as $ki => $item) {
+                            if ($contract_value_min >= $number->formatToData($item['contract_total'])) {
+                                $pro_item = unserialize($item['product_donate']);
+                                foreach($pro_item as $key => $value){
+                                    $donate['ki']        = $ki;
+                                    $donate['unit_type']        = $item['unit_type'];
+                                    $donate['discount_value']   = $item['discount_value'];
+                                    $donate['product_id']          = $value;
+                                    $pro_list_item[] = $donate;
+                                }
+                            }
+                        }
+                        $unit = [1 => 'vnđ', 2 => '%'];
+                        foreach($pro_list_item as $p){
+                            ?>
+                            <div class="detail-item">
+                                <label>
+                                    <input type="radio" name="discount_item_detail" value="<?= $program->id ?>_<?=$p['ki']?>_<?=$p['product_id']?>" data-branch="<?=$this->data['range_branch']?>">
+                                    Giảm <?= $p['discount_value'] ?> <?= $unit[$p['unit_type']] ?> khi mua thêm <?= $this->products->getItem(array('id' => $p['product_id']))['fullName'] ?></label><br>
+                            </div>
+                            <?php
+                        }
+                    }?>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+<?php } ?>
+
+<style>
+    .program{
+        padding: 10px 0px;
+        border-bottom: 1px solid #d8d8d8;
+        cursor: pointer;
+    }
+    .program:last-child{
+        padding: 10px 0px;
+        border-bottom: none;
+    }
+    .program .title h4{
+        font-weight: 600 !important;
+        color: #00d200;
+        margin-bottom: 3px;
+    }
+    .program .title h4 span.desc-program {
+        color: #f00;
+        font-size: 11px;
+        font-weight: 100;
+    }
+    .program .content {
+        padding-left: 10px;
+    }
+    .program .content label {
+        font-size: 12px;
+        position: relative;
+        padding-left: 20px;
+    }
+    .program .content label input{
+        position: absolute;
+        left: 0;
+        top: 1px;
+        margin: 0px;
+    }
+</style>
+<script>
+    $('#gift .gift').on('click', function () {
+        $('#gift .gift-detail').slideToggle();
+    })
+    $('#gift input[name="discount_item_detail"]').on('click', function () {
+        resetDiscounts();
+        updateTotal()
+        $.ajax({
+            url: '/xadmin/api/get-discounts-detail',
+            type: 'POST',
+            data: {'item' : $(this).val(), 'branch_id' : $(this).attr('data-branch')},
+            success: function(result) {
+                var res = JSON.parse(result)
+                if(res['success'] == true){
+                    var data = res['data'];
+                    if(data['type'] == "giam-gia-hoa-don"){
+                        if(data['unit_type'] == 1){
+                            $('.total_contract_discount input').val(data['value'])
+                        }
+                        if(data['unit_type'] == 2){
+                            var per = unFormatNumber(data['value'])
+                            var discount_value = per * unFormatNumber($('.total_contract input').val()) / 100
+                            $('.total_contract_discount input').val(formatNumber(discount_value))
+                        }
+                        updateTotal();
+                        $(parent).html(result);
+                    }
+                    if(data['type'] == "tang-hang" || data['type'] == 'giam-gia-hang'){
+                        $('.list-product-contract').append(data['value']);
+                        updateTotal()
+                    }
+                }
+            }
+        });
+    })
+</script>
+

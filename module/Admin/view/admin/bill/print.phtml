@@ -1,0 +1,86 @@
+<style>
+* { box-sizing: border-box; -moz-box-sizing: border-box; }
+body { margin: 0; padding: 0; font: 12pt "Times New Roman"; background-color: #333; }
+.wrapper{ padding: 30px 50px;}
+.page { width: 21cm; min-height: 14.85cm; padding: 0; margin: 10px auto; border: 0; background-color: #FFF; position: relative;}
+.page .company{ padding: 0 0 20px; font-size: 11pt; line-height: 15pt;}
+.page .title{ text-align: center; font-weight: bold; font-size: 16pt; padding-bottom: 8px;}
+.page .date{ text-align: center; font-weight: bold; font-style: italic; font-size: 11pt; padding-bottom: 8px;}
+.page .number{ text-align: center; font-weight: bold; font-style: italic; font-size: 11pt; padding-bottom: 8px; position: relative;}
+.page .code{ position: absolute; top: 0; right: 0; font-size: 18px; display: inline-block; width: auto; font-style: normal; text-align: right;}
+.page .code span{ color: #FF0000;}
+.page .name{ padding: 30px 0 14px;}
+.page .address{ padding: 0 0 14px;}
+.page .reason{ padding: 0 0 14px;}
+.page .price{ padding: 0 0 14px;}
+.page .price_string{ padding: 0 0 14px;}
+.page .attach{ padding: 0 0 14px;}
+.page .sign_day{ padding: 0 0 14px; text-align: right; font-style: italic;}
+.page .sign{ text-align: center; margin: 0 -20px;}
+.page .sign table{ width: 100%;}
+.page .sign table td{ text-align: center; font-size: 11pt;}
+.page .sign table td b{ font-style: italic; font-size: 12pt;}
+
+@page { size: A5; margin: 0; }
+@media print {
+    .page { margin: 0; border: initial; border-radius: initial; width: initial; min-height: initial; box-shadow: initial; background: initial; page-break-after: always; }
+    .page img{ width: 100%; }
+}
+</style>
+<?php
+	$dateFormat = new \ZendX\Functions\Date();
+    $number = new \ZendX\Functions\Number();
+    $code = $this->company_branch[$this->item['branch_id']]['code'] .'PT'. $this->item['index']; // Mã hóa đơn
+    if(!empty($item->accrued_price)) {
+        $code = $this->company_branch[$this->item['branch_id']]['code'] .'PC'. $this->item['index'];
+    }
+    
+    $paid_number = $this->item['paid_number'];
+    if(!empty($this->item['paid_price'])) {
+?>
+<div class="page">
+    <div class="wrapper">
+        <div class="company">
+            <div>CÔNG TY CỔ PHẦN ĐẦU TƯ GIÁO DỤC VÀ PHÁT TRIỂN CÔNG NGHỆ QUỐC TẾ LANGMASTER</div>
+            <div>Tầng 15, số 139 Cầu Giấy, phường Quan Hoa, quận Cầu Giấy, thành phố Hà Nội</div>
+        </div>
+        <div class="title">PHIẾU THU</div>
+        <div class="date">Ngày <b><?php echo $dateFormat->formatToView($this->item['date'], 'd');?></b> Tháng <b><?php echo $dateFormat->formatToView($this->item['date'], 'm');?></b> Năm <b><?php echo $dateFormat->formatToView($this->item['date'], 'Y');?></b></div>
+        <div class="number">Quyển số: ..... <div class="code">Số: <span><?php echo $code;?></span></div></div>
+        <div class="name">Họ tên người nộp tiền: <b style="margin-right: 30px; min-width: 250px; display: inline-block;"><?php echo $this->contact['name'];?></b> Số điện thoại: <b><?php echo $this->contact['phone'];?></b></div>
+        <div class="address">Địa chỉ: <b><?php echo $this->contact['address'];?></b></div>
+        <div class="reason">Lý do nộp: <b><?php echo $this->item['content'];?></b></div>
+        <div class="price">Số tiền: <b><?php echo number_format($this->item['paid_price'], 0, ',', '.');?> đ</b></div>
+        <div class="price_string">Viết bằng chữ: <b><?php echo $number->convertString($this->item['paid_price']);?> đồng</b></div>
+        <div class="attach">Kèm theo: .............................................................. Chứng từ gốc</div>
+        <div class="sign_day">Ngày <b><?php echo $dateFormat->formatToView($this->item['date'], 'd');?></b> Tháng <b><?php echo $dateFormat->formatToView($this->item['date'], 'm');?></b> Năm <b><?php echo $dateFormat->formatToView($this->item['date'], 'Y');?></b></div>
+        <div class="sign"> <table> <tr> <td> <b>Giám đốc</b> <div>(Ký, họ tên, đóng dấu)</div> </td> <td> <b>Kế toán trưởng</b> <div>(Ký, họ tên)</div> </td> <td> <b>Người nộp tiền</b> <div>(Ký, họ tên)</div> </td> <td> <b>Người lập phiếu</b> <div>(Ký, họ tên)</div> </td> <td> <b>Thủ quỹ</b> <div>(Ký, họ tên)</div> </td> </tr> </table> </div>
+    </div>
+</div>
+<?php
+    } else { 
+?>
+<div class="page">
+    <div class="wrapper">
+        <div class="company">
+            <div>CÔNG TY CỔ PHẦN ĐẦU TƯ GIÁO DỤC VÀ PHÁT TRIỂN CÔNG NGHỆ QUỐC TẾ LANGMASTER</div>
+            <div>Tầng 15, số 139 Cầu Giấy, phường Quan Hoa, quận Cầu Giấy, thành phố Hà Nội</div>
+        </div>
+        <div class="title">PHIẾU CHI</div>
+        <div class="date">Ngày ..... Tháng ..... Năm 20.....</div>
+        <div class="number">Quyển số: ..... <div class="code">Số: <span><?php echo $code;?></span></div></div>
+        <div class="name">Họ tên người nhận: <b style="margin-right: 30px; min-width: 250px; display: inline-block;"><?php echo $this->contact['name'];?></b> Số điện thoại: <b><?php echo $this->contact['phone'];?></b></div>
+        <div class="address">Địa chỉ: <b><?php echo $this->contact['address'];?></b></div>
+        <div class="reason">Lý do chi: ..........................................................................................................................................................</div>
+        <div class="price">Số tiền: <b><?php echo number_format($this->item['accrued_price'], 0, ',', '.');?> đ</b></div>
+        <div class="price_string">Viết bằng chữ: <b><?php echo $number->convertString($this->item['accrued_price']);?> đồng</b></div>
+        <div class="attach">Kèm theo: .............................................................. Chứng từ gốc</div>
+        <div class="sign_day">Ngày ..... Tháng ..... Năm 20.....</div>
+        <div class="sign"> <table> <tr> <td> <b>Giám đốc</b> <div>(Ký, họ tên, đóng dấu)</div> </td> <td> <b>Kế toán trưởng</b> <div>(Ký, họ tên)</div> </td> <td> <b>Người nhận tiền</b> <div>(Ký, họ tên)</div> </td> <td> <b>Người lập phiếu</b> <div>(Ký, họ tên)</div> </td> <td> <b>Thủ quỹ</b> <div>(Ký, họ tên)</div> </td> </tr> </table> </div>
+    </div>
+</div>
+<?php
+    } 
+?>
+
+

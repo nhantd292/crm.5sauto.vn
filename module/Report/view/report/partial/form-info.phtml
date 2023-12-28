@@ -1,0 +1,36 @@
+<?php
+    $label      = !empty($this->label) ? '<label class="control-label col-md-3">' . $this->label . '</label>' : '';
+    $boxClass   = !empty($this->boxClass) ? $this->boxClass : 'col-md-6';
+    $groupClass = 'form-group';
+
+    if(!empty($this->element)) {
+        $xhtml = sprintf('<div class="%s"><div class="%s">%s<div class="col-md-9"><p class="form-control-static text-info">%s</p></div></div></div>', $boxClass, $groupClass, $label, $this->element);
+    } else if(isset($this->section)) {
+        $xhtml = sprintf('<div class="%s"><h3 class="form-section">%s</h3></div>', $boxClass, $this->section);
+    } else if(!empty($this->control)) {
+        $xControl = '<div class="form-group pull-right">';
+        foreach ($this->control AS $key => $val) {
+            $controlAttr = '';
+            if(!empty($val['link'])) {
+                $controlAttr .= ' href="'. $val['link'] .'"';
+            }
+            if(!empty($val['onclick'])) {
+                $controlAttr .= ' onclick="'. $val['onclick'] .'"';
+            }
+            if(!empty($val['class'])) {
+                $controlAttr .= ' class="btn '. $val['class'] .'"';
+            }
+            
+            $controlLabel = $val['label'];
+            if(!empty($val['icon'])) {
+                $controlLabel = '<i class="fa '. $val['icon'] .'"></i> ' . $val['label'];
+            }
+            $xControl .= sprintf('<a %s>%s</a>', $controlAttr, $controlLabel);
+        }
+        $xControl .= '</div>';
+        
+        $xhtml = sprintf('<div class="%s">%s</div>', $boxClass, $xControl);
+    }
+    
+    echo $xhtml;
+?>

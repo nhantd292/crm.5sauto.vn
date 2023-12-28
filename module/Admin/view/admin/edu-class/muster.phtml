@@ -1,0 +1,306 @@
+<?php 
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    // Thông tin lớp học
+    $infoClass          = $this->item;
+    $edu_class_note     = !empty($this->item['note']) ? unserialize($this->item['note']) : array();
+    $edu_class_sessions = $infoClass['sessions'];
+    $edu_class_route    = $infoClass['route'] ? unserialize($infoClass['route']) : array();
+    $edu_class_muster   = $infoClass['muster'] ? unserialize($infoClass['muster']) : array();
+    $edu_class_exercise = $infoClass['exercise'] ? unserialize($infoClass['exercise']) : array();
+    
+    $headHtml = '<tr><th>STT</th><th>Họ Tên</th><th>Ngày sinh</th><th>Điện thoại</th><th>Email</th><th>Trạng thái</th>';
+    $headHtmlExe = '<tr><th>STT</th><th>Họ Tên</th><th>Ngày sinh</th><th>Điện thoại</th><th>Email</th><th>Trạng thái</th>';
+    $stopHtml = 0;
+    $stopHtmlExe = 0;
+    for($j = 1; $j <= $edu_class_sessions; $j++){
+        // Điểm danh đi học
+        $checked = '<div><input type="hidden" data-box="box_muster" data-column="col-day-'. $j .'" name="muster[day-'. $j .'][check-all]" value="off"><input type="checkbox" class="checkbox" data-box="box_muster" data-column="col-day-'. $j .'" name="muster[day-'. $j .'][check-all]" value="on"></div>';
+        if(!empty($edu_class_muster['day-'. $j])) { $checked = ''; } elseif (empty($stopHtml)) { $stopHtml = $j - 2;}
+        $headHtml .= '<th class="col-day-'. $j .'"><div>B'. $j .'</div>'. $checked .'</th>';
+        
+        // Điểm danh bài tập
+        $checked = '<div><input type="hidden" data-box="box_exercise" data-column="col-day-'. $j .'" name="exercise[day-'. $j .'][check-all]" value="off"><input type="checkbox" class="checkbox" data-box="box_exercise" data-column="col-day-'. $j .'" name="exercise[day-'. $j .'][check-all]" value="on"></div>';
+        if(!empty($edu_class_exercise['day-'. $j])) { $checked = ''; } elseif (empty($stopHtmlExe)) { $stopHtmlExe = $j - 2;}
+        $headHtmlExe .= '<th class="col-day-'. $j .'"><div>B'. $j .'</div>'. $checked .'</th>';
+    }
+    $headHtml .= '</tr>';
+
+    // Đưa danh sách vào
+    $xhtml = '';
+    $xhtmlExe = '';
+    $stt = 0;
+    foreach ($this->items AS $item){
+        $stt++;
+        
+        $id                 = $item->id;
+        $contact_phone      = $item->contact_phone;
+        $contact_name       = $item->contact_name;
+        $contact_email      = $item->contact_email;
+        $contact_birthday   = $dateFormat->formatToView($item->contact_birthday);
+        
+        $contact_options    = $item->contact_options ? unserialize($item->contact_options) : array();
+        $options            = $item->options ? unserialize($item->options) : array();
+        $edu_class_ids      = !empty($item['edu_class_ids']) ? unserialize($item['edu_class_ids']) : array();
+        
+        $edu_class_info     = '';
+        $disabled_muster    = 0;
+        if(!empty($edu_class_ids[$infoClass['id']]['reserve_sessions'])) {
+            $edu_class_info .= '<div class="text-purple text-normal">Bảo lưu: '. $dateFormat->formatToView($edu_class_ids[$infoClass['id']]['reserve_date_begin']) .'</div>';
+            $disabled_muster = $edu_class_ids[$infoClass['id']]['reserve_sessions'];
+        }
+        if (!empty($edu_class_ids[$infoClass['id']]['reserve_from'])) {
+            if($infoClass['id'] != $item['edu_class_id']) {
+                $edu_class_info .= '<div class="text-purple text-normal">Học bảo lưu đến: <a href="'. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'detail', 'id' => $edu_class_ids[$infoClass['id']]['reserve_from'])) .'">'. $this->edu_class[$edu_class_ids[$infoClass['id']]['reserve_from']]['name'] .'</a></div>';
+            } else {
+                $edu_class_info .= '<div class="text-purple text-normal">Học bảo lưu từ: <a href="'. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'detail', 'id' => $edu_class_ids[$infoClass['id']]['reserve_from'])) .'">'. $this->edu_class[$edu_class_ids[$infoClass['id']]['reserve_from']]['name'] .'</a></div>';
+            }
+        }
+        if(!empty($edu_class_ids[$item['edu_class_id']]['leave_sessions'])) {
+            $edu_class_info .= '<div class="text-red text-normal">Nghỉ học từ: '. $dateFormat->formatToView($item['leave_date']) .'</div>';
+            $edu_class_info .= '<div class="text-normal">Lý do: '. $edu_class_ids[$infoClass['id']]['leave_content'] .'</div>';
+            $disabled_muster = $edu_class_ids[$infoClass['id']]['leave_sessions'];
+        }
+        
+        $xhtmlData = '';
+        $xhtmlDataExe = '';
+        for($j = 1; $j <= $edu_class_sessions; $j++){
+            // Điểm danh đi học
+            $data = '';
+            $dataValue = '';
+            $dataContent = '';
+            if(!empty($edu_class_muster['day-'. $j][$id])) {
+                $data        = $edu_class_muster['day-'. $j][$id];
+                $dataValue   = $data['value'];
+                $dataContent = $data['content'];
+            }
+        
+            $style       = 'background: #FFF; color: #000;';
+            $selectNull  = '';
+            $select1     = '';
+            $selectM     = '';
+            $select0     = '';
+            $selectP     = '';
+        
+            if($dataValue == '') {
+                $selectNull = ' selected="selected"';
+            } else if($dataValue == '1') {
+                $select1 = ' selected="selected"';
+            } else if($dataValue == 'M') {
+                $selectM = ' selected="selected"';
+                $style = 'background: #ffd600 !important;';
+            } else if($dataValue == '0') {
+                $select0 = ' selected="selected"';
+                $style = 'background: #fd8c8c !important;';
+            } else if($dataValue == 'P') {
+                $selectP = ' selected="selected"';
+                $style = 'background: #8cfd8c !important; color: #000;';
+            }
+        
+            $blockContent = (strlen($dataContent)) > 0 ? 'display: block' : '';
+            $disabled = '';
+            /* $disabled = ($j <= $stopHtml) ? ' disabled="disabled"' : '';
+            if($disabled_muster > 0 && $j >= $disabled_muster) {
+                $disabled = ' disabled="disabled"';
+            } */
+            $xhtmlData  .= '<td class="combobox col-day-'. $j .'">
+                                    <select class="form-control" name="muster[day-'. $j .']['. $id .'][value]" style="'. $style .'"'. $disabled .'>
+                                        <option value=""'. $selectNull .'></option>
+                                        <option value="1"'. $select1 .'>1</option>
+                                        <option value="M"'. $selectM .'>M</option>
+                                        <option value="0"'. $select0 .'>0</option>
+                                        <option value="P"'. $selectP .'>P</option>
+                                    </select>
+                                    <div class="hoverContent" style="'.$blockContent.'"></div>
+                                    <div class="textContent"><textarea name="muster[day-'. $j .']['. $id .'][content]">'. $dataContent .'</textarea><div class="submit" data-name="muster[day-'. $j .']['. $id .'][content]">Đóng</div></div>
+                               </td>';
+            
+            // Điểm danh bài tập
+            $data = '';
+            $dataValue = '';
+            $dataContent = '';
+            if(!empty($edu_class_exercise['day-'. $j][$id])) {
+                $data        = $edu_class_exercise['day-'. $j][$id];
+                $dataValue   = $data['value'];
+                $dataContent = $data['content'];
+            }
+            
+            $style       = 'background: #FFF; color: #000;';
+            $selectNull  = '';
+            $select1     = '';
+            $select0     = '';
+            
+            if($dataValue == '') {
+                $selectNull = ' selected="selected"';
+            } else if($dataValue == '1') {
+                $select1 = ' selected="selected"';
+            } else if($dataValue == '0') {
+                $select0 = ' selected="selected"';
+                $style = 'background: #fd8c8c !important;';
+            }
+            
+            $blockContent = (strlen($dataContent)) > 0 ? 'display: block' : '';
+            $disabled = '';
+            /* $disabled = ($j <= $stopHtmlExe) ? ' disabled="disabled"' : '';
+            if($disabled_muster > 0 && $j >= $disabled_muster) {
+                $disabled = ' disabled="disabled"';
+            } */
+            $xhtmlDataExe  .= '<td class="combobox col-day-'. $j .'">
+                                    <select class="form-control" name="exercise[day-'. $j .']['. $id .'][value]" style="'. $style .'"'. $disabled .'>
+                                        <option value=""'. $selectNull .'></option>
+                                        <option value="1"'. $select1 .'>1</option>
+                                        <option value="0"'. $select0 .'>0</option>
+                                    </select>
+                                    <div class="hoverContent" style="'.$blockContent.'"></div>
+                                    <div class="textContent"><textarea name="exercise[day-'. $j .']['. $id .'][content]">'. $dataContent .'</textarea><div class="submit" data-name="exercise[day-'. $j .']['. $id .'][content]">Đóng</div></div>
+                               </td>';
+        }
+        
+        $xhtml .= '<tr class="'. $id .'">
+                        <td>'. $stt .'</td>
+                        <td>'. $contact_name .'</td>
+                        <td>'. $contact_birthday .'</td>
+                        <td>'. $contact_phone .'</td>
+                        <td>'. $contact_email .'</td>
+                        <td>'. $edu_class_info .'</td>
+                        '. $xhtmlData .'
+                   </tr>';
+        
+        $xhtmlExe .= '<tr class="'. $id .'">
+                        <td>'. $stt .'</td>
+                        <td>'. $contact_name .'</td>
+                        <td>'. $contact_birthday .'</td>
+                        <td>'. $contact_phone .'</td>
+                        <td>'. $contact_email .'</td>
+                        <td>'. $edu_class_info .'</td>
+                        '. $xhtmlDataExe .'
+                   </tr>';
+    } 
+?>
+
+<form method="post" action="" role="form" name="adminFormAjaxMuster" id="adminFormAjaxMuster">
+	<input type="hidden" name="id" value="<?php echo $infoClass['id'];?>">
+	<div class="box_muster">
+    	<h3 class="form-section view">Điểm danh đi học</h3>
+        <div class="page-report" style="padding: 10px 0;">
+            <div class="text">
+                <span class="item">Đi học: <span class="value">1</span></span>
+                <span class="item">Đi muộn: <span class="value" style="color: #ffd600;">M</span></span>
+                <span class="item">Nghỉ học: <span class="value text-danger">0</span></span>
+                <span class="item">Nghỉ phép: <span class="value text-active">P</span></span>
+            </div>
+        </div>
+        <div class="table-scrollable" style="min-height: 0 !important; margin-bottom: 40px !important;">
+            <table class="table table-striped table-bordered table-hover table-nowrap tableMuster">
+                <thead>
+                    <?php echo $headHtml; ?>
+                </thead>
+                <tbody>
+                    <?php echo $xhtml; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="box_exercise">
+    	<h3 class="form-section view">Điểm danh bài tập</h3>
+        <div class="page-report" style="padding: 10px 0;">
+            <div class="text">
+                <span class="item">Có: <span class="value">1</span></span>
+                <span class="item">Không: <span class="value text-danger">0</span></span>
+            </div>
+        </div>
+        <div class="table-scrollable" style="min-height: 0 !important; margin-bottom: 40px !important;">
+            <table class="table table-striped table-bordered table-hover table-nowrap tableMuster">
+                <thead>
+                    <?php echo $headHtmlExe; ?>
+                </thead>
+                <tbody>
+                    <?php echo $xhtmlExe; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function(){
+        function submitFormMusterAjax(element) {
+    		$.ajax({
+    			url: '<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action']));?>',
+    			type: 'POST',
+    			data: $(element).serialize(),
+    			beforeSend: function() {
+    				pageLoading('loading', '.page-container');
+    			},
+    			success: function(result) {
+    				if(result != '') {
+    					xToastr('error', result, '');
+    				}
+    				pageLoading('close', '.page-container');
+    				$('.tableMuster .textContent').css({'display' : 'none'});
+    	        	$('.body-backgroud').remove();
+    			}
+    		});
+        }
+    
+        jQuery(".textArea").on("keydown keyup click", function(){
+            this.style.height = "1px";
+            this.style.height = (this.scrollHeight) + 3 + "px"; 
+        });
+    
+        // Bat su kien select
+    	$('#adminFormAjaxMuster select').change(function() {
+    		var value = $(this).val();
+    		var name = $(this).attr('name');
+    		if(value == '' || value == '1'){
+                $(this).css({'background-color': '#FFF', 'color': '#000'});
+            } else if(value == 'M') {
+                $(this).css({'background-color': '#ffd600', 'color': '#000'});
+            } else if(value == '0') {
+                $(this).css({'background-color': '#fd8c8c', 'color': '#000'});
+            } else if(value == 'P') {
+                $(this).css({'background-color': '#8cfd8c', 'color': '#000'});
+            } else {
+            	$(this).css({'background-color': '#FF0000', 'color': '#FFF'});
+            }
+    		submitFormMusterAjax('select[name="'+ name +'"], input[name="id"]');
+        });
+    
+        $( ".tableMuster .combobox" ).hover(function() {
+        	$('.hoverContent', this).css({'display' : 'block', 'cursor' : 'pointer'});
+      	});
+      	
+        $('.tableMuster .combobox .hoverContent').click(function() {
+        	$("body").prepend('<div class="body-backgroud"></div>');
+        	$('.textContent', $(this).parent()).css({'display' : 'block'});
+        	$('.textContent textarea', $(this).parent()).focus();
+        });
+
+        $("body").on('click', ".tableMuster .textContent .submit", function() {
+        	var name = $(this).attr('data-name');
+        	submitFormMusterAjax('textarea[name="'+ name +'"], input[name="id"]');
+        });
+        
+        $( ".tableMuster .combobox" ).mouseleave(function() {
+            var leght = $('.textContent textarea', $(this)).val().length;
+            if(leght == 0){
+            	$('.hoverContent', this).css({'display': 'none'});
+            }
+      	});
+
+        $('.tableMuster input.checkbox').change(function(){
+        	var data_column = $(this).attr('data-column');
+        	var data_box = $(this).attr('data-box');
+            if ($(this).is(':checked')) {
+                $('.'+ data_box +' td.'+ data_column +' select').each(function() {
+					$(this).val('1'); 
+            	});
+            } else {
+            	$('.'+ data_box +' td.'+ data_column +' select').each(function() {
+                	$(this).val(''); 
+            	});
+            }
+
+            submitFormMusterAjax('.'+ data_box +' td.'+ data_column +' select, input[name="id"]');
+        });
+    });
+</script>

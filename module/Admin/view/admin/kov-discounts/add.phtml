@@ -1,0 +1,160 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+
+$myForm->get('discounts_option')->setAttributes(array('data-parent' => $myForm->get('discounts_type')->getValue()));
+    
+    $elementsTop = array(
+        array('section' => 'Thông tin khuyến mãi', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('code'), 'label' => 'Mã chương trình', 'validate' => array('require' => false), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('name'), 'label' => 'Tên chương trình', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'validate' => array('require' => false), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('status'), 'label' => 'Trạng thái', 'validate' => array('require' => true), 'boxClass' => 'col-md-3 box-radio-status'),
+
+        array('section' => 'Thời gian áp dụng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('date_begin'), 'label' => 'Từ ngày', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('date_end'), 'label' => 'Đến hết ngày', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+
+        array('section' => 'Phạm vi áp dụng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('discounts_range_branchs'), 'label' => 'Phạm vi chi nhánh', 'validate' => array('require' => true), 'boxClass' => 'col-md-4 box-radio-status'),
+        array('element' => $myForm->get('discounts_range_sales'), 'label' => 'Phạm vi người bán', 'validate' => array('require' => true), 'boxClass' => 'col-md-4 box-radio-status'),
+        array('element' => $myForm->get('discounts_range_customers'), 'label' => 'Phạm vi khách hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-4 box-radio-status'),
+        array('element' => $myForm->get('discounts_range_branchs_detail'), 'label' => 'Chọn chi nhánh', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
+        array('element' => $myForm->get('discounts_range_sales_detail'), 'label' => 'Chọn người bán', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
+        array('element' => $myForm->get('discounts_range_customers_detail'), 'label' => 'Chọn nhóm khách hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
+
+        array('section' => 'Hình thức khuyến mãi', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('discounts_type'), 'label' => 'Khuyến mãi theo', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('discounts_option'), 'label' => 'Hình thức', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+    );
+    
+    $xhtmlTop = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elementsTop);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elementsTop);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtmlTop;?>
+            <div class="col-md-12">
+                <?php
+                    if(!empty($this->check_detail_discounts)){
+                    ?>
+                    <div class="alert alert-block alert-danger">
+                        <button type="button" class="close" data-dismiss="alert"></button>
+                        <p><?php echo $this->check_detail_discounts; ?></p>
+                    </div>
+                    <?php
+                    }
+                ?>
+            </div>
+		</div>
+        <div id="template_detail">
+
+        </div>
+	</div>
+</form>
+<?php $this->headScript()->captureStart() ?>
+<!--<script type="text/javascript">-->
+    $('input[name="discounts_range_branchs"]').click(function() {
+        showBranchs($(this).val());
+    });
+    showBranchs($("input[name='discounts_range_branchs']:checked").val());
+
+    function showBranchs(type){
+        if(type == 'all'){
+            $('select.discounts_range_branchs_detail').val(null).trigger('change');
+            $('select.discounts_range_branchs_detail').attr('disabled', 'disabled');
+        }
+        else {
+            $('select.discounts_range_branchs_detail').removeAttr('disabled');
+        }
+    }
+
+
+    $('input[name="discounts_range_sales"]').click(function() {
+        showSales($(this).val());
+    });
+    showSales($("input[name='discounts_range_sales']:checked").val());
+    function showSales(type){
+        if(type == 'all'){
+            $('select.discounts_range_sales_detail').val(null).trigger('change');
+            $('select.discounts_range_sales_detail').attr('disabled', 'disabled');
+        }
+        else {
+            $('select.discounts_range_sales_detail').removeAttr('disabled');
+        }
+    }
+
+
+    $('input[name="discounts_range_customers"]').click(function() {
+        showCustomers($(this).val());
+    });
+    showCustomers($("input[name='discounts_range_customers']:checked").val());
+    function showCustomers(type){
+        if(type == 'all'){
+            $('select.discounts_range_customers_detail').val(null).trigger('change');
+            $('select.discounts_range_customers_detail').attr('disabled', 'disabled');
+        }
+        else {
+            $('select.discounts_range_customers_detail').removeAttr('disabled');
+        }
+    }
+
+<?php $this->headScript()->captureEnd() ?>
+
+<?php $this->headScript()->captureStart() ?>
+    function loadDetailDiscounts(parent_value, child_value){
+        var data = {
+            discounts_type : parent_value,
+            discounts_option : child_value
+        }
+        load_action('#template_detail', '/xadmin/api/discounts-detail',data);
+    }
+    function loadAjaxSelect(parent, child){
+        child.select2('destroy');
+        var parent_value = parent.val();
+        var child_value = child.attr('data-value');
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'discounts-option'));?>',
+            data: {'alias': parent.val(), 'discounts_option' : child.val()},
+            success: function (res) {
+                child.html(res);
+                child.select2();
+                loadDetailDiscounts(parent.val(), child.val());
+            }, error: function () {
+                console.log("Something went wrong!");
+            }
+        });
+    }
+    loadAjaxSelect($('select[name="discounts_type"]'), $('select[name="discounts_option"]'))
+
+    $('select[name="discounts_type"]').change(function() {
+        loadAjaxSelect($(this), $('select[name="discounts_option"]'));
+    });
+    $('select[name="discounts_option"]').change(function() {
+        loadDetailDiscounts($('select[name="discounts_type"]').val(), $(this).val());
+    });
+<?php $this->headScript()->captureEnd() ?>
+
+

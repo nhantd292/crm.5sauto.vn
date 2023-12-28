@@ -1,0 +1,34 @@
+<?php echo $this->flashMessenger()->render();?>
+
+<?php
+    function checkIssetArray($arrGroup, $arrData) {
+        $flag = false;
+        foreach ($arrGroup AS $group) {
+            if(in_array(strtolower($group['code']), $arrData)) {
+                $flag = true;
+                return $flag;
+            }
+        }
+        return $flag;
+    }
+    
+    $groupManager = array('system', 'admin', 'manager');
+    $groupEdu = array('accounting', 'edu');
+    $groupMarketing = array('system', 'admin', 'manager', 'marketing');
+?>
+
+<div class="page-content">
+	<div class="row">
+    	<div class="col-sm-12">
+    		<div id="revenue-branch" class="ajax-load-page">Đang tải biểu đồ...</div>
+<!--    		<div id="edu-day" class="ajax-load-page">Đang tải biểu đồ...</div>-->
+<!--    		<div id="edu-teacher" class="ajax-load-page">Đang tải biểu đồ...</div>-->
+		</div>
+    </div>
+    <?php $this->headScript()->captureStart() ?>
+        load_report('#revenue-branch', '<?php echo $this->url('routeReport/default', array('controller' => 'revenue', 'action' => 'total'));?>', null);
+<!--        load_report('#edu-day', '--><?php //echo $this->url('routeReport/default', array('controller' => 'edu', 'action' => 'day'));?><!--', null);-->
+<!--        load_report('#edu-teacher', '--><?php //echo $this->url('routeReport/default', array('controller' => 'edu', 'action' => 'teacher'));?><!--', null);-->
+    <?php $this->headScript()->captureEnd() ?>
+</div>
+

@@ -1,0 +1,322 @@
+<?php
+    $type = $this->type;
+    $option = $this->option;
+
+    $xhtml = '';
+    if($type == 'hoa-don'){
+        if($option == 'giam-gia-hoa-don'){
+            $content = '';
+            if(!empty($this->details)){
+                foreach($this->details as $key => $value){
+                    $checked1 = $value['unit_type'] == 1 ? 'checked = "checked"' : '';
+                    $checked2 = $value['unit_type'] == 2 ? 'checked = "checked"' : '';
+                    $active1 = $value['unit_type'] == 1 ? 'active' : '';
+                    $active2 = $value['unit_type'] == 2 ? 'active' : '';
+                    $content .= '<tr>
+                                    <td width="30px">Từ</td>
+                                    <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[contract_total][]" value="'.$value['contract_total'].'"></td>
+                                    <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[discount_value][]" value="'.$value['discount_value'].'"></td>
+                                    <td width="180px" class="unit-type">
+                                        <label class="'.$active1.'"><input type="radio" name="detail_discounts[unit_type]['.$key.']" value="1" '.$checked1.'>VND</label>
+                                        <label class="'.$active2.'"><input type="radio" name="detail_discounts[unit_type]['.$key.']" value="2" '.$checked2.'>%</label>
+                                    </td>
+                                    <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                                </tr>';
+                }
+            }
+            else{
+                $content = '<tr>
+                                <td width="30px">Từ</td>
+                                <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[contract_total][]" value=""></td>
+                                <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[discount_value][]" value=""></td>
+                                <td width="180px" class="unit-type">
+                                    <label class="active"><input type="radio" name="detail_discounts[unit_type][0]" value="1" checked="checked">VND</label>
+                                    <label><input type="radio" name="detail_discounts[unit_type][0]" value="2">%</label>
+                                </td>
+                                <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                            </tr>';
+            }
+            $xhtml = '<div class="" >
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Tổng tiền hàng</th>
+                                        <th colspan="2">Giá trị khuyến mãi</th>
+                                        <th>Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    '.$content.'
+                                </tbody>
+                            </table>
+                            <a href="javascript:void(0);" class="btn btn-default" id="add_row" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm điều kiện</a>
+                        </div>';
+        }
+        elseif ($option == 'tang-hang'){
+            $content = '';
+            if(!empty($this->details)){
+                foreach($this->details as $key => $value){
+                    $product_options = '';
+                    $product_choice = unserialize($value['product_donate']);
+                    foreach($this->products as $pro){
+                        $selected = in_array($pro['id'], $product_choice) ? 'selected' : '';
+                        $product_options .= '<option value="'.$pro['id'].'" '.$selected.'>'.$pro['fullName'].'</option>';
+                    }
+
+                    $content .= '<tr>
+                                    <td width="30px">Từ</td>
+                                    <td width="150px"><input class="form-control text-right money" type="text" name="detail_discounts[contract_total][]" value="'.$value['contract_total'].'"></td>
+                                    <td width="120px"><input class="form-control text-right money" type="text" name="detail_discounts[number_donate][]" value="'.$value['number_donate'].'"></td>
+                                    <td class="product-donate">
+                                        <select class="select-product select2 select2_basic form-control" multiple="multiple" name="detail_discounts[product_donate]['.$key.'][]">
+                                            '.$product_options.'
+                                        </select>
+                                    </td>
+                                    <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                                </tr>';
+                }
+            }
+            else{
+                $product_options = '';
+                foreach($this->products as $key => $value){
+                    $product_options .= '<option value="'.$value['id'].'">'.$value['fullName'].'</option>';
+                }
+
+                $content = '<tr>
+                                <td width="30px">Từ</td>
+                                <td width="150px"><input class="form-control text-right money" type="text" name="detail_discounts[contract_total][]" value=""></td>
+                                <td width="120px"><input class="form-control text-right money" type="text" name="detail_discounts[number_donate][]" value=""></td>
+                                <td class="product-donate">
+                                    <select class="select-product select2 select2_basic form-control" multiple="multiple" name="detail_discounts[product_donate][0][]">
+                                        '.$product_options.'
+                                    </select>
+                                </td>
+                                <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                            </tr>';
+            }
+            $xhtml = '<div class="" >
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr><th colspan="2">Tổng tiền hàng</th><th>Số lượng tặng</th><th>Sản phẩm tặng</th><th>Xóa</th></tr>
+                                </thead>
+                                <tbody>
+                                    '.$content.'
+                                </tbody>
+                            </table>
+                            <a href="javascript:void(0);" class="btn btn-default" id="add_row" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm điều kiện</a>
+                        </div>';
+        }
+        elseif ($option == 'giam-gia-hang'){
+            $content = '';
+            if(!empty($this->details)){
+                foreach($this->details as $key => $value){
+                    $product_options = '';
+                    $product_choice = unserialize($value['product_donate']);
+                    foreach($this->products as $pro){
+                        $selected = in_array($pro['id'], $product_choice) ? 'selected' : '';
+                        $product_options .= '<option value="'.$pro['id'].'" '.$selected.'>'.$pro['fullName'].'</option>';
+                    }
+
+                    $checked1 = $value['unit_type'] == 1 ? 'checked = "checked"' : '';
+                    $checked2 = $value['unit_type'] == 2 ? 'checked = "checked"' : '';
+                    $active1 = $value['unit_type'] == 1 ? 'active' : '';
+                    $active2 = $value['unit_type'] == 2 ? 'active' : '';
+
+                    $content .= '<tr>
+                                    <td width="30px">Từ</td>
+                                    <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[contract_total][]" value="'.$value['contract_total'].'"></td>
+                                    <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[discount_value][]" value="'.$value['discount_value'].'"></td>
+                                    <td width="180px" class="unit-type">
+                                        <label class="'.$active1.'"><input type="radio" name="detail_discounts[unit_type]['.$key.']" value="1" '.$checked1.'>VND</label>
+                                        <label class="'.$active2.'"><input type="radio" name="detail_discounts[unit_type]['.$key.']" value="2" '.$checked2.'>%</label>
+                                    </td>
+                                    <td width="120px"><input class="form-control text-right money" type="text" name="detail_discounts[number_donate][]" value="'.$value['number_donate'].'"></td>
+                                    <td class="product-donate">
+                                        <select class="select-product select2 select2_basic form-control" multiple="multiple" name="detail_discounts[product_donate]['.$key.'][]">
+                                            '.$product_options.'
+                                        </select>
+                                    </td>
+                                    <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                                </tr>';
+                }
+            }
+            else{
+                $product_options = '';
+                foreach($this->products as $key => $value){
+                    $product_options .= '<option value="'.$value['id'].'">'.$value['fullName'].'</option>';
+                }
+
+                $content = '<tr>
+                                <td width="30px">Từ</td>
+                                <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[contract_total][]" value=""></td>
+                                <td width="180px"><input class="form-control text-right money" type="text" name="detail_discounts[discount_value][]" value=""></td>
+                                <td width="180px" class="unit-type">
+                                    <label class="active"><input type="radio" name="detail_discounts[unit_type][0]" value="1" checked="checked">VND</label>
+                                    <label><input type="radio" name="detail_discounts[unit_type][0]" value="2">%</label>
+                                </td>
+                                <td width="120px"><input class="form-control text-right money" type="text" name="detail_discounts[number_donate][]" value=""></td>
+                                <td class="product-donate">
+                                    <select class="select-product select2 select2_basic form-control" multiple="multiple" name="detail_discounts[product_donate][0][]">
+                                        '.$product_options.'
+                                    </select>
+                                </td>
+                                
+                                <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                            </tr>';
+            }
+
+            $xhtml = '<div class="" >
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Tổng tiền hàng</th>
+                                    <th colspan="2">Giá trị khuyến mãi</th>
+                                    <th colspan="2">Hàng/nhóm hàng được giảm giá</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                   '.$content.'
+                            </tbody>
+                        </table>
+                        <a href="javascript:void(0);" class="btn btn-default" id="add_row" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm điều kiện</a>
+                    </div>';
+        }
+    }
+
+    if($type == 'hang-hoa'){
+        if($option == 'mua-hang-giam-gia-hang'){
+            $xhtml = '<div class="" >
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Hàng/Nhóm hàng mua</th>
+                                    <th colspan="2">Giá trị khuyến mãi</th>
+                                    <th colspan="2">Hàng/nhóm hàng được giảm giá</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="">
+                                    <td><input class="form-control text-right" type="text" name="" value=""></td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td class="unit-type">
+                                        <label class="active"><input type="radio" name="unit_type" value="1" checked="checked" class="hidden">VND</label>
+                                        <label><input type="radio" name="unit_type" value="2" class="hidden">%</label>
+                                    </td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <a href="javascript:void(0);" class="btn btn-default" id="add_row" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm điều kiện</a>
+                    </div>';
+        }
+        elseif ($option == 'mua-hang-tang-hang'){
+            $xhtml = '<div class="" >
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Hàng/Nhóm hàng mua</th>
+                                    <th colspan="2">Hàng/nhóm hàng tặng</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="">
+                                    <td><input class="form-control text-right" type="text" name="" value=""></td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td><input class="form-control text-right money" type="text" name="" value=""></td>
+                                    <td><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 5px 0 0 5px; font-size: 20px;"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <a href="javascript:void(0);" class="btn btn-default" id="add_row" style="margin-bottom: 5px; background-color: #5cb85c; color: white;">Thêm điều kiện</a>
+                    </div>';
+        }
+        elseif ($option == 'gia-ban-theo-so-luong-mua'){
+
+        }
+    }
+
+    echo $xhtml;
+?>
+<style>
+    .unit-type label {
+        width: 60px;
+        text-align: center;
+        background: #d8d8d8;
+        color: #fff;
+        height: 30px;
+        margin-bottom: 0;
+        line-height: 30px;
+        border-radius: 5px;
+        position: relative;
+        padding-left: 12px;
+    }
+    .unit-type label.active{
+        background: green;
+        color: #fff;
+    }
+    .unit-type label input {
+        position: absolute;
+        left: 3px;
+        top: 5px;
+    }
+    tr td{
+        vertical-align: middle !important;
+    }
+    .select2-container-multi .select2-choices .select2-search-choice {
+        background: #5cb85c;
+        color: #fff;
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        format_to_money();
+    })
+
+    $('#add_row').on('click', function(){
+        var table = $(this).parent().find('.table');
+        table.find('select.select2').select2('destroy');
+        var tr    = table.find('tbody tr:last-child');
+        var count = table.find('tbody tr').length;
+
+        var clone = tr.clone();
+        clone.find('input').val('');
+        clone.find('select.select2').val('');
+
+        clone.find('td.unit-type input').attr('name','detail_discounts[unit_type]['+count+']');
+        clone.find('td.unit-type label:first-child input').attr('value',1);
+        clone.find('td.unit-type label:last-child input').attr('value',2);
+
+        clone.find('td.product-donate select').attr('name','detail_discounts[product_donate]['+count+'][]');
+
+        clone.insertAfter(tr);
+
+        table.find('select.select2').select2();
+        format_to_money();
+    });
+
+    $('body').on('click', '.delete-row', function(){
+        deleteTr($(this).parents('tr'));
+    });
+
+    function deleteTr(tr_parent){
+        var row = tr_parent.parent().find('tr').length;
+        if(row > 1){
+            tr_parent.remove();
+        }else{
+            tr_parent.find('input').val('');
+            tr_parent.find('.select2').val(null).trigger('change');
+        }
+    }
+
+    $('body').on('click', '.unit-type label', function(){
+        $(this).parent().find('label').removeClass('active');
+        $(this).addClass('active');
+    });
+</script>

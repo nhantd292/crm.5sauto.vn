@@ -1,0 +1,362 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+
+    $elements_sale = array(
+        array('section' => 'Đánh giá nhân viên bán hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('sale_level'), 'label' => 'Mức độ hài lòng nhân viên sale', 'validate' => array('require' => true), 'boxClass' => 'col-md-12 box-radio'),
+        array('element' => $myForm->get('sale_note'), 'label' => 'Ý kiến đóng góp cho nhân viên sales', 'boxClass' => 'col-md-12  box-product-sale hidden'),
+    );
+    $xhtml_sale = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements_sale);
+
+    $elements_product = array(
+        array('section' => 'Đánh giá sản phẩm', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('technical_level'), 'label' => 'Mức độ hài lòng sản phẩm', 'validate' => array('require' => true), 'boxClass' => 'col-md-12 box-radio'),
+        array('element' => $myForm->get('technical_product'), 'label' => 'Sản phẩm kỹ thuật', 'boxClass' => 'col-md-12 box-product hidden'),
+        array('element' => $myForm->get('technical_note'), 'label' => 'Ý kiến đóng góp sản phẩm', 'boxClass' => 'col-md-12  box-product hidden'),
+
+        array('element' => $myForm->get('code')),
+        array('element' => $myForm->get('contract_id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true)),
+    );
+    $xhtml_product = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements_product);
+
+    $element_tailors = array(
+        array('section' => 'Đánh giá thợ may', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('tailors_level'), 'label' => 'Mức độ hài lòng thợ may', 'validate' => array('require' => true), 'boxClass' => 'col-md-12 box-radio'),
+        array('element' => $myForm->get('tailors_product'), 'label' => 'Sản phẩm thợ may', 'boxClass' => 'col-md-12 box-product-tailors hidden'),
+        array('element' => $myForm->get('tailors_note'), 'label' => 'Ý kiến đóng góp thợ may', 'boxClass' => 'col-md-12 box-product-tailors hidden'),
+    );
+    $xhtml_tailors = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $element_tailors);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements_sale);?>
+    <?php echo @$this->xViewElementErrors($elements_product);?>
+    <?php echo @$this->xViewElementErrors($element_tailors);?>
+    <div class="row">
+        <?php if($this->check_order){ ?>
+            <div class="contact">
+                <div class="col-md-12 title-form">
+                    <div class="out"><img src="/public/files/upload/default/images/logo-ok2.png"></div>
+                    <div class="center"><h3 class="title-section">Mời quý khách đánh giá chất lượng dịch vụ</h3></div>
+<!--                    <div class="out">-->
+<!--                    </div>-->
+                </div>
+                <div class="col-md-12">
+                    <h3 class="form-section title-section">Thông tin khách hàng</h3>
+                </div>
+                <div class="col-md-3 col-xs-6 text-center">
+                    <label class="control-label">Khách hàng</label>
+                    <div class="form-control-info">
+                        <span><?php echo $this->contact['name']; ?></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6 text-center">
+                    <label class="control-label">Số điện thoại</label>
+                    <div class="form-control-info">
+                        <span><?php echo $this->contact['phone']; ?></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6 text-center">
+                    <label class="control-label">Giá trị</label>
+                    <div class="form-control-info">
+                        <span class="mask_currency"><?php echo $this->contract['price_total']; ?></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-xs-6 text-center">
+                    <label class="control-label">Đơn hàng</label>
+                    <div class="form-control-info">
+                        <span><?php echo $this->contract['code']; ?></span>
+                    </div>
+                </div>
+            </div>
+        <?php }else{ ?>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">Mã đơn hàng</label>
+                    <div class="control-element">
+                        <input type="text" name="contract_code" class="form-control" placeholder="Nhập mã đơn hàng" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label">.</label>
+                    <div class="control-element">
+                        <input type="button" name="search" class="form-control btn btn-sm green" value="Tìm kiếm">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <h3 class="form-section title-section">Thông tin khách hàng</h3>
+                <p class="text-red"><?php echo $this->notify ?></p>
+            </div>
+        <?php } ?>
+    </div>
+    <?php if($this->check_order){ ?>
+    <form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row list-eval owl-carousel">
+            <div class="eval-sale eval item">
+                <?php echo $xhtml_sale;?>
+            </div>
+            <div class="eval-product evalitem">
+                <?php echo $xhtml_product;?>
+            </div>
+            <?php if($this->evaluate_tailors){?>
+            <div class="eval-tailo eval item">
+                <?php if($this->evaluate_tailors) echo $xhtml_tailors; ?>
+            </div>
+            <?php } ?>
+		</div>
+    </form>
+    <?php } ?>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+
+    <?php if($this->check_order){ ?>
+        <button type="button" class="btn green save-close">Gửi đánh giá</button>
+        <button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+    <?php }else{ ?>
+        <button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+    <?php } ?>
+
+</div>
+<?php
+} 
+?>
+    <link rel="stylesheet" href="/public/template/backend/plugins/owl/owlcarousel/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="/public/template/backend/plugins/owl/owlcarousel/assets/owl.theme.default.min.css">
+    <script src="/public/template/backend/plugins/owl/owlcarousel/owl.carousel.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.owl-carousel').owlCarousel({
+                loop:false,
+                margin:0,
+                nav:true,
+                navText: ['<i class="fa fa-caret-left"></i>','<i class="fa fa-caret-right"></i>'],
+                dots:true,
+                responsive:{
+                    0:{
+                        items:1,
+                        nav:false,
+                    },
+                    600:{
+                        items:1,
+                        nav:false,
+                    },
+                    1000:{
+                        items:1
+                    }
+                }
+            })
+        });
+    </script>
+<?php if($this->check_order){ ?>
+    <style>
+        .modal-body{
+            background: #fff url(/public/files/upload/default/images/bg.png) no-repeat center;
+            padding:0 0 15px 0;
+        }
+        .row{
+            margin-left: 0;
+            margin-right: 0;
+        }
+    </style>
+
+<?php } ?>
+
+<script type="text/javascript">
+    $('input[name="search"]').click(function() {
+        var order_code = $('input[name="contract_code"]').val();
+        if(order_code.length){
+            $('.modal-scrollable').remove();
+            $('.modal-backdrop.fade.in').remove();
+            popupAction('/xadmin/evaluate/form/', {'code': order_code});
+        }
+    });
+
+    $('input[name="sale_level"]').click(function() {
+        showSale($(this).val());
+    });
+    showSale($("input[name='sale_level']:checked").val());
+
+    function showSale(level){
+        if(level < 4){
+            $('.box-product-sale').removeClass('hidden');
+        }
+        else {
+            $('.box-product-sale').addClass('hidden');
+        }
+    }
+
+    $('input[name="technical_level"]').click(function() {
+        showProduct($(this).val());
+    });
+    showProduct($("input[name='technical_level']:checked").val());
+
+    function showProduct(level){
+        if(level < 4){
+            $('.box-product').removeClass('hidden');
+            $(".box-product select").select2('val', '');
+        }
+        else {
+            $('.box-product').addClass('hidden');
+            $(".box-product select").select2('val', '');
+        }
+    }
+
+    $('input[name="tailors_level"]').click(function() {
+        showProductTailors($(this).val());
+    });
+    showProductTailors($("input[name='tailors_level']:checked").val());
+
+    function showProductTailors(level){
+        if(level < 4){
+            $('.box-product-tailors').removeClass('hidden');
+            $(".box-product-tailors select").select2('val', '');
+        }
+        else {
+            $('.box-product-tailors').addClass('hidden');
+            $(".box-product-tailors select").select2('val', '');
+        }
+    }
+
+    $('.box-radio .control-element label').each(function (index) {
+        var img = (index % 5) + 1 ;
+        img = img.toString();
+        $(this).attr('style' , "background: url(/public/files/upload/default/images/"+img+".png) no-repeat center; background-size: contain;");
+    });
+
+</script>
+
+<style>
+    @font-face {
+        font-family: avo;
+        src: url("/public/files/upload/default/fonts/UTM Avo.ttf");
+    }
+    @font-face {
+        font-family: avo;
+        src: url("/public/files/upload/default/fonts/UTM AvoBold.ttf");
+        font-weight: bold;
+    }
+    @font-face {
+        font-family: utm_bebas;
+        src: url("/public/files/upload/default/fonts/UTM Bebas.ttf");
+    }
+    *{
+        font-family: avo;
+    }
+
+    .box-radio .control-element label {
+        line-height: 32px;
+        margin: 10px 2%;
+        width: 16%;
+        height: 110px;
+        position: relative;
+    }
+    .box-radio .control-element label input {
+        width: 15px;
+        float: left;
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        margin-left: -7px;
+    }
+    .title-form {
+        background: #3fb666;
+        width: 100%;
+        float: left;
+    }
+    .title-form .out{
+        width: 15%;
+        float: left;
+        text-align: center;
+    }
+    .title-form .out img{
+        width: 80%;
+    }
+
+    .title-form .center {
+        width: 70%;
+        float: left;
+        vertical-align: middle;
+    }
+    h3.form-section {
+        font-family: utm_bebas;
+        text-align: center;
+        font-size: 35px;
+        margin: 10px 0px !important;
+        border: none;
+    }
+    .title-form .center h3{
+        font-family: utm_bebas;
+        text-align: center;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 36px;
+    }
+    .form-control-info span{
+        font-size: 20px;
+        color: #3069b3;
+    }
+    .contact .control-label {
+        font-size: 22px;
+    }
+
+    .owl-nav{
+        width: 100%;
+        top: 45px;
+    }
+    .owl-nav button{
+        position: absolute;
+        width: 22px;
+        background: #000 !important;
+        color: #fff !important;
+        border: 2px solid #000 !important;
+        border-radius: 5px !important;
+        line-height: 20px !important;
+    }
+    .owl-nav button.owl-prev{
+        left: 20px;
+    }
+    .owl-nav button.owl-next{
+        left: 45px;
+    }
+    .owl-dots{
+        text-align: center;
+    }
+    .owl-dot{
+        width: 12px;
+        height: 12px;
+        background: #d8d8d8 !important;
+        border-radius: 50% !important;
+        margin: 0px 3px;
+    }
+    .owl-dot.active{
+        background: #f32824 !important;
+    }
+    .modal-header {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        .title-form .center h3 {
+            font-size: 16px;
+            margin: 5px 0px;
+        }
+    }
+</style>

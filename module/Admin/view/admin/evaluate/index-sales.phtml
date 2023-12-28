@@ -1,0 +1,144 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    $myForm->get('filter_action')->setValue($this->params['action']);
+    $elements = array(
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_user_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_level_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_action')),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th rowspan="2" class="text-center">Ngày đánh giá</th>';
+    $xhtmlHead .= '<th rowspan="2" class="text-center">Tên nhân viên</th>';
+    $xhtmlHead .= '<th rowspan="2" class="text-center">Mã đơn hàng</th>';
+    $xhtmlHead .= '<th rowspan="2" class="text-center">Doanh thu</th>';
+    $xhtmlHead .= '<th colspan="5" class="text-center">Thái độ phục vụ</th>';
+    $xhtmlHead .= '<th rowspan="2" class="text-center">Ý liến đóng góp</th>';
+	$xhtmlHead .= '</tr>';
+    $xhtmlHead .= '<tr>';
+    $xhtmlHead .= '<th class="text-center">Rất không hài lòng</th>';
+    $xhtmlHead .= '<th class="text-center">Không hài lòng</th>';
+    $xhtmlHead .= '<th class="text-center">Bình thường</th>';
+    $xhtmlHead .= '<th class="text-center">Hà lòng</th>';
+    $xhtmlHead .= '<th class="text-center">Rất hài lòng</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+    	$stt = 0;
+    	$total_sale = 0;
+    	$level_total[1] = 0;
+    	$level_total[2] = 0;
+    	$level_total[3] = 0;
+    	$level_total[4] = 0;
+    	$level_total[5] = 0;
+        foreach ($this->items AS $key => $item) {
+            $levels = [];
+        	$stt++;
+        	$id                     = $item->id;
+        	$contract_code          = $item->contract_code;
+        	$level                  = $item->level;
+        	$levels[$level]         = '<a class="btn btn-xs btn-status green"><i class="fa fa-check"></i></a>';
+        	$note                   = $item->note;
+        	$contract_price         = $item->contract_price;
+            $date                   = $dateFormat->formatToView($item->created);
+            $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+
+            $total_sale += $contract_price;
+            $level_total[$level] += 1;
+
+            $xhtmlItems .= '<tr>
+                                <td  class="text-center">'. $date .'</td>
+                                <td >'. $user_name .'</td>
+                                <td  class="text-center">'. $contract_code .'</td>
+                                <td  class="text-right mask_currency">'. $contract_price .'</td>
+                                <td class="text-center">'. $levels[1] .'</td>
+                                <td class="text-center">'. $levels[2] .'</td>
+                                <td class="text-center">'. $levels[3] .'</td>
+                                <td class="text-center">'. $levels[4] .'</td>
+                                <td class="text-center">'. $levels[5] .'</td>
+                                <td >'. $note .'</td>
+                           </tr>';
+        }
+
+        $xhtmlItems .= '<tr class="text-red text-bold" style="border-bottom: 1px solid #d8d8d8;">
+                                <td  class="text-center" colspan="3">Tổng</td>
+                                <td  class="text-right mask_currency">'. $total_sale .'</td>
+                                <td class="text-center">'. $level_total[1] .'</td>
+                                <td class="text-center">'. $level_total[2] .'</td>
+                                <td class="text-center">'. $level_total[3] .'</td>
+                                <td class="text-center">'. $level_total[4] .'</td>
+                                <td class="text-center">'. $level_total[5] .'</td>
+                                <td ></td>
+                           </tr>';
+    }
+    $blank = "'blank'";
+    // Control
+    $arrControl = array(
+        // array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
+        array( 
+            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ), 
+            'children' => array( 
+                array( 'name' => 'print-production', 'caption' => 'In sản xuất', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrintProduction('.$blank.');') ),
+                array( 'name' => 'print-ship', 'caption' => 'In giao hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint('.$blank.');') ),
+                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array( 'onclick' => 'javascript:contractExport();')) ,
+//                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o')
+            ), 'children-class' => 'dropdown-menu pull-right' ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable table-fixed">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])), 'options' => $this->params['paginator']['options']));
+        	?>
+    	</div>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+    <!-- resize_col_table('#table-manager'); -->
+    $('.btn-edit-check').on('click', function() {
+        var parent_td = $(this).parent('td');
+        var parent_tr = parent_td.parent('tr');
+        parent_tr.find('input[name="cid[]"]').attr('checked', 'checked');
+    });
+<?php $this->headScript()->captureEnd() ?>

@@ -1,0 +1,67 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    // Hiển thị thông tin vật phẩm
+    $elementMatter = array(
+        array('section' => 'Thông tin vật phẩm', 'boxClass' => 'col-md-12'),
+        array('element' => $this->matter[$this->item['matter_id']]['name'], 'label' => 'Tên', 'boxClass' => 'col-md-3'),
+    );
+    $xhtmlMatter = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elementMatter);
+    
+    $elements = array(
+        array('section' => 'Nội dung', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('note_log'), 'label' => 'Nguyên nhân/Lý do xóa', 'validate' => array('require' => true), 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id')),
+        array('element' => $myForm->get('modal')),
+    );
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtmlMatter;?>
+		</div>
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+
+<script type="text/javascript">
+    //Xử lý load sản phẩm
+    if($('select[name="paid_type_id"]').val() == 'surcharge') {
+    	$('.box-surcharge').removeClass('box-hidden');
+    } else {
+    	$('.box-surcharge').addClass('box-hidden');
+    }
+    $('select[name="paid_type_id"]').change(function() {
+    	if($(this).val() == 'surcharge') {
+        	$('.box-surcharge').removeClass('box-hidden');
+    	} else {
+    		$('.box-surcharge').addClass('box-hidden');
+    	}
+    });
+</script>

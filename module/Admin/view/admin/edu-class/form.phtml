@@ -1,0 +1,70 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    // Set lại các giá trị của từng element
+    $myForm->get('room_id')->setAttributes(array('data-parent' => $myForm->get('location_id')->getValue()));
+    
+    $elements = array(
+        array('section' => 'Thông tin', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('name'), 'label' => 'Tên', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('product_id'), 'label' => 'Khóa học', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('location_id'), 'label' => 'Địa điểm học', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('room_id'), 'label' => 'Phòng học', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('public_date'), 'label' => 'Khai giảng', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('student_max'), 'label' => 'Số học viên tối đa', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('time'), 'label' => 'Ca học', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('sessions'), 'label' => 'Số buổi học', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('public_status'), 'label' => 'Tình trạng lớp học', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('status'), 'label' => 'Hiển thị'),
+        array('element' => $myForm->get('teacher_ids'), 'label' => 'Giáo viên', 'validate' => array('require' => true), 'boxClass' => 'col-sm-12'),
+        array('element' => $myForm->get('coach_ids'), 'label' => 'Trợ giảng', 'boxClass' => 'col-sm-12'),
+        array('element' => $myForm->get('schedule'), 'label' => 'Lịch học trong tuần', 'validate' => array('require' => true), 'boxClass' => 'col-sm-12'),
+        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'boxClass' => 'col-sm-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>
+<?php $this->headScript()->captureStart() ?>
+
+	// Xử lý load phòng học
+	$('select[name="location_id"]').change(function() {
+		var select = 'input[name="room_id"]';
+		var parent = $(select).parent();
+		$('.select2-container', parent).select2('val', '');
+		$(select).attr('data-parent', $(this).val());
+    });
+    
+<?php $this->headScript()->captureEnd() ?>
+
+
+

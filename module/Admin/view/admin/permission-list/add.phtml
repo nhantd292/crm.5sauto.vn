@@ -1,0 +1,74 @@
+<?php
+    $arrControl = array(
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+?>
+
+<form method="post" action="" class="horizontal-form form-tab" role="form" name="adminForm" id="adminForm">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-content">
+    	<div class="row">
+    		<div class="col-md-3">
+    			<div class="form-group"><label class="control-label">Tên</label></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><label class="control-label">Module</label></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><label class="control-label">Controller</label></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><label class="control-label">Action</label></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><label class="control-label">Control</label></div>
+    		</div>
+    	</div>
+    	<?php
+    	$i = 0;
+    	$wordFirst = new \ZendX\Functions\WordFirst();
+    	foreach ($this->infoSystem AS $module => $controllers) {
+    	    foreach ($controllers AS $controller => $actions) {
+    	        foreach ($actions AS $action) {
+        	        if(empty($this->items[$module][$controller][$action])) {
+        	            $i++;
+        	            $name = $wordFirst->upperFirst($controller) . ' - ' . $wordFirst->upperFirst($action);
+    	?>
+    	<div class="row" id="<?php echo 'row_' . $i;?>">
+    		<div class="col-md-3">
+    			<div class="form-group"><input type="text" name="name" id="name" value="<?php echo $name;?>" class="form-control input-sm"></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><input type="text" name="module" id="module" value="<?php echo $module;?>" class="form-control input-sm"></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><input type="text" name="controller" id="controller" value="<?php echo $controller;?>" class="form-control input-sm"></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><input type="text" name="action" id="action" value="<?php echo $action;?>" class="form-control input-sm"></div>
+    		</div>
+    		<div class="col-md-2">
+    			<div class="form-group"><input type="button" name="submit" value="Lưu" onclick="javascript:insertPermission(this);" data-id="<?php echo $i;?>" class="btn btn-sm green"></div>
+    		</div>
+    	</div>
+    	<?php
+        	        }
+    	        }
+    	    }
+    	}
+    	
+    	if($i == 0) {
+    	    echo '<p>Không có dữ liệu</p>';
+    	}
+    	?>
+	</div>
+</form>

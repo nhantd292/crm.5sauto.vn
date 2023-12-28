@@ -1,0 +1,52 @@
+<?php 
+if ($this->pageCount > 1) {
+	// Link
+	$linkStart		    = array('page' => $this->first);
+	$linkEnd		    = array('page' => $this->last);
+	$linkNext		    = array('page' => $this->next);
+	$linkPrevious	    = array('page' => $this->previous);
+	
+	// Button
+	$startXhtml         = '<li class="prev disabled"><a href="javascript:;"><i class="fa fa-angle-double-left"></i></a></li>';
+	$previousXhtml	    = '<li class="prev disabled"><a href="javascript:;"><i class="fa fa-angle-left"></i></a></li>';
+	$nextXhtml          = '<li class="next disabled"><a href="javascript:;"><i class="fa fa-angle-right"></i></a></li>';
+	$endXhtml		    = '<li class="next disabled"><a href="javascript:;"><i class="fa fa-angle-double-right"></i></a></li>';
+	
+	if($this->current != 1){
+		$startXhtml		= sprintf('<li class="prev"><a href="javascript:;" onclick="javascript:ajax_load_page(\'%s\', \'%s\', \'%s\');"><i class="fa fa-angle-double-left"></i></a></li>', $this->ajax_content_id, $this->currentURL, str_replace('"', "\'", json_encode(array_merge($this->options, $linkStart))));
+		$previousXhtml	= sprintf('<li class="prev"><a href="javascript:;" onclick="javascript:ajax_load_page(\'%s\', \'%s\', \'%s\');"><i class="fa fa-angle-left"></i></a></li>', $this->ajax_content_id, $this->currentURL, str_replace('"', "\'", json_encode(array_merge($this->options, $linkPrevious))));
+	}
+	
+	if($this->current != $this->last){
+		$nextXhtml		= sprintf('<li class="next"><a href="javascript:;" onclick="javascript:ajax_load_page(\'%s\', \'%s\', \'%s\');"><i class="fa fa-angle-right"></i></a></li>', $this->ajax_content_id, $this->currentURL, str_replace('"', "\'", json_encode(array_merge($this->options, $linkNext))));
+		$endXhtml		= sprintf('<li class="next"><a href="javascript:;" onclick="javascript:ajax_load_page(\'%s\', \'%s\', \'%s\');"><i class="fa fa-angle-double-right"></i></a></li>', $this->ajax_content_id, $this->currentURL, str_replace('"', "\'", json_encode(array_merge($this->options, $linkEnd))));
+	}
+	
+	$pagesInRange	= '';
+	foreach ($this->pagesInRange as $key) {
+		$linkPage = array('page' => $key);
+		
+		if($this->current == $key) {
+			$pagesInRange	.= sprintf('<li class="active"><a href="javascript:;">%s</a></li>',$key);
+		}else{
+			$pagesInRange	.= sprintf('<li><a href="javascript:;" onclick="javascript:ajax_load_page(\'%s\', \'%s\', \'%s\');">%s</a></li>', $this->ajax_content_id, $this->currentURL, str_replace('"', "\'", json_encode(array_merge($this->options, $linkPage))), $key);
+		}
+	}
+?>
+<div class="row paginations">
+	<div class="col-sm-12">
+		<div class="pull-right">
+			<ul class="pagination pagination-sm">
+				<?php echo $startXhtml;?>
+            	<?php echo $previousXhtml;?>
+            	<?php echo $pagesInRange;?>
+            	<?php echo $nextXhtml;?>
+            	<?php echo $endXhtml;?>
+			</ul>
+		</div>
+	</div>
+</div>
+<?php
+} 
+?>
+

@@ -1,0 +1,302 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+* { box-sizing: border-box; -moz-box-sizing: border-box; }
+body { margin: 0; padding: 0; font: 14px; background-color: #333; font-family: "Roboto";}
+.box_title{font-weight: 700; text-align: center; padding-bottom: 20px; font-size: 25px; text-transform: uppercase;}
+.address_company{font-weight: 500; text-align: center; padding-bottom: 20px; font-size: 18px;}
+.title{font-weight: 700; text-align: center; padding-bottom: 20px; font-size: 25px; text-transform: uppercase;}
+.wrapper{ padding: 30px 50px;}
+.page { width: 30cm; min-height: 20cm; padding: 0; margin: 10px auto; border: 0; background-color: #FFF; position: relative;}
+.page .company{ padding: 0 0 20px; font-size: 11pt; line-height: 15pt;}
+.page .table{width: 100%; margin-bottom: 20px;}
+.page .table_top tbody tr td{width: 50%; float: left;border: 1px solid #ddd; padding: 5px 15px; margin: 0;} 
+.page .table tbody tr td{border: 1px solid #ddd; padding: 5px 15px; margin: 0;} 
+.item{text-align: center; font-weight: 500; font-size: 21px;}
+.item .note{text-align: center; font-weight: 400; font-size: 15px;}
+
+</style>
+<?php
+	$dateFormat = new \ZendX\Functions\Date();
+    $number = new \ZendX\Functions\Number();
+    
+    $contact_options    = !empty($this->contact['options']) ? unserialize($this->contact['options']) : array();
+    $contract_options   = !empty($this->item['options']) ? unserialize($this->item['options']) : array();
+    $contract_pending   = !empty($this->item['pending']) ? unserialize($this->item['pending']) : array();
+    $user               = $this->user[$this->item['user_id']]['company_department_id'];
+    $company_department = $this->company_department[$user]['name'];
+    $payment            = $this->payment[$this->item['payment']]['name'];
+    
+    $products       = $contract_options['product'];
+    $product_gift   = $contract_options['gift'];
+    $i= 0;
+    foreach ($product_gift AS $gift){
+        $i++;
+        $product_gift       = ($gift['product_id'] ? $this->product[$gift['product_id']]['name'] : '');
+        $gift_code          = $gift['code'];
+        $gift_unit          = $gift['unit'];
+        $gift_number        = $gift['numbers'];
+    
+        $xhtmlGift .= '<tr id="tr_'. $id .'" data-id="'. $id .'">
+    							<td>'. $i .'</td>
+							    <td>'. $gift_code .'</td>
+							    <td>'. $product_gift .'</td>
+							    <td>'. $gift_unit .'</td>
+							    <td>'. $gift_number .'</td>
+    						</tr>';
+    }
+    if (!empty($products)){
+        $product_name       = '';
+        $price_product      = '';
+        $number             = '';
+        $discount           = '';
+        $total              = 0;
+        $xhtmlProduct = '';
+        $i= 0;
+        foreach ($products AS $product){
+            $i++;
+            $product_name       = ($product['product_id'] ? $this->product[$product['product_id']]['name'] : '').'<br>';
+            $product_code       = ($product['product_id'] ? $this->product[$product['product_id']]['code'] : '').'<br>';
+            $unit               = $product['unit'];
+            $number             = ($product['numbers']).'</br>';
+            $price_product      = number_format($product['price']?(int)$product['price']:0, 0, '.' ,',').'<br>';
+            $discount_percent   = $product['discount_percent'];
+            $discount           = number_format($product['discount']?(int)$product['discount']:0, 0, '.' ,',').'<br>';
+            $total              = $product['total'];
+            $total_number       += $product['numbers'];
+            $total_product      += $total;
+            $transport_fee      = 0;
+            if ($total_number < 3){
+                $transport_fee = 30000;
+            }
+            
+            foreach ($this->vat AS $key => $vats){
+                $vat = $vats['name'];
+            }
+            
+            $sale_vat           = ($total_product * $vat)/100;
+    
+            $xhtmlProduct .= '<tr id="tr_'. $id .'" data-id="'. $id .'">
+    							<td>'. $i .'</td>
+							    <td>'. $product_code .'</td>
+							    <td>'. $product_name .'</td>
+							    <td>'. $unit .'</td>
+							    <td>'. $number .'</td>
+    							<td><span class="mask_currency">'. $price_product .'</span></td>
+    							<td><span class="mask_currency">'. $discount_percent .'</span></td>
+    							<td><span class="mask_currency">'. $discount .'</span></td>
+    							<td><span class="mask_currency text-primary">'. number_format($total) .' VNĐ</span></td>
+    						</tr>';
+        }
+    }
+    $city       = $this->location_city[$item['city']]->name ? ' - '.$this->location_city[$item['city']]->name : '';
+    $district   = $this->location_district[$item['district']]->name ? ' - '.$this->location_district[$item['district']]->name : '';
+    $town       = $this->location_town[$item['town_id']]->name ? ' - '.$this->location_town[$item['town_id']]->name : '';
+
+    $district_city = $town.$district.$city;
+    if(!empty($this->item['paid_price'])) {
+?>
+<div class="page">
+    <div class="wrapper">
+        <div class="company">
+            <div class="box_title">Công Ty Cổ Phần Elepharma</div>
+            <div class="address_company">Số 10, hẻm 1, ngách 8 Ngõ 118 Nguyễn Khánh Toàn, Quan Hoa, Cầu Giấy, Hà Nội</div>
+        </div>
+        <div class="title">ĐƠN HÀNG : <?php echo $this->item['code']; ?></div>
+        <table class="table table_top table-striped table-bordered table-hover table-product">
+            <tbody class="product_body">
+                <tr class="product_row">
+                    <td>Tên Khách Hàng : <?php echo $this->contact['name']; ?></td>
+                    <td>Người Thực Hiện : <?php echo $this->user[$this->item['user_id']]['name']; ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td>Địa Chỉ : <?php echo '123' . $this->item['address'] . $district_city; ?></td>
+                    <td>Phòng Ban : <?php echo $company_department; ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td>Điện Thoại : <?php echo $this->item['phone']; ?></td>
+                    <td>Ngày Đặt Hàng : <?php echo $dateFormat->formatToView($this->item['created'], 'd/m/Y'); ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td>Người Nhận : <?php echo $this->contact['name']; ?></td>
+                    <td>Phương Thức Thanh Toán : <?php echo $payment; ?></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="table table-striped table-bordered table-hover table-product">
+        	<thead>
+        		<tr>
+        			<th>STT</th>
+        			<th>Mã Sản Phẩm</th>
+        			<th>Tên Sản Phẩm</th>
+        			<th>Đơn Vị Tính</th>
+        			<th>Số Lượng</th>
+        			<th>Đơn Giá</th>
+        			<th>Giảm theo %</th>
+        			<th>Tổng Chiết Khấu</th>
+        			<th>Thành Tiền</th>
+        		</tr>
+        	</thead>
+            <tbody class="product_body">
+                <?php echo $xhtmlProduct; ?>
+            </tbody>
+            <tbody class="product_body">
+                <tr>
+                	<td colspan="8">Tổng</td>
+                	<td class="mask_currency"><?php echo number_format($total_product); ?> VNĐ</td>
+                </tr>
+            </tbody>
+        </table>
+        <?php 
+            if (!empty($product_gift)){
+        ?>
+    	<table class="table table-striped table-bordered table-hover table-product">
+        	<thead>
+        		<tr>
+        			<th>STT</th>
+        			<th>Mã Quà tặng</th>
+        			<th>Tên Quà tặng</th>
+        			<th>Đơn Vị Tính</th>
+        			<th>Số Lượng</th>
+        		</tr>
+        	</thead>
+            <tbody class="product_body">
+                <?php echo $xhtmlGift; ?>
+            </tbody>
+        </table>
+        <?php 
+            }
+        ?>
+        <div class="sign">
+        	<div class="col-sm-4">
+        		<div class="item">
+        			<div class="name">Người lập đơn</div>
+        			<div class="note">(Ký, họ tên)</div>
+        		</div>
+        	</div>
+        	<div class="col-sm-4">
+        		<div class="item">
+        			<div class="name">Người giao hàng</div>
+        			<div class="note">(Ký, họ tên)</div>
+        		</div>
+        	</div>
+        	<div class="col-sm-4">
+        		<div class="item">
+        			<div class="name">Người nhận hàng</div>
+        			<div class="note">(Ký, họ tên)</div>
+        		</div>
+        	</div>
+        </div>
+    </div>
+</div>
+<?php
+    } else { 
+?>
+<div class="page">
+    <div class="wrapper">
+        <div class="company">
+            <div class="box_title">Công Ty Cổ Phần Elepharma</div>
+            <div class="address_company">Số 10, hẻm 1, ngách 8 Ngõ 118 Nguyễn Khánh Toàn, Quan Hoa, Cầu Giấy, Hà Nội</div>
+        </div>
+        <div class="title">ĐƠN HÀNG : <?php echo $this->item['code']; ?></div>
+        <table class="table table_top table-striped table-bordered table-hover table-product">
+            <tbody class="product_body">
+                <tr class="product_row">
+                    <td>Tên Khách Hàng : <?php echo $this->contact['name']; ?></td>
+                    <td>Người Thực Hiện : <?php echo $this->user[$this->item['user_id']]['name']; ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td>Địa Chỉ : <?php echo $this->item['address'] . $district_city; ?></td>
+                    <td>Phòng Ban : <?php echo $company_department; ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td>Điện Thoại : <?php echo $this->item['phone']; ?></td>
+                    <td>Ngày Đặt Hàng : <?php echo $dateFormat->formatToView($this->item['created'], 'd/m/Y'); ?></td>
+                </tr>
+                <tr class="product_row">
+                    <td>Người Nhận : <?php echo $this->contact['name']; ?></td>
+                    <td>Phương Thức Thanh Toán : <?php echo $payment; ?></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="table table-striped table-bordered table-hover table-product">
+        	<thead>
+        		<tr>
+        			<th>STT</th>
+        			<th>Mã Sản Phẩm</th>
+        			<th>Tên Sản Phẩm</th>
+        			<th>Đơn Vị Tính</th>
+        			<th>Số Lượng</th>
+        			<th>Đơn Giá</th>
+        			<th>CK %</th>
+        			<th>Chiết Khấu (Đ)</th>
+        			<th>Thành Tiền</th>
+        		</tr>
+        	</thead>
+            <tbody class="product_body">
+                <?php echo $xhtmlProduct; ?>
+            </tbody>
+            <tbody class="product_body">
+                <tr>
+                	<td colspan="8">VAT (%)</td>
+                	<td class="mask_currency"><?php echo number_format($vat); ?>%</td>
+                </tr>
+                <tr>
+                	<td colspan="8">Phí vận chuyển</td>
+                	<td class="mask_currency"><?php echo number_format($transport_fee); ?> VNĐ</td>
+                </tr>
+                <tr>
+                	<td colspan="8">Tổng</td>
+                	<td class="mask_currency"><?php echo number_format($total_product + $transport_fee + $sale_vat); ?> VNĐ</td>
+                </tr>
+            </tbody>
+        </table>
+        <?php 
+            if (!empty($product_gift)){
+        ?>
+    	<table class="table table-striped table-bordered table-hover table-product">
+        	<thead>
+        		<tr>
+        			<th>STT</th>
+        			<th>Mã Quà tặng</th>
+        			<th>Tên Quà tặng</th>
+        			<th>Đơn Vị Tính</th>
+        			<th>Số Lượng</th>
+        		</tr>
+        	</thead>
+            <tbody class="product_body">
+                <?php echo $xhtmlGift; ?>
+            </tbody>
+        </table>
+        <?php 
+            }
+        ?>
+        <div class="sign">
+        	<div class="col-sm-4">
+        		<div class="item">
+        			<div class="name">Người lập đơn</div>
+        			<div class="note">(Ký, họ tên)</div>
+        		</div>
+        	</div>
+        	<div class="col-sm-4">
+        		<div class="item">
+        			<div class="name">Người giao hàng</div>
+        			<div class="note">(Ký, họ tên)</div>
+        		</div>
+        	</div>
+        	<div class="col-sm-4">
+        		<div class="item">
+        			<div class="name">Người nhận hàng</div>
+        			<div class="note">(Ký, họ tên)</div>
+        		</div>
+        	</div>
+        </div>
+    </div>
+</div>
+<?php
+    } 
+?>
+
+

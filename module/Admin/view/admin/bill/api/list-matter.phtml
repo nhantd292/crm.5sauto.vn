@@ -1,0 +1,59 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="col-80">Công cụ</th>';
+    $xhtmlHead .= '<th>Ngày phát</th>';
+    $xhtmlHead .= '<th>Ngày tạo</th>';
+    $xhtmlHead .= '<th>Tên vật phẩm</th>';
+    $xhtmlHead .= '<th>Người phát</th>';
+    $xhtmlHead .= '<th>Cơ sở phát</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+        foreach ($this->items AS $item) {
+            $id             = $item->id;
+            $date           = $dateFormat->formatToView($item->date, 'd/m/Y');
+            $matter_id      = $this->matter[$item->matter_id]['name'];
+            $branch_id      = $item->branch_id ? $this->company_branch[$item->branch_id]['name'] : '';
+            $created        = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+            $created_by     = $this->user[$item->created_by]['name'];
+            
+            // Link Action
+            $linkEdit       = $this->url('routeAdmin/default', array('controller' => 'bill', 'action' => 'edit', 'id' => $id));
+            $linkDelete     = $this->url('routeAdmin/default', array('controller' => 'bill', 'action' => 'delete', 'id' => $id));
+            
+            // Control Action
+            $controlDelete  = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Xóa', 'class' => 'btn btn-xs red', 'icon' => 'fa fa-trash', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'matter-delete')) .'\', {\'id\': \''. $item['id'] .'\'});'));
+            $controls       = $controlDelete;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+							    <td>'. $controls .'</td>
+    							<td>'. $date .'</td>
+    							<td>'. $created .'</td>
+    							<td>'. $matter_id .'</td>
+							    <td>'. $created_by .'</td>
+    							<td>'. $branch_id .'</td>
+    						</tr>';
+        }
+?>
+<?php echo $this->flashMessenger()->render();?>
+<div class="table-manager">
+	<div class="table-scrollable">
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+				<?php echo $xhtmlHead;?>
+			</thead>
+			<tbody>
+				<?php echo $xhtmlItems;?>
+			</tbody>
+		</table>
+	</div>
+</div>
+<?php
+    } else {
+        echo '<span class="text-danger">Không có dữ liệu</span>';
+    } 
+?>

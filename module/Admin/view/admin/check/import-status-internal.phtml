@@ -1,0 +1,132 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    $number = new \ZendX\Functions\Number();
+
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'close', 'caption' => 'Quay lại danh sách', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'internal')), 'onclick' => '', 'icon' => 'fa-arrow-left', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $elements = array(
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
+        array('element' => $myForm->get('file_import'), 'label' => 'Chọn file cần nhập <a href="'. URL_FILES .'/template/Cap_nhat_trang_thai_giuc_don_ha_noi.xlsx"><b>(Tải file mẫu)</b></a>', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('submit'), 'label' => '', 'boxClass' => 'col-md-12'),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" enctype="multipart/form-data">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+	<?php echo @$this->xViewElementErrors($elements);?>
+	
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+		<?php
+		if(!empty($this->import) && !empty($this->sheetData)) {  
+		?>
+    	<div class="row">
+			<div class="col-md-12">
+			    <div class="table-manager" id="table-manager">
+                    <div class="table-scrollable" style="height: 600px;">
+        				<table class="table table-striped table-bordered table-hover">
+            				<thead>
+            					<tr>
+									<th class="col-80">Công cụ</th>
+            						<th class="col-50">STT</th>
+            						<th>Mã vận đơn</th>
+            						<th>Trạng thái</th>
+            						<th>COD</th>
+            					</tr>
+            				</thead>
+            				<tbody>
+            					<?php
+                                $index = 0;
+            					foreach ($this->sheetData AS $key => $val) { 
+                                    if ($key != 1) {
+            						$index++;
+            					?>
+								<tr id="tr_<?php echo $index;?>" data-index="<?php echo $index;?>">
+									<td><a href="javascript:;" data-index="<?php echo $index;?>" class="btn btn-xs default">Import</a></td>
+        							<td><?php echo $index;?></td>
+        							<td><span class="bill_code"><?php echo trim($val['B']);?></span></td>
+        							<td><span class="status_check_id"><?php echo trim($val['C']);?></span></td>
+        							<td><span class="price_transport"><?php echo ($val['D'] ? number_format(trim($val['D']),0) : 0);?></span></td>
+        						</tr>
+                                <?php
+                                    }
+            					} 
+        						?>
+        					</tbody>
+            			</table>
+        			</div>
+    			</div>
+			</div>
+		</div>
+		<?php
+		} else {
+			echo '<div class="alert alert-danger">Không có dữ liệu import</div>';
+		}
+		?>
+	</div>
+</form>
+
+<?php $this->headScript()->captureStart() ?>
+	<?php
+	if(!empty($this->import) && !empty($this->sheetData)) {  
+	?>
+	function startImportContact(index) {
+		var item = '#tr_'+ index;
+		
+		if($(item).size() > 0) {
+		    var data = {
+		    	'type': $('select[name="type"]').val(),
+		    };
+		    $(item +' span').each(function() {
+		        data[$(this).attr('class')] = $(this).text();
+		    });
+            $.ajax({
+    			url: "<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action']));?>",
+    			type: 'POST',
+    			data: data,
+    			beforeSend: function() {
+    				$(item + ' .btn').html('Đang xử lý ...').removeClass('default').addClass('yellow');
+    			},
+    			success: function(result) {
+    				setTimeout(function(){
+    					$(item).removeClass('active');
+    					if(result == 'Hoàn thành') {
+    						$(item + ' .btn').html('Hoàn thành').removeClass('yellow').addClass('green');
+    					} else {
+    						$(item + ' .btn').html(result).removeClass('yellow').addClass('red');
+    					}
+
+						var index_next = parseInt(index) + 1;
+    				    startImportContact(index_next); 
+    			    }, 100);
+    			}
+    		});
+		} else {
+			alert('Import thành công');
+		}
+	}
+    startImportContact(1);
+    <?php
+	}
+    ?>
+<?php $this->headScript()->captureEnd() ?>

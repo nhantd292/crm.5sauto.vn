@@ -1,0 +1,153 @@
+<?php
+if($this->kov_branch_id){
+    $count = $this->count;
+    $itemPerpage = $this->itemPerpage;
+    $curentPage = $this->curentPage;
+    $textItemPerpage = $count > $itemPerpage ? $itemPerpage : $count;
+    $xhtml = '';
+    $show_infor = $count > 0 ? '<p class="page">Hiển thị '.$textItemPerpage.' / '.$count.' sản phẩm</p>' : 'Không có sản phẩm tìm kiếm';
+
+    if($count / $itemPerpage > 1){
+        $page = (int)($count / $itemPerpage);
+        if($count % $itemPerpage > 0)
+            $page = $page + 1;
+    }
+    if($page > 1){
+        $pageText = '<ul class="pages">';
+        for($p = 1; $p <= $page; $p++){
+            $active = $p == $curentPage ? "active" : '';
+            $pageText .= '<li class="'.$active.'">'.$p.'</li>';
+        }
+        $pageText .= '</ul>';
+    }
+    $xhtml .= '<div class="pagination">'.$show_infor.$pageText.'</div>';
+    $xhtml .= '<div class="listProduct" >';
+    foreach ($this->kovProducts as $pro) {
+        $xhtml .= '<div class="col-xl-2 col-sm-3 col-xs-6 item">
+                <div class="product col-xs-12" data-id="' . $pro['id'] . '" data-branch-id="' . $pro['inventories'][0]['branchId'] . '" >
+                    <div class="img col-sm-3 col-xs-3">
+                        <img src="' . $pro['images'][0] . '" width="100%">
+                    </div>
+                    <div class="infor col-sm-9 col-xs-9">
+                        <p class="code-product text-bold">' . $pro['code'] .'</span></p>
+                        <p class="name-product">' . $pro['fullName'] . '</p>
+                        <p class="price-product">Giá:' . number_format($pro['basePrice']) . '</p>
+                        <p class="number-product">Tồn kho:<span class="text-red text-bold">' . number_format($pro['inventories'][0]['onHand']) . '</span></p>
+                    </div>
+                </div>
+            </div>';
+    }
+    $xhtml .= '</div>';
+    echo $xhtml;
+}
+else{
+    echo "Bạn chưa được chọn kho hàng lấy sản phẩm";
+}
+
+?>
+<style>
+    .pagination{width: 100%;float: left;margin: 10px 0px; border-bottom: 1px solid #d8d8d8;}
+    .pagination p{float: left;margin-right: 20px;line-height: 24px;}
+    .pagination ul li {list-style: none;display: inline-block;width: 24px;height: 24px;text-align: center;line-height: 22px;border: 1px solid #d8d8d8;margin: 0px 3px;border-radius: 3px !important;cursor: pointer;}
+    .pagination ul li.active {background: #f70;color: #fff;}
+    .pagination ul li:hover {background: #f70;color: #fff;}
+</style>
+
+<script>
+    $('#loadProducts .item .product').on('click', function () {
+        // resetDiscounts();
+        var id = $(this).attr('data-id');
+        var branch_id = $(this).attr('data-branch-id');
+        if ($('#tr_' + id).length) {
+            var number = $('#tr_' + id).find('.numbers input').val();
+            var price = $('#tr_' + id).find('.price > input').val();
+            $('#tr_' + id).find('.numbers input').val(parseInt(number) + 1);
+            $('#tr_' + id).find('.total input').val(formatNumber(parseInt(unFormatNumber(price)) * (parseInt(unFormatNumber(number)) + 1)));
+            updateTotal()
+        } else {
+            $.ajax({
+                url: '/xadmin/api/add-product-to-list/',
+                method: 'POST',
+                data: {id: id, branch_id: branch_id},
+                success: function (data) {
+                    $('.list-product-contract').append(data);
+                    format_to_money();
+                    updateTotal()
+                }
+            })
+        }
+    });
+
+    // Load sản phẩm khi chọn phân trang
+    $('#loadProducts .pagination ul li').on('click', function () {
+        var curentPage = parseInt($(this).text());
+        var data = {categoriId: $(`select[name="kov_product_category"]`).val(), filter_keyword: $(`input[name="filter_keyword"]`).val(), curentPage : curentPage};
+        load_action('#loadProducts', '<?php echo $this->url('routeAdmin/default',array('controller' => 'api', 'action' => 'loadKovProducts'));?>', data);
+    });
+
+    $('body').delegate(".price > input , .numbers input",'change',function(e){
+        var total = 0;
+        var tr_parent = $(this).parents('tr');
+        var number = tr_parent.find('.numbers input').val().replace(/,/gm,'');
+        var price = tr_parent.find('.price > input').val().replace(/,/gm,'');
+        tr_parent.find('.total input').val(formatNumber(parseInt(number) * parseInt(price)));
+        updateTotal();
+    });
+
+    $('body').delegate(".show-price",'click',function(e){
+        $(this).parents('tr').find('.price-detail').show();
+    });
+    $('body').delegate(".close-price-detail",'click',function(e){
+        $(this).parents('tr').find('.price-detail').hide();
+    });
+
+    $('body').delegate("input.discount_value , input.unit_type",'change',function(e){
+        var tr_parent = $(this).parents('tr');
+        var numbers = unFormatNumber(tr_parent.find('.numbers input').val());
+        var price = unFormatNumber(tr_parent.find('input.listed_price').val());
+        var discount_value = unFormatNumber(tr_parent.find('input.discount_value').val());
+        var unit_type = unFormatNumber(tr_parent.find('input.unit_type:checked').val());
+        discount_value = discount_value.length ? discount_value : 0;
+        var sale_text
+        if(unit_type == 1)
+            sale_text = discount_value;
+        if(unit_type == 2)
+            sale_text = (price * discount_value / 100);
+        tr_parent.find('input.sale_text').val(formatNumber(price - sale_text));
+        tr_parent.find('input.base_price').val(formatNumber(price - sale_text));
+        tr_parent.find('.total input').val(formatNumber((price - sale_text) * numbers));
+        var unit = unit_type == 1 ? '' : ' %'
+        if(discount_value != 0) tr_parent.find('.show_discount').text('- '+formatNumber(discount_value)+ unit);
+        else tr_parent.find('.show_discount').text('');
+        updateTotal();
+    });
+
+    $('body').delegate("input.sale_text",'change',function(e){
+        var tr_parent = $(this).parents('tr');
+        var sale_text = unFormatNumber($(this).val());
+        var numbers   = unFormatNumber(tr_parent.find('.numbers input').val());
+        var listed_price    = unFormatNumber(tr_parent.find('.show-price').text());
+
+        tr_parent.find('input.base_price').val(formatNumber(sale_text));
+        tr_parent.find('.total input').val(formatNumber(sale_text * numbers));
+        if(sale_text != listed_price)
+            var op = sale_text - listed_price > 0 ? '+' : '';
+            tr_parent.find('.show_discount').text(op + formatNumber(sale_text - listed_price));
+        updateTotal();
+    });
+
+    $('body').delegate(".total_contract_vat input, .fee_other input, .total_contract_discount input, .price_deposits input",'change',function(e){
+        updateTotal();
+    });
+
+    //Xóa hàng trong bảng sản phẩm
+    $('body').on('click', '.delete-row', function(){
+        deleteTr($(this).parents('tr'));
+    });
+
+    function deleteTr(tr_parent){
+        tr_parent.remove();
+        resetDiscounts();
+        updateTotal();
+    }
+</script>

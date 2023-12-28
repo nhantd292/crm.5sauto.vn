@@ -1,0 +1,91 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    $options = !empty($this->item['options']) ? unserialize($this->item['options']) : array();
+    $elements = array(
+        array('section' => 'Thông tin chung', 'boxClass' => 'col-md-12'),
+        array('element' => $this->item['name'], 'label' => 'Họ và tên'),
+        array('element' => $this->item['phone'], 'label' => 'Số điện thoại'),
+        array('element' => $this->item['email'], 'label' => 'Email'),
+        array('element' => $this->item['birthday_year'], 'label' => 'Năm sinh'),
+        array('element' => $this->sex[$this->item['sex']]['name'], 'label' => 'Giới tính'),
+        array('element' => $options['job'], 'label' => 'Nghề nghiệp'),
+        array('element' => $this->item['address'], 'label' => 'Địa chỉ nơi ở'),
+        array('element' => $this->location_city[$this->item['location_city_id']]['name'], 'label' => 'Tỉnh thành'),
+        array('element' => $this->location_district[$this->item['location_district_id']]['name'], 'label' => 'Quận huyện'),
+        array('element' => $this->type_c3[$this->item['type_c3']]['name'], 'label' => 'Loại C3'),
+        array('element' => $this->level[$this->item['level']]['name'], 'label' => 'Level'),
+        array('element' => $this->product_interest[$this->item['product_id']]['name'], 'label' => 'Sản phẩm quan tâm'),
+        array('element' => $this->marketing_channel[$this->item['marketing_channel_id']]['name'], 'label' => 'Kênh marketing'),
+        array('element' => $this->source_group[$this->item['source_group_id']]['name'], 'label' => 'Nguồn liên hệ'),
+        array('section' => 'Thông tin thêm', 'boxClass' => 'col-md-12'),
+        array('element' => $item['phone_2'], 'label' => 'Số điện thoại 2'),
+        array('element' => $options['address_2'], 'label' => 'Địa chỉ 2'),
+        array('element' => $item['phone_3'], 'label' => 'Số điện thoại 3'),
+        array('element' => $options['address_3'], 'label' => 'Địa chỉ 3'),
+        array('element' => $options['note'], 'label' => 'Ghi chú', 'boxClass' => 'col-sm-12'),       
+        array('section' => 'Thông tin người quản lý', 'boxClass' => 'col-md-12'),
+        array('element' => $dateFormat->formatToView($this->item['created'], 'd/m/Y H:s'), 'label' => 'Ngày tạo'),
+        array('element' => $dateFormat->formatToView($this->item['date'], 'd/m/Y H:s'), 'label' => 'Ngày quản lý'),
+        array('element' => $this->user[$this->item['user_id']]['name'], 'label' => 'Người quản lý'),
+        array('element' => $this->sale_group[$this->item['sale_group_id']]['name'], 'label' => 'Đội nhóm'),
+        array('element' => $this->sale_branch[$this->item['sale_branch_id']]['name'], 'label' => 'Cơ sở'),
+        array('section' => 'Danh sách đơn hàng', 'boxClass' => 'col-md-12'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'load_contract', 'boxStyle' => 'margin-bottom: 20px;'),
+        array('section' => 'Lịch sử chăm sóc', 'boxClass' => 'col-md-12'),
+        array('div' => '<a href="javascript:;" id="btn_load_history" class="btn btn-sm blue">Nhân vào đây để xem chi tiết</a>', 'boxClass' => 'col-md-12', 'boxId' => 'load_history', 'boxStyle' => 'margin-bottom: 20px;'),
+        array('section' => 'Lịch sử hệ thống', 'boxClass' => 'col-md-12'),
+        array('div' => '<a href="javascript:;" id="btn_load_logs" class="btn btn-sm blue">Nhân vào đây để xem chi tiết</a>', 'boxClass' => 'col-md-12', 'boxId' => 'load_logs', 'boxStyle' => 'margin-bottom: 20px;'),
+        //array('section' => 'Lịch sử quản lý', 'boxClass' => 'col-md-12'),
+        //array('div' => '<a href="javascript:;" id="btn_load_logs_parent" class="btn btn-sm blue">Nhân vào đây để xem chi tiết</a>', 'boxClass' => 'col-md-12', 'boxId' => 'load_logs_parent', 'boxStyle' => 'margin-bottom: 20px;'),
+    );
+
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+
+<script type="text/javascript">
+    // Load danh sách đơn hàng
+    load_action('#load_contract', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-contract'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>'});
+    
+    // Load lịch sử chăm sóc
+    $('#btn_load_history').click(function() {
+    	load_action('#load_history', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-history'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>'});
+    });
+    
+    // Load lịch sử hệ thống
+    $('#btn_load_logs').click(function() {
+    	load_action('#load_logs', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-logs'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>'});
+    });
+    
+    // Load lịch sử chuyển quản lý
+    $('#btn_load_logs_parent').click(function() {
+    	load_action('#load_logs_parent', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'list-logs-parent'));?>', {contact_id: '<?php echo $this->item['contact_id'];?>'});
+    });
+</script>

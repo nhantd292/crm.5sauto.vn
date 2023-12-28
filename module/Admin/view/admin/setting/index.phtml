@@ -1,0 +1,138 @@
+<?php
+    // Filter
+    $myForm				= $this->myForm;
+    $myForm->prepare();
+    
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= $this->linkAdminSort('Tên', 'name', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Code', 'code', $this->params['ssFilter'], null);
+    $xhtmlHead .= $this->linkAdminSort('Giá trị', 'value', $this->params['ssFilter'], null);
+	$xhtmlHead .= $this->linkAdminSort('Thứ tự', 'left', $this->params['ssFilter'], array('class' => 'col-90'));
+	$xhtmlHead .= '<th class="col-60">Left</th>';
+	$xhtmlHead .= '<th class="col-60">Right</th>';
+	$xhtmlHead .= '<th class="col-80">Công cụ</th>';
+	$xhtmlHead .= '</tr>';
+
+    // Danh sách
+    $xhtmlItems = '';
+    if($this->items->count() > 0) {
+        $levelFirst = $this->item_first['level'];
+        foreach ($this->items AS $item) {
+            $childList[$item->parent][] = $item->id;
+            
+            $id             = $item->id;
+            $level          = $item->level;
+            $space          = str_repeat('<span class="gi">|----- </span>', $item->level - $levelFirst);
+            $name           = $item->name;
+            $code           = $item->code;
+            $value          = $item->value;
+            $left           = $item->left;
+            $right          = $item->right;
+            $status         = $this->linkAdminStatus($id, $item->status);
+            $ordering       = @$this->xFormInput('ordering[\''. $id .'\']', array_search($item->id, $childList[$item->parent]) + 1, array('class' => 'form-control input-xs spinner-input', 'data-level' => $level));
+            $cid            = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            // Link Action
+            $linkAddBefore  = $this->url('routeAdminNested/add', array('controller' => $this->params['controller'], 'code' => $this->params['route']['code'], 'type' => 'before', 'reference' => $id));
+            $linkAddAfter   = $this->url('routeAdminNested/add', array('controller' => $this->params['controller'], 'code' => $this->params['route']['code'], 'type' => 'after', 'reference' => $id));
+            $linkAddLeft    = $this->url('routeAdminNested/add', array('controller' => $this->params['controller'], 'code' => $this->params['route']['code'], 'type' => 'left', 'reference' => $id));
+            $linkAddRight   = $this->url('routeAdminNested/add', array('controller' => $this->params['controller'], 'code' => $this->params['route']['code'], 'type' => 'right', 'reference' => $id));
+            $linkEdit       = $this->url('routeAdminNested/default', array('controller' => $this->params['controller'], 'action' => 'edit', 'code' => $this->params['route']['code'], 'id' => $id));
+            $linkMove       = $this->url('routeAdminNested/default', array('controller' => $this->params['controller'], 'action' => 'move', 'code' => $this->params['route']['code'], 'id' => $id));
+            $linkCopy       = $this->url('routeAdminNested/default', array('controller' => $this->params['controller'], 'action' => 'copy', 'code' => $this->params['route']['code'], 'id' => $id));
+            $linkDelete     = $this->url('routeAdminNested/default', array('controller' => $this->params['controller'], 'action' => 'delete', 'code' => $this->params['route']['code'], 'id' => $id));
+            
+            // Control Action
+            $controlEdit    = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+            $controlStatus  = $this->linkAdminStatus($id, $item->status);
+            $controlOptions = '<div class="btn-group">
+                                    <a class="btn btn-xs default" href="javascript:;" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"><i class="fa fa-link"></i> <i class="fa fa-angle-down"></i></a>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li><a href="'. $linkAddBefore .'"><i class="fa fa-plus-square-o"></i> Thêm vào trước</a></li>
+                                        <li><a href="'. $linkAddAfter .'"><i class="fa fa-plus-square-o"></i> Thêm vào sau</a></li>
+                                        <li><a href="'. $linkAddLeft .'"><i class="fa fa-plus-square-o"></i> Thêm con đầu tiên</a></li>
+                                        <li><a href="'. $linkAddRight .'"><i class="fa fa-plus-square-o"></i> Thêm con cuối cùng</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="'. $linkMove .'"><i class="fa fa-arrows"></i> Di chuyển</a></li>
+                                        <li><a href="'. $linkCopy .'"><i class="fa fa-copy"></i> Copy</a></li>
+                                        <li><a href="'. $linkDelete .'"><i class="fa fa-trash"></i> Xóa</a></li>
+                                    </ul>
+                                </div>';
+            $controls       = $controlEdit . $controlStatus . $controlOptions;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+    							<td>'. $cid .'</td>
+    							<td>'. $space .'<a href="'. $linkEdit .'">' . $name .'</a></td>
+    							<td>'. $code .'</td>
+    							<td>'. $value .'</td>
+    							<td class="center">
+    							    <div class="input-group">
+    				                    '. $ordering .'
+    									<div class="input-group-btn">
+    										<a href="javascript:;" onclick="moveNode(\''. $id .'\', \'up\')" class="btn btn-xs default spinner-up"> <i class="fa fa-angle-up"></i> </a>
+    										<a href="javascript:;" onclick="moveNode(\''. $id .'\', \'down\')" class="btn btn-xs default spinner-down"> <i class="fa fa-angle-down"></i> </a>
+    									</div>
+    								</div>
+                                </td>
+    							<td>'. $left .'</td>
+    							<td>'. $right .'</td>
+    							<td>'. $controls .'</td>
+    						</tr>';
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array( 'name' => 'add', 'caption' => 'Thêm', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+        array( 'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ), 'children' => array( array( 'name' => 'sort', 'caption' => 'Sắp xếp', 'link' => 'javascript:;', 'icon' => 'fa-sort-alpha-asc', 'attributes' => array( 'onclick' => 'javascript:changeOrdering();', ) ), array( 'name' => 'divider' ), array( 'name' => 'active', 'caption' => 'Hiển thị', 'link' => 'javascript:;', 'icon' => 'fa-check-square-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 0);', ) ), array( 'name' => 'inactive', 'caption' => 'Không hiển thị', 'link' => 'javascript:;', 'icon' => 'fa-circle-o', 'attributes' => array( 'onclick' => 'javascript:changeStatus(\'multi\', 1);', ) ), array( 'name' => 'divider' ), array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');', ) ), array( 'name' => 'divider' ), array( 'name' => 'print', 'caption' => 'In', 'link' => 'javascript:;', 'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:printPage();', ) ), array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array( 'onclick' => 'javascript:exportList();', ) ), ), 'children-class' => 'dropdown-menu pull-right' ),
+        array( 'name' => 'config', 'caption' => 'Cài đặt', 'link' => 'javascript:;', 'icon' => 'fa-cogs', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
+    );
+?>
+
+<form action="<?php echo $this->url('routeAdminNested/default', array('controller' => $this->params['controller'], 'action' => 'filter', 'code' => $this->params['route']['code'])); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php //echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+			<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable default">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+	<input type="hidden" name="code" value="<?php echo $this->params['route']['code'];?>">
+</form>

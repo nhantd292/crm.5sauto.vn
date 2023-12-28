@@ -1,0 +1,68 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+
+    $arrControl = array(
+        array('name' => 'save-close', 'caption' => 'Xác nhận xóa', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Quay lại', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-arrow-left', 'attributes' => array('class' => 'btn')),
+    );
+    
+    $color_price_owed = 'text-info';
+    if($this->item['price_total'] > 0) {
+        if(($this->item['price_paid'] / $this->item['price_total'] * 100) < 60) {
+            $color_price_owed   = 'text-red';
+        } elseif (($this->item['price_paid'] / $this->item['price_total'] * 100) < 100) {
+            $color_price_owed   = 'text-purple';
+        }
+    }
+    
+    $options = !empty($this->item['options']) ? unserialize($this->item['options']) : array();
+    $contact_options = !empty($this->contact['options']) ? unserialize($this->contact['options']) : array();
+    
+    $elements = array(
+        array('section' => 'Thông tin khách hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $this->contact['phone'], 'label' => 'Số điện thoại'),
+        array('element' => $this->contact['name'], 'label' => 'Họ và tên'),
+        array('element' => $this->contact['email'], 'label' => 'Email'),
+        array('element' => $this->sex[$this->contact['sex']]['name'], 'label' => 'Giới tính'),
+        array('element' => $this->sale_source_group[$this->contact['source_group_id']]['name'], 'label' => 'Nguồn liên hệ'),
+        array('section' => 'Thông tin người quản lý', 'boxClass' => 'col-md-12'),
+        array('element' => $this->user[$this->item['user_id']]['name'], 'label' => 'Người quản lý'),
+        array('element' => $this->sale_group[$this->item['sale_group_id']]['name'], 'label' => 'Đội nhóm'),
+        array('element' => $this->sale_branch[$this->item['sale_branch_id']]['name'], 'label' => 'Cơ sở'),
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => $dateFormat->formatToView($this->item['created'], 'd/m/Y H:i:s'), 'label' => 'Ngày tạo'),
+        array('element' => $dateFormat->formatToView($this->item['date'], 'd/m/Y'), 'label' => 'Ngày đơn hàng'),
+        array('element' => $this->product[$this->item['product_id']]['name'], 'label' => 'Sản phẩm'),
+        array('element' => $this->edu_class[$this->item['edu_class_id']]['name'], 'label' => 'Lớp học'),
+        array('element' => $options['promotion_content'], 'label' => 'Lý do giảm giá', 'boxClass' => 'col-md-4'),
+        array('section' => 'Thông tin thanh toán', 'boxClass' => 'col-md-12'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price'] .'</span> '. $this->item['price_unit'], 'label' => 'Đơn giá', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price_promotion'] .'</span>', 'label' => 'Ưu đãi', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price_total'] .'</span>', 'label' => 'Thành tiền sau ưu đãi', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-purple">'. $this->item['price_paid'] .'</span>', 'label' => 'Đã thanh toán', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-info">'. $this->item['price_accrued'] .'</span>', 'label' => 'Đã chi', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency '. $color_price_owed .'">'. $this->item['price_owed'] .'</span>', 'label' => 'Công nợ', 'boxClass' => 'col-md-2'),
+    );
+    
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elements);
+?>
+
+<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminForm" id="adminForm" class="">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-default.phtml', array( 'control' => $arrControl )); ?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="alert alert-danger">Lưu ý: Sẽ xóa toàn bộ hóa đơn, trong danh sách đơn hàng và không thể khôi phục lại</div>
+    <div class="page-content">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+	</div>
+</form>

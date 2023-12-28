@@ -1,0 +1,195 @@
+<?php
+$dateFormat = new \ZendX\Functions\Date();
+$number = new \ZendX\Functions\Number();
+$i = 0;
+foreach ($this->items as $item) {
+    if($item['production_department_type'] == STATUS_CONTRACT_PRODUCT_PRODUCTED || $item['production_department_type'] == STATUS_CONTRACT_PRODUCT_POST) {
+        $code = $item['code'];
+        $user = $this->user[$item['created_by']]['name'];
+        $options = !empty($item['options']) ? unserialize($item['options']) : array();
+        $contact_name = $item['contact_name'];
+        $contact_phone = $item['contact_phone'];
+        $contact_license_plate = $item['contact_license_plate'];
+        $note = $options['sale_note'];
+        $date = date('d/m/Y');
+        $contact_phone = substr_replace($contact_phone, "****", 3, 4);
+        $products = $options['product'];
+
+        $infor_contact = '<div class="label">
+                                <p><span class="title">Tên khách hàng:</span> ' . $contact_name . '</p>
+                                <p><span class="title">Số điện thoại:</span> ' . $contact_phone . '</p>
+                                <p><span class="title">Ngày tháng:</span> ' . $date . '</p>
+                            </div>
+                            <div class="label">
+                                <p><span class="title">Mã đơn hàng:</span> ' . $code . '</p>
+                                <p><span class="title">Tên sales:</span> ' . $user . '</p>
+                            </div>
+                            <p><span class="title">Ghi chú sale:</span> </span> ' . $note . '</p>';
+
+        $product_html = '';
+        foreach ($products as $key => $value) {
+            $product_name = $item['kov_status'] ? $value['full_name'] : $this->product[$value['product_id']]['name'];
+
+            $product_number = $value['numbers'];
+            $driver = $value['product_name'];
+            $product_code = $value['code'];
+
+            $contract_code_return = $value['product_return_id'] ? '<span class="text-red">('.$this->ProductReturn[$value['product_return_id']]['contract_code'].')</span>' : '';
+
+            $product_html .= '<tr>
+                                    <td>' . $product_code . '</td>
+                                    <td>' . $product_name . '</td>
+                                    <td class="text-center">' . $product_number . '</td>
+                                    <td>' . $driver .$contract_code_return. '</td>
+                                    <td></td>
+                                </tr>
+                                <tr><td colspan="8"></td></tr>
+                                ';
+        }
+
+        ?>
+
+        <div class="content-print">
+            <div class="head-print">
+                <div class="logo">
+                    <img src="/public/files/upload/default/images/logo-ok2.png">
+                </div>
+                <div class="company">
+                    <h3>CÔNG TY TNHH SẢN XUẤT VÀ THƯƠNG MẠI XUẤT<br>NHẬP KHẨU FOREWIN</h3>
+                    <p>Showroom: 256, nguyễn xiển, p. Hạ đình, q. thanh xuân, hà nội</p>
+                    <p>Hotline: 0936 119 887 - 0968 233 117 - 0961 793845</p>
+                </div>
+            </div>
+            <div class="infor-contact">
+                <h4>Phiếu sản xuất và thi công</h4>
+                <?php echo $infor_contact; ?>
+            </div>
+            <div class="infor-order">
+                <table border="1">
+                    <tr>
+                        <th>Mã sản phẩm</th>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Tên xe - Năm sản xuất</th>
+                        <th width="200">Thợ may</th>
+                    </tr>
+                    <?php echo $product_html; ?>
+                </table>
+            </div>
+        </div>
+        <br clear="all" style="page-break-before:always"/>
+        <?php
+    }
+    else{?>
+        <div class="content-print">
+            Đơn <?php echo $item['code']; ?> chưa có trạng thái sản xuất
+        </div>
+<?php
+    }
+}
+?>
+
+<style>
+    *{
+        margin:0px;
+        padding:0px;
+        box-sizing:border-box;
+        moz-box-sizing:border-box;
+        webkit-box-sizing:border-box;
+    }
+    .text-center{
+        text-align: center;
+    }
+    .text-red{
+        color: #ff0000;
+    }
+    body{
+        background: rgba(0,0, 0, 0.7);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    table{
+        border-collapse: collapse;
+        width: 100%;
+    }
+    table th{
+        padding: 5px;
+        text-transform: capitalize;
+        font-size: 14px;
+    }
+    table td{
+        padding: 5px;
+        text-transform: capitalize;
+        font-size: 13px;
+        font-weight: bold;
+    }
+    .content-print {
+        min-width: 210mm;
+        max-width: 297mm;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        background: #fff url("/public/files/upload/default/images/bg.png") no-repeat center;
+    }
+    .content-print .head-print{
+        width: 100%;
+        display: flex;
+    }
+    .content-print .head-print .logo{
+        width: 30%;
+        text-align: center;
+    }
+    .content-print .head-print .logo img {
+        width: 70%;
+    }
+    .content-print .head-print .company {
+        width: 70%;
+        padding: 0 20px;
+        text-align: center;
+    }
+    .content-print .head-print .company h3{
+        font-weight: bold;
+        font-size: 18px;
+        text-transform: uppercase;
+        margin: 5px 0px;
+        width: 100%;
+    }
+    .content-print .head-print .company p {
+        padding: 3px 0;
+        font-size: 14px;
+        text-transform: capitalize;
+        margin: 0;
+    }
+    .content-print .infor-contact{
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .content-print .infor-contact h4{
+        text-align: center;
+        font-size: 20px;
+        text-transform: capitalize;
+        padding: 10px 0 20px;
+    }
+    .content-print .infor-contact .label{
+        width: 50%;
+        float: left;
+    }
+    .content-print .infor-contact p {
+        margin: 0;
+        padding: 5px 30px;
+        font-size: 15px;
+        display: flex;
+        text-transform: capitalize;
+    }
+    .content-print .infor-contact p span{
+        min-width: 160px;
+        display: inline-block;
+    }
+
+    @media print {
+        tr.title{
+            background-color: #d8d8d8 !important;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+
+</style>

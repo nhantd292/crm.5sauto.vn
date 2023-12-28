@@ -1,0 +1,134 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $arrControl = array(
+        array('name' => 'save', 'caption' => 'Lưu', 'link' => 'javascript:;', 'icon' => 'fa-check', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save\');', 'class' => 'btn')),
+        array('name' => 'save-new', 'caption' => 'Lưu &amp; Mới', 'link' => 'javascript:;', 'icon' => 'fa-paste', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-new\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
+    );
+    
+    // Set lại các giá trị của từng element
+    $myForm->get('contract_id')->setAttributes(array('value' => $this->contract['id']));
+    $location_city_id = $myForm->get('location_city_id')->getValue() ? $myForm->get('location_city_id')->getValue() : current(array_keys($myForm->get('location_city_id')->getValueOptions()));
+    $myForm->get('location_district_id')->setAttributes(array('data-parent' => $location_city_id));
+    $myForm->get('source_channel_id')->setAttributes(array('data-parent' => $myForm->get('source_group_id')->getValue()));
+    $myForm->get('contract_id')->setAttributes(array('value' => $this->contract['id']));
+    $myForm->get('bill_paid_price')->setAttributes(array('value' => $this->settings['General.Contract.TransferPrice']['value']));
+    
+    $elements = array(
+        array('section' => 'Thông tin khách hàng được chuyển nhượng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('phone'), 'label' => 'Số điện thoại', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('source_group_id'), 'label' => 'Nhóm nguồn liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('source_channel_id'), 'label' => 'Kênh nguồn liên hệ', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
+        array('section' => 'Phân loại', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('subject'), 'label' => 'Đối tượng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('student_school_id'), 'label' => 'Trường học', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 load_by_subject subject_1 subject_2 subject_3'),
+        array('element' => $myForm->get('student_major_id'), 'label' => 'Ngành học', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 load_by_subject subject_1 subject_2 subject_3'),
+        array('element' => $myForm->get('company_name'), 'label' => 'Tên công ty', 'boxClass' => 'col-md-2 load_by_subject subject_2'),
+        array('element' => $myForm->get('company_department'), 'label' => 'Phòng ban', 'boxClass' => 'col-md-2 load_by_subject subject_2'),
+        array('element' => $myForm->get('company_position'), 'label' => 'Vị trí/Chức vụ', 'boxClass' => 'col-md-2 load_by_subject subject_2'),
+        array('element' => $myForm->get('student_class_id'), 'label' => 'Lớp', 'boxClass' => 'col-md-2 load_by_subject subject_4'),
+        array('section' => 'Mở rộng', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('email'), 'label' => 'Email', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('birthday'), 'label' => 'Ngày sinh', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_district_id'), 'label' => 'Quận huyện', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('address'), 'label' => 'Địa chỉ', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('facebook'), 'label' => 'Facebook', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('content'), 'label' => 'Nguyên nhân/Lý do chuyển nhượng', 'validate' => array('require' => true), 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('contract_id'), 'label' => 'đơn hàng', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true)),
+        array('section' => 'Thêm phiếu thu', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('bill_date'), 'label' => 'Ngày', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('bill_paid_number'), 'label' => 'Số phiếu thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('bill_paid_price'), 'label' => 'Tiền thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('bill_paid_type_id'), 'label' => 'Phân loại phiếu thu', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('bill_surcharge_type_id'), 'label' => 'Phân loại phụ phí', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('branch_id'), 'label' => 'Cơ sở thu tiền', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('bill_content'), 'label' => 'Nội dung/Ghi chú', 'boxClass' => 'col-md-12'),
+    );
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+    
+    $access = 1;
+    $message = '';
+    if($this->contract['price_owed'] > 0) {
+        $access     = 0;
+        $message    = '<div class="alert alert-danger">Vui lòng hoàn thành học phí trước khi chuyển nhượng</div>';
+    }
+    
+    if(!empty($this->contract['transfer'])) {
+        $access     = 0;
+        $message    = '<div class="alert alert-danger">đơn hàng này đã được chuyển nhượng. Bạn không thể thực hiện thao tác này</div>';
+    }
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+    <?php if($access == 1) { ?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+    <?php
+    } else {
+        echo $message;
+    } 
+    ?>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+    <?php if($access == 1) { ?>
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<?php }?>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+<script type="text/javascript">
+    var idForm = '#adminFormModal';
+    
+    //Xử lý hiển thị đối tượng
+    var subject_id = $(idForm + ' select[name="subject"]').val();
+    $(idForm + ' .subject_' + subject_id).show();
+    $(idForm + ' select[name="subject"]').change(function() {
+    	var subject_id = $(this).val();
+        $(idForm + ' .load_by_subject').hide();
+        $(idForm + ' .subject_' + subject_id).show();
+    });
+    
+    //Xử lý load tỉnh thành
+    $(idForm + ' select[name="location_city_id"]').change(function() {
+    	var select = 'input[name="location_district_id"]';
+    	var parent = $(select).parent();
+    	$(idForm + ' .select2-container', parent).select2('val', '');
+    	$(select).attr('data-parent', $(this).val());
+    });
+    
+    //Xử lý load nguồn liên hệ
+    $(idForm + ' select[name="source_group_id"]').change(function() {
+    	var select = idForm + ' input[name="source_channel_id"]';
+    	var parent = $(select).parent();
+    	$('.select2-container', parent).select2('val', '');
+    	$(select).attr('data-parent', $(this).val());
+    });
+</script>

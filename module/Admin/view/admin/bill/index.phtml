@@ -1,0 +1,147 @@
+<?php
+    $dateFormat = new \ZendX\Functions\Date();
+    
+    // Filter
+    $myForm = $this->myForm;
+    $myForm->prepare();
+   
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_bill_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th class="col-80">Công cụ</th>';
+    $xhtmlHead .= '<th>Ngày chứng từ</th>';
+    $xhtmlHead .= '<th>Ngày đơn hàng</th>';
+    $xhtmlHead .= '<th>Phân loại</th>';
+    $xhtmlHead .= '<th>Số chứng từ</th>';
+    $xhtmlHead .= '<th>Mã hóa đơn</th>';
+    $xhtmlHead .= '<th>Thu</th>';
+    $xhtmlHead .= '<th>Chi</th>';
+    $xhtmlHead .= '<th>Còn nợ</th>';
+    $xhtmlHead .= '<th>Hình thức</th>';
+    $xhtmlHead .= '<th>Số điện thoại</th>';
+    $xhtmlHead .= '<th>Tên khách hàng</th>';
+    $xhtmlHead .= '<th>Tên xe - Năm sản xuất</th>';
+    $xhtmlHead .= '<th>Người tạo</th>';
+    $xhtmlHead .= '<th>Người quản lý</th>';
+    $xhtmlHead .= '<th>Ghi chú</th>';
+	$xhtmlHead .= '</tr>';
+    
+    // Danh sách
+    $xhtmlItems = '';
+    if(!empty($this->items)) {
+        foreach ($this->items AS $item) {
+            $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            
+            $id                     = $item->id;
+            $index                  = !empty($item->paid_price) ? 'PT'. $item['index'] : 'PC'. $item['index'];
+            $options                = !empty($item->options) ? unserialize($item->options) : array();
+            $date                   = $dateFormat->formatToView($item->date, 'd/m/Y');
+            $contract_date          = $dateFormat->formatToView($item->contract_date, 'd/m/Y');
+            $code                   = $item->code;
+            $type                   = $this->type[$item->type];
+            $paid_price             = !empty($item->paid_price) ? '<span class="mask_currency">'. $item->paid_price .'</span> ' : 0;
+            $accrued_price          = !empty($item->accrued_price) ? '<span class="mask_currency">'. $item->accrued_price .'</span> ' : 0;
+            $contract_price_owed    = !empty($item->contract_price_owed) ? '<span class="mask_currency">'. $item->contract_price_owed .'</span> ' : 0;
+            $bill_type_id           = $this->bill_type[$item->bill_type_id]['name'];
+            $contact_phone          = $item->contact_phone;
+            $contact_name           = $item->contact_name;
+            $product_name           = $item->contract_product_name;
+            $created_by             = $this->user[$item->created_by]['name'];
+            $user_id                = $this->user[$item->user_id]['name'];
+            $sale_group_id          = $item->sale_group_id ? ' - '. $this->sale_group[$item->sale_group_id]['name'] : '';
+            $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+            $checked_id             = $item->checked_id ? $this->user[$item->checked_id]['name'] : '';
+            $checked                = $options['checked'] ? ' - '. $dateFormat->formatToView($options['checked']) : '';
+            $note                   = $options['note'];
+            
+            // Link Action
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            $linkContract           = $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'view', 'id' => $item->contract_id));
+            
+            // Control Action
+            $controlEdit            = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+            $controlContract        = $this->linkAdminHtml($linkContract, array('type' => 'icon', 'title' => 'Xem chi tiết đơn hàng', 'value' => 'Xem đơn hàng', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-dollar'));
+            $controls               = $controlContract;
+            
+            $xhtmlItems .= '<tr id="tr_'. $id .'">
+                                <td>'. $cid .'</td>
+							    <td>'. $controls .'</td>
+    							<td>'. $date .'</td>
+    							<td>'. $contract_date .'</td>
+    							<td>'. $type.'</td>
+    							<td>'. $index .'</td>
+    							<td>'. $code .'</td>
+    							<td>'. $paid_price .'</td>
+    							<td>'. $accrued_price .'</td>
+    							<td>'. $contract_price_owed .'</td>
+    							<td>'. $bill_type_id .'</td>
+    							<td>'. $contact_phone .'</td>
+    							<td>'. $contact_name .'</td>
+    							<td>'. $product_name .'</td>
+							    <td>'. $created_by .'</td>
+							    <td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>
+							    <td>'. $note .'</td>
+    						</tr>';
+        }
+    }
+    
+    // Control
+    $arrControl = array(
+        array( 
+            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ), 
+            'children' => array( 
+                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o', 'attributes' => array( 'onclick' => 'javascript:exportList();' )) 
+            ), 'children-class' => 'dropdown-menu pull-right' ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>
