@@ -10,7 +10,7 @@ return array(
                 'password' => '',
                 'hostname' => 'localhost',
                 'port'     => '',
-                'charset'  => 'utf8'
+                'charset'  => 'utf8',
             ),
             'dbNotify' => array(
                 'driver'   => 'Pdo_Mysql',
