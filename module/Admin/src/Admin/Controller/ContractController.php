@@ -1729,8 +1729,8 @@ class ContractController extends ActionController {
             $order_item['note'] = $contract['ghtk_note'];
             $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
             $order_item['transport'] = "road"; // road đường bộ, fly đường bay
-            $order_item['pick_work_shift'] = $contract['pick_work_shift'];
-            $order_item['deliver_work_shift'] = $contract['deliver_work_shift'];
+//            $order_item['pick_work_shift'] = $contract['pick_work_shift']; Thời gian lấy hàng
+            $order_item['deliver_work_shift'] = $contract['deliver_work_shift']; // Thời gian giao hàng
             if($total_weight >= 20){
                 $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
             }
