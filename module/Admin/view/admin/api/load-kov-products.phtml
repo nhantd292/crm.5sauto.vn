@@ -95,16 +95,16 @@ else{
         updateTotal();
     });
 
-    $('body').delegate(".numbers input",'change',function(e){
-        var tr_parent = $(this).parents('tr');
-        var number = parseInt(tr_parent.find('.numbers input').val());
-        var length = parseInt(tr_parent.find('.length > input').val());
-        var width = parseInt(tr_parent.find('.width > input').val());
-        var height = parseInt(tr_parent.find('.height > input').val());
-        tr_parent.find('.length input').val(number * length);
-        tr_parent.find('.width input').val(number * width);
-        tr_parent.find('.height input').val(number * height);
-    });
+    // $('body').delegate(".numbers input",'change',function(e){
+    //     var tr_parent = $(this).parents('tr');
+    //     var number = parseInt(tr_parent.find('.numbers input').val());
+    //     var length = parseInt(tr_parent.find('.length > input').val());
+    //     var width = parseInt(tr_parent.find('.width > input').val());
+    //     var height = parseInt(tr_parent.find('.height > input').val());
+    //     tr_parent.find('.length input').val(number * length);
+    //     tr_parent.find('.width input').val(number * width);
+    //     tr_parent.find('.height input').val(number * height);
+    // });
 
     $('body').delegate(".show-price",'click',function(e){
         $(this).parents('tr').find('.price-detail').show();
