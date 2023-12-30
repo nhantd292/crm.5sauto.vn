@@ -37,6 +37,25 @@ class Contact extends InputFilter {
                 )
             )
         ));
+
+
+
+
+        $this->add(array(
+            'name'		=> 'marketer_id',
+            'required'	=> true,
+            'validators'	=> array(
+                array(
+                    'name'		=> 'NotEmpty',
+                    'options'	=> array(
+                        'messages'	=> array(
+                            \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
+                        )
+                    ),
+                    'break_chain_on_failure'	=> true
+                )
+            )
+        ));
 	    
 		// Phone
 	    if(!empty($optionId)) {
@@ -141,22 +160,6 @@ class Contact extends InputFilter {
 //		    )
 		));
 
-		// Nhân viên mkt
-		$this->add(array(
-		    'name'		=> 'marketer_id',
-		    'required'	=> false,
-//		    'validators'	=> array(
-//		        array(
-//		            'name'		=> 'NotEmpty',
-//		            'options'	=> array(
-//		                'messages'	=> array(
-//		                    \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
-//		                )
-//		            ),
-//		            'break_chain_on_failure'	=> true
-//		        )
-//		    )
-		));
 
 		// Nguồn khách hàng
 		$this->add(array(

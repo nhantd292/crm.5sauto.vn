@@ -27,7 +27,7 @@ tfoot tr {
     width: 350px;
 }
 .form-control {
-    min-width: 100px;
+    /*min-width: 80px;*/
 }
 
 #form-product-return {

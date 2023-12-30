@@ -27,7 +27,8 @@
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-5 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('order')),
@@ -47,7 +48,8 @@
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-5 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('order')),
@@ -122,6 +124,9 @@
             $contact_options        = $item->contact_options ? unserialize($item['contact_options']) : array();
 
             $address = !empty($options['contract_received']['address']) ? $options['contract_received']['address'] : $contact_options['address'];
+            $location_city = !empty($item->location_city_id) ?  ' '.$this->location_city[$item->location_city_id]['name'] : '';
+            $location_district = !empty($item->location_district_id) ? ' '.$this->location_district[$item->location_district_id]['name'] : '';
+            $location_town = !empty($item->location_town_id) ?  ' '.$this->location_town[$item->location_town_id]['name'] : '';
 
 
             $color_price_owed       = '';
@@ -206,7 +211,7 @@
     							<td '.$rowSpan.'>'. $user_name .'</td>
     							<td '.$rowSpan.'>'. $contact_name .'</td>
     							<td '.$rowSpan.'>'. $contact_phone .'</td>
-    							<td class="av-read" '.$rowSpan.'>'. $address .'</td>
+    							<td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
     							<td '.$rowSpan.' class="text-right">'. number_format($price_total) .'</td>
     							<td '.$rowSpan.' class="text-right">'. $fee_cod .'</td>
     							<td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>';

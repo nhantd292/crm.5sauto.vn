@@ -38,6 +38,7 @@ class ContractController extends ActionController {
         $this->_params['ssFilter']['filter_category']       = $ssFilter->filter_category;
         $this->_params['ssFilter']['filter_product']        = $ssFilter->filter_product;
         $this->_params['ssFilter']['filter_update_kov_false']        = $ssFilter->filter_update_kov_false;
+        $this->_params['ssFilter']['filter_production_type_id']        = $ssFilter->filter_production_type_id;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage'] = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : $this->_paginator['itemCountPerPage'];
@@ -79,6 +80,7 @@ class ContractController extends ActionController {
             $ssFilter->filter_category 	        = $data['filter_category'];
             $ssFilter->filter_product 	        = $data['filter_product'];
             $ssFilter->filter_update_kov_false 	= $data['filter_update_kov_false'];
+            $ssFilter->filter_production_type_id 	= $data['filter_production_type_id'];
 
             $ssFilter->filter_sale_group = $data['filter_sale_group'];
             if(!empty($data['filter_sale_branch'])) {
@@ -228,6 +230,9 @@ class ContractController extends ActionController {
         $this->_viewModel['user']                   = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
         $this->_viewModel['sale_group']             = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
         $this->_viewModel['sale_branch']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
+        $this->_viewModel['location_city']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
+        $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
+        $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
@@ -1724,6 +1729,8 @@ class ContractController extends ActionController {
             $order_item['note'] = $contract['ghtk_note'];
             $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
             $order_item['transport'] = "road"; // road đường bộ, fly đường bay
+            $order_item['pick_work_shift'] = $contract['pick_work_shift'];
+            $order_item['deliver_work_shift'] = $contract['deliver_work_shift'];
             if($total_weight >= 20){
                 $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
             }

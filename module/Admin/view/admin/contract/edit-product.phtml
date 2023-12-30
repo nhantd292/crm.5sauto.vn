@@ -29,8 +29,10 @@ $elementsTop = array(
     array('element' => $myForm->get('marketer_id'), 'label' => 'Nhân viên marketing', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
 //    array('element' => $myForm->get('size_product_id'), 'label' => 'Kích thước đóng hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
     array('element' => $myForm->get('groupaddressId'), 'label' => 'Kho gửi hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
-    array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sale', 'boxClass' => 'col-md-4'),
-    array('element' => $myForm->get('ghtk_note'), 'label' => 'Ghi chú GHTK', 'boxClass' => 'col-md-4'),
+    array('element' => $myForm->get('pick_work_shift'), 'label' => 'Giờ lấy', 'validate' => array('require' => true), 'boxClass' => 'col-md-1'),
+    array('element' => $myForm->get('deliver_work_shift'), 'label' => 'Giờ giao', 'validate' => array('require' => true), 'boxClass' => 'col-md-1'),
+    array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sale', 'boxClass' => 'col-md-3'),
+    array('element' => $myForm->get('ghtk_note'), 'label' => 'Ghi chú GHTK', 'boxClass' => 'col-md-3'),
 
 );
 
@@ -194,7 +196,7 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                         <td class="total_contract_product text-right text-middle" style="padding: 0px 17px;"><span></span><input class="form-control hidden" type="text" name="total_contract_product"  value="0"></td>
                     </tr>
                     <tr>
-                        <td class="text-middle">Tổng tiền thuế VAT</td>
+                        <td class="text-middle">Thuế VAT</td>
                         <td class="total_contract_vat"><input class="form-control text-right money" type="text" name="total_contract_vat" value="<?php if($this->contract['vat']) echo number_format($this->contract['vat']);  else echo 0 ?>"></td>
                     </tr>
                     <tr>

@@ -90,6 +90,9 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_unit_transport'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.unit_transport', $ssFilter['filter_unit_transport']);
                 }
+                if(!empty($ssFilter['filter_production_type_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.production_type_id', $ssFilter['filter_production_type_id']);
+                }
 
                 if(!empty($ssFilter['filter_product'])) {
                     foreach($ssFilter['filter_product'] as $key => $value){
@@ -221,6 +224,9 @@ class ContractTable extends DefaultTable {
     			
     			if(!empty($ssFilter['filter_sale_group'])) {
     			    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_group_id', $ssFilter['filter_sale_group']);
+    			}
+    			if(!empty($ssFilter['filter_production_type_id'])) {
+    			    $select -> where -> equalTo(TABLE_CONTRACT .'.production_type_id', $ssFilter['filter_production_type_id']);
     			}
 
                 if(!empty($ssFilter['filter_user'])) {
@@ -1369,6 +1375,9 @@ class ContractTable extends DefaultTable {
                     'groupaddressId'          => $arrData['groupaddressId'],
                     'size_product_id'         => $arrData['size_product_id'],
                     'ORDER_SERVICE'           => $arrData['ORDER_SERVICE'],
+                    'pick_work_shift'         => $arrData['pick_work_shift'],
+                    'deliver_work_shift'      => $arrData['deliver_work_shift'],
+                    'production_type_id'      => $arrData['production_type_id'],
 
                     'user_id'                 => $this->userInfo->getUserInfo('id'),
                     'sale_branch_id'          => $this->userInfo->getUserInfo('sale_branch_id'),
@@ -1496,7 +1505,10 @@ class ContractTable extends DefaultTable {
                 'groupaddressId'          => $arrData['groupaddressId'],
                 'size_product_id'         => $arrData['size_product_id'],
                 'ORDER_SERVICE'           => $arrData['ORDER_SERVICE'],
-                'options'                 => serialize($contract_options)
+                'options'                 => serialize($contract_options),
+                'pick_work_shift'         => $arrData['pick_work_shift'],
+                'deliver_work_shift'      => $arrData['deliver_work_shift'],
+                'production_type_id'      => $arrData['production_type_id'],
             );
 
 			// Cập nhật đơn hàng

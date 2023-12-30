@@ -140,6 +140,54 @@ class Contract extends InputFilter {
             )
         ));
 
+        $this->add(array(
+            'name'		=> 'pick_work_shift',
+            'required'	=> true,
+            'validators'	=> array(
+                array(
+                    'name'		=> 'NotEmpty',
+                    'options'	=> array(
+                        'messages'	=> array(
+                            \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
+                        )
+                    ),
+                    'break_chain_on_failure'	=> true
+                )
+            )
+        ));
+
+        $this->add(array(
+            'name'		=> 'deliver_work_shift',
+            'required'	=> true,
+            'validators'	=> array(
+                array(
+                    'name'		=> 'NotEmpty',
+                    'options'	=> array(
+                        'messages'	=> array(
+                            \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
+                        )
+                    ),
+                    'break_chain_on_failure'	=> true
+                )
+            )
+        ));
+
+        $this->add(array(
+            'name'		=> 'production_type_id',
+            'required'	=> true,
+            'validators'	=> array(
+                array(
+                    'name'		=> 'NotEmpty',
+                    'options'	=> array(
+                        'messages'	=> array(
+                            \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
+                        )
+                    ),
+                    'break_chain_on_failure'	=> true
+                )
+            )
+        ));
+
 //        $this->add(array(
 //            'name'		=> 'size_product_id',
 //            'required'	=> true,

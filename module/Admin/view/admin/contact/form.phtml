@@ -23,6 +23,7 @@
         array('element' => $myForm->get('sex'), 'label' => 'Giới tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
 //        array('element' => $myForm->get('product_group_id'), 'label' => 'Sản phẩm quan tâm', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('type'), 'label' => 'Phân loại khách hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('marketer_id'), 'label' => 'Nhân viên Marketing', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('contact_group'), 'label' => 'Nhóm khách hàng', 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'boxClass' => 'col-md-2'),
@@ -34,12 +35,12 @@
         array('element' => $myForm->get('facebook'), 'label' => 'Facebook', 'boxClass' => 'col-md-2'),
 //        array('element' => $myForm->get('source_group_id'), 'label' => 'Nguồn liên hệ', 'boxClass' => 'col-md-2'),
 //        array('element' => $myForm->get('source_known_id'), 'label' => 'Nguồn biết đến', 'boxClass' => 'col-md-2'),
-        array('element' => $myForm->get('job'), 'label' => 'Nghề nghiệp', 'boxClass' => 'col-md-2'),
+//        array('element' => $myForm->get('job'), 'label' => 'Nghề nghiệp', 'boxClass' => 'col-md-2'),
 //        array('element' => $myForm->get('license_plate'), 'label' => 'Biển số xe', 'boxClass' => 'col-md-2'),
 //        array('element' => $myForm->get('marketer_id'), 'label' => 'Nhân viên MKT', 'boxClass' => 'col-md-2'),
         array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
 //        array('div' => '', 'boxClass' => 'col-md-12'),
-        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-6'),
+        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-12'),
 //        array('element' => $myForm->get('content'), 'label' => 'Nội dung tư vấn', 'validate' => array('require' => true), 'boxClass' => 'col-md-6'),
 
         array('section' => 'Thêm lịch sử chăm sóc mới', 'boxClass' => 'col-md-12'),
@@ -49,7 +50,7 @@
         array('element' => $myForm->get('sales_expected'), 'label' => 'Doanh số tạm tính', 'validate' => array('require' => true), 'boxClass' => 'col-md-2 hidden', 'boxId' => 'sales_expected'),
         array('element' => $myForm->get('history_return'), 'label' => 'Hẹn ngày chăm sóc lại', 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('history_success'), 'label' => 'Trạng thái chăm sóc', 'boxClass' => 'col-md-2'),
-        array('element' => $myForm->get('history_content'), 'label' => 'Nội dung/Ghi chú', 'boxClass' => 'col-md-4'),
+        array('element' => $myForm->get('history_content'), 'label' => 'Nội dung/Ghi chú', 'boxClass' => 'col-md-12'),
         array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
     );
     

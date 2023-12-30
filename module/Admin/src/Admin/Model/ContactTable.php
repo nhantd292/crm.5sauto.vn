@@ -396,7 +396,6 @@ class ContactTable extends DefaultTable {
                 'password'              => md5('12345678'),
                 'sex'                   => $arrData['sex'],
                 'birthday_year'         => $arrData['birthday_year'] ? $arrData['birthday_year'] : null,
-				'product_id'            => $arrData['product_id'],
 			    'type'                  => $arrData['type'],
 			    'contact_group'         => $arrData['contact_group'],
 			    'license_plate'         => $arrData['license_plate'],
@@ -617,6 +616,9 @@ class ContactTable extends DefaultTable {
 		    }
 		    if(!empty($arrData['name'])) {
 		        $data['name'] = $arrData['name'];
+		    }
+		    if(!empty($arrData['marketer_id'])) {
+		        $data['marketer_id'] = $arrData['marketer_id'];
 		    }
 		    if(!empty($arrData['phone'])) {
 		        $data['phone'] = $arrData['phone'];
