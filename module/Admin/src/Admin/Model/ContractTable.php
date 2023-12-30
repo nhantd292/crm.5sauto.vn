@@ -1333,6 +1333,10 @@ class ContractTable extends DefaultTable {
                         $contract_options['product'][$i]['weight']           = $contract_product['weight'][$i]; // Khối lượng 1 gói hàng (gram)
                         $contract_options['product'][$i]['categoryId']       = $contract_product['categoryId'][$i]; // Khối lượng 1 gói hàng (gram)
                         $contract_options['product'][$i]['categoryName']     = $contract_product['categoryName'][$i]; // Khối lượng 1 gói hàng (gram)
+                        $contract_options['product'][$i]['car_year']         = $contract_product['car_year'][$i]; // Tên xe năm sản xuất
+                        $contract_options['product'][$i]['length']           = $contract_product['length'][$i]; // Chiều dài
+                        $contract_options['product'][$i]['width']            = $contract_product['width'][$i]; // Chiều rộng
+                        $contract_options['product'][$i]['height']           = $contract_product['height'][$i]; // Chiều cao
                     }
                 }
 
@@ -1463,6 +1467,10 @@ class ContractTable extends DefaultTable {
                     $contract_options['product'][$i]['weight']           = $contract_product['weight'][$i]; // Khối lượng 1 gói hàng (gram)
                     $contract_options['product'][$i]['categoryId']       = $contract_product['categoryId'][$i]; // Khối lượng 1 gói hàng (gram)
                     $contract_options['product'][$i]['categoryName']     = $contract_product['categoryName'][$i]; // Khối lượng 1 gói hàng (gram)
+                    $contract_options['product'][$i]['car_year']         = $contract_product['car_year'][$i]; // Tên xe năm sản xuất
+                    $contract_options['product'][$i]['length']           = $contract_product['length'][$i]; // Chiều dài
+                    $contract_options['product'][$i]['width']            = $contract_product['width'][$i]; // Chiều rộng
+                    $contract_options['product'][$i]['height']           = $contract_product['height'][$i]; // Chiều cao
                 }
             }
 
@@ -1560,6 +1568,10 @@ class ContractTable extends DefaultTable {
                     $contract_options['product'][$i]['weight']           = $contract_product['weight'][$i]; // Khối lượng 1 gói hàng (gram)
                     $contract_options['product'][$i]['categoryId']       = $contract_product['categoryId'][$i]; // Khối lượng 1 gói hàng (gram)
                     $contract_options['product'][$i]['categoryName']     = $contract_product['categoryName'][$i]; // Khối lượng 1 gói hàng (gram)
+                    $contract_options['product'][$i]['car_year']         = $contract_product['car_year'][$i]; // Tên xe năm sản xuất
+                    $contract_options['product'][$i]['length']           = $contract_product['length'][$i]; // Chiều dài
+                    $contract_options['product'][$i]['width']            = $contract_product['width'][$i]; // Chiều rộng
+                    $contract_options['product'][$i]['height']           = $contract_product['height'][$i]; // Chiều cao
                 }
             }
 

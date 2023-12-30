@@ -29,10 +29,11 @@ if($this->kov_branch_id){
                         <img src="' . $pro['images'][0] . '" width="100%">
                     </div>
                     <div class="infor col-sm-9 col-xs-9">
-                        <p class="code-product text-bold">' . $pro['code'] .'</span></p>
+                        <p class="code-product text-bold">' . $pro['code'] .'</span> (<span class="text-green text-bold">Số Lượng: ' . number_format($pro['inventories'][0]['onHand']) . '</span>)</p>
                         <p class="name-product">' . $pro['fullName'] . '</p>
                         <p class="price-product">Giá:' . number_format($pro['basePrice']) . '</p>
-                        <p class="number-product">Tồn kho:<span class="text-red text-bold">' . number_format($pro['inventories'][0]['onHand']) . '</span></p>
+                        <p class="number-product"></p>
+                        <p class="number-product">Size:<span class="text-bold"><span>'.$pro['description'].'cm - '.$pro['weight'].' kg</span></p>
                     </div>
                 </div>
             </div>';
@@ -92,6 +93,17 @@ else{
         var price = tr_parent.find('.price > input').val().replace(/,/gm,'');
         tr_parent.find('.total input').val(formatNumber(parseInt(number) * parseInt(price)));
         updateTotal();
+    });
+
+    $('body').delegate(".numbers input",'change',function(e){
+        var tr_parent = $(this).parents('tr');
+        var number = parseInt(tr_parent.find('.numbers input').val());
+        var length = parseInt(tr_parent.find('.length > input').val());
+        var width = parseInt(tr_parent.find('.width > input').val());
+        var height = parseInt(tr_parent.find('.height > input').val());
+        tr_parent.find('.length input').val(number * length);
+        tr_parent.find('.width input').val(number * width);
+        tr_parent.find('.height input').val(number * height);
     });
 
     $('body').delegate(".show-price",'click',function(e){

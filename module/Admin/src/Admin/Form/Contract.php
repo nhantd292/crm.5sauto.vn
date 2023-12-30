@@ -141,19 +141,19 @@ class Contract extends Form {
 		    )
 		));
 
-        // Kích thước đóng hàng
-        $this->add(array(
-            'name'			=> 'size_product_id',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Kích thước đóng hàng -',
-                'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'size-product')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
-            )
-        ));
+//        // Kích thước đóng hàng
+//        $this->add(array(
+//            'name'			=> 'size_product_id',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Kích thước đóng hàng -',
+//                'disable_inarray_validator' => true,
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'size-product')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+//            )
+//        ));
 
 
         // Kho gửi hàng

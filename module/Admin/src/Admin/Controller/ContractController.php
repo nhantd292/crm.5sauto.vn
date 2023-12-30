@@ -442,7 +442,8 @@ class ContractController extends ActionController {
         $dateFormat = new \ZendX\Functions\Date();
         $numberFormat = new \ZendX\Functions\Number();
 
-        $myForm = new \Admin\Form\Contract\ContractEditKov($this->getServiceLocator(), $this->_params);
+//        $myForm = new \Admin\Form\Contract\ContractEditKov($this->getServiceLocator(), $this->_params);
+        $myForm = new \Admin\Form\Contract($this, $this->_params);
         if(!empty($this->params('id'))) {
             $id = $this->params('id');
             $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
@@ -1684,11 +1685,16 @@ class ContractController extends ActionController {
             $address_dclh = explode(',', $dclh['address']);
 
             $products = [];
+            $total_weight = 0;
             foreach($contract['options'] as $key => $value){
-                $pro['name'] = $value['full_name'];
+                $pro['name'] = $value['full_name'].' - '.$value['car_year'];
                 $pro['weight'] = $value['weight'];
                 $pro['quantity'] = $value['numbers'];
                 $pro['product_code'] = $value['code'];
+                $pro['length'] = $value['length'];
+                $pro['width'] = $value['width'];
+                $pro['height'] = $value['height'];
+                $total_weight += $value['weight'];
 
                 $products[] = $pro;
             }
@@ -1718,9 +1724,16 @@ class ContractController extends ActionController {
             $order_item['note'] = $contract['ghtk_note'];
             $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
             $order_item['transport'] = "road"; // road đường bộ, fly đường bay
+            if($total_weight >= 20){
+                $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
+            }
 
             $listData_ghtk[$contract['code']]['order'] = $order_item;
         }
+//        echo "<pre>";
+//        print_r($listData_ghtk);
+//        echo "</pre>";
+//        exit;
 
         foreach ($listData_ghtk as $key => $value){
             $result = $this->ghtk_call('/services/shipment/order/?ver=1.5', $value, 'POST');
