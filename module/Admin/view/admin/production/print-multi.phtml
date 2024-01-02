@@ -5,37 +5,42 @@ $number = new \ZendX\Functions\Number();
 $i = 0;
 
 foreach ($this->items as $item) {
-    if($item['production_department_type'] == STATUS_CONTRACT_PRODUCT_POST) {
-        if($this->product_type_contract[$item['production_type_id']] == 'Đơn tỉnh' || ($this->product_type_contract[$item['production_type_id']] == 'Đơn Hà Nội' && !empty($this->user[$item['shipper_id']]['name']))){
+    if($item['production_department_type'] == STATUS_CONTRACT_PRODUCT_POST or 1==1) {
+        if(1==1 or $this->product_type_contract[$item['production_type_id']] == 'Đơn tỉnh' || ($this->product_type_contract[$item['production_type_id']] == 'Đơn Hà Nội' && !empty($this->user[$item['shipper_id']]['name']))){
 
             $code = $item['code'];
+            $name = $item['name'];
             $user = $this->user[$item['created_by']]['name'];
             $user_phone = $this->user[$item['created_by']]['phone'];
-            $shiper = $this->user[$item['shipper_id']]['name'];
+            $shiper = $this->shippers[$item['ghtk_code']]['name'];
             $options = !empty($item['options']) ? unserialize($item['options']) : array();
             $contact_name = $item['contact_name'];
             $contact_phone = $item['contact_phone'];
             $price_deposits = $item['price_paid'];
             $contact_license_plate = $item['contact_license_plate'];
-            $note = $options['sale_note'];
+            $note = $item['sale_note'];
             $date = date('d/m/Y');
             $contact_options = !empty($item['contact_options']) ? unserialize($item['contact_options']) : array();
             $contact_address = $options['contract_received']['address'];// địa chỉ nhận hàng
             $products = $options['product'];
+
+            $location_city = !empty($item['location_city_id']) ?  ' - '.$this->location_city[$item['location_city_id']]['name'] : '';
+            $location_district = !empty($item['location_district_id']) ? ' - '.$this->location_district[$item['location_district_id']]['name'] : '';
+            $location_town = !empty($item['location_town_id']) ?  ' - '.$this->location_town[$item['location_town_id']]['name'] : '';
 
             $infor_contact = '
                             <p><span class="title">Ngày tháng:</span> </span> ' . $date . '</p>
                             <div class="label">
                                 <p><span class="title">Mã đơn hàng:</span> ' . $code . '</p>
                                 <p><span class="title">Tên sales:</span> ' . $user . '</p>
-                                <p><span class="title">Tên khách hàng:</span> ' . $contact_options['contact_received']['name'] . '</p>
+                                <p><span class="title">Tên khách hàng:</span> ' . $name . '</p>
                             </div>
                             <div class="label">
                                 <p><span class="title">Tên NV giao hàng:</span> ' . $shiper . '</p>
                                 <p><span class="title">SĐT Sales:</span> ' . $user_phone . '</p>
-                                <p><span class="title">SĐT khách hàng:</span> ' . $contact_options['contact_received']['phone'] . '</p>
+                                <p><span class="title">SĐT khách hàng:</span> ' . $item['phone'] . '</p>
                             </div>
-                            <p><span class="title">Địa chỉ:</span> </span> ' . $contact_options['contact_received']['address'] . '</p>
+                            <p><span class="title">Địa chỉ:</span> </span> ' . $item['address'] .$location_town.$location_district.$location_city. '</p>
                             <p><span class="title">Ghi chú sale:</span> </span> ' . $note . '</p>
                             ';
 
@@ -44,17 +49,16 @@ foreach ($this->items as $item) {
             $total_vat = $item['vat'];
 
             foreach ($products as $key => $value) {
-                $product_name = $item['kov_status'] ? $this->kovProduct[$value['product_id']]['fullName'] : $this->product[$value['product_id']]['name'];
+                $product_name = $value['full_name'];
                 $product_number = $value['numbers'];
-                $driver = $value['product_name'];
+                $driver = $value['car_year'];
 
                 $listed_price = $value['listed_price'];
                 $total_listed_price += $listed_price;
                 $percenter = $value['percenter'];
-                $price_base = $listed_price / (100 - $percenter) * 100;
-                $price_base = $price_base == $listed_price ? $price_base : floor($price_base / 100000) * 100000 + 100000;
+                $price_base = $value['price'];
                 $total_price_base += $price_base;
-                $total = $item['kov_status'] ? $product_number * $value['price'] : $value['price'];
+                $total = $value['total'];
                 $total_total += $total;
                 $sale_price = $price_base - $total;
                 $total_sale_price += $sale_price;
@@ -79,7 +83,7 @@ foreach ($this->items as $item) {
             <div class="content-print">
                 <div class="head-print">
                     <div class="logo">
-                        <img src="/public/files/upload/default/images/logo-ok2.png">
+                        <img src="/public/files/upload/default/images/logo-ok2.jpg">
                     </div>
                     <div class="company">
                         <h3>CÔNG TY TNHH SẢN XUẤT VÀ THƯƠNG MẠI XUẤT<br>NHẬP KHẨU FOREWIN</h3>
@@ -226,7 +230,7 @@ foreach ($this->items as $item) {
         margin: auto;
         background: #fff;
         padding: 20px;
-        background: #fff url("/public/files/upload/default/images/bg.png") no-repeat center;
+        /*background: #fff url("/public/files/upload/default/images/logo-ok2.jpg") no-repeat center;*/
     }
     .content-print .head-print{
         width: 100%;

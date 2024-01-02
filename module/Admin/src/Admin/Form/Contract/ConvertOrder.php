@@ -30,14 +30,6 @@ class ConvertOrder extends Form {
 		        'value'		=> 'success',
 		    ),
 		));
-
-        $this->add(array(
-            'name'			=> 'unit_transport',
-            'type'			=> 'Text',
-            'attributes'	=> array(
-                'class'		=> 'form-control',
-            ),
-        ));
         $this->add(array(
             'name'			=> 'unit_transport',
             'type'			=> 'Select',
@@ -66,6 +58,20 @@ class ConvertOrder extends Form {
                 'class'		=> 'form-control',
             ),
         ));
+
+        // Shipper
+        $this->add(array(
+		    'name'			=> 'shipper_id',
+		    'type'			=> 'Select',
+		    'attributes'	=> array(
+				'class'		=> 'form-control select2 select2_basic',
+		    ),
+		    'options'		=> array(
+		        'empty_option'	=> '- Chọn -',
+		        'disable_inarray_validator' => true,
+		        'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "shipper" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+		    ),
+		));
 		
 		// Trạng thái
 		$this->add(array(

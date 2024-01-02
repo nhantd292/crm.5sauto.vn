@@ -29,10 +29,10 @@
 //        array('element' => $myForm->get('size_product_id'), 'label' => 'Kích thước đóng hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('groupaddressId'), 'label' => 'Kho gửi hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
 //        array('element' => $myForm->get('pick_work_shift'), 'label' => 'Thời gian lấy', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
-        array('element' => $myForm->get('deliver_work_shift'), 'label' => 'Thời gian giao', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
-        array('element' => $myForm->get('production_type_id'), 'label' => 'Loại đơn', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
-        array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sale', 'boxClass' => 'col-md-2'),
-        array('element' => $myForm->get('ghtk_note'), 'label' => 'Ghi chú GHTK', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('deliver_work_shift'), 'label' => 'Thời gian giao', 'validate' => array('require' => true), 'boxClass' => 'col-md-1'),
+        array('element' => $myForm->get('production_type_id'), 'label' => 'Loại đơn', 'validate' => array('require' => true), 'boxClass' => 'col-md-1'),
+        array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sale', 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('ghtk_note'), 'label' => 'Ghi chú GHTK', 'boxClass' => 'col-md-3'),
 
     );
     
@@ -86,13 +86,13 @@
                     <tr>
                         <th width="100px" class="text-center">Mã sản phẩm</th>
                         <th width="150px" class="text-center">Tên sản phẩm</th>
-                        <th width="150px" class="text-center">Tên xe năm sản xuất</th>
-                        <th width="80px" class="text-center">Số lượng</th>
+                        <th width="" class="text-center">Tên xe năm sản xuất</th>
+                        <th width="80px" class="text-center">S.lượng</th>
                         <th width="100px" class="text-center">Giá tiền</th>
                         <th width="100px" class="text-center">Thành tiền</th>
-                        <th width="100px" class="text-center">Dài</th>
-                        <th width="100px" class="text-center">Rộng</th>
-                        <th width="100px" class="text-center">Cao</th>
+                        <th width="10px" class="text-center">C.Dài</th>
+                        <th width="10px" class="text-center">C.Rộng</th>
+                        <th width="10px" class="text-center">C.Cao</th>
                         <th width="30px" class="text-center">Xóa</th>
                     </tr>
                     </thead>
@@ -110,19 +110,19 @@
                                                         <td width="100px" class="text-bold text-red text-middle">'.$productList['code'][$i].'</td>
                                                         <td width="100px" class="text-middle">'.$productList['full_name'][$i].'</td>
     <                                                   <td class="car_year"><input class="form-control text-right" type="text" name="contract_product[car_year][]" value="'.$productList['car_year'][$i].'" ></td>
-                                                        <td class="numbers '.$check_number.'"><input class="form-control text-right money" type="text" name="contract_product[numbers][]" value="'.$productList['numbers'][$i].'" min="1"></td>
+                                                        <td class="numbers '.$check_number.'"><input class="form-control text-right money w-60 p5" type="text" name="contract_product[numbers][]" value="'.$productList['numbers'][$i].'" min="1"></td>
                                                         <td class="price text-middle text-right box-price '.$check_price.'">
                                                             <input class="form-control text-right money base_price " name="contract_product[price][]" type="text" value="'.$productList['price'][$i].'" min="0">
                                                         </td>
                                                         <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" value="'.$productList['total'][$i].'" readonly></td>
                                                         <td class="length">
-                                                            <input class="form-control text-right" type="number" name="contract_product[length][]" value="'.$productList['length'][$i].'" required min="1" max="300">
+                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[length][]" value="'.$productList['length'][$i].'" required min="1" max="300">
                                                         </td>
                                                         <td class="width">
-                                                            <input class="form-control text-right" type="number" name="contract_product[width][]" value="'.$productList['width'][$i].'" required min="1" max="300">
+                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[width][]" value="'.$productList['width'][$i].'" required min="1" max="300">
                                                         </td>
                                                         <td class="height">
-                                                            <input class="form-control text-right" type="number" name="contract_product[height][]" value="'.$productList['height'][$i].'" required min="1" max="300">
+                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.$productList['height'][$i].'" required min="1" max="300">
                                                         </td>
                                                         <td class="hidden">
                                                             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$productList['product_id'][$i].'">

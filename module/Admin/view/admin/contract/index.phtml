@@ -127,6 +127,7 @@
             $location_city = !empty($item->location_city_id) ?  ' '.$this->location_city[$item->location_city_id]['name'] : '';
             $location_district = !empty($item->location_district_id) ? ' '.$this->location_district[$item->location_district_id]['name'] : '';
             $location_town = !empty($item->location_town_id) ?  ' '.$this->location_town[$item->location_town_id]['name'] : '';
+            $ghtk_code = $item->unit_transport != '5sauto' ? $item->ghtk_code : $this->shippers[$item->ghtk_code]['name'];
 
 
             $color_price_owed       = '';
@@ -147,6 +148,7 @@
 
             // Control Action
             $controlView            = '<a href="javascript:;" onclick="'. $linkView .'" title="Xem chi tiết" class="btn btn-xs blue"><i class="fa fa-info"></i></a>';
+            $controlPrint           = $item->unit_transport == '5sauto' ? '<a href="/xadmin/production/print-multi/id/'.$item->id.'/" target="_blank" title="In đơn hàng" class="btn btn-xs yellow"><i class="fa fa-print"></i></a>': '';
 
             $menu_edit_contract = empty($item->ghtk_code) ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '<li><a href="'.$linkEditProduct.'"><i class="fa fa-edit"></i> Cập nhật giá bán</a></li>';
             $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
@@ -202,9 +204,9 @@
             $xhtmlItems .= '<tr id="tr_'. $id .'" data-id="'. $id .'"'.$color_text_row.'>
     							<td '.$rowSpan.'>'. $cid .'</td>
     							<td '.$rowSpan.'>'. $lock .'</td>
-                                <td '.$rowSpan.' class="controls">'. $controls .$controlAddHistoryContract.'</td>
+                                <td '.$rowSpan.' class="controls">'. $controls .$controlAddHistoryContract.'<br>'.$controlPrint.'</td>
     							<td '.$rowSpan.'>'. $status .'</td>
-                                <td '.$rowSpan.'>'. $item->ghtk_code .'</td>
+                                <td '.$rowSpan.'>'. $ghtk_code .'</td>
     							<td '.$rowSpan.'><span class="text-bold">'. $code .'</span><br><span style="color: #a70101;">'.$item->coincider_code.'</span></td>
     							<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
     							<td '.$rowSpan.'>'. $date .'</td>
@@ -219,12 +221,13 @@
                 foreach($options['product'] as $key => $item_product) {
                     if ($key == 0 && !empty($item_product['product_id'])) {
                         $xhtmlItems    .= '<td>' . $item_product['full_name'].'</td>
+                                            <td>' . $item_product['car_year'] . '</td>
                                             <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>';
                     }
                 }
             }
             else{
-                $xhtmlItems    .= '<td></td><td></td>';
+                $xhtmlItems    .= '<td></td><td></td><td></td>';
             }
             $xhtmlItems .= '<td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
                             <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
@@ -236,6 +239,7 @@
                     if ($key > 0 && !empty($item_product['product_id'])) {
                         $xhtmlItems .= '<tr ' . $color_text_row . '>
                                     <td>' . $item_product['full_name'].'</td>
+                                    <td>' . $item_product['car_year'] . '</td>
                                     <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
                                     </tr>';
                     }
@@ -264,6 +268,7 @@
     $xhtmlHead .= '<th width="80" class="text-right">COD</th>';
     $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu</th>';
     $xhtmlHead .= '<th width="200">Sản phẩm</th>';
+    $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
     $xhtmlHead .= '<th width="120">Số lượng</th>';
     $xhtmlHead .= '<th width="150">Ghi chú</th>';
     $xhtmlHead .= '<th width="140">Người tạo</th>';

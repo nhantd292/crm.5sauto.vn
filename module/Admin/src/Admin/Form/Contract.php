@@ -173,18 +173,18 @@ class Contract extends Form {
             )
         ));
 
-        $this->add(array(
-            'name'			=> 'pick_work_shift',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-//                'empty_option'	=> '- Kho gửi hàng -',
-                'disable_inarray_validator' => true,
-                'value_options'	=> ['1'=>"Sáng", '2'=>"Chiều", '3'=>"Tối", ],
-            )
-        ));
+//        $this->add(array(
+//            'name'			=> 'pick_work_shift',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+////                'empty_option'	=> '- Kho gửi hàng -',
+//                'disable_inarray_validator' => true,
+//                'value_options'	=> ['1'=>"Sáng", '2'=>"Chiều", '3'=>"Tối", ],
+//            )
+//        ));
 
         $this->add(array(
             'name'			=> 'deliver_work_shift',

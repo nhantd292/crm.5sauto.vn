@@ -82,6 +82,30 @@ class Contract extends Form{
             ),
         ));
 
+        // Shipper
+        $this->add(array(
+            'name'			=> 'filter_shipper_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Nhân viên giao hàng -',
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-positons-care')), array('key' => 'id', 'value' => 'name')),
+            )
+        ));
+        // đơn đã xuất kho
+        $this->add(array(
+            'name' => 'filter_status_shipped',
+            'type' => 'Select',
+            'attributes' => array(
+                'class' => 'form-control select2 select2_basic',
+            ),
+            'options' => array(
+                'value_options' => array('' => 'Xác nhận xuất kho', '0' => 'Chưa xuất kho', '1' => 'Đã xuất kho'),
+            )
+        ));
+
 		// Cơ sở
 		$this->add(array(
 		    'name'			=> 'filter_sale_branch',

@@ -38,7 +38,7 @@ class ProductionController extends ActionController {
         $this->_params['ssFilter']['filter_technical_id']   = $ssFilter->filter_technical_id;
         $this->_params['ssFilter']['filter_tailors_id']     = $ssFilter->filter_tailors_id;
         $this->_params['ssFilter']['filter_coincider']      = $ssFilter->filter_coincider;
-        $this->_params['ssFilter']['filter_contract_type']  = $ssFilter->filter_contract_type;
+        $this->_params['ssFilter']['filter_production_type_id']  = $ssFilter->filter_production_type_id;
         $this->_params['ssFilter']['filter_carpet_color']   = $ssFilter->filter_carpet_color;
         $this->_params['ssFilter']['filter_tangled_color']  = $ssFilter->filter_tangled_color;
         $this->_params['ssFilter']['filter_flooring']       = $ssFilter->filter_flooring;
@@ -85,7 +85,7 @@ class ProductionController extends ActionController {
             $ssFilter->filter_technical_id 	    = $data['filter_technical_id'];
             $ssFilter->filter_tailors_id 	    = $data['filter_tailors_id'];
             $ssFilter->filter_coincider 	    = $data['filter_coincider'];
-            $ssFilter->filter_contract_type 	= $data['filter_contract_type'];
+            $ssFilter->filter_production_type_id= $data['filter_production_type_id'];
             $ssFilter->filter_status_guarantee_id = $data['filter_status_guarantee_id'];
             $ssFilter->filter_user              = $data['filter_user'];
             $ssFilter->filter_carpet_color      = $data['filter_carpet_color'];
@@ -144,14 +144,14 @@ class ProductionController extends ActionController {
             }
         }
 
-        $myForm	= new \Admin\Form\Search\Contract($this->getServiceLocator(), $this->_params);
+        $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
         $myForm->setData($this->_params['ssFilter']);
         
         $items = $this->getTable()->listItem($this->_params, array('task' => 'list-production-item'));
         $count = $this->getTable()->countItem($this->_params, array('task' => 'list-production-item'));
         
         $this->_viewModel['myForm']	                = $myForm;
-        $this->_viewModel['ssFilter']	                = $this->_params['ssFilter'];
+        $this->_viewModel['ssFilter']	            = $this->_params['ssFilter'];
         $this->_viewModel['items']                  = $items;
         $this->_viewModel['count']                  = $count;
         $this->_viewModel['user']                   = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
@@ -644,7 +644,10 @@ class ProductionController extends ActionController {
     }
     
     public function printMultiAction() {
-        $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => $this->_params['data']['cid']), array('task' => 'list-print-multi'));
+        if($this->params('id'))
+            $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => [$this->params('id')]), array('task' => 'list-print-multi'));
+        else
+            $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => $this->_params['data']['cid']), array('task' => 'list-print-multi'));
         $items      = $items->toArray();
 
         $contact      = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $items['contact_id']), null);
@@ -696,7 +699,11 @@ class ProductionController extends ActionController {
         $this->_viewModel['status_product']         = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'production-department')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-check')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
-        $this->_viewModel['product_type_contract'] =  \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name'));
+        $this->_viewModel['product_type_contract']  =  \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name'));
+        $this->_viewModel['location_city']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
+        $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
+        $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
+        $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
 
 
 

@@ -1,10 +1,14 @@
 <?php
     $myForm = $this->myForm;
     $myForm->prepare();
-    
+    $data = $this->data;
+    $classx = $data['unit_transport'] == '5sauto' ? '' : 'hidden';
+    $classy = $data['unit_transport'] == '5sauto' ? 'hidden' : '';
+
     $elements = array(
         array('element' => $myForm->get('unit_transport'), 'label' => 'Đơn vị vận chuyển', 'boxClass' => 'col-md-3', 'validate' => array('require' => true)),
-        array('element' => $myForm->get('ghtk_code'), 'label' => 'Mã đơn vận chuyển', 'boxClass' => 'col-md-3', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('ghtk_code'), 'label' => 'Mã đơn vận chuyển', 'boxClass' => 'col-md-3 unit-child '.$classy, 'validate' => array('require' => true)),
+        array('element' => $myForm->get('shipper_id'), 'label' => 'Nhân viên giao hàng', 'boxClass' => 'col-md-3 unit-child 5sauto '.$classx, 'validate' => array('require' => true)),
         array('element' => $myForm->get('ghtk_status'), 'label' => 'Trạng thái vận chuyển', 'boxClass' => 'col-md-3', 'validate' => array('require' => true)),
         array('element' => $myForm->get('price_transport'), 'label' => 'Phí vận chuyển', 'boxClass' => 'col-md-3', 'validate' => array('require' => true)),
         array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
@@ -39,6 +43,20 @@ if($this->params['data']['modal'] != 'success') {
 	<button type="button" class="btn green save-close">Lưu & Đóng</button>
 	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
 </div>
+    <script>
+        $('select[name="unit_transport"]').change(function() {
+            var unit = $(this).val();
+            if(unit == '5sauto'){
+                $('.unit-child').addClass('hidden')
+                $('.5sauto').removeClass('hidden')
+            }
+            else {
+                $('.unit-child').removeClass('hidden')
+                $('.5sauto').addClass('hidden')
+            }
+        });
+    </script>
 <?php
 } 
 ?>
+

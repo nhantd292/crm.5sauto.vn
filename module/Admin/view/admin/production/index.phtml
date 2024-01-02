@@ -16,7 +16,7 @@ if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_
         array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //        array('element' => $myForm->get('filter_bill_code'), 'boxClass' => 'col-md-1 col-sm-2 col-xs-6'),
-        array('element' => $myForm->get('filter_contract_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //        array('element' => $myForm->get('filter_status_guarantee_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
@@ -176,12 +176,12 @@ if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_
                         $total_numbers += $item_product['numbers']?:1;
                     }
 
-                        $productName = $item->kov_status ? $this->kovProduct[$item_product['product_id']]['fullName'] : $this->product[$item_product['product_id']]['name'];
+                        $productName = $item_product['full_name'];
                         $contract_code_return = $item_product['product_return_id'] ? '<span class="text-red">('.$this->ProductReturn[$item_product['product_return_id']]['contract_code'].')('.$this->sale_branch[$this->ProductReturn[$item_product['product_return_id']]['sale_branch_id']]['name'].')</span>' : '';
                     $xhtmlItems .= '
                                     <td title="'.$productName.'">'. $productName .'  '.$carpet_color.'  '.$tangled_color.'</td>
                                     <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
-                                    <td title="'.$item_product['product_name'].'">'. $item_product['product_name'].' '.$contract_code_return .'</td>
+                                    <td title="'.$item_product['car_year'].'">'. $item_product['car_year'].' '.$contract_code_return .'</td>
                                     ';
                     endif;
                 }
@@ -193,7 +193,7 @@ if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_
                                 <td></td>';
             }
             $xhtmlItems .= '
-    							<td class="av-read" '.$rowSpan.'>'. $options['sale_note'] .'</td>
+    							<td class="av-read" '.$rowSpan.'>'. $item['sale_note'] .'</td>
     							<td class="av-read" '.$rowSpan.'>'. $options['production_note'] .'</td>
     							<td '.$rowSpan.'>'. $shipper_id .'</td>
 							    <td '.$rowSpan.'>'. $user . $sale_group_user . $sale_branch_user .'</td>
@@ -205,7 +205,7 @@ if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_
                     $carpet_color           = $item_product['carpet_color_id'] ? $this->carpet_color[$item_product['carpet_color_id']]['name'] : '';
                     $tangled_color          = $item_product['tangled_color_id'] ? $this->tangled_color[$item_product['tangled_color_id']]['name'] : '';
                     $flooring               = $item_product['flooring_id'] ? $this->flooring[$item_product['flooring_id']]['name'] : '';
-                    $productName = $item->kov_status ? $this->kovProduct[$item_product['product_id']]['fullName'] : $this->product[$item_product['product_id']]['name'];
+                    $productName = $item_product['full_name'];
                     if($this->ssFilter['filter_carpet_color'] == $item_product['carpet_color_id']){
                         $total_numbers += $item_product['numbers']?:1;
                     }
@@ -214,7 +214,7 @@ if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_
                     $xhtmlItems .= '<tr '.$color_text_row.'>
                                     <td title="'.$productName.'">'. $productName .'  '.$carpet_color.'  '.$tangled_color.'  '.$flooring.'</td>
                                     <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
-                                    <td title="'.$item_product['product_name'].'">'. $item_product['product_name'].' '.$contract_code_return .'</td>
+                                    <td title="'.$item_product['car_year'].'">'. $item_product['car_year'].' '.$contract_code_return .'</td>
                                     </tr>';
                     endif;
                 }

@@ -18,6 +18,21 @@ $('input[name="location_district_id"]').change(function() {
     $(select).attr('data-parent', $(this).val());
 });
 
+$('select[name="unit_transport"]').change(function() {
+    var unit = $(this).val();
+    console.log(unit)
+    if(unit == '5sauto'){
+        $('.unit-child').addClass('hidden')
+        $('.'+unit).addClass('hidden')
+    }
+
+
+    var select = 'input[name="location_town_id"]';
+    var parent = $(select).parent();
+    $('.select2-container', parent).select2('val', '');
+    $(select).attr('data-parent', $(this).val());
+});
+
 updateTotal()
 
 function updateTotal() {

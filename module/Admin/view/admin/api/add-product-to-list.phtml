@@ -5,7 +5,7 @@ $xhtml = '
         <td width="100px" class="text-bold text-red text-middle">'.$this->product['code'].'</td>
         <td width="100px" class="text-middle">'.$this->product['fullName'].' </td>
         <td class="car_year"><input class="form-control text-right" type="text" name="contract_product[car_year][]" value="" ></td>
-        <td class="numbers"><input class="form-control text-right" type="number" name="contract_product[numbers][]" value="1" min="1"></td>
+        <td class="numbers"><input class="form-control text-right w-60 p5" type="number" name="contract_product[numbers][]" value="1" min="1"></td>
         <td class="price text-middle text-right box-price">
             <input class="form-control text-right money base_price" name="contract_product[price][]" type="text" value="'.number_format($this->product['basePrice']).'" min="0">
         </td>
@@ -13,13 +13,13 @@ $xhtml = '
             <input class="form-control text-right" type="text" name="contract_product[total][]" readonly value="'.number_format($this->product['basePrice']).'">
         </td>
         <td class="length">
-            <input class="form-control text-right" type="number" name="contract_product[length][]" value="'.(int)$size[0].'" required min="1" max="300">
+            <input class="form-control text-right w-60 p5" type="number" name="contract_product[length][]" value="'.(int)$size[0].'" required min="1" max="300">
         </td>
         <td class="width">
-            <input class="form-control text-right" type="number" name="contract_product[width][]" value="'.(int)$size[1].'" required min="1" max="300">
+            <input class="form-control text-right w-60 p5" type="number" name="contract_product[width][]" value="'.(int)$size[1].'" required min="1" max="300">
         </td>
         <td class="height">
-            <input class="form-control text-right" type="number" name="contract_product[height][]" value="'.(int)$size[2].'" required min="1" max="300">
+            <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.(int)$size[2].'" required min="1" max="300">
         </td>
         <td class="hidden">
             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$this->product['id'].'">
