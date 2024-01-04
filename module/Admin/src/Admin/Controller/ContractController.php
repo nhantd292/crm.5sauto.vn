@@ -1347,8 +1347,8 @@ class ContractController extends ActionController {
     
     public function printMultiAction() {
         $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => $this->_params['data']['cid']), array('task' => 'list-print-multi'));
-        $items      = $items->current();
-        $contact      = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $items['contact_id']), null);
+        $items      = $items->toArray();
+        $contact    = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $items['contact_id']), null);
 
         if(empty($items)) {
             return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));

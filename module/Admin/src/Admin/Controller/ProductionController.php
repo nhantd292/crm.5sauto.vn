@@ -705,9 +705,6 @@ class ProductionController extends ActionController {
         $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
 
-
-
-
         $viewModel = new ViewModel($this->_viewModel);
         $viewModel->setTerminal(true);
     
