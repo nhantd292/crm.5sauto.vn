@@ -11,6 +11,7 @@
                 <th>Sản phẩm</th>
                 <th>Số lượng</th>
                 <th>Tên xe - Năm sản xuất</th>
+                <th>Kích thước</th>
                 <th>Ghi chú</th>
             </tr>
             <?php
@@ -28,6 +29,7 @@
                     $product_name = $value['full_name'];
                     $product_number = $value['numbers'];
                     $driver = $value['car_year'];
+                    $size = $value['length'].'x'.$value['width'].'x'.$value['height'];
                     if($key == 0){
                         $product_html .= '<tr>
                                             <td class="text-center" rowspan="'.count($products).'">' . $idx++ . '</td>
@@ -35,6 +37,7 @@
                                             <td>' . $product_name . '</td>
                                             <td class="text-center">' . $product_number . '</td>
                                             <td>' . $driver . '</td>
+                                            <td>' . $size . '</td>
                                             <td rowspan="'.count($products).'">' . $note . '</td>
                                       </tr>';
                     }
@@ -43,6 +46,7 @@
                                             <td>' . $product_name . '</td>
                                             <td class="text-center">' . $product_number . '</td>
                                             <td>' . $driver . '</td>
+                                            <td>' . $size . '</td>
                                       </tr>';
                     }
 
