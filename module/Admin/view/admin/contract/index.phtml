@@ -137,6 +137,7 @@
             $linkEditStatus         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status')) .'\', {\'id\': \''. $id .'\'});';
             $linkConvertOrder       = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'convert-order')) .'\', {\'id\': \''. $id .'\'});';
             $linkDelete             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'delete', 'id' => $id));
+            $linkCancel             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'cancel', 'id' => $id));
             $linkBillAdd            = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $id .'\'});';
             $linkContactEdit        = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $item['contact_id'] .'\'});';
             $linkEditStatusAccount  = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status-account')) .'\', {\'id\': \''. $id .'\'});';
@@ -152,6 +153,7 @@
 
             $menu_edit_contract = empty($item->ghtk_code) ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '<li><a href="'.$linkEditProduct.'"><i class="fa fa-edit"></i> Cập nhật giá bán</a></li>';
             $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
+            $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
 
             if($item->unit_transport == 'ghtk'){
                 $menu_edit_status = '';
@@ -169,7 +171,8 @@
     									   <i class="fa fa-cog"></i> <i class="fa fa-angle-down"></i>
     									</button>
     									<ul class="dropdown-menu" role="menu">
-    										'.$menu_edit_contract.$menuConver.$menu_edit_status_acountant.$menu_edit_status.'
+    									    
+    										'.$menuCancel.$menu_edit_contract.$menuConver.$menu_edit_status_acountant.$menu_edit_status.'
     										<li><a href="javascript:;" onclick="'. $linkEditReduce .'"><i class="fa fa-money"></i> Giảm trừ doanh thu</a></li>
     										<li><a href="javascript:;" onclick="'. $linkEditShippingFee .'"><i class="fa fa-money"></i> Xác nhận Hoàn có hỗ trợ ship</a></li>
     										<li><a href="'. $linkDelete .'"><i class="fa fa-trash"></i> Xóa</a></li>

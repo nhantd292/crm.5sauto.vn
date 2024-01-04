@@ -3399,6 +3399,48 @@ class ContractTable extends DefaultTable {
 
             $result = $arrItem['id'];
         }
+
+        // Hủy sale
+        if($options['task'] == 'cancel') {
+            $arrItem = $arrParam['item'];
+
+            // Xóa đơn hàng tạm thời
+            $data = array(
+                'status_id' => HUY_SALES,
+            );
+            $where = new Where();
+            $where->equalTo('id', $arrItem['id']);
+            $this->tableGateway->update($data, $where);
+
+            // Thêm lịch sử HỦY SALE
+            $arrParamLogs = array(
+                'data' => array(
+                    'title'          => 'Hủy sale: '.$arrItem['code'],
+                    'phone'          => $contact['phone'],
+                    'name'           => $contact['name'],
+                    'action'         => 'Xóa',
+                    'contact_id'     => $arrItem['contact_id'],
+                    'contract_id'    => $arrItem['id'],
+                    'options'        => array(
+                        'date'                    => $arrItem['date'],
+                        'price'                   => $arrItem['price'],
+                        'price_promotion'         => $arrItem['price_promotion'],
+                        'price_promotion_percent' => $arrItem['price_promotion_percent'],
+                        'price_promotion_price'   => $arrItem['price_promotion_price'],
+                        'promotion_content'       => $contract_options['promotion_content'],
+                        'price_total'             => $arrItem['price_total'],
+                        'product_id'              => $arrItem['product_id'],
+                        'user_id'                 => $arrItem['user_id'],
+                        'sale_branch_id'          => $arrItem['sale_branch_id'],
+                        'sale_group_id'           => $arrItem['sale_group_id'],
+                        'note'                    => "Xóa đơn hàng",
+                    )
+                )
+            );
+            $logs = $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
+
+            $result = $arrItem['id'];
+        }
 	
 	    return $result;
 	}

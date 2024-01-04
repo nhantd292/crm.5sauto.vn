@@ -141,7 +141,6 @@ class ContractController extends ActionController {
         $products = json_decode($products, true);
         if($products['total'] < $products['pageSize']){
             $product_data = \ZendX\Functions\CreateArray::create($products['data'], array('key' => 'id', 'value' => 'fullName'));
-            // $category_data = \ZendX\Functions\CreateArray::create($products['data'], array('key' => 'categoryId', 'value' => 'categoryName'));
         }
         else{
             $total = $products['total'];
@@ -150,76 +149,13 @@ class ContractController extends ActionController {
             $product_data = [];
             for ($index = 0; $index < $pageTotal; $index++) {
                 $currentItem = $index * $pageSize;
-                $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token,
-                    '/products?pageSize=100&currentItem=' . $currentItem);
+                $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100&currentItem=' . $currentItem);
                 $products = json_decode($products, true);
                 $product_data = array_merge($product_data, $products['data']);
             }
             $product_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'id', 'value' => 'fullName'));
-            // $category_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'categoryId', 'value' => 'categoryName'));
         }
         $this->_params['products'] = $product_data;
-
-//        if(!empty($this->_params['ssFilter']['filter_date_begin']) && !empty($this->_params['ssFilter']['filter_date_end'])){
-//             $list_pro = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
-//             foreach($list_pro as $key => $value){
-//                 if(!empty($value->id_kov)){
-//                     $result = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/' . $value->id_kov);
-//                     $result = json_decode($result, true);
-//                     if($result['code']){
-//
-//                         $params['data']['id']       = $value['id'];
-//                         $params['data']['kov_code']  = $result['code'];
-//                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($params, array('task' => 'update-kov-code'));
-//                     }
-//                 }
-//             }
-//        }
-
-//        if(!empty($this->_params['ssFilter']['filter_date_begin']) && !empty($this->_params['ssFilter']['filter_date_end'])) {
-//            $list_pro_update = $this->getTable()->listItem(['query' => 'SELECT * FROM x_contract WHERE shipped = 0 AND ghtk_status IN (3,4,5,6,9,10,11,13,20,21,123,45,49,410)'], array('task' => 'list-query'));
-//            foreach ($list_pro_update as $prupdate) {
-//                $result = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/' . $prupdate['id_kov']);
-//                $result = json_decode($result, true);
-//                if(isset($result['id'])){
-//                    $invoiceDetails = $result['orderDetails'];
-//                    foreach($invoiceDetails as $key => $value){
-//                        unset($invoiceDetails[$key]['viewDiscount']);
-//                    }
-//                    $invoiceOrderSurcharges = $result['invoiceOrderSurcharges'];
-//                    foreach($invoiceOrderSurcharges as $key => $value){
-//                        $invoiSurcharges[$key]['id'] = $value['id'];
-//                        $invoiSurcharges[$key]['code'] = $value['surchargeCode'];
-//                        $invoiSurcharges[$key]['price'] = $value['price'];
-//                    }
-//
-//                    $invoi_data['branchId']         = $result['branchId'];
-//                    $invoi_data['customerId']       = $result['customerId'];
-//                    $invoi_data['discount']         = $result['discount'];
-//                    $invoi_data['totalPayment']     = $result['totalPayment'];
-//                    $invoi_data['soldById']         = $result['soldById'];
-//                    $invoi_data['orderId']          = $result['id'];
-//                    $invoi_data['invoiceDetails']   = $invoiceDetails;
-//                    $invoi_data['deliveryDetail']   = array(
-//                        'status' => 2,
-//                        'surchages' => $invoiSurcharges
-//                    );
-//                }
-//                $result_kov = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/invoices', $invoi_data, 'POST');
-//                $result_kov = json_decode($result_kov, true);
-//
-//                if(isset($result_kov['id'])){
-//                    $params['data']['id']       = $prupdate['id'];
-//                    $params['data']['shipped']  = 1;
-//                    $co_shipped = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($params, array('task' => 'update-shipped'));
-//                }
-//                echo "<pre>";
-//                print_r($co_shipped);
-//                print_r($result_kov);
-//                echo "</pre>";
-//            }
-//            echo 'hoàn thành'; exit;
-//        }
 
         $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
         $myForm->setData($this->_params['ssFilter']);
@@ -1102,7 +1038,6 @@ class ContractController extends ActionController {
             $this->goRoute();
         }
     
-    
         $this->_viewModel['item']               = $item;
         $this->_viewModel['contact']            = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $item['contact_id']));
         $this->_viewModel['user']               = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
@@ -1112,6 +1047,47 @@ class ContractController extends ActionController {
         $this->_viewModel['sex']                = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sex')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['product']            = $this->getServiceLocator()->get('Admin\Model\ProductTable')->listItem(null, array('task' => 'cache-active'));
         $this->_viewModel['caption']            = 'Đơn hàng - Xóa';
+        return new ViewModel($this->_viewModel);
+    }
+
+    // Xóa Đơn hàng
+    public function cancelAction() {
+        $item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->params('id')));
+
+        if($item['lock']){
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock'));
+        }
+        if(!empty($item['ghtk_code'])){
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock'));
+        }
+
+        if(empty($item)) {
+            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+        }
+
+        if($this->getRequest()->isPost()) {
+            $this->_params['item'] = $item;
+            $a = json_decode($this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/' . $item['id_kov'], null, 'DELETE' ), true);
+            $msg = 'Hủy sales thành công';
+            if(isset($a['responseStatus'])){
+                $msg = $a['responseStatus']['message'];
+            }
+            else{
+                $this->getTable()->deleteItem($this->_params, array('task' => 'cancel'));
+            }
+            $this->flashMessenger()->addMessage($msg);
+            $this->goRoute();
+        }
+
+        $this->_viewModel['item']               = $item;
+        $this->_viewModel['contact']            = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $item['contact_id']));
+        $this->_viewModel['user']               = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
+        $this->_viewModel['sale_group']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
+        $this->_viewModel['sale_branch']        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
+        $this->_viewModel['sale_source_group']  = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-source-group')), array('task' => 'cache'));
+        $this->_viewModel['sex']                = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sex')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['product']            = $this->getServiceLocator()->get('Admin\Model\ProductTable')->listItem(null, array('task' => 'cache-active'));
+        $this->_viewModel['caption']            = 'Đơn hàng - Hủy sale';
         return new ViewModel($this->_viewModel);
     }
     

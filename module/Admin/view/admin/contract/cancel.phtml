@@ -2,7 +2,7 @@
     $dateFormat = new \ZendX\Functions\Date();
 
     $arrControl = array(
-        array('name' => 'save-close', 'caption' => 'Xác nhận xóa', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+        array('name' => 'save-close', 'caption' => 'Xác nhận Hủy sale', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
         array('name' => 'close', 'caption' => 'Quay lại', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-arrow-left', 'attributes' => array('class' => 'btn')),
     );
     
@@ -49,7 +49,7 @@
 	</div>
 	
     <?php echo $this->flashMessenger()->render();?>
-    <div class="alert alert-danger">Lưu ý: Sẽ xóa toàn bộ hóa đơn, trong danh sách đơn hàng và không thể khôi phục lại</div>
+    <div class="alert alert-danger">Lưu ý: Đơn hàng hủy sale sẽ không thể chuyển sang sang đơn vị vận chuyển</div>
     <div class="page-content">
     	<div class="row">
 			<?php echo $xhtml;?>
