@@ -195,7 +195,7 @@ class Contract extends Form{
             'options'		=> array(
                 'empty_option'	=> '- Bộ phận -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> array('ghtk_status' => 'Giục đơn', 'status_acounting_id' => 'Kế toán', ),
+                'value_options'	=> array('status_id' => 'Sales', 'ghtk_status' => 'Giục đơn', 'status_acounting_id' => 'Kế toán', ),
             ),
         ));
 
@@ -205,6 +205,9 @@ class Contract extends Form{
         }
         if($ssFilter['filter_status_type'] == 'status_acounting_id'){
             $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status-acounting" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
+        }
+        if($ssFilter['filter_status_type'] == 'status_id'){
+            $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
         }
 
         // Trạng thái theo bộ phận
