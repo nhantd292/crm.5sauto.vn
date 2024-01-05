@@ -131,10 +131,10 @@ class ContractController extends ActionController {
         }
 
         // Lấy danh mục sản phẩm cho vào bộ lọc
-        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
-        $categories = json_decode($categories, true)['data'];
-        $categories = $this->getNameCat($this->addNew($categories), $result);
-        $this->_params['categories'] = $categories;
+//        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
+//        $categories = json_decode($categories, true)['data'];
+//        $categories = $this->getNameCat($this->addNew($categories), $result);
+//        $this->_params['categories'] = $categories;
 
         // Lấy danh sách sản phẩm đưa vào bộ lọc
         $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
@@ -153,7 +153,7 @@ class ContractController extends ActionController {
                 $products = json_decode($products, true);
                 $product_data = array_merge($product_data, $products['data']);
             }
-            $product_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'id', 'value' => 'fullName'));
+            $product_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'code', 'value' => 'fullName'));
         }
         $this->_params['products'] = $product_data;
 
