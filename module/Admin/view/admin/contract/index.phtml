@@ -286,6 +286,7 @@
             'children' => array(
                 array( 'name' => 'print', 'caption' => 'In đóng hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint();') ),
                 array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-check-square-o' ),
+                array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
 //                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport();')) ,
 //                array( 'name' => 'hidden', 'caption' => 'Khóa đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'lock\');')),
                 array( 'name' => 'return', 'caption' => 'Xác nhận hoàn', 'link' => 'javascript:;', 'icon' => 'fa fa-arrow-left', 'attributes' => array('onclick'=>'javascript:updateItem(\'returned\', \'Bạn có muốn xác nhận hoàn các đơn hàng đã chọn\');')),

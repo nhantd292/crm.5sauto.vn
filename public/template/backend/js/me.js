@@ -299,7 +299,7 @@ function contractTool(action, option) {
 /*
 * Xuất excel
 */
-function contractExport() {
+function contractExport(action='export') {
 	var itemId = [];
 	
 	jQuery(formAdmin + ' .checkboxes').each(function () {
@@ -310,9 +310,9 @@ function contractExport() {
 	});
 	
 	if(itemId.length > 0) {
-		var ajaxUrl = jQuery(formAdmin).attr('action').replace('/filter', '/export');
+		var ajaxUrl = jQuery(formAdmin).attr('action').replace('/filter', '/'+action);
 		submitForm(ajaxUrl);
-		jQuery(formAdmin).attr('action', jQuery(formAdmin).attr('action').replace('/export', '/filter'));
+		jQuery(formAdmin).attr('action', jQuery(formAdmin).attr('action').replace('/'+action, '/filter'));
 	} else {
 		xToastr('error', xMessage['no-checked'], '');
 	}
