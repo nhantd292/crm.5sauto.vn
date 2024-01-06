@@ -165,8 +165,8 @@
             $menu_edit_status_acountant = in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)
                 ? '<li><a href="javascript:;" onclick="'. $linkEditStatusAccount .'"><i class="fa fa-pencil-square-o"></i> Sửa trạng thái kế toán</a></li>' : '';
             
-            $controls               = $controlView;
-            $controls              .= '<div class="btn-group">
+//            $controls               = $controlView;
+            $controls              = '<div class="btn-group">
     									<button class="btn green btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
     									   <i class="fa fa-cog"></i> <i class="fa fa-angle-down"></i>
     									</button>
@@ -205,9 +205,8 @@
             }
 
             $xhtmlItems .= '<tr id="tr_'. $id .'" data-id="'. $id .'"'.$color_text_row.'>
-    							<td '.$rowSpan.'>'. $cid .'</td>
-    							<td '.$rowSpan.'>'. $lock .'</td>
-                                <td '.$rowSpan.' class="controls">'. $controls .$controlAddHistoryContract.'<br>'.$controlPrint.'</td>
+    							<th '.$rowSpan.'>'. $cid .'</th>
+                                <th '.$rowSpan.' class="controls" style="left:23px;">'.$controlView.$controlAddHistoryContract. $controls .'<br>'.$controlPrint.'</th>
     							<td '.$rowSpan.'>'. $status .'</td>
                                 <td '.$rowSpan.'>'. $ghtk_code .'</td>
     							<td '.$rowSpan.'><span class="text-bold">'. $code .'</span><br><span style="color: #a70101;">'.$item->coincider_code.'</span></td>
@@ -255,9 +254,8 @@
 
     // Head
     $xhtmlHead  = '<tr>';
-    $xhtmlHead .= '<th width="30" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
-    $xhtmlHead .= '<th width="30"></th>';
-    $xhtmlHead .= '<th width="70">Công cụ</th>';
+    $xhtmlHead .= '<th width="30" class="table-checkbox fix-head"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th width="70" class="fix-head" style="left: 23px;">Công cụ</th>';
     $xhtmlHead .= '<th width="180">Trạng thái</th>';
     $xhtmlHead .= '<th width="200">Mã đơn GHTK</th>';
     $xhtmlHead .= '<th width="90">Mã số đơn</th>';
@@ -348,6 +346,11 @@
     	</div>
 	</div>
 </form>
+<style>
+    .dropdown-menu {
+        left: 100%;
+    }
+</style>
 
 <?php $this->headScript()->captureStart() ?>
 <!-- resize_col_table('#table-manager'); -->
