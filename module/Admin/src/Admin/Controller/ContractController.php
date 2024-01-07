@@ -974,9 +974,9 @@ class ContractController extends ActionController {
             $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->_params['data']['id']));
             $myForm->setData($contract);
 
-            if($contract['lock'] || $contract['ghtk_code'] || $contract['ghtk_status'] || $contract['ghtk_result']){
-                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'modal'));
-            }
+//            if($contract['lock'] || $contract['ghtk_code'] || $contract['ghtk_status'] || $contract['ghtk_result']){
+//                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'modal'));
+//            }
         } else {
             return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
         }
@@ -1795,9 +1795,12 @@ class ContractController extends ActionController {
 
                 $products = [];
                 $total_weight = 0;
+                $list_name = '';
                 foreach($contract['options'] as $key => $value){
+                    $pname = $value['full_name'].' - '.$value['car_year'];
+                    $list_name .= $pname.', ';
                     if($value['weight'] > 1){
-                        $pro['name'] = $value['full_name'].' - '.$value['car_year'];
+                        $pro['name'] = $pname;
                         $pro['weight'] = $value['weight'];
                         $pro['quantity'] = $value['numbers'];
                         $pro['product_code'] = $value['code'];
@@ -1809,6 +1812,7 @@ class ContractController extends ActionController {
                         $products[] = $pro;
                     }
                 }
+                $products[0]['name'] = $list_name;
                 $listData_ghtk[$contract['code']]['products'] = $products;
 
                 // Thông tin kho ship lấy hàng
