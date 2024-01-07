@@ -1796,16 +1796,18 @@ class ContractController extends ActionController {
                 $products = [];
                 $total_weight = 0;
                 foreach($contract['options'] as $key => $value){
-                    $pro['name'] = $value['full_name'].' - '.$value['car_year'];
-                    $pro['weight'] = $value['weight'];
-                    $pro['quantity'] = $value['numbers'];
-                    $pro['product_code'] = $value['code'];
-                    $pro['length'] = $value['length'];
-                    $pro['width'] = $value['width'];
-                    $pro['height'] = $value['height'];
-                    $total_weight += $value['weight'];
+                    if($value['weight'] > 1){
+                        $pro['name'] = $value['full_name'].' - '.$value['car_year'];
+                        $pro['weight'] = $value['weight'];
+                        $pro['quantity'] = $value['numbers'];
+                        $pro['product_code'] = $value['code'];
+                        $pro['length'] = $value['length'];
+                        $pro['width'] = $value['width'];
+                        $pro['height'] = $value['height'];
+                        $total_weight += $value['weight'];
 
-                    $products[] = $pro;
+                        $products[] = $pro;
+                    }
                 }
                 $listData_ghtk[$contract['code']]['products'] = $products;
 
