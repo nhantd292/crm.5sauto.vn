@@ -335,7 +335,8 @@ class   MarketingReportController extends ActionController
         if(!empty($arrParams['data']['params']['total_cp'])) {
             $arrParam['ssFilter']['filter_date_begin'] = $arrParams['item']['date'];
             $arrParam['ssFilter']['filter_date_end'] = $arrParams['item']['date'];
-            $items = $this->getTable()->listItem($arrParam, array('task' => 'list-item-type'));
+            $arrParam['ssFilter']['filter_type'] = 'mkt_report_day_hour';
+            $items = $this->getTable()->listItem($arrParam, array('task' => 'list-item-type', 'paginator' => false));
 
             // $total_cp   = str_replace(',', '', $arrParams['data']['params']['total_cp']);
             $total_cp   = 0;
