@@ -3121,6 +3121,7 @@ class ContractTable extends DefaultTable {
             $data = array(
                 'ghtk_status' => $arrData['ghtk_status'],
                 'ghtk_code' => $arrData['ghtk_code'],
+                'price_transport' => $arrData['price_transport'],
             );
             // Cập nhật đơn hàng
             $this->tableGateway->update($data, array('id' => $id));
