@@ -733,6 +733,7 @@ class ApiController extends ActionController {
                         $arrParam['id']             = $contract_item['id'];
                         $arrParam['ghtk_status']    = $data['status_id'];
                         $arrParam['ghtk_code']      = $data['label_id'];
+                        $arrParam['price_transport']= $data['fee'];
                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
 
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho

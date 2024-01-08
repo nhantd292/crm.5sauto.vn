@@ -83,17 +83,17 @@ class Contract extends Form{
         ));
 
         // Shipper
-        $this->add(array(
-            'name'			=> 'filter_shipper_id',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Nhân viên giao hàng -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-positons-care')), array('key' => 'id', 'value' => 'name')),
-            )
-        ));
+//        $this->add(array(
+//            'name'			=> 'filter_shipper_id',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Nhân viên giao hàng -',
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-positons-care')), array('key' => 'id', 'value' => 'name')),
+//            )
+//        ));
         // đơn đã xuất kho
         $this->add(array(
             'name' => 'filter_status_shipped',
@@ -171,6 +171,21 @@ class Contract extends Form{
 		        'value_options'	=> $categories,
 		    )
 		));
+
+
+        // Shipper
+        $this->add(array(
+            'name'			=> 'filter_shipper_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Nhân viên giao hàng -',
+                'disable_inarray_validator' => true,
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "shipper" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+            ),
+        ));
 
 		$this->add(array(
 		    'name'			=> 'filter_product',

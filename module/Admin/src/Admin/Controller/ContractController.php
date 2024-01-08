@@ -39,6 +39,7 @@ class ContractController extends ActionController {
         $this->_params['ssFilter']['filter_product']        = $ssFilter->filter_product;
         $this->_params['ssFilter']['filter_update_kov_false']        = $ssFilter->filter_update_kov_false;
         $this->_params['ssFilter']['filter_production_type_id']        = $ssFilter->filter_production_type_id;
+        $this->_params['ssFilter']['filter_shipper_id']        = $ssFilter->filter_shipper_id;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage'] = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : $this->_paginator['itemCountPerPage'];
@@ -81,6 +82,7 @@ class ContractController extends ActionController {
             $ssFilter->filter_product 	        = $data['filter_product'];
             $ssFilter->filter_update_kov_false 	= $data['filter_update_kov_false'];
             $ssFilter->filter_production_type_id 	= $data['filter_production_type_id'];
+            $ssFilter->filter_shipper_id 	= $data['filter_shipper_id'];
 
             $ssFilter->filter_sale_group = $data['filter_sale_group'];
             if(!empty($data['filter_sale_branch'])) {
@@ -1671,14 +1673,14 @@ class ContractController extends ActionController {
             $item['product_numbers'] = $item['product_numbers'] = $item['product_weight'] = $item['product_price'] = $item['product_total'] = $item['product_length'] = $item['product_width'] = $item['product_height'] = 0;
 
             foreach($options['product'] as $product){
-                $item['product_name'] .= $product['full_name'].' + ';
-                $item['product_numbers'] += $product['numbers'];
-                $item['product_weight'] += $product['weight'];
-                $item['product_price'] += $product['total'];
-                $item['product_total'] += $product['total'];
-                $item['product_length'] += $product['length'];
-                $item['product_width'] += $product['width'];
-                $item['product_height'] += $product['height'];
+                $item['product_name']       .= $product['full_name'].' + ';
+                $item['product_numbers']    += $product['numbers'];
+                $item['product_weight']     += $product['weight'];
+                $item['product_price']      += $product['total'];
+                $item['product_total']      += $product['total'];
+                $item['product_length']     += $product['weight'] > 1 ? $product['length'] : 0;
+                $item['product_width']      += $product['weight'] > 1 ? $product['width'] : 0;
+                $item['product_height']     += $product['weight'] > 1 ? $product['height'] : 0;
             }
             $item['product_weight'] = $item['product_weight'] * 1000;
 
