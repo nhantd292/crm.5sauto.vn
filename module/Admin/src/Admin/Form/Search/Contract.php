@@ -183,7 +183,7 @@ class Contract extends Form{
             'options'		=> array(
                 'empty_option'	=> '- Nhân viên giao hàng -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "shipper" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "shipper" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
             ),
         ));
 
