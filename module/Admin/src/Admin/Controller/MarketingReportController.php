@@ -333,7 +333,20 @@ class   MarketingReportController extends ActionController
 
         // Cập nhật lại chi phí quảng cáo cho từng data
         if(!empty($arrParams['data']['params']['total_cp'])) {
-            $total_cp   = str_replace(',', '', $arrParams['data']['params']['total_cp']);
+            $arrParam['ssFilter']['filter_date_begin'] = $arrParams['item']['date'];
+            $arrParam['ssFilter']['filter_date_end'] = $arrParams['item']['date'];
+            $items = $this->getTable()->listItem($arrParam, array('task' => 'list-item-type'));
+
+            // $total_cp   = str_replace(',', '', $arrParams['data']['params']['total_cp']);
+            $total_cp   = 0;
+            foreach($items as $key => $value){
+                if(!empty($value->params)){
+                    $params = unserialize($value->params);
+                    $cp = str_replace(',', '', $params['total_cp']);
+                    $total_cp += $cp;
+                }
+            }
+
             $count_data = $this->getServiceLocator()->get('Admin\Model\ContractTable')->countItem(array('ssFilter' => array('filter_date_begin' => $arrParams['item']['date'], 'filter_date_end' => $arrParams['item']['date'])), array('task' => 'list-item'));
             $cost_ads = (int)($total_cp / $count_data);
 
