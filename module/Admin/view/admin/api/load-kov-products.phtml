@@ -29,7 +29,7 @@ if($this->kov_branch_id){
                         <img src="' . $pro['images'][0] . '" width="100%">
                     </div>
                     <div class="infor col-sm-9 col-xs-9">
-                        <p class="code-product text-bold">' . $pro['code'] .'</span> (<span class="text-green text-bold">Số Lượng: ' . number_format($pro['inventories'][0]['onHand']) . '</span>)</p>
+                        <p class="code-product text-bold">' . $pro['code'] .'</span> (<span class="text-green text-bold">Số Lượng: ' . number_format($pro['inventories'][0]['reserved'].'/'.number_format($pro['inventories'][0]['onHand']) . '</span>)</p>
                         <p class="name-product">' . $pro['fullName'] . '</p>
                         <p class="price-product">Giá:' . number_format($pro['basePrice']) . '</p>
                         <p class="number-product"></p>
