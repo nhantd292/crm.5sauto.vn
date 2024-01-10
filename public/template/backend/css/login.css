@@ -1,7 +1,7 @@
 
 .page_login {
     background: url(../img/bg_login.jpg) no-repeat;
-    background-size: auto;
+    background-size: cover;
     background-position: top center;
 }
 
