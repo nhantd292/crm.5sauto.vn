@@ -200,6 +200,12 @@
 <!--            <li class="divider"></li>-->
 
             <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'add-kov'));?>" target="_self">
+                    <i class="fa fa-plus"></i> <span class="title">Tạo đơn</span><span class="arrow"></span>
+                </a>
+            </li>
+
+            <li>
 				<a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contact', 'action' => 'index'));?>" target="_self">
 					<i class="fa fa-list"></i> <span class="title">Danh sách liên hệ</span><span class="arrow"></span>
 				</a>
