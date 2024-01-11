@@ -895,7 +895,11 @@ class ContractTable extends DefaultTable {
                     $data['code'] = substr_replace("H-000000",$index, 2);
                 }
             }
-            $data['code'] = 'DH-'.$data['code'];
+            $branch = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $result['sale_branch_id']));
+            $data['code'] = $branch['alias'].'-'.$data['code'];
+            if ($options['split-contract']){
+                $data['code'] = $data['code'] .'-H';
+            }
 
             $this->tableGateway->update($data, array('id' => $id));
             return true;
