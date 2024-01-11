@@ -1924,7 +1924,7 @@ class ContractController extends ActionController {
                     $contract_code_success[] = $contract['code'];
                 }
                 else{
-                    $contract_code_error[] = $contract['code'];
+                    $contract_code_error[] = $contract['code'].'('.$result_kov['responseStatus']['message'].')';
                 }
             }
             else{
