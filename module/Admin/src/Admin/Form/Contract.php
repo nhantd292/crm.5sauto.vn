@@ -4,7 +4,7 @@ use \Zend\Form\Form as Form;
 
 class Contract extends Form {
 	
-	public function __construct($sm){
+	public function __construct($sm, $options){
 		parent::__construct();
 		
 		// FORM Attribute
@@ -51,7 +51,7 @@ class Contract extends Form {
             'options'		=> array(
                 'empty_option'	=> '- Chọn -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-marketing')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array("data" => array('sale_branch_id' =>$options['userInfo']['sale_branch_id'])), array('task' => 'list-marketing')), array('key' => 'id', 'value' => 'name')),
             ),
         ));
 

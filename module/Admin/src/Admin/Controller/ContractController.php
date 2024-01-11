@@ -183,6 +183,7 @@ class ContractController extends ActionController {
 
     // Thêm mới đơn hàng theo sản phẩm mới
     public function addKovAction() {
+        $this->_params['userInfo'] = $this->_userInfo->getUserInfo();
         $numberFormat = new \ZendX\Functions\Number();
 //        $myForm = $this->getForm();
         $myForm = new \Admin\Form\Contract($this, $this->_params);
