@@ -137,7 +137,7 @@ class ContractDetail extends Form {
 		    'type'			=> 'Text',
 		    'attributes'	=> array(
 				'class'		  => 'form-control',
-                'value' => 'Cho Kiểm Tra Hàng, Có Vấn Đề Gì Gọi Cho Shop, Không Tự Ý Hủy Đơn'
+                'value' => 'Cho Kiểm Tra Và Đồng Kiểm, Có Vấn Đề Gì Gọi Cho Shop, Không Tự Ý Hủy Đơn'
 		    )
 		));
 	}
