@@ -67,7 +67,7 @@
     if($this->items->count() > 0) {
         $stt = 0;
         $sum = 0;
-        $total_price = 0;
+        $total_price = $total_cod = $total_discount = 0;
         $manager_edit = false;
         if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
             $manager_edit = true;
@@ -91,6 +91,8 @@
             $price_promotion        = number_format($item->price_promotion);
             $price_total            = $item->price_total;
             $total_price           += $price_total;
+            $total_cod             += $item->price_transport;
+            $total_discount        += $item->price_reduce_sale;
             $price_paid             = $item->price_paid;
             $price_accrued          = $item->price_accrued;
             $price_owed             = $item->price_owed;
@@ -254,6 +256,8 @@
     }
 
     $text_total = '<br><span  class="text-red">' . number_format($total_price) . '</span>';
+    $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
+    $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
 
     // Head
     $xhtmlHead  = '<tr>';
@@ -269,8 +273,8 @@
     $xhtmlHead .= '<th width="90">Điện thoại</th>';
     $xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
     $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
-    $xhtmlHead .= '<th width="80" class="text-right">COD</th>';
-    $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu</th>';
+    $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
+    $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu'.$text_total_cod.'</th>';
     $xhtmlHead .= '<th width="200">Sản phẩm</th>';
     $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
     $xhtmlHead .= '<th width="120">Số lượng</th>';
