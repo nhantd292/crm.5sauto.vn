@@ -488,8 +488,8 @@ class ContractController extends ActionController {
                 $product_add[$i]['productCode'] = $contract_product['code'][$i];
                 $product_add[$i]['productName'] = $contract_product['full_name'][$i];
                 $product_add[$i]['quantity'] = (int)$contract_product['numbers'][$i];
-                // $product_add[$i]['price'] = $numberFormat->formatToData($contract_product['price'][$i]);
-                $product_add[$i]['price'] = 0;
+                $product_add[$i]['price'] = $numberFormat->formatToData($contract_product['price'][$i]);
+//                $product_add[$i]['price'] = 0;
                 $product_add[$i]['note'] = '';
             }
         }
@@ -511,10 +511,10 @@ class ContractController extends ActionController {
         $order_data['surchages']        = $surchages;
 
         // Không đồ bộ thanh toán lên kiotviet
-//        if(!empty($params['price_deposits']) && $method == 'POST'){
-//            $order_data['totalPayment'] = $numberFormat->formatToData($params['price_deposits']);
-//            $order_data['method'] = 'Transfer';
-//        }
+        if(!empty($params['price_deposits']) && $method == 'POST'){
+            $order_data['totalPayment'] = $numberFormat->formatToData($params['price_deposits']);
+            $order_data['method'] = 'Transfer';
+        }
 
         $order_id = '';
         if($method == 'PUT'){
@@ -1376,7 +1376,7 @@ class ContractController extends ActionController {
                             'message' => 'Mã vận đơn không tồn tại',
                         ));
                     } else {
-                        $cod_ghtk = (int)$this->_params['data']['cod'];
+                        $cod_ghtk = (int)str_replace(',', '', $this->_params['data']['cod']);
                         $price_owed = (int)$contract['price_owed'];
                         $price_reduce_sale = (int)$contract['price_reduce_sale'];
                         if (($price_owed - $price_reduce_sale) != $cod_ghtk) {
