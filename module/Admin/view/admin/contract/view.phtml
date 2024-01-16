@@ -40,7 +40,7 @@
         array('element' => $this->contact['name'], 'label' => 'Họ và tên'),
         array('element' => $this->location_city[$this->contact['location_city_id']]['name'], 'label' => 'Tỉnh thành'),
         array('element' => $this->location_district[$this->contact['location_district_id']]['name'], 'label' => 'Quận huyện'),
-        array('element' => $contact_options['address'], 'label' => 'Địa chỉ nơi ở'),
+        array('element' => $this->item['address'], 'label' => 'Địa chỉ nơi ở'),
 
 //        array('section' => 'Thông tin người nhận', 'boxClass' => 'col-md-12'),
 //        array('element' => $contract_options['contract_received']['name'], 'label' => 'Họ và tên'),
@@ -58,7 +58,7 @@
 //        array('element' => $productionType, 'label' => 'Loại đơn sản xuất'),
 //        array('element' => $codeOld, 'label' => 'Mã đơn cũ', 'boxClass' => $classCode),
 //        array('element' => $this->transport[$this->item['transport_id']]['name'], 'label' => 'Vận chuyển'),
-        array('element' => $options['sale_note'], 'label' => 'Ghi chú sales'),
+        array('element' => $this->item['sale_note'], 'label' => 'Ghi chú sales'),
         array('element' => number_format($this->item['price_total']), 'label' => 'Thành tiền'),
 
 //        array('section' => 'Thông tin sản xuất', 'boxClass' => 'col-md-12'),
