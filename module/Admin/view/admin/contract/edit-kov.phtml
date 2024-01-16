@@ -106,11 +106,12 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                             $check_name = empty($productList['product_name'][$i]) ? 'has-error' : "";
                             $check_number = empty($productList['numbers'][$i]) ? 'has-error' : "";
                             $check_price = empty($productList['price'][$i]) ? 'has-error' : "";
+                            $check_car_year = empty($productList['car_year'][$i]) ? 'has-error' : "";
 
                             $productHtml .= '<tr id="tr_'.$productList['product_id'][$i].' data-id="'.$productList['product_id'][$i].'">
                                                         <td width="100px" class="text-bold text-red text-middle">'.$productList['code'][$i].'</td>
                                                         <td width="100px" class="text-middle">'.$productList['full_name'][$i].'</td>
-                                                        <td class="car_year"><input class="form-control text-right" type="text" name="contract_product[car_year][]" value="'.$productList['car_year'][$i].'" ></td>
+                                                        <td class="car_year '.$check_car_year.'"><input class="form-control text-right" type="text" name="contract_product[car_year][]" value="'.$productList['car_year'][$i].'" ></td>
                                                         <td class="numbers '.$check_number.'"><input class="form-control text-right w-60 p5" type="number" name="contract_product[numbers][]" value="'.$productList['numbers'][$i].'" min="1"></td>
                                                         <td class="price text-middle text-right box-price '.$check_price.'">
                                                             <input class="form-control text-right money base_price" name="contract_product[price][]" type="text" value="'.$productList['price'][$i].'" min="0">
