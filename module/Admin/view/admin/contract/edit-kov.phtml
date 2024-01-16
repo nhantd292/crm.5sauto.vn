@@ -107,6 +107,9 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                             $check_number = empty($productList['numbers'][$i]) ? 'has-error' : "";
                             $check_price = empty($productList['price'][$i]) ? 'has-error' : "";
                             $check_car_year = empty($productList['car_year'][$i]) ? 'has-error' : "";
+                            $check_length = empty($productList['length'][$i]) ? 'has-error' : "";
+                            $check_width = empty($productList['width'][$i]) ? 'has-error' : "";
+                            $check_height = empty($productList['height'][$i]) ? 'has-error' : "";
 
                             $productHtml .= '<tr id="tr_'.$productList['product_id'][$i].' data-id="'.$productList['product_id'][$i].'">
                                                         <td width="100px" class="text-bold text-red text-middle">'.$productList['code'][$i].'</td>
@@ -119,13 +122,13 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                                                         <td class="text-middle text-right hidden">'.number_format($productList['listed_price'][$i]).'</td>
                                                         <td class="total"><input class="form-control text-right" type="text" name="contract_product[total][]" value="'.$productList['total'][$i].'" readonly></td>
                                                         <td class="length">
-                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[length][]" value="'.$productList['length'][$i].'" required min="1" max="300">
+                                                            <input class="form-control text-right w-60 p5 '.$check_length.'" type="number" name="contract_product[length][]" value="'.$productList['length'][$i].'" required min="1" max="300">
                                                         </td>
                                                         <td class="width">
-                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[width][]" value="'.$productList['width'][$i].'" required min="1" max="300">
+                                                            <input class="form-control text-right w-60 p5 '.$check_width.'" type="number" name="contract_product[width][]" value="'.$productList['width'][$i].'" required min="1" max="300">
                                                         </td>
                                                         <td class="height">
-                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.$productList['height'][$i].'" required min="1" max="300">
+                                                            <input class="form-control text-right w-60 p5 '.$check_height.'" type="number" name="contract_product[height][]" value="'.$productList['height'][$i].'" required min="1" max="300">
                                                         </td>
                                                         <td class="hidden">
                                                             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$productList['product_id'][$i].'">
