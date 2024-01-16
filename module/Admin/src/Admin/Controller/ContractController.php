@@ -1391,14 +1391,14 @@ class ContractController extends ActionController {
                             $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract['id'], 'status_acounting_id' => 'khieu-lai')), array('task' => 'compare-order'));
                             echo json_encode(array(
                                 'status'=> 2,
-                                'data' => ['price_owed' => $price_owed, 'price_reduce_sale' => $price_reduce_sale, 'compare' => $price_owed - $price_reduce_sale ],
+                                'data' => ['price_owed' => number_format($price_owed), 'price_reduce_sale' => number_format($price_reduce_sale), 'compare' => number_format($price_owed - $price_reduce_sale) ],
                                 'message' => 'Khiếu lại',
                             ));
                         } else {
-                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract['id'], 'status_acounting_id' => 'da-doi-soat')), array('task' => 'compare-order'));
+                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => array('id' => $contract['id'], 'status_acounting_id' => 'da-doi-soat', 'price_paid' => $price_owed - $price_reduce_sale)), array('task' => 'compare-order'));
                             echo json_encode(array(
                                 'status'=> 3,
-                                'data' => ['price_owed' => $price_owed, 'price_reduce_sale' => $price_reduce_sale, 'compare' => $price_owed - $price_reduce_sale ],
+                                'data' => ['price_owed' => number_format($price_owed), 'price_reduce_sale' => number_format($price_reduce_sale), 'compare' => number_format($price_owed - $price_reduce_sale) ],
                                 'message' => 'Đối soát thành công',
                             ));
                         }

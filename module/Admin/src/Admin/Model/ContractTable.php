@@ -2770,9 +2770,16 @@ class ContractTable extends DefaultTable {
 
 		// Đối soát
 		if($options['task'] == 'compare-order') {
-			$data	= array(
-			    'status_acounting_id'  => $arrData['status_acounting_id'],
-			);
+//			$data	= array(
+//			    'status_acounting_id'  => $arrData['status_acounting_id'],
+//			);
+			if(!empty($arrData['status_acounting_id'])){
+			    $data['status_acounting_id'] = $arrData['status_acounting_id'];
+            }
+			if(!empty($arrData['price_paid'])){
+			    $data['price_paid'] = $arrData['price_paid'];
+                $data['price_owed'] = $arrItem['price_owed'] - $arrData['price_paid'];
+            }
 			$this->tableGateway->update($data, ['id' => $arrData['id']]);
 
 			return $id;

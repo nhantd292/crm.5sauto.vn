@@ -11,7 +11,8 @@
     
     $elements = array(
         array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
-        array('element' => $myForm->get('file_import'), 'label' => 'Chọn file cần cập nhật <a href="'. URL_FILES .'/template/Doi_soat_ghtk.xlsx"><b>(Tải file mẫu)</b></a>', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+//        array('element' => $myForm->get('file_import'), 'label' => 'Chọn file cần cập nhật <a href="'. URL_FILES .'/template/Doi_soat_ghtk.xlsx"><b>(Tải file mẫu)</b></a>', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('file_import'), 'label' => 'Chọn file cần cập nhật <a href="'. URL_FILES .'/template/Doi_soat_giao_hang.xlsx"><b>(Tải file mẫu)</b></a>', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
         array('element' => $myForm->get('submit'), 'label' => '', 'boxClass' => 'col-md-12'),
     );
     
@@ -50,11 +51,11 @@
             						<th class="col-50 text-center">STT</th>
             						<th>Mã vận đơn</th>
             						<th>Mã đơn hàng shop</th>
-                                    <th>Tiền COD ghtk</th>
-                                    <th>Phải thu</th>
-                                    <th>Tiền COD CRM</th>
-                                    <th>Giảm trừ doanh thu</th>
-            						<th>Trạng thái đơn hàng</th>
+                                    <th class="text-right">Tiền COD ghtk</th>
+                                    <th class="text-right">Phải thu</th>
+                                    <th class="text-right">Tiền COD CRM</th>
+                                    <th class="text-right">Giảm trừ doanh thu</th>
+<!--            						<th>Trạng thái đơn hàng</th>-->
             					</tr>
             				</thead>
             				<tbody>
@@ -69,11 +70,11 @@
         							<td class="text-center"><?php echo $index;?></td>
         							<td><span class="ghtk_code"><?php echo trim($val['B']);?></span></td>
         							<td><span class="code"><?php echo trim($val['C']);?></span></td>
-                                    <td><span class="cod"><?php echo trim($val['I']);?></span></td>
-                                    <td><span class="compare text-red"></span></td>
-                                    <td><span class="price_owed"></span></td>
-                                    <td><span class="price_reduce_sale"></span></td>
-        							<td><span class="ghtk_status"><?php echo trim($val['D']);?></span></td>
+                                    <td class="text-right"><span class="cod"><?php echo  number_format((int)str_replace(',', '', trim($val['D'])));?></span></td>
+                                    <td class="text-right"><span class="compare text-red"></span></td>
+                                    <td class="text-right"><span class="price_owed"></span></td>
+                                    <td class="text-right"><span class="price_reduce_sale"></span></td>
+<!--        							<td><span class="ghtk_status">--><?php //echo trim($val['D']);?><!--</span></td>-->
         						</tr>
         						<?php
             					    }
