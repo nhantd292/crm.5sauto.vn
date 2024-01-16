@@ -1388,14 +1388,14 @@ class ContractController extends ActionController {
                         $price_owed = (int)$contract['price_owed'];
                         $price_reduce_sale = (int)$contract['price_reduce_sale'];
                         if (($price_owed - $price_reduce_sale) != $cod_ghtk) {
-                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract['id'], 'status_acounting_id' => 'khieu-lai')), array('task' => 'compare-order'));
+                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => array('id' => $contract['id'], 'status_acounting_id' => 'khieu-lai', 'price_paid' => $cod_ghtk)), array('task' => 'compare-order'));
                             echo json_encode(array(
                                 'status'=> 2,
                                 'data' => ['price_owed' => number_format($price_owed), 'price_reduce_sale' => number_format($price_reduce_sale), 'compare' => number_format($price_owed - $price_reduce_sale) ],
                                 'message' => 'Khiếu lại',
                             ));
                         } else {
-                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => array('id' => $contract['id'], 'status_acounting_id' => 'da-doi-soat', 'price_paid' => $price_owed - $price_reduce_sale)), array('task' => 'compare-order'));
+                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => array('id' => $contract['id'], 'status_acounting_id' => 'da-doi-soat', 'price_paid' => $cod_ghtk)), array('task' => 'compare-order'));
                             echo json_encode(array(
                                 'status'=> 3,
                                 'data' => ['price_owed' => number_format($price_owed), 'price_reduce_sale' => number_format($price_reduce_sale), 'compare' => number_format($price_owed - $price_reduce_sale) ],
