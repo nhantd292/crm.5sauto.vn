@@ -2778,7 +2778,7 @@ class ContractTable extends DefaultTable {
             }
 			if(!empty($arrData['price_paid'])){
 			    $data['price_paid'] = $arrData['price_paid'];
-                $data['price_owed'] = $arrItem['price_owed'] - $arrData['price_paid'];
+                $data['price_owed'] = $arrItem['price_total'] - $arrData['price_paid'];
             }
 			$this->tableGateway->update($data, ['id' => $arrData['id']]);
 
