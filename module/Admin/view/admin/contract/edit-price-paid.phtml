@@ -1,0 +1,54 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    
+    $elements1 = array(
+        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('element' => '<span class="mask_currency text-info">'. $this->contract['price_total'] .'</span>', 'label' => 'Tổng tiền đơn hàng', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency text-purple">'. $this->contract['price_paid'] .'</span>', 'label' => 'Đã thanh toán', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency ">'. $this->contract['price_owed'] .'</span>', 'label' => 'Công nợ', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency ">'. $this->contract['price_transport'] .'</span>', 'label' => 'Phí COD', 'boxClass' => 'col-md-2'),
+        array('element' => '<span class="mask_currency ">'. $this->contract['price_reduce_sale'] .'</span>', 'label' => 'Giảm trừ doanh thu', 'boxClass' => 'col-md-2'),
+    );
+
+    $elements = array(
+        array('section' => 'Thông tin thanh toán', 'boxClass' => 'col-md-12'),
+        array('element' => $myForm->get('price_paid'), 'label' => 'Đã thanh toán', 'boxClass' => 'col-md-6', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('status_acounting_id'), 'label' => 'Trạng thái kế toán', 'boxClass' => 'col-md-6', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+
+$xhtml1 = $this->partialLoop($this->params['module'] . '/partial/form-view.phtml', $elements1);
+$xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtml1;?>
+			<?php echo $xhtml;?>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>

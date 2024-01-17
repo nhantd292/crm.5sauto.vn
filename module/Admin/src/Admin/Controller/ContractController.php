@@ -2015,6 +2015,50 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
+    // cập nhật công nợ khách hàng
+    public function editPricePaidAction() {
+        $myForm = new \Admin\Form\Contract\EditPricePaid($this->getServiceLocator(), $this->_params);
+
+        if(!empty($this->_params['data']['id'])) {
+            $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->_params['data']['id']));
+            $myForm->setData($contract);
+            if($contract['lock']){
+                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'modal'));
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
+        }
+
+        if($this->getRequest()->isPost()){
+            if($this->_params['data']['modal'] == 'success') {
+                $myForm->setInputFilter(new \Admin\Filter\Contract\EditPricePaid($this->_params));
+                $myForm->setData($this->_params['data']);
+
+                if($myForm->isValid()){
+                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+                    $this->_params['item'] = $contract;
+                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'update-price'));
+                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
+                    echo 'success';
+                    return $this->response;
+                }
+            } else {
+                $myForm->setData($this->_params['data']);
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+        }
+
+        $this->_viewModel['myForm']     = $myForm;
+        $this->_viewModel['contract']   = $contract;
+        $this->_viewModel['caption']    = 'Đối soát thủ công';
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
+
     // Thêm lịch sử chăm sóc đơn hàng
     public function addHistoryContractAction() {
         $myForm = new \Admin\Form\Contract\AddHistoryContract($this->getServiceLocator(), $this->_params);

@@ -1249,6 +1249,22 @@ class ContractTable extends DefaultTable {
 		}
 
 		// cập nhật giảm trừ doanh thu
+		if ($options['task'] == 'update-price') {
+			$id = $arrData['id'];
+            $data = array();
+            if($arrData['price_paid']){
+                $data['price_paid'] = $number->formatToData($arrData['price_paid']);
+                $data['price_owed'] = $arrItem['price_total'] - $number->formatToData($arrData['price_paid']);
+            }
+            if($arrData['status_acounting_id']){
+                $data['status_acounting_id'] = $arrData['status_acounting_id'];
+            }
+
+			$this->tableGateway->update($data, array('id' => $id));
+			return $id;
+		}
+
+		// cập nhật giảm trừ doanh thu
 		if ($options['task'] == 'update-shipping-fee') {
 			$id = $arrData['id'];
             $data = array();
