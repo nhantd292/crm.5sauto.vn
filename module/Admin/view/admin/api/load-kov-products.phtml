@@ -33,7 +33,7 @@ if($this->kov_branch_id){
                         <p class="name-product">' . $pro['fullName'] . '</p>
                         <p class="price-product">Giá:' . number_format($pro['basePrice']) . '</p>
                         <p class="number-product"></p>
-                        <p class="number-product">Size:<span class="text-bold"><span>'.$pro['description'].'cm - '.$pro['weight'].' kg</span></p>
+                        <p class="number-product">Size:<span class="text-bold"><span>'.strip_tags($pro['description']).'cm - '.$pro['weight'].' kg</span></p>
                     </div>
                 </div>
             </div>';

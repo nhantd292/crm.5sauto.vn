@@ -256,7 +256,7 @@ class ApiController extends ActionController {
             $search_params .= '&name='.urlencode($this->_params['data']['filter_keyword']);
 
 
-        $return = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?currentItem='.$curentItem.'&includeInventory=true'.$search_params);
+        $return = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?currentItem='.$curentItem.'&isActive=1&includeInventory=true'.$search_params);
         $kovProducts = json_decode($return,true);
 
         $this->_viewModel['kovProducts'] = $kovProducts['data'];
