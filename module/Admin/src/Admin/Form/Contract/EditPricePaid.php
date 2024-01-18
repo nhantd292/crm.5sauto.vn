@@ -48,9 +48,9 @@ class EditPricePaid extends Form {
                 'class'		=> 'form-control select2 select2_basic',
             ),
             'options'		=> array(
-                'empty_option'	=> '- Chọn -',
+                'empty_option'	=> '- Trạng thái -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> array('khieu-lai' => 'Khiếu lại', 'da-doi-soat' => 'Đã đối soát'),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status-acounting" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name')),
             ),
         ));
 	}

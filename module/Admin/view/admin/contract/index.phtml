@@ -144,7 +144,7 @@
             $linkCancel             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'cancel', 'id' => $id));
             $linkBillAdd            = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $id .'\'});';
             $linkContactEdit        = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $item['contact_id'] .'\'});';
-            $linkEditStatusAccount  = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status-account')) .'\', {\'id\': \''. $id .'\'});';
+//            $linkEditStatusAccount  = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status-account')) .'\', {\'id\': \''. $id .'\'});';
             $linkEdit = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-kov', 'id' => $id));
             $linkEditReduce         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-reduce')) .'\', {\'id\': \''. $id .'\'});';
             $linkEditPricePaid      = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-price-paid')) .'\', {\'id\': \''. $id .'\'});';
@@ -168,8 +168,7 @@
                 $menu_edit_status = '<li><a href="javascript:;" onclick="'. $linkEditStatus .'"><i class="fa fa-edit"></i> Sửa trạng thái giục đơn</a></li>';
             }
 
-            $menu_edit_status_acountant = in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)
-                ? '<li><a href="javascript:;" onclick="'. $linkEditStatusAccount .'"><i class="fa fa-pencil-square-o"></i> Sửa trạng thái kế toán</a></li>' : '';
+//            $menu_edit_status_acountant = in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)? '<li><a href="javascript:;" onclick="'. $linkEditStatusAccount .'"><i class="fa fa-pencil-square-o"></i> Sửa trạng thái kế toán</a></li>' : '';
             
 //            $controls               = $controlView;
             $controls              = '<div class="btn-group">
@@ -178,7 +177,7 @@
     									</button>
     									<ul class="dropdown-menu" role="menu">
     									    
-    										'.$menuCancel.$menu_edit_contract.$menuConver.$menu_edit_status_acountant.$menu_edit_status.'
+    										'.$menuCancel.$menu_edit_contract.$menuConver.$menu_edit_status.'
     										<li><a href="javascript:;" onclick="'. $linkEditReduce .'"><i class="fa fa-money"></i> Giảm trừ doanh thu</a></li>
     										<li><a href="javascript:;" onclick="'. $linkEditPricePaid .'"><i class="fa fa-money"></i> Đối soát thủ công</a></li>
     										<li><a href="javascript:;" onclick="'. $linkEditShippingFee .'"><i class="fa fa-money"></i> Xác nhận Hoàn có hỗ trợ ship</a></li>

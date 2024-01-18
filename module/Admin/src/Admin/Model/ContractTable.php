@@ -3118,13 +3118,6 @@ class ContractTable extends DefaultTable {
         if ($options['task'] == 'update-ghtk') {
             $id = $arrData['id'];
 
-//            $data = array(
-//                'ghtk_code' => $arrData['ghtk_code'],
-//                'ghtk_result' => serialize($arrData['ghtk_result']),
-//                'ghtk_status' => $arrData['ghtk_status'],
-//                'price_transport' => $arrData['price_transport'],
-//            );
-
             if(!empty($arrData['ghtk_code'])){
                 $data['ghtk_code'] = $arrData['ghtk_code'];
             }

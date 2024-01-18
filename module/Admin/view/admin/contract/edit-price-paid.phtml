@@ -3,7 +3,8 @@
     $myForm->prepare();
     
     $elements1 = array(
-        array('section' => 'Thông tin đơn hàng', 'boxClass' => 'col-md-12'),
+        array('section' => 'Thông tin đơn hàng: '.$this->contract['code'], 'boxClass' => 'col-md-12'),
+        array('element' => '<span class="text-info">'. $this->contract['name'] .'</span>', 'label' => 'khách hàng', 'boxClass' => 'col-md-2'),
         array('element' => '<span class="mask_currency text-info">'. $this->contract['price_total'] .'</span>', 'label' => 'Tổng tiền đơn hàng', 'boxClass' => 'col-md-2'),
         array('element' => '<span class="mask_currency text-purple">'. $this->contract['price_paid'] .'</span>', 'label' => 'Đã thanh toán', 'boxClass' => 'col-md-2'),
         array('element' => '<span class="mask_currency ">'. $this->contract['price_owed'] .'</span>', 'label' => 'Công nợ', 'boxClass' => 'col-md-2'),

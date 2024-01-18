@@ -1756,22 +1756,22 @@ class ContractController extends ActionController {
             return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
         }
 
-        if($this->getRequest()->isPost()){
-            if($this->_params['data']['modal'] == 'success') {
-                $myForm->setData($this->_params['data']);
-
-                if($myForm->isValid()){
-                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                    $result = $this->getTable()->updateItem($this->_params, array('task' => 'update-status'));
-
-                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
-                    echo 'success';
-                    return $this->response;
-                }
-            }
-        } else {
-            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
-        }
+//        if($this->getRequest()->isPost()){
+//            if($this->_params['data']['modal'] == 'success') {
+//                $myForm->setData($this->_params['data']);
+//
+//                if($myForm->isValid()){
+//                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+//                    $result = $this->getTable()->updateItem($this->_params, array('task' => 'update-status'));
+//
+//                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
+//                    echo 'success';
+//                    return $this->response;
+//                }
+//            }
+//        } else {
+//            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+//        }
 
         $this->_viewModel['myForm']     = $myForm;
         $this->_viewModel['contract']   = $contract;
