@@ -153,6 +153,16 @@
             <i class="fa fa-database"></i> <span class="title">Marketing</span><span class="arrow"></span>
         </a>
         <ul class="dropdown-menu">
+            <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'form-data', 'action' => 'index'));?>" target="_self">
+                    <i class="fa fa-database"></i> <span class="title">Data Marketing</span><span class="arrow"></span>
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contact-data', 'action' => 'index'));?>" target="_self">
+                    <i class="fa fa-share-alt"></i> <span class="title">Chia data marketing</span><span class="arrow"></span>
+                </a>
+            </li>
             <li class="dropdown-submenu">
                 <a href="javascript:;" target="_self">
                     <i class="fa fa-folder-o"></i> <span class="title">Báo cáo</span><span class="arrow"></span>
@@ -198,12 +208,6 @@
 <!--                </a>-->
 <!--            </li>-->
 <!--            <li class="divider"></li>-->
-
-            <li>
-                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'add-kov'));?>" target="_self">
-                    <i class="fa fa-plus"></i> <span class="title">Tạo đơn</span><span class="arrow"></span>
-                </a>
-            </li>
 
             <li>
 				<a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contact', 'action' => 'index'));?>" target="_self">

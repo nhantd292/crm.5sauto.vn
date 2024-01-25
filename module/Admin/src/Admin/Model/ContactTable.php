@@ -648,6 +648,9 @@ class ContactTable extends DefaultTable {
 		    if(isset($arrData['location_district_id'])) {
 		        $data['location_district_id'] = $arrData['location_district_id'];
 		    }
+		    if(isset($arrData['location_town_id'])) {
+		        $data['location_town_id'] = $arrData['location_town_id'];
+		    }
 		    if(isset($arrData['product_id'])) {
 		        $data['product_id'] = $arrData['product_id'];
 		    }

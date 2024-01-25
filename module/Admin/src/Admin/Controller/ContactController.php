@@ -672,7 +672,6 @@ class ContactController extends ActionController
 
         return $this->response;
     }
-
 }
 
 

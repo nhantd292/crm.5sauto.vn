@@ -130,7 +130,7 @@
             $controlHistory         = $this->linkAdminHtml('javascript:;', array('type' => 'icon', 'title' => 'Thêm lịch sử chăm sóc', 'class' => 'btn btn-xs green', 'icon' => 'fa fa-volume-control-phone', 'onclick' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'history-add')) .'\', {\'id\': \''. $id .'\'});'));
             $addContract            = $this->linkAdminHtml($linkAddContract, array('type' => 'icon', 'title' => 'Tạo đơn hàng', 'target' => '_blank', 'class' => 'btn btn-xs blue', 'icon' => 'fa fa-plus'));
 
-            $controls               = $controlView . $controlEdit;
+            $controls               = $controlView . $controlEdit . $addContract;;
 
             $xhtmlItems .= '<tr id="tr_'. $id .'" '.$color_text_row.'>';
     		$xhtmlItems .= '<td>'. $cid .'</td>';

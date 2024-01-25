@@ -13,8 +13,10 @@
     
     // Set lại các giá trị của từng element
     $myForm->get('location_district_id')->setAttributes(array('data-parent' => $myForm->get('location_city_id')->getValue()));
+    $myForm->get('location_town_id')->setAttributes(array('data-parent' => $myForm->get('location_district_id')->getValue()));
     if(!empty($this->item['location_district_id'])) {
-        $myForm->get('location_district_id')->setAttributes(array('data-text-label' => $this->locations[$this->item['location_district_id']]['name']));
+        $myForm->get('location_district_id')->setAttributes(array('data-text-label' => $this->document[$this->item['location_district_id']]['name']));
+        $myForm->get('location_town_id')->setAttributes(array('data-text-label' => $this->document[$this->item['location_town_id']]['name']));
     }
     
     $elements = array(
@@ -28,6 +30,7 @@
         array('element' => $myForm->get('name'), 'label' => 'Họ và tên', 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('location_city_id'), 'label' => 'Tỉnh thành', 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('location_district_id'), 'label' => 'Quận huyện', 'boxClass' => 'col-md-2'),
+        array('element' => $myForm->get('location_town_id'), 'label' => 'Phường xã', 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('address'), 'label' => 'Địa chỉ nơi ở', 'boxClass' => 'col-md-2'),
 
         array('element' => $myForm->get('email'), 'label' => 'Email', 'boxClass' => 'col-md-2'),
@@ -90,6 +93,13 @@
 		var parent = $(select).parent();
 		$('.select2-container', parent).select2('val', '');
 		$(select).attr('data-parent', $(this).val());
+    });
+
+    $('input[name="location_district_id"]').change(function() {
+        var select = 'input[name="location_town_id"]';
+        var parent = $(select).parent();
+        $('.select2-container', parent).select2('val', '');
+        $(select).attr('data-parent', $(this).val());
     });
     
     $('select[name="type"]').change(function() {

@@ -187,6 +187,9 @@ class ContractController extends ActionController {
         $numberFormat = new \ZendX\Functions\Number();
 //        $myForm = $this->getForm();
         $myForm = new \Admin\Form\Contract($this, $this->_params);
+
+        $contact_item = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $this->params('id')));
+        $sales_manager = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(array('id' => $contact_item['user_id']));
         
         if($this->getRequest()->isPost()){
             $myForm->setInputFilter(new \Admin\Filter\Contract(array('data' => $this->_params['data'], 'route' => $this->_params['route'])));
@@ -263,6 +266,10 @@ class ContractController extends ActionController {
                 $this->_viewModel['productList']  = $productList;
                 $this->_viewModel['data']  = $this->_params['data'];
             }
+        }
+        else{
+            $this->_viewModel['contactPhone']   = $contact_item['phone'];
+            $this->_viewModel['contactId']      = $contact_item['id'];
         }
 
         $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');

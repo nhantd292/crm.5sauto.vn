@@ -286,7 +286,7 @@
     
     // Control
     $arrControl = array(
-        array( 'name' => 'add', 'caption' => 'Tạo đơn', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add-kov')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
+//        array( 'name' => 'add', 'caption' => 'Tạo đơn', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add-kov')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
         array( 
             'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ), 
             'children' => array(
@@ -313,7 +313,7 @@
                     'icon' => 'fa fa-retweet',
                     'attributes' => array(
                         'onclick' => 'javascript:updateItem(\'updateNumberProductKov\', \'Mỗi một đơn chỉ được cập nhật sang 1 lần! <br> Vui lòng kiểm tra và chắc chắn các đơn hàng đã chọn ?\');',
-                        'title' => 'Tạo đơn từ CRM Sang giao hàng tiết kiệm',
+                        'title' => 'Cập nhật số lượng sang kiotviet',
                     ),
                 ) ,
 //                array( 'name' => 'hidden', 'caption' => 'Mở khóa', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'unlock\');')),
@@ -355,7 +355,7 @@
 	</div>
 </form>
 <style>
-    .dropdown-menu {
+    .btn-group.open .dropdown-menu {
         left: 100%;
     }
 </style>
