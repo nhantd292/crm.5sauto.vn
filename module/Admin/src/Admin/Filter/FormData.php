@@ -62,7 +62,7 @@ class FormData extends InputFilter {
 		// Kênh marketing
 		$this->add(array(
 		    'name'		=> 'marketing_channel_id',
-		    'required'	=> true,
+		    'required'	=> false,
 		    'validators'	=> array(
 		        array(
 		            'name'		=> 'NotEmpty',
