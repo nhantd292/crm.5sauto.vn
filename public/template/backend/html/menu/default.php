@@ -165,6 +165,23 @@
             </li>
             <li class="dropdown-submenu">
                 <a href="javascript:;" target="_self">
+                    <i class="fa fa-link"></i> <span class="title">Link Tracking</span><span class="arrow"></span>
+                </a>
+                <ul class="dropdown-menu" style="display: none;">
+                    <li>
+                        <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'link-checking', 'action' => 'index'));?>" target="_self">
+                            <i class="fa fa-list"></i> <span class="title">Danh sách</span><span class="arrow"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'link-checking', 'action' => 'introduce'));?>" target="blank">
+                            <i class="fa fa-key"></i> <span class="title">Hướng dẫn cài đặt</span><span class="arrow"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown-submenu">
+                <a href="javascript:;" target="_self">
                     <i class="fa fa-folder-o"></i> <span class="title">Báo cáo</span><span class="arrow"></span>
                 </a>
                 <ul class="dropdown-menu" style="display: none;">
