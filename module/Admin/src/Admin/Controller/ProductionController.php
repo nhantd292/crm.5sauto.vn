@@ -12,7 +12,6 @@ class ProductionController extends ActionController {
         // Thiết lập options
         $this->_options['tableName'] = 'Admin\Model\ContractTable';
         $this->_options['formName'] = 'formAdminContract';
-
         
         // Thiết lập session filter
         $action = str_replace('-', '_', $this->_params['action']);

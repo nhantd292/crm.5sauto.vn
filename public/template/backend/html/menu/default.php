@@ -319,11 +319,16 @@
 <!--	</li>-->
 
 	<!--Giục đơn-->
-<!--	<li class="parent">-->
-<!--	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">-->
-<!--			<i class="fa fa-phone-square"></i> <span class="title">Giục đơn</span><span class="arrow"></span>-->
-<!--		</a>-->
-<!--		<ul class="dropdown-menu">-->
+	<li class="parent">
+	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">
+			<i class="fa fa-phone-square"></i> <span class="title">Giục đơn</span><span class="arrow"></span>
+		</a>
+		<ul class="dropdown-menu">
+            <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'index-shipping'));?>" target="_self">
+                    <i class="fa fa-file-text-o"></i> <span class="title">Danh sách đơn hàng</span><span class="arrow"></span>
+                </a>
+            </li>
 <!--			<li>-->
 <!--				<a href="--><?php //echo $this->url('routeAdmin/default', array('controller' => 'check', 'action' => 'index'));?><!--" target="_self">-->
 <!--					<i class="fa fa-file-text-o"></i> <span class="title">Đơn hàng Tỉnh</span><span class="arrow"></span>-->
@@ -335,15 +340,20 @@
 <!--					<i class="fa fa-file-text-o"></i> <span class="title">Đơn hàng Hà Nội</span><span class="arrow"></span>-->
 <!--				</a>-->
 <!--			</li>-->
-<!--		</ul>-->
-<!--	</li>-->
+		</ul>
+	</li>
 
 	<!--Kế toán -->
-<!--	<li class="parent">-->
-<!--	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">-->
-<!--			<i class="fa fa-usd"></i> <span class="title">Kế toán</span><span class="arrow"></span>-->
-<!--		</a>-->
-<!--		<ul class="dropdown-menu">-->
+	<li class="parent">
+	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">
+			<i class="fa fa-usd"></i> <span class="title">Kế toán</span><span class="arrow"></span>
+		</a>
+		<ul class="dropdown-menu">
+            <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'index-accounting'));?>" target="_self">
+                    <i class="fa fa-file-text-o"></i> <span class="title">Danh sách đơn hàng</span><span class="arrow"></span>
+                </a>
+            </li>
 <!--			<li>-->
 <!--				<a href="--><?php //echo $this->url('routeAdmin/default', array('controller' => 'contract-owed', 'action' => 'index'));?><!--" target="_self">-->
 <!--					<i class="fa fa-file-text-o"></i> <span class="title">Công nợ</span><span class="arrow"></span>-->
@@ -360,8 +370,8 @@
 <!--				</a>-->
 <!--			</li>-->
 <!--            <li class="divider"></li>-->
-<!--		</ul>-->
-<!--	</li>-->
+		</ul>
+	</li>
 
     <!--Báo cáo-->
 	<li>

@@ -360,5 +360,13 @@ class Contract extends Form{
                 'value'   => 'index',
             ),
         ));
+        // action index
+        $this->add(array(
+            'name'			=> 'action_shipping',
+            'type'			=> 'Hidden',
+            'attributes'	=> array(
+                'value'   => 'shipping',
+            ),
+        ));
 	}
 }
