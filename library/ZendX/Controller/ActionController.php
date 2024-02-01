@@ -17,6 +17,7 @@ class ActionController extends AbstractActionController {
     protected $_table;
     protected $_form;
     protected $kiotviet_token;
+    protected $viettelPost_token;
     protected $_options = array(
         'tableName', 'formName'
     );
@@ -35,7 +36,7 @@ class ActionController extends AbstractActionController {
     
     public function onInit(MvcEvent $e) {
         // Set token kiotviet.
-        unset($_COOKIE['kiotviet_token']);
+//        unset($_COOKIE['kiotviet_token']);
         if(isset($_COOKIE['kiotviet_token'])){
             $this->kiotviet_token = $_COOKIE['kiotviet_token'];
         } else {
@@ -45,6 +46,18 @@ class ActionController extends AbstractActionController {
             $this->kiotviet_token = $token;
         }
 //        echo $this->kiotviet_token;
+
+//        setcookie('viettelPost_token', '', time() - 1000);
+        if(isset($_COOKIE['viettelPost_token'])){
+            $this->viettelPost_token = $_COOKIE['viettelPost_token'];
+        }
+//          else {
+//            $result_token = json_decode($this->viettelpost("/user/LoginVTP", ["token"=>VIETTELPOST_CODE_SECRET],"POST"), true);
+//            $token = $result_token['data']['token'];
+//            setcookie('viettelPost_token', $token,time()+86400*30);
+//            $this->viettelPost_token = $_COOKIE['viettelPost_token'];
+//        }
+//        echo $_COOKIE['viettelPost_token'];
 
         // Lấy thông tin setting
         $this->_settings = $this->getServiceLocator()->get('Admin\Model\SettingTable')->listItem(array('code' => 'General'), array('task' => 'cache-by-code'));
@@ -139,6 +152,13 @@ class ActionController extends AbstractActionController {
         
         // Gọi đến function chạy đầu tiên
         $this->init();
+    }
+    public function updateToken($codeSecret){
+        setcookie('viettelPost_token', '', time() - 1000);
+        $result_token = json_decode($this->viettelpost("/user/LoginVTP", ["token"=>$codeSecret],"POST"), true);
+        $token = $result_token['data']['token'];
+        setcookie('viettelPost_token', $token,time()+86400*30);
+        return $_COOKIE['viettelPost_token'];
     }
     
     public function onDispath(MvcEvent $e) {
@@ -345,6 +365,39 @@ class ActionController extends AbstractActionController {
         }
         $header = array(
             "Token: " .GHTK,
+            "Cache-control: no-cache",
+            "Content-type: application/json",
+        );
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return false;
+        } else {
+            return $response;
+        }
+    }
+
+    public function viettelpost($api_endpoint, $query = array(), $method = 'GET', $token = '')
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, "https://partner.viettelpost.vn/v2" . $api_endpoint);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        if ($method != 'GET' && in_array($method, array('POST', 'PUT'))) {
+            if (is_array($query)) {
+                $query = json_encode($query);
+            }
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+        }
+        $token = !empty($token) ? $token : $this->viettelPost_token;
+        $header = array(
+            "Token: " .$token,
             "Cache-control: no-cache",
             "Content-type: application/json",
         );

@@ -171,8 +171,10 @@ class ContractController extends ActionController {
         $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
         $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
+        $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key')), array('task' => 'cache'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_sales']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['caption']                = 'Đơn hàng - Danh sách';
@@ -2024,6 +2026,145 @@ class ContractController extends ActionController {
         }
 
         $this->goRoute();
+    }
+
+    public function sendViettelPostAction() {
+        $id_viettel_key = $this->params('id');
+        if(!empty($id_viettel_key)){
+            $ditem = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $id_viettel_key));
+            $viettel_key = $ditem->alias;
+            if(!empty($viettel_key)){
+                $this->updateToken($viettel_key);
+                $myForm   = new \Admin\Form\Contract\SendViettelPost($this);
+
+                $this->_viewModel['myForm']         = $myForm;
+                $this->_viewModel['caption']        = 'Đẩy đơn hàng sang Viettel Post bằng tài khoản: '.$ditem->name;
+
+                if($this->getRequest()->isPost()){
+                    if($this->_params['data']['modal'] == 'success') {
+                        $myForm->setInputFilter(new \Admin\Filter\Contract\SendViettelPost(array('data' => $this->_params['data'],)));
+                        $myForm->setData($this->_params['data']);
+                        if($myForm->isValid()) {
+                            $locations = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
+
+                            $list_data_id   = json_decode($this->_params['data']['list_data_id'], true);
+                            $groupaddressId = $this->_params['data']['groupaddressId'];
+                            $inventorys = json_decode($this->viettelpost('/user/listInventory'), true);
+                            $inventory_item = [];
+                            if (isset($inventorys['data'])) {
+                                foreach ($inventorys['data'] as $ki => $vi) {
+                                    if ($vi['groupaddressId'] == $groupaddressId) {
+                                        $inventory_item = $vi;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            $listData_ghtk = [];
+                            foreach($list_data_id as $id) {
+                                $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
+                                if (empty($contract['ghtk_code'])) {
+                                    $products = [];
+                                    $total_weight = 0;
+                                    $list_name = '';
+                                    $contract['options'] = unserialize($contract['options'])['product'];
+                                    foreach($contract['options'] as $key => $value){
+                                        $list_name .= $value['full_name'].' - '.$value['car_year'].', ';
+                                        $total_weight += $value['weight'] * 1000;
+                                        $pro['PRODUCT_NAME'] = $value['full_name'].' - '.$value['car_year'];
+                                        $pro['PRODUCT_WEIGHT'] = $value['weight'] * 100;
+                                        $pro['PRODUCT_QUANTITY'] = $value['numbers'];
+                                        $pro['PRODUCT_PRICE'] = $value['price'];
+                                        $products[] = $pro;
+                                    }
+                                    $order_item['ORDER_NUMBER'] =$contract['code'];
+                                    $order_item['SENDER_FULLNAME'] = $inventory_item['name'];
+                                    $order_item['SENDER_ADDRESS'] = $inventory_item['address'];
+                                    $order_item['SENDER_PHONE'] = $inventory_item['phone'];
+                                    $order_item['RECEIVER_FULLNAME'] = $contract['name'];
+//                                    $order_item['RECEIVER_ADDRESS'] = $contract['address'].', '.$locations[$contract['location_town_id']]->fullname.', '.$locations[$contract['location_district_id']]->fullname.', '.$locations[$contract['location_city_id']]->name;
+                                    $order_item['RECEIVER_ADDRESS'] = $locations[$contract['location_town_id']]->fullname.', '.$locations[$contract['location_district_id']]->fullname.', '.$locations[$contract['location_city_id']]->fullname;
+                                    $order_item['RECEIVER_PHONE'] = $contract['phone'];
+
+                                    # Tính dịch vụ vận chuyển phù hợp
+                                    $s_data = array(
+                                        "SENDER_ADDRESS" => $order_item['SENDER_ADDRESS'],
+                                        "RECEIVER_ADDRESS" => $order_item['RECEIVER_ADDRESS'],
+                                        "PRODUCT_TYPE" => "HH",
+                                        "PRODUCT_WEIGHT" => $total_weight,
+                                        "PRODUCT_PRICE" => $contract['price_total'],
+                                        "MONEY_COLLECTION" => $contract['price_total'],
+                                        "TYPE" => 1
+                                    );
+                                    $services = json_decode($this->viettelpost('/order/getPriceAllNlp', $s_data, 'POST'), true)['RESULT'];
+                                    $order_service = '';
+                                    $gia_cuoc = 1000000000;
+                                    foreach($services as $ser){
+                                        if($ser['GIA_CUOC'] < $gia_cuoc){
+                                            $gia_cuoc = $ser['GIA_CUOC'];
+                                            $order_service = $ser['MA_DV_CHINH'];
+                                        }
+                                    }
+                                    
+                                    $order_item["PRODUCT_NAME"] = $list_name;
+                                    $order_item["PRODUCT_DESCRIPTION"] = $contract['sale_note'];
+                                    $order_item["PRODUCT_QUANTITY"] = $contract['total_number_product'];;
+                                    $order_item["PRODUCT_PRICE"] = $contract['price_total'];
+                                    $order_item["PRODUCT_WEIGHT"] = $total_weight;
+                                    $order_item["PRODUCT_LENGTH"] = 0;
+                                    $order_item["PRODUCT_WIDTH"] = 0;
+                                    $order_item["PRODUCT_HEIGHT"] = 0;
+                                    $order_item["ORDER_PAYMENT"] = 3;
+                                    $order_item["ORDER_SERVICE"] = $order_service;
+                                    $order_item["PRODUCT_TYPE"] = "HH";
+                                    $order_item["ORDER_SERVICE_ADD"] = null;
+                                    $order_item["ORDER_NOTE"] = $contract['ghtk_note'];
+                                    $order_item["MONEY_COLLECTION"] = $contract['price_total'];
+                                    $order_item["EXTRA_MONEY"] = 0;
+                                    $order_item["CHECK_UNIQUE"] = true;
+                                    $order_item["PRODUCT_DETAIL"] = $products;
+
+                                    $listData_ghtk[$contract['code']] = $order_item;
+                                }
+                            }
+                            # thực hiện đẩy đơn sang vtp
+                            foreach ($listData_ghtk as $key => $value){
+                                $result = $this->viettelpost('/order/createOrderNlp', $value, 'POST');
+                                $res = json_decode($result, true);
+
+                                if($res['status'] == 200 and $res['error'] == false){
+                                    $contract_code_success[] = $key;
+
+                                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
+                                    $arrParam['id']             = $contract_item['id'];
+                                    $arrParam['ghtk_code']      = $res['data']['ORDER_NUMBER'];
+                                    $arrParam['ghtk_result']    = $res['data'];
+                                    $arrParam['unit_transport'] = 'viettel';
+                                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
+                                }
+                                else{
+                                    $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
+                                }
+                            }
+
+                            if(!empty($contract_code_success)){
+                                $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang Viettel Post '.implode(', ', $contract_code_success) );
+                            }
+                            if(!empty($contract_code_error)){
+                                $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
+                            }
+
+                            echo 'success';
+                            return $this->response;
+                        }
+                    }
+                }
+            }
+        }
+        $viewModel =  new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
     }
 
     // Trừ số lượng sản phẩm bên kiotviet thủ công khi đơn lỗi không thể đồng bộ

@@ -89,52 +89,52 @@
     }
     
     /* Kiểm tra liên hệ cần chăm sóc lại trong ngày hôm nay */
-    $.ajax({
-		url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'contact-history-return'));?>',
-		type: 'POST',
-		data: {},
-		beforeSend: function() {
-		},
-		success: function(result) {
-			if(result > 0) {
-			    $('#notification_history_return .badge').text(result);
-			    $('#notification_history_return').removeClass('hidden');
-			}
-		}
-	});
+    //$.ajax({
+	//	url: '<?php //echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'contact-history-return'));?>//',
+	//	type: 'POST',
+	//	data: {},
+	//	beforeSend: function() {
+	//	},
+	//	success: function(result) {
+	//		if(result > 0) {
+	//		    $('#notification_history_return .badge').text(result);
+	//		    $('#notification_history_return').removeClass('hidden');
+	//		}
+	//	}
+	//});
 
     /* Kiểm tra liên hệ chưa được chăm sóc */
-    $.ajax({
-		url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'contact-history-status'));?>',
-		type: 'POST',
-		data: {},
-		beforeSend: function() {
-		},
-		success: function(result) {
-			if(result > 0) {
-			    $('#notification_history_status .badge').text(result);
-			    $('#notification_history_status').removeClass('hidden');
-			}
-		}
-	});
-
-    load_notifi('#notification_contract_false', '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'contract-notifi-false'));?>');
+    //$.ajax({
+	//	url: '<?php //echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'contact-history-status'));?>//',
+	//	type: 'POST',
+	//	data: {},
+	//	beforeSend: function() {
+	//	},
+	//	success: function(result) {
+	//		if(result > 0) {
+	//		    $('#notification_history_status .badge').text(result);
+	//		    $('#notification_history_status').removeClass('hidden');
+	//		}
+	//	}
+	//});
+    //
+    //load_notifi('#notification_contract_false', '<?php //echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'contract-notifi-false'));?>//');
 
 
     /* Kiểm tra có đơn hàng phải duyệt */
-    $.ajax({
-		url: '<?php echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'pending'));?>',
-		type: 'POST',
-		data: {},
-		beforeSend: function() {
-		},
-		success: function(result) {
-			if(result > 0) {
-			    $('.notification_pending').text(result);
-			    $('.notification_pending').removeClass('hidden');
-			}
-		}
-	});
+    //$.ajax({
+	//	url: '<?php //echo $this->url('routeAdmin/default', array('controller' => 'api', 'action' => 'pending'));?>//',
+	//	type: 'POST',
+	//	data: {},
+	//	beforeSend: function() {
+	//	},
+	//	success: function(result) {
+	//		if(result > 0) {
+	//		    $('.notification_pending').text(result);
+	//		    $('.notification_pending').removeClass('hidden');
+	//		}
+	//	}
+	//});
 </script>
 <!-- END JAVASCRIPTS -->
 

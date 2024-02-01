@@ -702,8 +702,8 @@ class ApiController extends ActionController {
     }
 
     public function pendingAction() {
-        $tableContact = new \Admin\Model\ApiTable(new TableGateway(TABLE_CONTRACT, $this->getServiceLocator()->get('dbConfig'), null));
-        echo $tableContact->countItem(null, array('task' => 'pending'));
+//        $tableContact = new \Admin\Model\ApiTable(new TableGateway(TABLE_CONTRACT, $this->getServiceLocator()->get('dbConfig'), null));
+//        echo $tableContact->countItem(null, array('task' => 'pending'));
 
         return $this->response;
     }
@@ -714,6 +714,48 @@ class ApiController extends ActionController {
         $viewModel = new ViewModel($this->_viewModel);
         $viewModel->setTerminal(true);
         return $viewModel;
+    }
+
+    public function updateTokenViettelAction() {
+        $viettel_key = $this->_params['data']['viettel_key'];
+        return $this->updateToken($viettel_key);
+    }
+
+    public function updateNumberKiotviet($contract_item){
+        $result = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/'.$contract_item['id_kov']);
+        $result = json_decode($result, true);
+        if(isset($result['id'])){
+            $invoiceDetails = $result['orderDetails'];
+            foreach($invoiceDetails as $key => $value){
+                unset($invoiceDetails[$key]['viewDiscount']);
+            }
+            $invoiceOrderSurcharges = $result['invoiceOrderSurcharges'];
+            foreach($invoiceOrderSurcharges as $key => $value){
+                $invoiSurcharges[$key]['id']    = $value['id'];
+                $invoiSurcharges[$key]['code']  = $value['surchargeCode'];
+                $invoiSurcharges[$key]['price'] = $value['price'];
+            }
+
+            $invoi_data['branchId']         = $result['branchId'];
+            $invoi_data['customerId']       = $result['customerId'];
+            $invoi_data['discount']         = $result['discount'];
+            $invoi_data['totalPayment']     = $result['totalPayment'];
+            $invoi_data['soldById']         = $result['soldById'];
+            $invoi_data['orderId']          = $result['id'];
+            $invoi_data['invoiceDetails']   = $invoiceDetails;
+            $invoi_data['deliveryDetail']   = array(
+                'status' => 2,
+                'surchages' => $invoiSurcharges
+            );
+        }
+        $result_kov = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/invoices', $invoi_data, 'POST');
+        $result_kov = json_decode($result_kov, true);
+
+        if(isset($result_kov['id'])){
+            $params['data']['id']       = $contract_item['id'];
+            $params['data']['shipped']  = 1;
+            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($params, array('task' => 'update-shipped'));
+        }
     }
 
     // webhook cập nhật trạng thái từ ghtk đẩy về crm
@@ -734,49 +776,16 @@ class ApiController extends ActionController {
                         $arrParam['ghtk_status']    = $data['status_id'];
                         $arrParam['ghtk_code']      = $data['label_id'];
                         $arrParam['price_transport']= $data['fee'];
+                        $arrParam['status_history'] = $data;
                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
 
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
-                        if($data['status_id'] == 3) // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
-                        {
-                            $result = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/'.$contract_item['id_kov']);
-                            $result = json_decode($result, true);
-                            if(isset($result['id'])){
-                                $invoiceDetails = $result['orderDetails'];
-                                foreach($invoiceDetails as $key => $value){
-                                    unset($invoiceDetails[$key]['viewDiscount']);
-                                }
-                                $invoiceOrderSurcharges = $result['invoiceOrderSurcharges'];
-                                foreach($invoiceOrderSurcharges as $key => $value){
-                                    $invoiSurcharges[$key]['id'] = $value['id'];
-                                    $invoiSurcharges[$key]['code'] = $value['surchargeCode'];
-                                    $invoiSurcharges[$key]['price'] = $value['price'];
-                                }
-
-                                $invoi_data['branchId']         = $result['branchId'];
-                                $invoi_data['customerId']       = $result['customerId'];
-                                $invoi_data['discount']         = $result['discount'];
-                                $invoi_data['totalPayment']     = $result['totalPayment'];
-                                $invoi_data['soldById']         = $result['soldById'];
-                                $invoi_data['orderId']          = $result['id'];
-                                $invoi_data['invoiceDetails']   = $invoiceDetails;
-                                $invoi_data['deliveryDetail']   = array(
-                                    'status' => 2,
-                                    'surchages' => $invoiSurcharges
-                                );
-                            }
-                            $result_kov = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/invoices', $invoi_data, 'POST');
-                            $result_kov = json_decode($result_kov, true);
-
-                            if(isset($result_kov['id'])){
-                                $params['data']['id']       = $contract_item['id'];
-                                $params['data']['shipped']  = 1;
-                                $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($params, array('task' => 'update-shipped'));
-                            }
+                        if($data['status_id'] == 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
+                            $this->updateNumberKiotviet($contract_item);
                         }
 
                         $response->setStatusCode(Response::STATUS_CODE_200);
-                        $response->setContent(json_encode(array('succsess' => true, 'message' => 'update status success')));
+                        $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
                     }
                     else{
                         $response->setStatusCode(Response::STATUS_CODE_404);
@@ -795,6 +804,57 @@ class ApiController extends ActionController {
         } catch (Exception $e) {
             $response->setStatusCode(Response::STATUS_CODE_500);
             $response->setContent(json_encode(array('success' => false, 'message' => 'invalid')));
+        }
+
+        return $response;
+    }
+
+    // webhook cập nhật trạng thái từ viettel post đẩy về crm
+    public function updateOrderStatusViettelPostAction(){
+        $response = new Response();
+        $response->setStatusCode(Response::STATUS_CODE_500);
+        try {
+            if($this->getRequest()->isPost()){
+                $data_post = json_decode(file_get_contents('php://input'), true);
+                $token = $data_post['TOKEN'];
+                if($token == TOKENUPDATE){
+                    $data = $data_post['DATA'];
+                    $this->postJson(file_get_contents('php://input'));
+                    $code = $data['ORDER_REFERENCE'];
+
+                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
+                    if(!empty($contract_item)){
+                        $arrParam['id']             = $contract_item['id'];
+                        $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
+                        $arrParam['ghtk_code']      = $data['ORDER_NUMBER'];
+                        $arrParam['price_transport']= $data['MONEY_TOTALFEE'];
+                        $arrParam['status_history'] = $data;
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
+
+                        // Tạo hóa đơn kov trừ số lượng hàng trong kho
+                        if($data['ORDER_STATUS'] == 105){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
+                            $this->updateNumberKiotviet($contract_item);
+                        }
+                        $response->setStatusCode(Response::STATUS_CODE_200);
+                        $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'update status success')));
+                    }
+                    else{
+                        $response->setStatusCode(Response::STATUS_CODE_404);
+                        $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Order reference invalid')));
+                    }
+                }
+                else{
+                    $response->setStatusCode(Response::STATUS_CODE_404);
+                    $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Token invalid')));
+                }
+            }
+            else{
+                $response->setStatusCode(Response::STATUS_CODE_401);
+                $response->setContent(json_encode(array('status' => '401', 'success' => false, 'message' => 'method invalid')));
+            }
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::STATUS_CODE_500);
+            $response->setContent(json_encode(array('status' => '500', 'success' => false, 'message' => 'invalid')));
         }
 
         return $response;

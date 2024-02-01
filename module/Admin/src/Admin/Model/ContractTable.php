@@ -3130,6 +3130,12 @@ class ContractTable extends DefaultTable {
             if(!empty($arrData['price_transport'])){
                 $data['price_transport'] = $arrData['price_transport'];
             }
+            if(!empty($arrData['ORDER_NUMBER'])){
+                $data['ORDER_NUMBER'] = $arrData['ORDER_NUMBER'];
+            }
+            if(!empty($arrData['unit_transport'])){
+                $data['unit_transport'] = $arrData['unit_transport'];
+            }
 
             // Cập nhật đơn hàng
             $this->tableGateway->update($data, array('id' => $id));
@@ -3138,11 +3144,27 @@ class ContractTable extends DefaultTable {
         // Cập nhật webhook ghtk
         if ($options['task'] == 'update-webhook-status') {
             $id = $arrData['id'];
-            $data = array(
-                'ghtk_status' => $arrData['ghtk_status'],
-                'ghtk_code' => $arrData['ghtk_code'],
-                'price_transport' => $arrData['price_transport'],
-            );
+            $item = $this->getItem(array('id' => $id));
+            $status_history = unserialize($item['status_history']);
+
+            if(!empty($arrData['ghtk_status'])){
+                $data['ghtk_status'] = $arrData['ghtk_status'];
+            }
+            if(!empty($arrData['ghtk_code'])){
+                $data['ghtk_code'] = $arrData['ghtk_code'];
+            }
+            if(!empty($arrData['viettel_status'])){
+                $data['viettel_status'] = $arrData['viettel_status'];
+            }
+            if(!empty($arrData['price_transport'])){
+                $data['price_transport'] = $arrData['price_transport'];
+            }
+            if(!empty($arrData['status_history'])){
+                $arrData['status_history']['created'] = date('Y-m-d H:i:s');
+                $status_history[] = $arrData['status_history'];
+                $data['status_history'] = serialize($status_history);
+            }
+
             // Cập nhật đơn hàng
             $this->tableGateway->update($data, array('id' => $id));
             return $id;
