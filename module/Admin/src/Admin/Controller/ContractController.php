@@ -2081,7 +2081,9 @@ class ContractController extends ActionController {
                                         $pro['PRODUCT_WEIGHT'] = $value['weight'] * 100;
                                         $pro['PRODUCT_QUANTITY'] = $value['numbers'];
                                         $pro['PRODUCT_PRICE'] = $value['price'];
-                                        $products[] = $pro;
+                                        if($pro['PRODUCT_WEIGHT'] > 1){
+                                            $products[] = $pro;
+                                        }
                                     }
                                     $order_item['ORDER_NUMBER'] =$contract['code'];
                                     $order_item['SENDER_FULLNAME'] = $inventory_item['name'];
