@@ -193,9 +193,9 @@ class Contract extends Form {
                 'class'		=> 'form-control select2 select2_basic',
             ),
             'options'		=> array(
-//                'empty_option'	=> '- Kho gửi hàng -',
+                'empty_option'	=> '- Thời gian giao hàng-',
                 'disable_inarray_validator' => true,
-                'value_options'	=> ['1'=>"Sáng", '2'=>"Chiều", '3'=>"Tối", ],
+                'value_options'	=> ['1' => "Sáng", '2' => "Chiều", '3' => "Tối", ],
             )
         ));
 

@@ -827,7 +827,7 @@ class ApiController extends ActionController {
                         $arrParam['id']             = $contract_item['id'];
                         $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
                         $arrParam['ghtk_code']      = $data['ORDER_NUMBER'];
-                        $arrParam['price_transport']= $data['MONEY_TOTALFEE'];
+                        $arrParam['price_transport']= $data['MONEY_TOTAL'];
                         $arrParam['status_history'] = $data;
                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
 
