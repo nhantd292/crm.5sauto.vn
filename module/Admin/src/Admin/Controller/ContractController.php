@@ -2076,12 +2076,12 @@ class ContractController extends ActionController {
                                     $contract['options'] = unserialize($contract['options'])['product'];
                                     foreach($contract['options'] as $key => $value){
                                         $list_name .= $value['full_name'].' - '.$value['car_year'].', ';
-                                        $total_weight += $value['weight'] * 1000;
-                                        $pro['PRODUCT_NAME'] = $value['full_name'].' - '.$value['car_year'];
-                                        $pro['PRODUCT_WEIGHT'] = $value['weight'] * 100;
-                                        $pro['PRODUCT_QUANTITY'] = $value['numbers'];
-                                        $pro['PRODUCT_PRICE'] = $value['price'];
-                                        if($pro['PRODUCT_WEIGHT'] > 1){
+                                        if($value['weight'] > 1){
+                                            $total_weight += $value['weight'] * 1000;
+                                            $pro['PRODUCT_NAME'] = $value['full_name'].' - '.$value['car_year'];
+                                            $pro['PRODUCT_WEIGHT'] = $value['weight'] * 1000;
+                                            $pro['PRODUCT_QUANTITY'] = $value['numbers'];
+                                            $pro['PRODUCT_PRICE'] = $value['price'];
                                             $products[] = $pro;
                                         }
                                     }
