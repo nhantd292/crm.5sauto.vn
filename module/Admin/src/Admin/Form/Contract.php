@@ -41,19 +41,19 @@ class Contract extends Form {
 			),
 		));
 
-        // Nhân viên mkt
-        $this->add(array(
-            'name'			=> 'marketer_id',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Chọn -',
-                'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array("data" => array('sale_branch_id' =>$options['userInfo']['sale_branch_id'])), array('task' => 'list-marketing')), array('key' => 'id', 'value' => 'name')),
-            ),
-        ));
+//        // Nhân viên mkt
+//        $this->add(array(
+//            'name'			=> 'marketer_id',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Chọn -',
+//                'disable_inarray_validator' => true,
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array("data" => array('sale_branch_id' =>$options['userInfo']['sale_branch_id'])), array('task' => 'list-marketing')), array('key' => 'id', 'value' => 'name')),
+//            ),
+//        ));
 
 		// Tỉnh thành
 		$this->add(array(
@@ -157,21 +157,21 @@ class Contract extends Form {
 
 
         // Kho gửi hàng
-        $groupaddress = json_decode($sm->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
-        $inventorys = \ZendX\Functions\CreateArray::create($groupaddress, array('key' => 'pick_address_id', 'value' => 'pick_name,address', 'sprintf' =>'%s - %s'));
-
-        $this->add(array(
-            'name'			=> 'groupaddressId',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Kho gửi hàng -',
-                'disable_inarray_validator' => true,
-                'value_options'	=> $inventorys,
-            )
-        ));
+//        $groupaddress = json_decode($sm->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
+//        $inventorys = \ZendX\Functions\CreateArray::create($groupaddress, array('key' => 'pick_address_id', 'value' => 'pick_name,address', 'sprintf' =>'%s - %s'));
+//
+//        $this->add(array(
+//            'name'			=> 'groupaddressId',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Kho gửi hàng -',
+//                'disable_inarray_validator' => true,
+//                'value_options'	=> $inventorys,
+//            )
+//        ));
 
 //        $this->add(array(
 //            'name'			=> 'pick_work_shift',

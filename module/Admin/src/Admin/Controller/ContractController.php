@@ -321,6 +321,9 @@ class ContractController extends ActionController {
 
         $contact_item = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $this->params('id')));
         $sales_manager = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(array('id' => $contact_item['user_id']));
+        if(empty($contact_item)){
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'not-found'));
+        }
         
         if($this->getRequest()->isPost()){
             $myForm->setInputFilter(new \Admin\Filter\Contract(array('data' => $this->_params['data'], 'route' => $this->_params['route'])));
@@ -350,11 +353,11 @@ class ContractController extends ActionController {
                 }
 
                 if($check_emty_data){
-                    $contact_item = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']),['task'=>'by-phone']);
-                    if(empty($contact_item)){
-                        $contact_id_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem($this->_params,['task'=>'add-item']);
-                        $contact_item = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contact_id_new));
-                    }
+//                    $contact_item = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']),['task'=>'by-phone']);
+//                    if(empty($contact_item)){
+//                        $contact_id_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem($this->_params,['task'=>'add-item']);
+//                        $contact_item = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contact_id_new));
+//                    }
                     $this->_params['item'] = $contact_item;
 
                     // TẠO ĐƠN HÀNG LÊN API
@@ -470,12 +473,13 @@ class ContractController extends ActionController {
                     )$check_emty_data = false;
                 }
                 if($check_emty_data){
-                    $contact_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']),['task'=>'by-phone']);
-                    if(empty($contact_new)){
-                        $contact_id_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem($this->_params,['task'=>'add-item']);
-                        $contact_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contact_id_new));
-                    }
-                    $this->_params['contact_new'] = $contact_new;
+//                    $contact_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']),['task'=>'by-phone']);
+//                    if(empty($contact_new)){
+//                        $contact_id_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem($this->_params,['task'=>'add-item']);
+//                        $contact_new = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contact_id_new));
+//                    }
+//                    $this->_params['contact_new'] = $contact_new;
+                    $this->_params['contact_new'] = $contact_old;
 
                     $result_kov = $this->createOrderKov($this->_params['data'], 'PUT');
                     if((int)$result_kov['id']) {
@@ -2092,8 +2096,8 @@ class ContractController extends ActionController {
                                         "RECEIVER_ADDRESS" => $order_item['RECEIVER_ADDRESS'],
                                         "PRODUCT_TYPE" => "HH",
                                         "PRODUCT_WEIGHT" => $total_weight,
-                                        "PRODUCT_PRICE" => $contract['price_total'],
-                                        "MONEY_COLLECTION" => $contract['price_total'],
+                                        "PRODUCT_PRICE" => $contract['price_total'] - $contract['price_deposits'],
+                                        "MONEY_COLLECTION" => $contract['price_total'] - $contract['price_deposits'],
                                         "TYPE" => 1
                                     );
                                     $services = json_decode($this->viettelpost('/order/getPriceAllNlp', $s_data, 'POST'), true)['RESULT'];
@@ -2119,7 +2123,7 @@ class ContractController extends ActionController {
                                     $order_item["PRODUCT_TYPE"] = "HH";
                                     $order_item["ORDER_SERVICE_ADD"] = null;
                                     $order_item["ORDER_NOTE"] = $contract['ghtk_note'];
-                                    $order_item["MONEY_COLLECTION"] = $contract['price_total'];
+                                    $order_item["MONEY_COLLECTION"] = $contract['price_total'] - $contract['price_deposits'];
                                     $order_item["EXTRA_MONEY"] = 0;
                                     $order_item["CHECK_UNIQUE"] = true;
                                     $order_item["PRODUCT_DETAIL"] = $products;

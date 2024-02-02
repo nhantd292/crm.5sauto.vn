@@ -161,7 +161,7 @@ function checkContactToElement(id, option) {
 					}
 				}
 
-				$('input[name="phone"]').attr('disabled', 'disabled');
+				// $('input[name="phone"]').attr('disabled', 'disabled');
 				pageLoading('close', '.page-container');
 				
 				// checkSubject();
