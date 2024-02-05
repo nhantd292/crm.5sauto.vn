@@ -855,8 +855,8 @@ class ApiController extends ActionController {
                         $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
                         $arrParam['ghtk_code']      = $data['ORDER_NUMBER'];
                         $arrParam['price_transport']= $data['MONEY_TOTAL'];
-                        $arrParam['status_history'] = $data;
-                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
+//                        $arrParam['status_history'] = $data;
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
 
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
                         if($data['ORDER_STATUS'] == 105){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
