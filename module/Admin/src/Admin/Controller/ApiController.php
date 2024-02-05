@@ -845,7 +845,7 @@ class ApiController extends ActionController {
                 $token = $data_post['TOKEN'];
                 if($token == TOKENUPDATE){
                     $data = $data_post['DATA'];
-                    $this->postJson(file_get_contents('php://input'));
+//                    $this->postJson(file_get_contents('php://input'));
                     $code = $data['ORDER_REFERENCE'];
 
                     $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
@@ -868,7 +868,7 @@ class ApiController extends ActionController {
 //                        $response->setStatusCode(Response::STATUS_CODE_404);
 //                        $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Order reference invalid')));
                         # trả về status 200 ghi log và bypass
-//                        $this->logRequest(file_get_contents('php://input'));
+                        $this->logRequest(file_get_contents('php://input'));
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'Order reference invalid - bypass')));
                     }
@@ -876,7 +876,7 @@ class ApiController extends ActionController {
                 else{
 //                    $response->setStatusCode(Response::STATUS_CODE_404);
 //                    $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Token invalid')));
-//                    $this->logRequest(file_get_contents('php://input'));
+                    $this->logRequest(file_get_contents('php://input'));
                     $response->setStatusCode(Response::STATUS_CODE_200);
                     $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'Token invalid - bypass')));
                 }
