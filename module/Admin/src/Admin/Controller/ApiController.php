@@ -6,6 +6,8 @@ use ZendX\Controller\ActionController;
 use Zend\Json\Json;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\View\Model\ViewModel;
+use Zend\Log\Logger;
+use Zend\Log\Writer\Stream;
 
 use Zend\Http\Response;
 
@@ -809,9 +811,34 @@ class ApiController extends ActionController {
         return $response;
     }
 
+    // Hàm để log thông tin request
+    function logRequest($data) {
+        // Lấy thông tin về request
+        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $requestMethod = $_SERVER['REQUEST_METHOD'];
+        $requestUri = $_SERVER['REQUEST_URI'];
+        $timestamp = date('Y-m-d H:i:s');
+
+        // Tạo nội dung log
+        $logContent = "$timestamp - IP: $ipAddress - Method: $requestMethod - URI: $requestUri - data: ".json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        // Tạo một instance của Zend\Log\Logger
+        $logger = new Logger();
+
+        // Thêm một writer để ghi log vào file
+        $logFilePath = PATH_APPLICATION . '/public/log/file.log';
+        $writer = new Stream($logFilePath);
+        $logger->addWriter($writer);
+
+        // Ghi nội dung vào file log
+        $logger->info($logContent);
+    }
+
+
     // webhook cập nhật trạng thái từ viettel post đẩy về crm
     public function updateOrderStatusViettelPostAction(){
         $response = new Response();
+        $this->logRequest(file_get_contents('php://input'));
         $response->setStatusCode(Response::STATUS_CODE_500);
         try {
             if($this->getRequest()->isPost()){
