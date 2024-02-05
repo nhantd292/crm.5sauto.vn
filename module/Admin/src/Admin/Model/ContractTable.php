@@ -3145,8 +3145,7 @@ class ContractTable extends DefaultTable {
         // Cập nhật webhook ghtk
         if ($options['task'] == 'update-webhook-status') {
             $id = $arrData['id'];
-//            $item = $this->getItem(array('id' => $id));
-//            $status_history = unserialize($arrItem['status_history']);
+            $status_history = unserialize($arrItem['status_history']);
 
             if(!empty($arrData['ghtk_status'])){
                 $data['ghtk_status'] = $arrData['ghtk_status'];

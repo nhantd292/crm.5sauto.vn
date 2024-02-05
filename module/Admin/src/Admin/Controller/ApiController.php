@@ -855,7 +855,7 @@ class ApiController extends ActionController {
                         $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
                         $arrParam['ghtk_code']      = $data['ORDER_NUMBER'];
                         $arrParam['price_transport']= $data['MONEY_TOTAL'];
-//                        $arrParam['status_history'] = $data;
+                        $arrParam['status_history'] = $data;
                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
 
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
@@ -866,8 +866,10 @@ class ApiController extends ActionController {
                         $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'update status success')));
                     }
                     else{
-                        $response->setStatusCode(Response::STATUS_CODE_404);
-                        $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Order reference invalid')));
+//                        $response->setStatusCode(Response::STATUS_CODE_404);
+//                        $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Order reference invalid')));
+                        $response->setStatusCode(Response::STATUS_CODE_200);
+                        $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'bypass')));
                     }
                 }
                 else{
