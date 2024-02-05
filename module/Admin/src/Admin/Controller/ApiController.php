@@ -869,12 +869,14 @@ class ApiController extends ActionController {
 //                        $response->setStatusCode(Response::STATUS_CODE_404);
 //                        $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Order reference invalid')));
                         $response->setStatusCode(Response::STATUS_CODE_200);
-                        $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'bypass')));
+                        $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'Order reference invalid - bypass')));
                     }
                 }
                 else{
-                    $response->setStatusCode(Response::STATUS_CODE_404);
-                    $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Token invalid')));
+//                    $response->setStatusCode(Response::STATUS_CODE_404);
+//                    $response->setContent(json_encode(array('status' => '404', 'success' => false, 'message' => 'Token invalid')));
+                    $response->setStatusCode(Response::STATUS_CODE_200);
+                    $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'Token invalid - bypass')));
                 }
             }
             else{
