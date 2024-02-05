@@ -845,7 +845,7 @@ class ApiController extends ActionController {
                 $token = $data_post['TOKEN'];
                 if($token == TOKENUPDATE){
                     $data = $data_post['DATA'];
-                    $this->postJson(file_get_contents('php://input'));
+//                    $this->postJson(file_get_contents('php://input'));
                     $code = $data['ORDER_REFERENCE'];
 
                     $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
