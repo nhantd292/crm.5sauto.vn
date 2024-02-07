@@ -2,7 +2,7 @@
 namespace Admin\Form\Contract;
 use \Zend\Form\Form as Form;
 
-class SendViettelPost extends Form {
+class SendGhtk extends Form {
 	
 	public function __construct($sm){
 		parent::__construct();

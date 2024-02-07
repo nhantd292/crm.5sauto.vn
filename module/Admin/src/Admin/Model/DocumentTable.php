@@ -90,7 +90,12 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
                 if(!empty($arrParam['where'])) {
                     foreach ($arrParam['where'] AS $key => $value) {
                         if(!empty($value)) {
-                            $select -> where -> equalTo($key, $value);
+                            if(in_array($key, ['key_ghtk_ids', 'key_ghtk_ids'])){
+                                $select -> where -> in('id', $value);
+                            }
+                            else{
+                                $select -> where -> equalTo($key, $value);
+                            }
                         }
                     }
                 }
@@ -149,7 +154,12 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
 	                if(!empty($arrParam['where'])) {
 	                    foreach ($arrParam['where'] AS $key => $value) {
 	                        if(!empty($value)) {
-                                $select -> where -> equalTo($key, $value);
+                                if(in_array($key, ['key_ghtk_ids', 'key_viettel_ids'])){
+                                    $select -> where -> in($key, '('.$value.')');
+                                }
+                                else{
+                                    $select -> where -> equalTo($key, $value);
+                                }
 	                        }
 	                    }
 					}
@@ -335,6 +345,9 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
     		                    case 'integer':
     		                        $valueData = $number->formatToData($arrData[$filed['name']]);
     		                        break;
+                                case 'implode':
+                                    $valueData = implode(',', $arrData[$filed['name']]);
+                                    break;
     		                    default:
     		                        $valueData = $arrData[$filed['name']];
     		                }
@@ -401,6 +414,9 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
 			            break;
 			        case 'integer':
 			            $valueData = $number->formatToData($arrData[$filed['name']]);
+			            break;
+			        case 'implode':
+			            $valueData = implode(',', $arrData[$filed['name']]);
 			            break;
 			        default:
 			            $valueData = $arrData[$filed['name']];

@@ -347,7 +347,7 @@ class ActionController extends AbstractActionController {
         }
     }
 
-    public function ghtk_call($api_endpoint, $query = array(), $method = 'GET')
+    public function ghtk_call($api_endpoint, $query = array(), $method = 'GET', $key)
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, URLGHTK . $api_endpoint);
@@ -364,7 +364,8 @@ class ActionController extends AbstractActionController {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
         }
         $header = array(
-            "Token: " .GHTK,
+//            "Token: " .GHTK,
+            "Token: " .$key,
             "Cache-control: no-cache",
             "Content-type: application/json",
         );
@@ -466,5 +467,161 @@ class ActionController extends AbstractActionController {
             }
         }
         return $result;
+    }
+    public function d(){
+        array(
+            "code" => "sale-branch",
+            "general" => array(
+                "title" => array(
+                    "value" => "Cơ sở kinh doanh",
+                )
+            ),
+            "list" => array(
+                "general" => array(
+                    "showIndex" => array(
+                        "value" => true,
+                    ),
+                    "showCheckbox" => array(
+                        "value" => true,
+                    ),
+                    "showControl" => array(
+                        "value" => true,
+                    ),
+                ),
+                "fields" => array(
+                    array(
+                        "caption" => "Tên",
+                        "name" => "name",
+                    ),
+                    array(
+                        "caption" => "Mã",
+                        "name" => "alias",
+                    ),
+                    array(
+                        "caption" => "Thứ tự",
+                        "name" => "ordering",
+                        "type" => "text",
+                        "attributes" => array(
+                            "class" => "col-80"
+                        )
+                    ),
+                ),
+            ),
+            "form" => array(
+                "general" => array(),
+                "fields" => array(
+                    array(
+                        "caption" => "Tên",
+                        "name" => "name",
+                        "type" => "text",
+                        "attributes" => array(
+                            "class" => "form-control",
+                            "id" => "name",
+                            "placeholder" => "Nhập tên",
+                            "onchange" => "createAlias(this, 'input[name=\"alias\"]')"
+                        ),
+                        "validators" => array(
+                            "require" => 1
+                        )
+                    ),
+                    array(
+                        "caption" => "Mã",
+                        "name" => "alias",
+                        "type" => "text",
+                        "attributes" => array(
+                            "class" => "form-control",
+                            "id" => "alias",
+                        ),
+                        "validators" => array(
+                            "require" => 1
+                        )
+                    ),
+                    array(
+                        "caption" => "Thứ tự",
+                        "boxClass" => "col-md-1",
+                        "name" => "ordering",
+                        "type" => "text",
+                        "attributes" => array(
+                            "value" => 255,
+                            "class" => "form-control",
+                            "id" => "ordering",
+                            "placeholder" => "Thứ tự"
+                        )
+                    ),
+                    array(
+                        "caption" => "Trạng thái",
+                        "boxClass" => "col-md-2",
+                        "name" => "status",
+                        "type" => "select",
+                        "attributes" => array(
+                            "class" => "form-control select2 select2_basic",
+                        ),
+                        "options" => array(
+                            "value_options" => array(1 => "Hiển thị", 0 => "Không hiển thị"),
+                        )
+                    ),
+                    array(
+                        "caption" => "Địa chỉ IP",
+                        "name" => "ip_address",
+                        "type" => "text",
+                        "attributes" => array(
+                            "class" => "form-control",
+                            "id" => "ip_address",
+                            "placeholder" => "Nhập địa chỉ IP của cơ sở",
+                        )
+                    ),
+                    array(
+                        "caption" => "Tài khoản Viettel Post",
+                        'name' => 'key_viettel_ids',
+                        'type' => 'MultiCheckbox',
+                        'attributes' => array(
+                            'class' => '',
+                        ),
+                        "options" => array(
+                            "empty_option" => "- Chọn -",
+                            "value_options" => array(),
+                            "data_source" => array(
+                                "table" => "document",
+                                "where" => array("code" => "viettel-key"),
+                                "order" => array("ordering" => "ASC", "name" => "ASC"),
+                                "view" => array(
+                                    "key" => "alias",
+                                    "value" => "name",
+                                    "sprintf" => "%s"
+                                )
+                            )
+                        ),
+                        "validators" => array(
+                            "require" => 1
+                        )
+                    ),
+                    array(
+                        "caption" => "Tài khoản GHTK",
+                        'name' => 'key_ghtk_ids',
+                        'type' => 'MultiCheckbox',
+                        'attributes' => array(
+                            'class' => '',
+                        ),
+                        "options" => array(
+                            "empty_option" => "- Chọn -",
+                            "value_options" => array(),
+                            "data_source" => array(
+                                "table" => "document",
+                                "where" => array("code" => "ghtk-key"),
+                                "order" => array("ordering" => "ASC", "name" => "ASC"),
+                                "view" => array(
+                                    "key" => "alias",
+                                    "value" => "name",
+                                    "sprintf" => "%s"
+                                )
+                            )
+                        ),
+                        "validators" => array(
+                            "require" => 1
+                        )
+                    ),
+                ),
+            )
+        );
     }
 }

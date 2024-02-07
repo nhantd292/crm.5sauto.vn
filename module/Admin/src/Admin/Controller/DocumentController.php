@@ -142,6 +142,8 @@ class DocumentController extends ActionController {
             $item['date_begin'] = !empty($item['date_begin']) ? $dateFormat->formatToView($item['date_begin']) : null;
             $item['date_end'] = !empty($item['date_end']) ? $dateFormat->formatToView($item['date_end']) : null;
             if(!empty($item)) {
+                $item['key_viettel_ids'] = explode(',', $item['key_viettel_ids']);
+                $item['key_ghtk_ids'] = explode(',', $item['key_ghtk_ids']);
                 $myForm->setInputFilter(new \Admin\Filter\Document(array('id' => $this->_params['data']['id'], 'configs' => $this->_params['configs'])));
                 $myForm->bind($item);
                 $task = 'edit-item';

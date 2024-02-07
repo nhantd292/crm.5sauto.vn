@@ -3,7 +3,7 @@ namespace Admin\Filter\Contract;
 
 use Zend\InputFilter\InputFilter;
 
-class SendViettelPost extends InputFilter {
+class SendGhtk extends InputFilter {
 	
 	public function __construct($options = null){
 

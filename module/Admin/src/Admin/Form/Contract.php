@@ -157,8 +157,8 @@ class Contract extends Form {
 
 
         // Kho gửi hàng
-        $groupaddress = json_decode($sm->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
-        $inventorys = \ZendX\Functions\CreateArray::create($groupaddress, array('key' => 'pick_address_id', 'value' => 'pick_name,address', 'sprintf' =>'%s - %s'));
+//        $groupaddress = json_decode($sm->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
+//        $inventorys = \ZendX\Functions\CreateArray::create($groupaddress, array('key' => 'pick_address_id', 'value' => 'pick_name,address', 'sprintf' =>'%s - %s'));
 
         $this->add(array(
             'name'			=> 'groupaddressId',
@@ -169,7 +169,8 @@ class Contract extends Form {
             'options'		=> array(
                 'empty_option'	=> '- Kho gửi hàng -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> $inventorys,
+//                'value_options'	=> $inventorys,
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'warehouses')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name,phone,address', 'sprintf' =>'%s - %s - %s')),
             )
         ));
 
