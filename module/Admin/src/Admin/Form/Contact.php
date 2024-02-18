@@ -459,30 +459,30 @@ class Contact extends Form {
         ));
 
         // Trạng thái chăm sóc
-        $this->add(array(
-            'name'			=> 'marketer_id',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Nhân viên MKT -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'marketing'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
-            )
-        ));
+//        $this->add(array(
+//            'name'			=> 'marketer_id',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Nhân viên MKT -',
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'marketing'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
+//            )
+//        ));
 
         // Nhân viên mkt
-        $this->add(array(
-            'name'			=> 'marketer_id',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Chọn -',
-                'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-marketing')), array('key' => 'id', 'value' => 'name')),
-            ),
-        ));
+//        $this->add(array(
+//            'name'			=> 'marketer_id',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Chọn -',
+//                'disable_inarray_validator' => true,
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-marketing')), array('key' => 'id', 'value' => 'name')),
+//            ),
+//        ));
 	}
 }

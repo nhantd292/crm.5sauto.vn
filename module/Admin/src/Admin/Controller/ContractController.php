@@ -2115,7 +2115,7 @@ class ContractController extends ActionController {
                                     $products[0]['name'] = $list_name;
                                     $listData_ghtk[$contract['code']]['products'] = $products;
 
-                                    $order_item['id'] = $contract['code'];
+                                    $order_item['id'] = $contract['code'].'X';
 
                                     // Thông tin khách hàng ships giao hàng
                                     $order_item['tel']       = $contract['phone'];
