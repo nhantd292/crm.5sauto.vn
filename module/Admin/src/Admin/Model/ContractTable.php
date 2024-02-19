@@ -521,9 +521,9 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_shipper_id'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.ghtk_code', $ssFilter['filter_shipper_id']);
                 }
-//                echo "<pre>";
-//                print_r($select->getSqlString());
-//                echo "</pre>";
+                echo "<pre>";
+                print_r($select->getSqlString());
+                echo "</pre>";
     		});
 		}
 
