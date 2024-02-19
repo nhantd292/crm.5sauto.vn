@@ -60,12 +60,12 @@ class ContractTable extends DefaultTable {
                     $select -> where -> NEST
                         -> greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']))
                         ->AND
-                        -> lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']) . ' 23:59:59')
+                        -> lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'))
                         -> UNNEST;
                 } elseif (!empty($ssFilter['filter_date_begin'])) {
                     $select->where->greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']));
                 } elseif (!empty($ssFilter['filter_date_end'])) {
-                    $select->where->lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']) . ' 23:59:59');
+                    $select->where->lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'));
                 }
 
                 if(!empty($ssFilter['filter_sale_branch'])) {
@@ -521,9 +521,9 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_shipper_id'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.ghtk_code', $ssFilter['filter_shipper_id']);
                 }
-                echo "<pre>";
-                print_r($select->getSqlString());
-                echo "</pre>";
+//                echo "<pre>";
+//                print_r($select->getSqlString());
+//                echo "</pre>";
     		});
 		}
 
