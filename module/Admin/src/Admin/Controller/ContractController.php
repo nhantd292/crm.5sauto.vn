@@ -20,6 +20,7 @@ class ContractController extends ActionController {
         $this->_params['ssFilter']['order_by']              = !empty($ssFilter->order_by) ? $ssFilter->order_by : 'date';
         $this->_params['ssFilter']['order']                 = !empty($ssFilter->order) ? $ssFilter->order : 'DESC';
         $this->_params['ssFilter']['filter_keyword']        = $ssFilter->filter_keyword;
+        $this->_params['ssFilter']['filter_date_type']      = $ssFilter->filter_date_type;
         $this->_params['ssFilter']['filter_date_begin']     = $ssFilter->filter_date_begin;
         $this->_params['ssFilter']['filter_date_end']       = $ssFilter->filter_date_end;
         $this->_params['ssFilter']['filter_date_type']      = $ssFilter->filter_date_type;
@@ -65,6 +66,7 @@ class ContractController extends ActionController {
             $ssFilter->order_by                 = $data['order_by'];
             $ssFilter->order                    = $data['order'];
             $ssFilter->filter_keyword           = $data['filter_keyword'];
+            $ssFilter->filter_date_type         = $data['filter_date_type'];
             $ssFilter->filter_date_begin        = $data['filter_date_begin'];
             $ssFilter->filter_date_end          = $data['filter_date_end'];
             $ssFilter->filter_date_type         = $data['filter_date_type'];

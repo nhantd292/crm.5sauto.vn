@@ -15,6 +15,7 @@
     if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
         $elements = array(
             array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -23,13 +24,13 @@
             array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_update_kov_false'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_update_kov_false'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -41,8 +42,9 @@
     else{
         $elements = array(
             array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
@@ -52,7 +54,7 @@
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -82,6 +84,7 @@
         	$id                     = $item->id;
         	$code                   = $item->code;
             $date                   = $dateFormat->formatToView($item->date);
+            $shipped_date           = $dateFormat->formatToView($item->shipped_date);
             $contact_date           = $dateFormat->formatToView($item->contact_date, 'd/m/Y H:i');
             $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
             $contact_name           = $item->contact_name;
@@ -223,7 +226,7 @@
                                 <td '.$rowSpan.'>'. $ghtk_code .'</td>
     							<td '.$rowSpan.'><span class="text-bold">'. $code .'</span><br><span style="color: #a70101;">'.$item->coincider_code.'</span></td>
     							<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
-    							<td '.$rowSpan.'>'. $date .'</td>
+    							<td '.$rowSpan.'>'. $date .'<br>'.$shipped_date.'</td>
     							<td '.$rowSpan.'>'. $user_name .'</td>
     							<td '.$rowSpan.'>'. $contact_name .'</td>
     							<td '.$rowSpan.'>'. $contact_phone .'</td>

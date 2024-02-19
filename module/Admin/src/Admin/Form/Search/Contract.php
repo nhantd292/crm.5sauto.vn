@@ -305,6 +305,19 @@ class Contract extends Form{
                 'value_options' => array('1' => 'Đơn hàng trùng', '-1' => 'Đơn hàng không trùng'),
             )
         ));
+
+        // Loại ngày
+        $this->add(array(
+            'name' => 'filter_date_type',
+            'type' => 'Select',
+            'attributes' => array(
+                'class' => 'form-control select2 select2_basic',
+            ),
+            'options' => array(
+//                'empty_option'	=> '- Ngày lên đơn -',
+                'value_options' => array('date' => 'Ngày lên đơn', 'shipped_date' => 'Ngày xuất kho'),
+            )
+        ));
 		
 		// Submit
 		$this->add(array(
