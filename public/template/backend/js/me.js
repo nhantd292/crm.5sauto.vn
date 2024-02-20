@@ -421,7 +421,6 @@ function contractPrintProduction(target="") {
 	
 	if(itemId.length > 0) {
 		var ajaxUrl = jQuery(formAdmin).attr('action').replace('/filter', '/print-production');
-		console.log(ajaxUrl);
 		submitForm(ajaxUrl, target);
 		jQuery(formAdmin).attr('action', jQuery(formAdmin).attr('action').replace('/print-production', '/filter'));
 	} else {
@@ -459,6 +458,10 @@ function popupAction(ajaxUrl, option) {
 				if(result == 'success') {
 					$modal.modal('hide');
 					location.reload();
+				}
+				if(result == 'print') {
+					// var pri = jQuery(formAdmin).attr('action').replace('/filter', '/print-multi')+'id/'+option['id'];
+					window.location = '/xadmin/production/print-multi/id/'+option['id']
 				}
 				else if(result == 'thank'){
 					$modal.modal('loading');

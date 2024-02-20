@@ -1,225 +1,220 @@
 <?php
-    $dateFormat = new \ZendX\Functions\Date();
+$dateFormat = new \ZendX\Functions\Date();
 
-    $myForm = $this->myForm;
-    $myForm->prepare();
+$myForm = $this->myForm;
+$myForm->prepare();
 
-    $permission_ids = explode(',', $curent_user['permission_ids']);
-    $encode_phone = explode(',', $curent_user['encode_phone']);
-    $phone_code = true;
-    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_array('sale_contract', $encode_phone)) {
-        $phone_code = false;
-    }
+$permission_ids = explode(',', $curent_user['permission_ids']);
+$encode_phone = explode(',', $curent_user['encode_phone']);
+$phone_code = true;
+if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_array('sale_contract', $encode_phone)) {
+    $phone_code = false;
+}
 
-    $myForm->get('filter_action')->setValue($this->params['action']);
-    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
-        $elements = array(
-            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_update_kov_false'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_update_kov_false'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_action')),
-            array('element' => $myForm->get('order')),
-            array('element' => $myForm->get('order_by')),
-        );
-    }
-    else{
-        $elements = array(
-            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+}
+else{
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_action')),
-            array('element' => $myForm->get('order')),
-            array('element' => $myForm->get('order_by')),
-        );
+        array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+}
+
+$xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+// Danh sách
+$xhtmlItems = '';
+
+if($this->items->count() > 0) {
+    $stt = 0;
+    $sum = 0;
+    $total_price = $total_cod = $total_discount = 0;
+    $manager_edit = false;
+    if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
+        $manager_edit = true;
     }
+    foreach ($this->items AS $key => $item) {
+        $stt++;
+        $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
 
-    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
-    
-    // Danh sách
-    $xhtmlItems = '';
-
-    if($this->items->count() > 0) {
-        $stt = 0;
-        $sum = 0;
-        $total_price = $total_cod = $total_discount = 0;
-        $manager_edit = false;
-        if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-            $manager_edit = true;
-        }
-        foreach ($this->items AS $key => $item) {
-        	$stt++;
-        	$cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
-        	
-        	$id                     = $item->id;
-        	$code                   = $item->code;
-            $date                   = $dateFormat->formatToView($item->date);
-            $shipped_date           = $dateFormat->formatToView($item->shipped_date);
-            $contact_date           = $dateFormat->formatToView($item->contact_date, 'd/m/Y H:i');
-            $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
-            $contact_name           = $item->contact_name;
-            $contact_contract_number= $item->contact_contract_number;
-            $index_number           = $item->index_number;
-            $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
+        $id                     = $item->id;
+        $code                   = $item->code;
+        $date                   = $dateFormat->formatToView($item->date);
+        $shipped_date           = $dateFormat->formatToView($item->shipped_date);
+        $contact_date           = $dateFormat->formatToView($item->contact_date, 'd/m/Y H:i');
+        $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
+        $contact_name           = $item->contact_name;
+        $contact_contract_number= $item->contact_contract_number;
+        $index_number           = $item->index_number;
+        $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
 
 //            $fee_cod                = !empty($item->ghtk_result) ? number_format(unserialize($item->ghtk_result)['fee']) : '';
-            $fee_cod                = number_format($item->price_transport);
-            $price_promotion        = number_format($item->price_promotion);
-            $price_total            = $item->price_total;
-            $total_price           += $price_total;
-            $total_cod             += $item->price_transport;
-            $total_discount        += $item->price_reduce_sale;
-            $price_paid             = $item->price_paid;
-            $price_accrued          = $item->price_accrued;
-            $price_owed             = $item->price_owed;
-            $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
-            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
-            $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
-            $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
-            $bill_code              = $item->bill_code;
-            $product_return         = $item->product_return;
-            $shipper_id             = $this->user[$item->shipper_id]['name'];
+        $fee_cod                = number_format($item->price_transport);
+        $price_promotion        = number_format($item->price_promotion);
+        $price_total            = $item->price_total;
+        $total_price           += $price_total;
+        $total_cod             += $item->price_transport;
+        $total_discount        += $item->price_reduce_sale;
+        $price_paid             = $item->price_paid;
+        $price_accrued          = $item->price_accrued;
+        $price_owed             = $item->price_owed;
+        $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+        $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
+        $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
+        $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
+        $bill_code              = $item->bill_code;
+        $product_return         = $item->product_return;
+        $shipper_id             = $this->user[$item->shipper_id]['name'];
 
-            $status_sales           = $item->status_id ? $this->status_sales[$item->status_id]['name'] : '';
-            if($item->unit_transport == 'viettel')
-                $status_check       = $item->ghtk_status ? $this->status_check_vtp[$item->ghtk_status]['name'] : '';
-            else
-                $status_check       = $item->ghtk_status ? $this->status_check[$item->ghtk_status]['name'] : '';
-            $status_acccounting     = $item->status_acounting_id ? $this->status_accounting[$item->status_acounting_id]['name'] : '';
+        $status_sales           = $item->status_id ? $this->status_sales[$item->status_id]['name'] : '';
+        if($item->unit_transport == 'viettel')
+            $status_check           = $item->ghtk_status ? $this->status_check_vtp[$item->ghtk_status]['name'] : '';
+        else
+            $status_check           = $item->ghtk_status ? $this->status_check[$item->ghtk_status]['name'] : '';
+        $status_acccounting     = $item->status_acounting_id ? $this->status_accounting[$item->status_acounting_id]['name'] : '';
 
-            $status = 'Sales: '.$status_sales.'<br>'.'Giục đơn: '.$status_check.'<br>'.'Kế toán: '.$status_acccounting;
+        $status = 'Sales: '.$status_sales.'<br>'.'Giục đơn: '.$status_check.'<br>'.'Kế toán: '.$status_acccounting;
 
-            $sale_group_id          = $item->sale_group_id ? '<br>'. $this->sale_group[$item->sale_group_id]['name'] : '';
-            $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
-            $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
+        $sale_group_id          = $item->sale_group_id ? '<br>'. $this->sale_group[$item->sale_group_id]['name'] : '';
+        $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
+        $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
 
-            $user                   = $this->user[$item->user_id]['name'];
-            $sale_group_user        = $this->user[$item->user_id]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->user_id]['sale_group_id']]['name'] : '';
-            $sale_branch_user       = $this->user[$item->user_id]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->user_id]['sale_branch_id']]['name'] : '';
+        $user                   = $this->user[$item->user_id]['name'];
+        $sale_group_user        = $this->user[$item->user_id]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->user_id]['sale_group_id']]['name'] : '';
+        $sale_branch_user       = $this->user[$item->user_id]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->user_id]['sale_branch_id']]['name'] : '';
 
-            $created_by             = $this->user[$item->created_by]['name'];
-            $sale_group_created_by  = $this->user[$item->created_by]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
-            $sale_branch_created_by = $this->user[$item->created_by]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
+        $created_by             = $this->user[$item->created_by]['name'];
+        $sale_group_created_by  = $this->user[$item->created_by]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->created_by]['sale_group_id']]['name'] : '';
+        $sale_branch_created_by = $this->user[$item->created_by]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->created_by]['sale_branch_id']]['name'] : '';
 
-            $order_type             = $item->status_store ? 'Đơn cửa hàng' : 'Đơn thường';
+        $order_type             = $item->status_store ? 'Đơn cửa hàng' : 'Đơn thường';
 
-            $options                = $item->options ? unserialize($item['options']) : array();
-            $contact_options        = $item->contact_options ? unserialize($item['contact_options']) : array();
+        $options                = $item->options ? unserialize($item['options']) : array();
+        $contact_options        = $item->contact_options ? unserialize($item['contact_options']) : array();
 
-            $address = !empty($options['contract_received']['address']) ? $options['contract_received']['address'] : $contact_options['address'];
-            $location_city = !empty($item->location_city_id) ?  ' '.$this->location_city[$item->location_city_id]['name'] : '';
-            $location_district = !empty($item->location_district_id) ? ' '.$this->location_district[$item->location_district_id]['name'] : '';
-            $location_town = !empty($item->location_town_id) ?  ' '.$this->location_town[$item->location_town_id]['name'] : '';
-            $ghtk_code = $item->unit_transport != '5sauto' ? $item->ghtk_code : $this->shippers[$item->ghtk_code]['name'];
+        $address = !empty($options['contract_received']['address']) ? $options['contract_received']['address'] : $contact_options['address'];
+        $location_city = !empty($item->location_city_id) ?  ' '.$this->location_city[$item->location_city_id]['name'] : '';
+        $location_district = !empty($item->location_district_id) ? ' '.$this->location_district[$item->location_district_id]['name'] : '';
+        $location_town = !empty($item->location_town_id) ?  ' '.$this->location_town[$item->location_town_id]['name'] : '';
+        $ghtk_code = $item->unit_transport != '5sauto' ? $item->ghtk_code : $this->shippers[$item->ghtk_code]['name'];
 
 
-            $color_price_owed       = '';
-            // Link Action
-            $linkView               = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'view')) .'\', {\'id\': \''. $id .'\'});';
-            $linkEditNote           = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-note')) .'\', {\'id\': \''. $id .'\'});';
-            $linkEditStatus         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status')) .'\', {\'id\': \''. $id .'\'});';
-            $linkConvertOrder       = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'convert-order')) .'\', {\'id\': \''. $id .'\'});';
-            $linkDelete             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'delete', 'id' => $id));
-            $linkCancel             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'cancel', 'id' => $id));
-            $linkBillAdd            = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $id .'\'});';
-            $linkContactEdit        = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $item['contact_id'] .'\'});';
+        $color_price_owed       = '';
+        // Link Action
+        $linkView               = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'view')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEditNote           = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-note')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEditStatus         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status')) .'\', {\'id\': \''. $id .'\'});';
+        $linkConvertOrder       = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'convert-order')) .'\', {\'id\': \''. $id .'\'});';
+        $linkDelete             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'delete', 'id' => $id));
+        $linkCancel             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'cancel', 'id' => $id));
+        $linkBillAdd            = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $id .'\'});';
+        $linkContactEdit        = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $item['contact_id'] .'\'});';
 //            $linkEditStatusAccount  = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status-account')) .'\', {\'id\': \''. $id .'\'});';
-            $linkEdit = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-kov', 'id' => $id));
-            $linkEditReduce         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-reduce')) .'\', {\'id\': \''. $id .'\'});';
-            $linkEditPricePaid      = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-price-paid')) .'\', {\'id\': \''. $id .'\'});';
-            $linkEditShippingFee    = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-shipping-fee')) .'\', {\'id\': \''. $id .'\'});';
-            $linkEditProduct        = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-product', 'id' => $id));
-            $linkAddHistoryContract = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add-history-contract')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEdit = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-kov', 'id' => $id));
+        $linkEditReduce         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-reduce')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEditPricePaid      = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-price-paid')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEditShippingFee    = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-shipping-fee')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEditProduct        = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-product', 'id' => $id));
+        $linkAddHistoryContract = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add-history-contract')) .'\', {\'id\': \''. $id .'\'});';
 
-            // Control Action
-            $controlView            = '<a href="javascript:;" onclick="'. $linkView .'" title="Xem chi tiết" class="btn btn-xs blue"><i class="fa fa-info"></i></a>';
-            $controlPrint           = $item->unit_transport == '5sauto' ? '<a href="/xadmin/production/print-multi/id/'.$item->id.'/" target="_blank" title="In đơn hàng" class="btn btn-xs yellow"><i class="fa fa-print"></i></a>': '';
+        // Control Action
+        $controlView            = '<a href="javascript:;" onclick="'. $linkView .'" title="Xem chi tiết" class="btn btn-xs blue"><i class="fa fa-info"></i></a>';
+        $controlPrint           = $item->unit_transport == '5sauto' ? '<a href="/xadmin/production/print-multi/id/'.$item->id.'/" target="_blank" title="In đơn hàng" class="btn btn-xs yellow"><i class="fa fa-print"></i></a>': '';
 
-            $menu_edit_contract = empty($item->ghtk_code) ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '<li><a href="'.$linkEditProduct.'"><i class="fa fa-edit"></i> Cập nhật giá bán</a></li>';
+        $menu_edit_contract = empty($item->ghtk_code) ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '<li><a href="'.$linkEditProduct.'"><i class="fa fa-edit"></i> Cập nhật giá bán</a></li>';
 //            $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
-            $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
-            $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
+        $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
+        $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
 
-            if($item->unit_transport == 'ghtk'){
-                $menu_edit_status = '';
-            }
-            else{
-                $menu_edit_status = '<li><a href="javascript:;" onclick="'. $linkEditStatus .'"><i class="fa fa-edit"></i> Sửa trạng thái giục đơn</a></li>';
-            }
+        if($item->unit_transport == 'ghtk' || $item->unit_transport == 'viettel'){
+            $menu_edit_status = '';
+        }
+        else{
+            $menu_edit_status = '<li><a href="javascript:;" onclick="'. $linkEditStatus .'"><i class="fa fa-edit"></i> Sửa trạng thái giục đơn</a></li>';
+        }
 
 //            $menu_edit_status_acountant = in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)? '<li><a href="javascript:;" onclick="'. $linkEditStatusAccount .'"><i class="fa fa-pencil-square-o"></i> Sửa trạng thái kế toán</a></li>' : '';
-            
+
 //            $controls               = $controlView;
-            $controls              = '<div class="btn-group">
+        $controls              = '<div class="btn-group">
     									<button class="btn green btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
     									   <i class="fa fa-cog"></i> <i class="fa fa-angle-down"></i>
     									</button>
     									<ul class="dropdown-menu" role="menu">
-    									    
-    										'.$menuCancel.$menu_edit_contract.$menuConver.$menu_edit_status.'
-    										<li><a href="javascript:;" onclick="'. $linkEditReduce .'"><i class="fa fa-money"></i> Giảm trừ doanh thu</a></li>
+    										'.$menu_edit_contract.$menuConver.$menu_edit_status.'
     										<li><a href="javascript:;" onclick="'. $linkEditPricePaid .'"><i class="fa fa-money"></i> Đối soát thủ công</a></li>
     										<li><a href="javascript:;" onclick="'. $linkEditShippingFee .'"><i class="fa fa-money"></i> Xác nhận Hoàn có hỗ trợ ship</a></li>
     										<li><a href="'. $linkDelete .'"><i class="fa fa-trash"></i> Xóa</a></li>
     									</ul>
                                     </div>';
-            if (!empty($options['contact_info'])) {
-                $contact_phone          = $options['contact_info']['phone'];
-                $contact_name           = $options['contact_info']['name'];
-            }
-            $controlAddHistoryContract = '<a href="javascript:;" onclick="'. $linkAddHistoryContract .'" title="Thêm lịch sử chăm sóc" class="btn btn-xs green"><i class="fa fa-volume-control-phone"></i></a>';
+        if (!empty($options['contact_info'])) {
+            $contact_phone          = $options['contact_info']['phone'];
+            $contact_name           = $options['contact_info']['name'];
+        }
+        $controlAddHistoryContract = '<a href="javascript:;" onclick="'. $linkAddHistoryContract .'" title="Thêm lịch sử chăm sóc" class="btn btn-xs green"><i class="fa fa-volume-control-phone"></i></a>';
 
 
-            $rowSpan = '';
-            $number_row = 0;
-            $countProduct = count($options['product']);
-            if ($countProduct > 0) {
-                foreach ($options['product'] as $keyp => $valuep){
-                    if(!empty($valuep['product_id'])){
-                        $number_row++;
-                        $rowSpan = 'rowspan="'.$number_row.'"';
-                    }
+        $rowSpan = '';
+        $number_row = 0;
+        $countProduct = count($options['product']);
+        if ($countProduct > 0) {
+            foreach ($options['product'] as $keyp => $valuep){
+                if(!empty($valuep['product_id'])){
+                    $number_row++;
+                    $rowSpan = 'rowspan="'.$number_row.'"';
                 }
             }
-            $color_text_row = 'style ="background-color: #9edea1"';
-            if($item->status_id == HUY_SALES){
-                $color_text_row = '';
-            }
-            if($item->returned){
-                $color_text_row = 'style ="background-color: #e29494"';
-            }
+        }
+        $color_text_row = 'style ="background-color: #9edea1"';
+        if($item->status_id == HUY_SALES){
+            $color_text_row = '';
+        }
+        if($item->returned){
+            $color_text_row = 'style ="background-color: #e29494"';
+        }
 
-            $xhtmlItems .= '<tr id="tr_'. $id .'" data-id="'. $id .'"'.$color_text_row.'>
+        $xhtmlItems .= '<tr id="tr_'. $id .'" data-id="'. $id .'"'.$color_text_row.'>
     							<th '.$rowSpan.'>'. $cid .'</th>
                                 <th '.$rowSpan.' class="controls" style="left:23px;">'.$controlView.$controlAddHistoryContract. $controls .'<br>'.$controlPrint.'</th>
     							<td '.$rowSpan.'>'. $status .'</td>
@@ -234,134 +229,154 @@
     							<td '.$rowSpan.' class="text-right">'. number_format($price_total) .'</td>
     							<td '.$rowSpan.' class="text-right">'. $fee_cod .'</td>
     							<td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>';
-            if (count($options['product']) > 0) {
-                foreach($options['product'] as $key => $item_product) {
-                    if ($key == 0 && !empty($item_product['product_id'])) {
-                        $xhtmlItems    .= '<td>' . $item_product['full_name'].'</td>
+        if (count($options['product']) > 0) {
+            foreach($options['product'] as $key => $item_product) {
+                if ($key == 0 && !empty($item_product['product_id'])) {
+                    $xhtmlItems    .= '<td>' . $item_product['full_name'].'</td>
                                             <td>' . $item_product['car_year'] . '</td>
                                             <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>';
-                    }
                 }
             }
-            else{
-                $xhtmlItems    .= '<td></td><td></td><td></td>';
-            }
-            $xhtmlItems .= '<td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
+        }
+        else{
+            $xhtmlItems    .= '<td></td><td></td><td></td>';
+        }
+        $xhtmlItems .= '<td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
                             <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
                             <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'</td>
                         </tr>';
 
-            if (count($options['product']) > 0) {
-                foreach($options['product'] as $key => $item_product) {
-                    if ($key > 0 && !empty($item_product['product_id'])) {
-                        $xhtmlItems .= '<tr ' . $color_text_row . '>
+        if (count($options['product']) > 0) {
+            foreach($options['product'] as $key => $item_product) {
+                if ($key > 0 && !empty($item_product['product_id'])) {
+                    $xhtmlItems .= '<tr ' . $color_text_row . '>
                                     <td>' . $item_product['full_name'].'</td>
                                     <td>' . $item_product['car_year'] . '</td>
                                     <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
                                     </tr>';
-                    }
                 }
             }
         }
     }
+}
 
-    $text_total = '<br><span  class="text-red">' . number_format($total_price) . '</span>';
-    $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
-    $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
+$text_total = '<br><span  class="text-red">' . number_format($total_price) . '</span>';
+$text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
+$text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
 
-    // Head
-    $xhtmlHead  = '<tr>';
-    $xhtmlHead .= '<th width="30" class="table-checkbox fix-head"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
-    $xhtmlHead .= '<th width="70" class="fix-head" style="left: 23px;">Công cụ</th>';
-    $xhtmlHead .= '<th width="180">Trạng thái</th>';
-    $xhtmlHead .= '<th width="200">Mã đơn vận chuyển</th>';
-    $xhtmlHead .= '<th width="90">Mã số đơn</th>';
-    $xhtmlHead .= '<th width="90">Mã kiotviet</th>';
-    $xhtmlHead .= '<th width="80">Ngày</th>';
-    $xhtmlHead .= '<th width="150">Nhân viên</th>';
-    $xhtmlHead .= '<th width="150">Tên khách hàng</th>';
-    $xhtmlHead .= '<th width="90">Điện thoại</th>';
-    $xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
-    $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
-    $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
-    $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu'.$text_total_discount.'</th>';
-    $xhtmlHead .= '<th width="200">Sản phẩm</th>';
-    $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
-    $xhtmlHead .= '<th width="120">Số lượng</th>';
-    $xhtmlHead .= '<th width="150">Ghi chú</th>';
-    $xhtmlHead .= '<th width="140">Người tạo</th>';
-    $xhtmlHead .= '<th width="140">Marketer</th>';
-    $xhtmlHead .= '</tr>';
-    
-    // Control
-    $arrControl = array(
+// Head
+$xhtmlHead  = '<tr>';
+$xhtmlHead .= '<th width="30" class="table-checkbox fix-head"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+$xhtmlHead .= '<th width="70" class="fix-head" style="left: 23px;">Công cụ</th>';
+$xhtmlHead .= '<th width="180">Trạng thái</th>';
+$xhtmlHead .= '<th width="200">Mã đơn vận chuyển</th>';
+$xhtmlHead .= '<th width="90">Mã số đơn</th>';
+$xhtmlHead .= '<th width="90">Mã kiotviet</th>';
+$xhtmlHead .= '<th width="80">Ngày</th>';
+$xhtmlHead .= '<th width="150">Nhân viên</th>';
+$xhtmlHead .= '<th width="150">Tên khách hàng</th>';
+$xhtmlHead .= '<th width="90">Điện thoại</th>';
+$xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
+$xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
+$xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
+$xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu'.$text_total_discount.'</th>';
+$xhtmlHead .= '<th width="200">Sản phẩm</th>';
+$xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
+$xhtmlHead .= '<th width="120">Số lượng</th>';
+$xhtmlHead .= '<th width="150">Ghi chú</th>';
+$xhtmlHead .= '<th width="140">Người tạo</th>';
+$xhtmlHead .= '<th width="140">Marketer</th>';
+$xhtmlHead .= '</tr>';
+
+$sendViettelAccount = [];
+foreach($this->viettelKeyList as $key => $value){
+    $sendViettelAccount[] = array( 'name' => 'share','link' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendViettelPost', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
+}
+$sendGhtkAccount = [];
+foreach($this->ghtkKeyList as $key => $value){
+    $sendGhtkAccount[] = array( 'name' => 'share','link' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendGhtk', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
+}
+
+// Control
+$arrControl = array(
 //        array( 'name' => 'add', 'caption' => 'Tạo đơn', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add-kov')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
-        array( 
-            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ), 
-            'children' => array(
-                array( 'name' => 'print', 'caption' => 'In đóng hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint();') ),
-                array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-check-square-o' ),
-                array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
+    array(
+        'name' => 'tool', 'caption' => 'Đẩy đơn sang Viettel Post', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
+        'children' => $sendViettelAccount,
+        'children-class' => 'dropdown-menu pull-right'
+    ),
+    array(
+        'name' => 'tool', 'caption' => 'Đẩy đơn sang GHTK', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
+        'children' => $sendGhtkAccount,
+        'children-class' => 'dropdown-menu pull-right'
+    ),
+    array(
+        'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
+        'children' => array(
+            array( 'name' => 'print', 'caption' => 'In đóng hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint();') ),
+            array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-check-square-o' ),
+            array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
 //                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport();')) ,
 //                array( 'name' => 'hidden', 'caption' => 'Khóa đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'lock\');')),
 //                array( 'name' => 'return', 'caption' => 'Xác nhận hoàn', 'link' => 'javascript:;', 'icon' => 'fa fa-arrow-left', 'attributes' => array('onclick'=>'javascript:updateItem(\'returned\', \'Bạn có muốn xác nhận hoàn các đơn hàng đã chọn\');')),
-                array(
-                    'name' => 'sendGhtk',
-                    'caption' => 'Đẩy đơn sang GHTK',
-                    'link' => 'javascript:;',
-                    'icon' => 'fa fa-paper-plane-o',
-                    'attributes' => array(
-                        'onclick' => 'javascript:updateItem(\'sendGhtk\', \'Mỗi một đơn chỉ được đẩy sang 1 lần! <br> Vui lòng kiểm tra và chắc chắn các đơn hàng đã chọn ?\');',
-                        'title' => 'Tạo đơn từ CRM Sang giao hàng tiết kiệm',
-                    ),
-                ) ,
-                array(
-                    'name' => 'updateOrderKiotviet',
-                    'caption' => 'Cập nhật số lượng sang Kiotviet',
-                    'link' => 'javascript:;',
-                    'icon' => 'fa fa-retweet',
-                    'attributes' => array(
-                        'onclick' => 'javascript:updateItem(\'updateNumberProductKov\', \'Mỗi một đơn chỉ được cập nhật sang 1 lần! <br> Vui lòng kiểm tra và chắc chắn các đơn hàng đã chọn ?\');',
-                        'title' => 'Cập nhật số lượng sang kiotviet',
-                    ),
-                ) ,
+//                array(
+//                    'name' => 'sendGhtk',
+//                    'caption' => 'Đẩy đơn sang GHTK',
+//                    'link' => 'javascript:;',
+//                    'icon' => 'fa fa-paper-plane-o',
+//                    'attributes' => array(
+//                        'onclick' => 'javascript:updateItem(\'sendGhtk\', \'Mỗi một đơn chỉ được đẩy sang 1 lần! <br> Vui lòng kiểm tra và chắc chắn các đơn hàng đã chọn ?\');',
+//                        'title' => 'Tạo đơn từ CRM Sang giao hàng tiết kiệm',
+//                    ),
+//                ) ,
+            array(
+                'name' => 'updateOrderKiotviet',
+                'caption' => 'Cập nhật số lượng sang Kiotviet',
+                'link' => 'javascript:;',
+                'icon' => 'fa fa-retweet',
+                'attributes' => array(
+                    'onclick' => 'javascript:updateItem(\'updateNumberProductKov\', \'Mỗi một đơn chỉ được cập nhật sang 1 lần! <br> Vui lòng kiểm tra và chắc chắn các đơn hàng đã chọn ?\');',
+                    'title' => 'Cập nhật số lượng sang kiotviet',
+                ),
+            ) ,
 //                array( 'name' => 'hidden', 'caption' => 'Mở khóa', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'unlock\');')),
-            ), 'children-class' => 'dropdown-menu pull-right' ),
-    );
+        ), 'children-class' => 'dropdown-menu pull-right'
+    ),
+);
 ?>
 <form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
     <div class="page-control">
-    	<div class="title pull-left">
-    		<?php echo $this->caption;?>
-    	</div>
-    	<div class="control pull-right">
-			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
-		</div>
-		<div class="clearfix"></div>
-	</div>
+        <div class="title pull-left">
+            <?php echo $this->caption;?>
+        </div>
+        <div class="control pull-right">
+            <?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+        </div>
+        <div class="clearfix"></div>
+    </div>
     <?php echo $this->flashMessenger()->render();?>
     <div class="page-filter">
-    	<div class="row">
-    		<?php echo $xhtmlFilter;?>
-    	</div>
+        <div class="row">
+            <?php echo $xhtmlFilter;?>
+        </div>
     </div>
     <div class="page-content">
-    	<div class="table-manager" id="table-manager">
-    		<div class="table-scrollable table-fixed">
-    			<table class="table table-striped table-bordered table-hover">
-    				<thead>
-    					<?php echo $xhtmlHead;?>
-    				</thead>
-    				<tbody>
-    					<?php echo $xhtmlItems;?>
-    				</tbody>
-    			</table>
-    		</div>
-    		<?php
-            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
-        	?>
-    	</div>
-	</div>
+        <div class="table-manager" id="table-manager">
+            <div class="table-scrollable table-fixed">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <?php echo $xhtmlHead;?>
+                    </thead>
+                    <tbody>
+                    <?php echo $xhtmlItems;?>
+                    </tbody>
+                </table>
+            </div>
+            <?php
+            echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options']));
+            ?>
+        </div>
+    </div>
 </form>
 <style>
     th .btn-group.open .dropdown-menu {

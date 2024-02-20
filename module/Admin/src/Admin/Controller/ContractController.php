@@ -1160,7 +1160,7 @@ class ContractController extends ActionController {
                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'convert-order'));
 
                     $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
-                    echo 'success';
+                    echo 'print';
                     return $this->response;
                 }
             }
@@ -1489,7 +1489,8 @@ class ContractController extends ActionController {
     }
     
     public function printMultiAction() {
-        $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => $this->_params['data']['cid']), array('task' => 'list-print-multi'));
+        $ids        = !empty($this->_params['data']['cid']) ? $this->_params['data']['cid'] : [$this->params('id')];
+        $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => $ids), array('task' => 'list-print-multi'));
         $items      = $items->toArray();
         $contact    = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $items['contact_id']), null);
 
@@ -2222,14 +2223,15 @@ class ContractController extends ActionController {
                             $listData_ghtk = [];
                             foreach($list_data_id as $id) {
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
-                                if (empty($contract['ghtk_code'])) {
+                                if (empty($contract['ghtk_code']) || 1==1) {
                                     $products = [];
                                     $total_weight = 0;
                                     $list_name = '';
                                     $contract['options'] = unserialize($contract['options'])['product'];
                                     foreach($contract['options'] as $key => $value){
                                         $list_name .= $value['full_name'].' - '.$value['car_year'].', ';
-                                        if($value['weight'] > 1){
+                                        $value['weight'] = (float)str_replace(',', '.', $value['weight']);
+                                        if($value['weight'] > 1 || count($contract['options']) == 1){
                                             $total_weight += $value['weight'] * 1000;
                                             $pro['PRODUCT_NAME'] = $value['full_name'].' - '.$value['car_year'];
                                             $pro['PRODUCT_WEIGHT'] = $value['weight'] * 1000;
@@ -2291,6 +2293,10 @@ class ContractController extends ActionController {
                                     $listData_ghtk[$contract['code']] = $order_item;
                                 }
                             }
+                            echo "<pre>";
+                            print_r($listData_ghtk);
+                            echo "</pre>";
+                            exit;
                             # thực hiện đẩy đơn sang vtp
                             foreach ($listData_ghtk as $key => $value){
                                 $result = $this->viettelpost('/order/createOrderNlp', $value, 'POST');
