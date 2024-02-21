@@ -2118,7 +2118,7 @@ class ContractController extends ActionController {
                                     $products[0]['name'] = $list_name;
                                     $listData_ghtk[$contract['code']]['products'] = $products;
 
-                                    $order_item['id'] = $contract['code'].'X';
+                                    $order_item['id'] = $contract['code'];
 
                                     // Thông tin khách hàng ships giao hàng
                                     $order_item['tel']       = $contract['phone'];
@@ -2223,7 +2223,7 @@ class ContractController extends ActionController {
                             $listData_ghtk = [];
                             foreach($list_data_id as $id) {
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
-                                if (empty($contract['ghtk_code']) || 1==1) {
+                                if (empty($contract['ghtk_code'])) {
                                     $products = [];
                                     $total_weight = 0;
                                     $list_name = '';
