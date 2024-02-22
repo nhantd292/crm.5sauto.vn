@@ -2102,7 +2102,7 @@ class ContractController extends ActionController {
                                     foreach($contract['options'] as $key => $value){
                                         $pname = $value['full_name'].' - '.$value['car_year'];
                                         $list_name .= $pname.', ';
-                                        if($value['weight'] > 1){
+                                        if($value['weight'] > 1 || count($contract['options']) == 1){
                                             $pro['name'] = $pname;
                                             $pro['weight'] = $value['weight'];
                                             $pro['quantity'] = $value['numbers'];
