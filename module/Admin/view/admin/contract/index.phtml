@@ -10,7 +10,7 @@
     if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_array('sale_contract', $encode_phone)) {
         $phone_code = false;
     }
-
+    $myForm->get('filter_action')->setValue($this->params['action']);
     if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
         $elements = array(
             array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -33,6 +33,7 @@
             array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_action')),
             array('element' => $myForm->get('order')),
             array('element' => $myForm->get('order_by')),
         );
@@ -56,6 +57,7 @@
             array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_action')),
             array('element' => $myForm->get('order')),
             array('element' => $myForm->get('order_by')),
         );
@@ -370,7 +372,7 @@
     			</table>
     		</div>
     		<?php
-            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => $this->params['action'])), 'options' => $this->params['paginator']['options']));
         	?>
     	</div>
 	</div>
