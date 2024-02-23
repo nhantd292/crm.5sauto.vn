@@ -1492,6 +1492,11 @@ class ContractController extends ActionController {
         $ids        = !empty($this->_params['data']['cid']) ? $this->_params['data']['cid'] : [$this->params('id')];
         $items      = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ids' => $ids), array('task' => 'list-print-multi'));
         $items      = $items->toArray();
+        foreach($items as $itm){
+            $dt['data']['id'] = $itm['id'];
+            $dt['data']['status_id'] = DANG_DONG_GOI;
+            $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem($dt, array('task' => 'update-status'));
+        }
         $contact    = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $items['contact_id']), null);
 
         if(empty($items)) {
