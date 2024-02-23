@@ -160,6 +160,10 @@ class ContactController extends ActionController
 
         $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
 
+        $fdata['ssFilter']['filter_active'] = 'unactive';
+        $fdata['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
+        $this->_viewModel['count_form_data']     = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->countItem($fdata, array('task' => 'list-item'));
+
         $this->_viewModel['myForm']              = $myForm;
         $this->_viewModel['items']               = $items;
         $this->_viewModel['count']               = $this->getTable()->countItem($this->_params, array('task' => 'list-item'));
@@ -671,6 +675,49 @@ class ContactController extends ActionController
         exit;
 
         return $this->response;
+    }
+
+    public function receiveAction() {
+        $myForm = new \Admin\Form\Contact\Receive($this->getServiceLocator(), $this->_params);
+
+        if($this->getRequest()->isPost()){
+            if($this->_params['data']['modal'] == 'success') {
+                $myForm->setInputFilter(new \Admin\Filter\Contact\Receive($this->_params));
+                $myForm->setData($this->_params['data']);
+
+                if($myForm->isValid()){
+                    $curent_user = $this->_userInfo->getUserInfo();
+                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+                    $fdata['ssFilter']['filter_active'] = 'unactive';
+                    $fdata['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
+                    $fdata['paginator']['itemCountPerPage'] = (int)$this->_params['data']['number_data'];
+                    $fdata['paginator']['currentPageNumber'] = 1;
+                    $datas     = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->ListItem($fdata, array('task' => 'list-item'));
+                    foreach ($datas as $item_data) {
+                        $items[] = array(
+                            'id' => $item_data['id']
+                        );
+                    }
+                    $this->_params['data']['items'] = $items;
+                    $this->_params['data']['user_id'] = [$curent_user['id']];
+                    $result = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->shareData($this->_params);
+
+                    $this->flashMessenger()->addMessage('Nhận data thành công');
+                    echo 'success';
+                    return $this->response;
+                }
+            } else {
+                $myForm->setData($this->_params['data']);
+            }
+        }
+
+        $this->_viewModel['myForm']     = $myForm;
+        $this->_viewModel['caption']    = 'Thêm tiền hỗ trợ ship';
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
     }
 }
 

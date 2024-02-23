@@ -156,6 +156,7 @@
     
     // Control
     $arrControl = array(
+        array( 'name' => 'share','link' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'receive')) .'\');', 'caption' => 'Nhận data( có '.$this->count_form_data.' data mới)', 'icon' => 'fa-braille', 'attributes' => array( 'onclick' => '', 'class' => 'btn',  ) ),
         array( 'name' => 'add', 'caption' => 'Thêm liên hệ', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
 //        array(
 //            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ),

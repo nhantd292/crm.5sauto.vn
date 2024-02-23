@@ -154,6 +154,10 @@ class ContactDataController extends ActionController{
                     );
                 }
                 $this->_params['data']['items'] = $items;
+                echo "<pre>";
+                print_r($this->_params);
+                echo "</pre>";
+                exit;
 
                 if(!empty($this->_params['data']['user_id']) && !empty($this->_params['data']['items'])){
                     $result = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->shareData($this->_params);
