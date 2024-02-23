@@ -48,7 +48,7 @@ class ContractController extends ActionController {
         
         // Lấy dữ liệu post của form
         $this->_params['data'] = array_merge($this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray());
-        
+
         // Truyển dữ dữ liệu ra ngoài view
         $this->_viewModel['params'] = $this->_params;
         $this->_viewModel['curent_user']  = $this->_userInfo->getUserInfo();
