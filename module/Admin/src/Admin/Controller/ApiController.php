@@ -862,7 +862,7 @@ class ApiController extends ActionController {
                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
 
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
-                        if($data['ORDER_STATUS'] == 105){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
+                        if($data['ORDER_STATUS'] == 105 || $data['ORDER_STATUS'] == 103){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
                             $this->updateNumberKiotviet($contract_item);
                         }
                         $response->setStatusCode(Response::STATUS_CODE_200);
