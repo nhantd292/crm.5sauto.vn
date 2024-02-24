@@ -162,6 +162,7 @@ class ContactController extends ActionController
 
         $fdata['ssFilter']['filter_active'] = 'unactive';
         $fdata['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
+        $fdata['ssFilter']['filter_cancel_share'] = 0;
         $this->_viewModel['count_form_data']     = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->countItem($fdata, array('task' => 'list-item'));
 
         $this->_viewModel['myForm']              = $myForm;
@@ -690,6 +691,7 @@ class ContactController extends ActionController
                     $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
                     $fdata['ssFilter']['filter_active'] = 'unactive';
                     $fdata['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
+                    $fdata['ssFilter']['filter_cancel_share'] = 0;
                     $fdata['paginator']['itemCountPerPage'] = (int)$this->_params['data']['number_data'];
                     $fdata['paginator']['currentPageNumber'] = 1;
                     $datas     = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->ListItem($fdata, array('task' => 'list-item'));
