@@ -162,7 +162,7 @@ class FormDataTable extends DefaultTable {
                     }
                 }
 
-                if(isset($ssFilter['filter_cancel_share']) &&  $ssFilter['filter_cancel_share'] != '') {
+                if(isset($ssFilter['filter_cancel_share']) &&  (string)$ssFilter['filter_cancel_share'] != '') {
                     if($ssFilter['filter_cancel_share'] != 0){
                         $select -> where ->equalTo(TABLE_FORM_DATA .'.cancel_share', $ssFilter['filter_cancel_share']);
                     }
@@ -402,7 +402,7 @@ class FormDataTable extends DefaultTable {
                     }
                 }
 
-                if(isset($ssFilter['filter_cancel_share']) &&  $ssFilter['filter_cancel_share'] != '') {
+                if(isset($ssFilter['filter_cancel_share']) &&  (string)$ssFilter['filter_cancel_share'] != '') {
                     if($ssFilter['filter_cancel_share'] != 0){
                         $select -> where ->equalTo(TABLE_FORM_DATA .'.cancel_share', $ssFilter['filter_cancel_share']);
                     }
