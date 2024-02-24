@@ -2088,7 +2088,7 @@ class ContractController extends ActionController {
                             $listData_ghtk = [];
                             foreach($ids as $id){
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
-                                if($contract['status_id'] == DA_CHOT && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
+                                if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
                                     $contract['options'] = unserialize($contract['options'])['product'];
 
                                     $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
