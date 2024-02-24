@@ -8,6 +8,7 @@
             <tr>
                 <th>STT</th>
                 <th>Mã đơn hàng</th>
+                <th>Mã SP</th>
                 <th>Sản phẩm</th>
                 <th>Số lượng</th>
                 <th>Tên xe - Năm sản xuất</th>
@@ -26,6 +27,7 @@
                 $product_html = '';
                 $i = 0;
                 foreach ($products as $key => $value) {
+                    $product_code = $value['code'];
                     $product_name = $value['full_name'];
                     $product_number = $value['numbers'];
                     $driver = $value['car_year'];
@@ -34,6 +36,7 @@
                         $product_html .= '<tr>
                                             <td class="text-center" rowspan="'.count($products).'">' . $idx++ . '</td>
                                             <td rowspan="'.count($products).'">' . $code . '</td>
+                                            <td>' . $product_code . '</td>
                                             <td>' . $product_name . '</td>
                                             <td class="text-center">' . $product_number . '</td>
                                             <td>' . $driver . '</td>
@@ -43,6 +46,7 @@
                     }
                     else{
                         $product_html .= '<tr>
+                                            <td>' . $product_code . '</td>
                                             <td>' . $product_name . '</td>
                                             <td class="text-center">' . $product_number . '</td>
                                             <td>' . $driver . '</td>
