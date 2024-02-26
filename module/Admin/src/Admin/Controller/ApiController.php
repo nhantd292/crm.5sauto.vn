@@ -773,9 +773,9 @@ class ApiController extends ActionController {
                     $code = $data['partner_id'];
                     $ghtk_code = $data['label_id'];
 
-                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
+                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('ghtk_code' => $ghtk_code),  array('task' => 'ghtk-code'));
                     if(empty($contract_item)){
-                        $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('ghtk_code' => $ghtk_code),  array('task' => 'ghtk-code'));
+                        $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
                     }
                     if(!empty($contract_item)){
                         $arrParam['id']             = $contract_item['id'];
@@ -851,8 +851,12 @@ class ApiController extends ActionController {
                     $data = $data_post['DATA'];
 //                    $this->postJson(file_get_contents('php://input'));
                     $code = $data['ORDER_REFERENCE'];
+                    $ghtk_code = $data['ORDER_NUMBER'];
 
-                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
+                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('ghtk_code' => $ghtk_code),  array('task' => 'ghtk-code'));
+                    if(empty($contract_item)){
+                        $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
+                    }
                     if(!empty($contract_item)){
                         $arrParam['id']             = $contract_item['id'];
                         $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
