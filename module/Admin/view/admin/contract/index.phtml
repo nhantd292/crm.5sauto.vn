@@ -164,7 +164,7 @@
             $controlView            = '<a href="javascript:;" onclick="'. $linkView .'" title="Xem chi tiết" class="btn btn-xs blue"><i class="fa fa-info"></i></a>';
             $controlPrint           = $item->unit_transport == '5sauto' ? '<a href="/xadmin/production/print-multi/id/'.$item->id.'/" target="_blank" title="In đơn hàng" class="btn btn-xs yellow"><i class="fa fa-print"></i></a>': '';
 
-            $menu_edit_contract = empty($item->ghtk_code) ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '';
+            $menu_edit_contract = empty($item->ghtk_code) && $item->status_id != DANG_DONG_GOI ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '';
 //            $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
             $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
             $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';

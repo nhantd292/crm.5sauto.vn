@@ -453,7 +453,7 @@ class ContractController extends ActionController {
         $permission_ids = explode(',', $curent_user['permission_ids']);
 
 //        if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !empty($contract['send_ghtk'])){
-        if(!empty($contract['ghtk_code'])){
+        if(!empty($contract['ghtk_code']) || $contract['status_id'] == DANG_DONG_GOI){
             return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'not-found'));
         }
 
