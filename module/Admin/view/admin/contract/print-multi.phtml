@@ -28,7 +28,7 @@
                 $product_html = '';
                 $i = 0;
                 foreach ($products as $key => $value) {
-                    $return = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products/'.$value['product_id']);
+                    $return = $this->ctl->kiotviet_call(RETAILER, $this->ctl->kiotviet_token, '/products/'.$value['product_id']);
                     $kovProduct = json_decode($return,true);
 
 
