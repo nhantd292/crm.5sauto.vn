@@ -2257,7 +2257,7 @@ class ContractController extends ActionController {
                                     }
 
                                     $order_item['RECEIVER_FULLNAME'] = $contract['name'];
-                                    $order_item['RECEIVER_ADDRESS'] = $locations[$contract['location_town_id']]->fullname.', '.$locations[$contract['location_district_id']]->fullname.', '.$locations[$contract['location_city_id']]->fullname;
+                                    $order_item['RECEIVER_ADDRESS'] = $contract['address'].', '.$locations[$contract['location_town_id']]->fullname.', '.$locations[$contract['location_district_id']]->fullname.', '.$locations[$contract['location_city_id']]->fullname;
                                     $order_item['RECEIVER_PHONE'] = $contract['phone'];
 
                                     # Tính dịch vụ vận chuyển phù hợp
