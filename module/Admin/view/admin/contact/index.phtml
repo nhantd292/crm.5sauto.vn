@@ -158,20 +158,20 @@
     $arrControl = array(
         array( 'name' => 'share','link' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'receive')) .'\');', 'caption' => 'Nhận data( có '.$this->count_form_data.' data mới)', 'icon' => 'fa-braille', 'attributes' => array( 'onclick' => '', 'class' => 'btn',  ) ),
         array( 'name' => 'add', 'caption' => 'Thêm liên hệ', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn', ) ),
-//        array(
-//            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ),
-//            'children' => array(
-////                array( 'name' => 'transfer', 'caption' => 'Chuyển quyền quản lý', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:contactChangeUser();') ),
-////                array( 'name' => 'divider' ),
-////                array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');' ) ),
-////                array( 'name' => 'divider' ),
-////                array( 'name' => 'check', 'caption' => 'Check data', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'check-info')), 'icon' => 'fa-database' ),
-////                array( 'name' => 'divider' ),
-////                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o', ),
-////                array( 'name' => 'import', 'caption' => 'Import dữ liệu', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-upload' ),
-//            ),
-//            'children-class' => 'dropdown-menu pull-right'
-//        ),
+        array(
+            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ),
+            'children' => array(
+                array( 'name' => 'transfer', 'caption' => 'Chuyển quyền quản lý', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:contactChangeUser();') ),
+//                array( 'name' => 'divider' ),
+//                array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');' ) ),
+//                array( 'name' => 'divider' ),
+//                array( 'name' => 'check', 'caption' => 'Check data', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'check-info')), 'icon' => 'fa-database' ),
+//                array( 'name' => 'divider' ),
+//                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'export')), 'icon' => 'fa-file-excel-o', ),
+//                array( 'name' => 'import', 'caption' => 'Import dữ liệu', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-upload' ),
+            ),
+            'children-class' => 'dropdown-menu pull-right'
+        ),
     );
 ?>
 <form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
