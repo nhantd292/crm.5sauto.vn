@@ -143,8 +143,8 @@ class Contract extends Form{
 		    )
 		));
 
-        $user_care	= \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'care'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'));
-        $user_sales	= \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'sales'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'));
+        $user_care	= \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'care', 'sale_branch_id' => $ssFilter['filter_sale_branch']), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'));
+        $user_sales	= \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'sales', 'sale_branch_id' => $ssFilter['filter_sale_branch']), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'));
         $user_data = array_merge($user_sales, $user_care);
 
 		$this->add(array(

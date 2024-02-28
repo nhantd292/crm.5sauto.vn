@@ -379,7 +379,13 @@ class FormDataTable extends DefaultTable {
                         -> offset(($paginator['currentPageNumber'] - 1) * $paginator['itemCountPerPage']);
                 }
 
-                $select ->ORder('phone asc , date desc');
+
+                if(!empty($ssFilter['order_by']) && !empty($ssFilter['order'])) {
+                    $select ->ORder(array($ssFilter['order_by'] => strtoupper($ssFilter['order'])));
+                }
+                else{
+                    $select ->ORder('phone asc , date desc');
+                }
 
                 $select -> join(TABLE_USER, TABLE_USER .'.id = '. TABLE_FORM_DATA .'.marketer_id',
                     array(
@@ -901,7 +907,17 @@ class FormDataTable extends DefaultTable {
 	
 	public function deleteItem($arrParam = null, $options = null){
 	    if($options['task'] == 'delete-item') {
-	        $result = $this->defaultDelete($arrParam, null);
+//	        $result = $this->defaultDelete($arrParam, null);
+
+            $arrData  = $arrParam['data'];
+
+            $where = new Where();
+            $where->in('id', $arrData['cid']);
+            $where->isNull('sales_id');
+            $where->or->equalTo('sales_id', '');
+            $result = $this->tableGateway->delete($where);
+
+//            $result = count($arrData['cid']);
 	    }
 	
 	    return $result;
@@ -911,8 +927,6 @@ class FormDataTable extends DefaultTable {
 	    if($options['task'] == 'change-status') {
 	        $result = $this->defaultStatus($arrParam, null);
 	    }
-	     
-	    return $result;
 	}
 	
 	public function changeOrdering($arrParam = null, $options = null){

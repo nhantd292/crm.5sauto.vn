@@ -134,10 +134,10 @@ class ContractController extends ActionController {
         }
 
         // Lấy danh mục sản phẩm cho vào bộ lọc
-//        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
-//        $categories = json_decode($categories, true)['data'];
-//        $categories = $this->getNameCat($this->addNew($categories), $result);
-//        $this->_params['categories'] = $categories;
+        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
+        $categories = json_decode($categories, true)['data'];
+        $categories = $this->getNameCat($this->addNew($categories), $result);
+        $this->_params['categories'] = $categories;
 
         // Lấy danh sách sản phẩm đưa vào bộ lọc
         $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
@@ -452,9 +452,10 @@ class ContractController extends ActionController {
         $curent_user = $this->_userInfo->getUserInfo();
         $permission_ids = explode(',', $curent_user['permission_ids']);
 
-//        if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !empty($contract['send_ghtk'])){
-        if(!empty($contract['ghtk_code']) || $contract['status_id'] == DANG_DONG_GOI){
-            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'not-found'));
+        if(!in_array(SYSTEM, $permission_ids)) {
+            if (!empty($contract['ghtk_code']) || $contract['status_id'] == DANG_DONG_GOI) {
+                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'not-found'));
+            }
         }
 
         if($this->getRequest()->isPost()){
@@ -2279,7 +2280,7 @@ class ContractController extends ActionController {
                                             $order_service = $ser['MA_DV_CHINH'];
                                         }
                                     }
-                                    
+
                                     $order_item["PRODUCT_NAME"] = $list_name;
                                     $order_item["PRODUCT_DESCRIPTION"] = $contract['sale_note'];
                                     $order_item["PRODUCT_QUANTITY"] = $contract['total_number_product'];

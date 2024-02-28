@@ -131,6 +131,11 @@ class MarketingReport extends Form{
 		));
 
         // Nhân viên marketing
+        $data_filter = array(
+            'company_department_id' => 'marketing',
+            'sale_branch_id' => $params['filter_sale_branch'],
+            'sale_group_id' => $params['filter_sale_group'],
+        );
         $this->add(array(
             'name'			=> 'filter_marketer_id',
             'type'			=> 'Select',
@@ -139,7 +144,7 @@ class MarketingReport extends Form{
             ),
             'options'		=> array(
                 'empty_option'	=> '- Nhân viên marketing -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'marketing'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem($data_filter, array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
             )
         ));
 		

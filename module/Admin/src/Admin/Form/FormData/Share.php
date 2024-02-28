@@ -4,8 +4,13 @@ use \Zend\Form\Form as Form;
 
 class Share extends Form {
 	
-	public function __construct($sm){
+	public function __construct($sm, $params){
 		parent::__construct();
+		$permission_ids = $params['permission_ids'];
+
+        if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
+            $condition['id'] = $params['branch'];
+        }
 		
 		// FORM Attribute
 		$this->setAttributes(array(
@@ -48,7 +53,7 @@ class Share extends Form {
 		$this->add(array(
 			'name'			=> 'list_data_id',
 			'type'			=> 'Hidden',
-			'required'		=> fakse,
+			'required'		=> false,
 		));
 
 		// Hiển thị level nhân viên
@@ -87,6 +92,7 @@ class Share extends Form {
 		));
 
         // Cơ sở kinh doanh
+        $condition['code'] = 'sale-branch';
         $this->add(array(
             'name'			=> 'sale_branch_id',
             'type'			=> 'Select',
@@ -96,7 +102,7 @@ class Share extends Form {
             'options'		=> array(
                 'empty_option'	=> '- Chọn -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => $condition), array('task' => 'list-all')), array('key' => 'id', 'value' => 'name')),
             ),
         ));
 

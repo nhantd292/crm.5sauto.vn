@@ -782,17 +782,18 @@ class FormDataController extends ActionController{
                 // Cập nhật lại số điện thoại về trong ngày trong báo cáo mkt theo giờ
                 foreach ($this->_params['data']['cid'] as $key => $value){
                     $item = $this->getTable()->getItem(array('id' => $value, null));
-                    $item_data['data']['marketer_id'] = $item['marketer_id'];
-                    $item_data['data']['date'] = $item['date'];
+                    if(empty($item['sales_id'])){
+                        $item_data['data']['marketer_id'] = $item['marketer_id'];
+                        $item_data['data']['date'] = $item['date'];
 
-                    $data_update[$key]['marketer_id'] = $item['marketer_id'];
-                    $data_update[$key]['date'] =  substr($item['date'], 0, 10);
-
+                        $data_update[$key]['marketer_id'] = $item['marketer_id'];
+                        $data_update[$key]['date'] =  substr($item['date'], 0, 10);
+                    }
                     $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem($item_data, array('task' => 'update-number-phone-2'));
                 }
 
                 // Xóa data đã chọn
-                $this->getTable()->deleteItem($this->_params, array('task' => 'delete-item'));
+                $cdata = $this->getTable()->deleteItem($this->_params, array('task' => 'delete-item'));
 
                 // Khi xóa data cần cập nhật lại chi phí mkt cho các data khác về cùng ngày
                 foreach ($data_update as $key => $value){
@@ -815,7 +816,7 @@ class FormDataController extends ActionController{
                     }
                 }
 
-                $message = 'Xóa '. count($this->_params['data']['cid']) .' phần tử thành công';
+                $message = 'Xóa '. $cdata .' phần tử thành công';
                 $this->flashMessenger()->addMessage($message);
             }
         }

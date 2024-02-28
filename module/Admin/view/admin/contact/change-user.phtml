@@ -47,13 +47,18 @@ $('select[name="sale_branch_id"]').change(function() {
     var parent = $(select).parent();
     $('.select2-container', parent).select2('val', '');
     $(select).attr('data-parent', $(this).val());
-});
 
-// Sự kiện thay đổi đội nhóm
-$('input[name="sale_group_id"]').change(function() {
     var select = 'input[name="user_id"]';
     var parent = $(select).parent();
     $('.select2-container', parent).select2('val', '');
     $(select).attr('data-parent', $(this).val());
 });
+
+// Sự kiện thay đổi đội nhóm
+//$('input[name="sale_group_id"]').change(function() {
+//    var select = 'input[name="user_id"]';
+//    var parent = $(select).parent();
+//    $('.select2-container', parent).select2('val', '');
+//    $(select).attr('data-parent', $(this).val());
+//});
 <?php $this->headScript()->captureEnd() ?>

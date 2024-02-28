@@ -27,9 +27,9 @@
             array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-//            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -51,8 +51,8 @@
             array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-//            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -71,7 +71,7 @@
     if($this->items->count() > 0) {
         $stt = 0;
         $sum = 0;
-        $total_price = $total_cod = $total_discount = 0;
+        $total_price = $total_cod = $total_discount =  $total_price_owed = 0;
         $manager_edit = false;
         if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
             $manager_edit = true;
@@ -101,6 +101,7 @@
             $price_paid             = $item->price_paid;
             $price_accrued          = $item->price_accrued;
             $price_owed             = $item->price_owed;
+            $total_price_owed      += $item->price_owed;
             $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
             $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
             $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
@@ -165,7 +166,10 @@
             $controlPrint           = $item->unit_transport == '5sauto' ? '<a href="/xadmin/production/print-multi/id/'.$item->id.'/" target="_blank" title="In đơn hàng" class="btn btn-xs yellow"><i class="fa fa-print"></i></a>': '';
 
             $menu_edit_contract = empty($item->ghtk_code) && $item->status_id != DANG_DONG_GOI ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '';
-//            $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
+            if(in_array(SYSTEM, $permission_ids)){
+                $menu_edit_contract = '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>';
+            }
+            //            $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
             $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
             $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
 
@@ -227,7 +231,8 @@
     							<td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
     							<td '.$rowSpan.' class="text-right">'. number_format($price_total) .'</td>
     							<td '.$rowSpan.' class="text-right">'. $fee_cod .'</td>
-    							<td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>';
+    							<td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>
+    							<td '.$rowSpan.' class="text-right">'. number_format($price_owed) .'</td>';
             if (count($options['product']) > 0) {
                 foreach($options['product'] as $key => $item_product) {
                     if ($key == 0 && !empty($item_product['product_id'])) {
@@ -262,6 +267,7 @@
     $text_total = '<br><span  class="text-red">' . number_format($total_price) . '</span>';
     $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
     $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
+    $text_total_price_owed = '<br><span  class="text-red">' . number_format($total_price_owed) . '</span>';
 
     // Head
     $xhtmlHead  = '<tr>';
@@ -279,6 +285,7 @@
     $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
     $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
     $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu'.$text_total_discount.'</th>';
+    $xhtmlHead .= '<th width="80" class="text-right">Công nợ'.$text_total_price_owed.'</th>';
     $xhtmlHead .= '<th width="200">Sản phẩm</th>';
     $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
     $xhtmlHead .= '<th width="120">Số lượng</th>';
@@ -342,6 +349,10 @@
             ), 'children-class' => 'dropdown-menu pull-right'
         ),
     );
+
+    if(in_array(GDCN, $permission_ids)){
+        $arrControl = [];
+    }
 ?>
 <form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
     <div class="page-control">

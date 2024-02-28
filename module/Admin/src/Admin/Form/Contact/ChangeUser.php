@@ -9,10 +9,6 @@ class ChangeUser extends Form {
 		
 		$userInfo = new \ZendX\System\UserInfo();
 		$userInfo = $userInfo->getUserInfo();
-
-//		echo '<pre>';
-//		print_r($params);
-//		echo '</pre>';
 		
 		// FORM Attribute
 		$this->setAttributes(array(
@@ -33,7 +29,7 @@ class ChangeUser extends Form {
             'options'		=> array(
                 'empty_option'	=> '- Chọn -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch', 'id' => $params['sale_branch_id'])), array('task' => 'list-all')), array('key' => 'id', 'value' => 'name')),
             ),
         ));
 
@@ -64,7 +60,8 @@ class ChangeUser extends Form {
                 'data-id'             => 'id',
                 'data-text'           => 'name,code',
                 'data-parent'         => '',
-                'data-parent-field'   => 'sale_group_id',
+//                'data-parent-field'   => 'sale_group_id',
+                'data-parent-field'   => 'sale_branch_id',
             ),
         ));
 

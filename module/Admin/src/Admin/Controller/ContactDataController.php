@@ -124,7 +124,9 @@ class ContactDataController extends ActionController{
     public function shareAction() {
         $ssFilter = new Container(__CLASS__);
         $users    = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-sale'));
-        $myForm   = new \Admin\Form\FormData\Share($this->getServiceLocator());
+        $curent_user = $this->_userInfo->getUserInfo();
+        $permission_ids = explode(',', $curent_user['permission_ids']);
+        $myForm   = new \Admin\Form\FormData\Share($this->getServiceLocator(), ['permission_ids' => $permission_ids, 'branch' => $curent_user['sale_branch_id']]);
 
         $this->_viewModel['myForm']         = $myForm;
         $this->_viewModel['caption']        = 'Phân chia data';
