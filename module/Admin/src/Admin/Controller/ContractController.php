@@ -1504,6 +1504,7 @@ class ContractController extends ActionController {
         }
     
         $this->_viewModel['ctl']                        = $this;
+        $this->_viewModel['kovToken']                   = $this->kiotviet_token;
         $this->_viewModel['items']                      = $items;
         $this->_viewModel['contact']                    = $contact;
         $this->_viewModel['user']                       = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
