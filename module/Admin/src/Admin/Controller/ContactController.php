@@ -172,6 +172,7 @@ class ContactController extends ActionController
         $this->_viewModel['sale_group']          = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
         $this->_viewModel['sale_branch']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
         $this->_viewModel['userInfo']            = $this->_userInfo->getUserInfo();
+        $this->_viewModel['product_group']      = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'product-group')), array('task' => 'cache'));
 
 
         $this->_viewModel['locations']         = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
