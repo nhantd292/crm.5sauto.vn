@@ -132,6 +132,7 @@
     							<td>'. $created .'</td>
     							<td>'. $name .'</td>
     							<td><a href="'. $linkEdit .'">'.  $phone .'</a></td>
+    							<td>'. $product_group .'</td>
     							<td class="text-right mask_currency text-green">'. $this->items_sales[$id]->sum_total_price .'</td>
     							<td class="text-right mask_currency text-green">'. $sales_expected .'</td>
     							<td class="text-red">'. $coincide .'</td>
@@ -155,6 +156,7 @@
     $xhtmlHead .= $this->linkAdminSort('Ngày ra data', 'date', $this->params['ssFilter'], array('width' => '150'));
     $xhtmlHead .= '<th width="160">Họ tên</th>';
     $xhtmlHead .= '<th width="100">Điện thoại</th>';
+    $xhtmlHead .= '<th width="150">Sản phẩm quan tâm</th>';
     $xhtmlHead .= '<th width="150">Doanh thu<br>Tổng:<span class="mask_currency text-red">'.$total_sales.'</span></th>';
     $xhtmlHead .= '<th width="150">Doanh số tạm tính<br>Tổng:<span class="mask_currency text-red">'.$total_sales_expected.'</span></th>';
     $xhtmlHead .= '<th width="160">Dữ liệu</th>';
