@@ -89,14 +89,14 @@ class User extends Form {
 		    ),
 		));
 
-        $permission_list  = $sm->getServiceLocator()->get('Admin\Model\PermissionTable')->listItem(null, array('task' => 'cache'));
-        foreach ($permission_list as $item) {
-            $option_per_list[] = array(
-                'attributes'   => array("onclick" => "checked(this)"),
-                'value'        => $item['code'],
-                'label'        => $item['name']
-            );
-        }
+//        $permission_list  = $sm->getServiceLocator()->get('Admin\Model\PermissionTable')->listItem(null, array('task' => 'cache'));
+//        foreach ($permission_list as $item) {
+//            $option_per_list[] = array(
+//                'attributes'   => array("onclick" => "checked(this)"),
+//                'value'        => $item['code'],
+//                'label'        => $item['name']
+//            );
+//        }
 		
 		// Nhóm quyền truy cập
 		$this->add(array(
@@ -106,7 +106,7 @@ class User extends Form {
 		        'label_attributes' => array(
 		            'class'		=> 'checkbox-inline',
 		        ),
-		        'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\PermissionTable')->listItem(null, array('task' => 'cache')), array('key' => 'code', 'value' => 'name')),
+		        'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\PermissionTable')->listItem(null, array('task' => 'list-add-user')), array('key' => 'code', 'value' => 'name')),
 //		        'value_options'	=> $option_per_list,
 		    ),
 		));

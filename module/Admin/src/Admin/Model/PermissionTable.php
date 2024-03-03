@@ -71,6 +71,19 @@ class PermissionTable extends AbstractTableGateway implements ServiceLocatorAwar
 				
 			});
 		}
+
+        if($options['task'] == 'list-add-user') {
+            $result	= $this->tableGateway->select(function (Select $select) use ($arrParam){
+
+                $select -> order(array('ordering' => 'ASC', 'name' => 'ASC'));
+                $select -> where -> equalTo('status', 1);
+                $curent_user = $this->userInfo->getUserInfo();
+                $permission_ids = explode(',', $curent_user['permission_ids']);
+                if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
+                    $select -> where -> notIn('code', [SYSTEM,ADMIN]);
+                }
+            });
+        }
 	    
 		if($options['task'] == 'multi-id') {
 			$result	= $this->tableGateway->select(function (Select $select) use ($arrParam){
