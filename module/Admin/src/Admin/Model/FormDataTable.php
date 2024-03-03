@@ -355,9 +355,9 @@ class FormDataTable extends DefaultTable {
 
 				$select -> where -> isNotNull(TABLE_FORM_DATA.'.sales_id');
 				$select -> where -> NEST
-								 -> EqualTo(TABLE_CONTRACT.'.production_department_type', STATUS_CONTRACT_PRODUCT_PRODUCTED)
+								 -> EqualTo(TABLE_CONTRACT.'.status_id', DANG_DONG_GOI)
 								 ->OR
-								 -> EqualTo(TABLE_CONTRACT.'.production_department_type', STATUS_CONTRACT_PRODUCT_POST)
+								 -> EqualTo(TABLE_CONTRACT.'.status_id', DANG_DONG_GOI)
 								 -> UNNEST;
 				$select->group(TABLE_FORM_DATA.'.id');
 			});

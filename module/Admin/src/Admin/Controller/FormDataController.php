@@ -106,7 +106,7 @@ class FormDataController extends ActionController{
         $myForm->setData($this->_params['ssFilter']);
 
         // Danh sách những data đã có doanh thu
-//        $items_sales = $this->getTable()->listItem($this->_params, array('task' => 'list-data-sales'));
+        $items_sales = $this->getTable()->listItem($this->_params, array('task' => 'list-data-sales'));
 
         // Danh sách data
         $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
