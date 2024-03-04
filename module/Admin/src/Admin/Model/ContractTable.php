@@ -835,7 +835,7 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_product_id'])) {
                     $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$ssFilter['filter_product_id'].'%');
                 }
-                $select -> where -> equalTo(TABLE_CONTRACT .'.status_id', 'da-cho');
+                $select -> where -> equalTo(TABLE_CONTRACT .'.status_id', 'da-chot');
             });
         }
 
