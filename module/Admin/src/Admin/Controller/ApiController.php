@@ -767,7 +767,7 @@ class ApiController extends ActionController {
             if($this->getRequest()->isPost()){
                 $hass = $this->getRequest()->getQuery('hash');
                 if($hass == HASS){
-                    $this->postJson(file_get_contents('php://input'));
+//                    $this->postJson(file_get_contents('php://input'));
                     $data = json_decode(file_get_contents('php://input'), true);
                     $code = $data['partner_id'];
                     $ghtk_code = $data['label_id'];
@@ -1024,7 +1024,6 @@ class ApiController extends ActionController {
         $data_post =  json_decode(file_get_contents('php://input'), true);
 
         $notifications = $data_post['Notifications'];
-        $product_type_contract =  \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name'));
         foreach($notifications as $notifi){
             foreach($notifi['Data'] as $item_get){
                 // Cập nhật sản phẩm.
@@ -1047,57 +1046,45 @@ class ApiController extends ActionController {
                 if($pid){
                     echo 'Cập nhật sản phẩm thành công! ';
                 }
+                $sale_branchs = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'list-all'));
 
                 // Cập nhật kho hàng.
                 if(isset($item_get['Inventories'])){
-                    foreach($item_get['Inventories'] as $key => $inven){
+                    foreach($sale_branchs as $key => $banch){
                         $data_inven = array(
-                            'branchId'          => $inven['BranchId'],
-                            'productId'         => $inven['ProductId'],
-                            'branchName'        => $inven['BranchName'],
-                            'cost'              => $inven['Cost'],
-                            'onHand'            => $inven['OnHand'],
-                            'reserved'          => $inven['Reserved'],
+                            'branchId'          => $banch->id,
+                            'productId'         => $item_get['Inventories'][0]['ProductId'],
+                            'branchName'        => $item_get['Inventories'][0]['BranchName'],
+                            'cost'              => $item_get['Inventories'][0]['Cost'],
+                            'onHand'            => $item_get['Inventories'][0]['OnHand'],
+                            'reserved'          => $item_get['Inventories'][0]['Reserved'],
                         );
-                        if(in_array($inven['BranchId'], [13083, 3134])){
-                            $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $inven['ProductId'], 'branchId' => $inven['BranchId']));
-                            if($item_inven){
-                                $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $data_inven), array('task' => 'update'));
-                                if($data_inven['cost'] != $item_inven['cost']){
-                                    $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ssFilter' => array('filter_branch_kov' => $item_inven['branchId'], 'filter_product_id' => $item_inven['productId'])), array('task' => 'list-item-update-cost',));
-                                    if(!empty($contracts)){
-                                        foreach($contracts as $key => $contract){
-                                            $options = unserialize($contract->options);
-                                            $products = $options['product'];
-                                            foreach($products as $key => $pro){
-                                                if($pro['product_id'] == $data_inven['productId'] && $pro['branch_id'] == $data_inven['branchId']){
-                                                    $options['product'][$key]['cost'] = $data_inven['cost'];
+                        $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $item_get['Id'], 'branchId' => $banch->id));
+                        if($item_inven){
+                            $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $data_inven), array('task' => 'update'));
+                            if($data_inven['cost'] != $item_inven['cost']){
+                                $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ssFilter' => array('filter_product_id' => $item_inven['productId'])), array('task' => 'list-item-update-cost',));
+                                if(!empty($contracts)){
+                                    foreach($contracts as $contract){
+                                        $options = unserialize($contract->options);
+                                        $products = $options['product'];
+                                        foreach($products as $key => $pro){
+                                            if($pro['product_id'] == $data_inven['productId']){
+                                                $options['product'][$key]['cost'] = $data_inven['cost'];
 
-                                                    $capital_default = (int)($data_inven['cost'] + $data_inven['cost'] * $item_inven['cost_new'] / 100) * $pro['numbers'];
-                                                    if($product_type_contract[$contract['production_type_id']] == 'Đơn Hà Nội'){
-                                                        $capital_default = $capital_default + $item_inven['fee'] * $pro['numbers'];
-                                                    }
-                                                    if(!empty($pro['product_return_id'])){
-                                                        $product_return = $this->getServiceLocator()->get('Admin\Model\ProductReturnTable')->getItem(array('id' => $pro['product_return_id']));
-                                                        $capital_default = $pro['sale_branch_id'] == $product_return['sale_branch_id'] ? 0 : $capital_default / 2;
-                                                    }
-                                                    $options['product'][$key]['capital_default'] = (int)$capital_default;
-                                                    $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
-                                                    $options['product'][$key]['fee'] = $item_inven['fee'];
-                                                }
+                                                $capital_default = (int)($data_inven['cost'] + $item_inven['cost_new']) * $pro['numbers'];
+                                                $options['product'][$key]['capital_default'] = (int)$capital_default;
+                                                $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
+                                                $options['product'][$key]['fee'] = $item_inven['fee'];
                                             }
-                                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract['id'])), array('task' => 'update-product-cost-auto',));
                                         }
+                                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract['id'])), array('task' => 'update-product-cost-auto'));
                                     }
                                 }
                             }
-                            else{
-                                $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $data_inven), array('task' => 'add'));
-                            }
-
-                            if($iid){
-                                echo 'Cập nhật kho sản phẩm '.$inven['BranchName'].' - '.$inven['ProductName'].' thành công ';
-                            }
+                        }
+                        else{
+                            $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $data_inven), array('task' => 'add'));
                         }
                     }
                 }

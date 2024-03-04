@@ -809,6 +809,36 @@ class ContractTable extends DefaultTable {
             });
         }
 
+        // Lấy ra danh sách đơn hàng cần cập nhật lại giá vốn khi giá vốn trên kiotviet thay đổi
+        if($options['task'] == 'list-item-update-cost') {
+            $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+                $ssFilter   = $arrParam['ssFilter'];
+
+                $select -> join(TABLE_CONTACT, TABLE_CONTACT .'.id = '. TABLE_CONTRACT .'.contact_id',
+                    array(
+                        'contact_phone' => 'phone',
+                        'contact_name' => 'name',
+                        'contact_date' => 'date',
+                        'contact_email' => 'email',
+                        'contact_sex' => 'sex',
+                        'contact_contract_number' => 'contract_number',
+                        'contact_birthday' => 'birthday',
+                        'contact_birthday_year' => 'birthday_year',
+                        'contact_location_city_id' => 'location_city_id',
+                        'contact_location_district_id' => 'location_district_id',
+                        'contact_options' => 'options',
+                    ), 'inner');
+                $select -> order(array(TABLE_CONTRACT .'.date' => 'DESC'));
+                // Đơn hàng chưa xóa có trạng thái = 0
+                $select -> where -> equalTo(TABLE_CONTRACT .'.delete', 0);
+
+                if(!empty($ssFilter['filter_product_id'])) {
+                    $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$ssFilter['filter_product_id'].'%');
+                }
+                $select -> where -> equalTo(TABLE_CONTRACT .'.status_id', 'da-cho');
+            });
+        }
+
         return $result;
 	}
 	
