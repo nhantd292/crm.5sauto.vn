@@ -111,6 +111,7 @@ class KovProductsController extends ActionController{
         $this->_viewModel['items']                  = $items;
         $this->_viewModel['count']                  = $count;
         $this->_viewModel['categories']             = $categories;
+        $this->_viewModel['sale_branch']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
         $this->_viewModel['caption']                = 'Danh sách sản phẩm';
 
         return new ViewModel($this->_viewModel);
@@ -118,6 +119,7 @@ class KovProductsController extends ActionController{
 
     // Đồng bộ kho từ kiotviet
     public function updateAction(){
+        $sale_branchs = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'list-all'));
         if ($this->getRequest()->isXmlHttpRequest()) {
             if ($this->getRequest()->isPost()) {
                 $product = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products/'.$this->_params['data']['id']);
@@ -132,16 +134,16 @@ class KovProductsController extends ActionController{
                 }
 
                 if(isset($product['inventories'])){
-                    foreach($product['inventories'] as $key => $inven){
-//                        if(in_array($inven['branchId'], [13083, 3134])){
-                            $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $inven['productId'], 'branchId' => $inven['branchId']));
-                            if($item_inven){
-                                $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $inven), array('task' => 'update'));
-                            }
-                            else{
-                                $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $inven), array('task' => 'add'));
-                            }
-//                        }
+                    $inven = $product['inventories'][0];
+                    foreach($sale_branchs as $key => $banch){
+                        $inven['branchId'] = $banch->id;
+                        $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $product['id'], 'branchId' => $banch->id));
+                        if($item_inven){
+                            $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $inven), array('task' => 'update'));
+                        }
+                        else{
+                            $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $inven), array('task' => 'add'));
+                        }
                     }
                 }
 
@@ -250,7 +252,7 @@ class KovProductsController extends ActionController{
             array('field' =>'fullName','title' => 'TÊN SẢN PHẨM'),
             array('field' =>'branch_name','title' => 'KHO'),
             array('field' =>'branch_cost','title' => 'GIÁ VỐN KIOTVIET'),
-            array('field' =>'branch_cost_new','title' => '% TĂNG GIÁ VỐN CRM'),
+            array('field' =>'branch_cost_new','title' => 'TĂNG THÊM GIÁ VỐN TRÊN CRM'),
             array('field' =>'branch_fee','title' => 'PHỤ PHÍ'),
         );
 

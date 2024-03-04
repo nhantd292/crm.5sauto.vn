@@ -8,8 +8,8 @@ $elements = array(
     array('element' => $myForm->get('filter_branches'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
     array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
     array('element' => $myForm->get('filter_categoryId'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-    array('element' => $myForm->get('filter_evaluate'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-    array('element' => $myForm->get('filter_tailors'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_evaluate'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//    array('element' => $myForm->get('filter_tailors'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 
     array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
     array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -23,6 +23,7 @@ $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-defau
 $xhtmlHead  = '<tr>';
 $xhtmlHead .= '<th class="table-checkbox col-40"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
 $xhtmlHead .= '<th class="text-center" width="60">STT</th>';
+$xhtmlHead .= '<th>Kho hàng</th>';
 $xhtmlHead .= '<th>Nhóm hàng</th>';
 $xhtmlHead .= '<th class="text-center">Mã sản phẩm</th>';
 $xhtmlHead .= '<th>Tên sản phẩm</th>';
@@ -53,9 +54,10 @@ if($this->items->count() > 0) {
         $branch_cost_new    = $item->branch_cost_new;
         $branch_fee         = $item->branch_fee;
         $product_type       = $item->product_type == 1 ? 'Hàng có sẵn' : 'Hàng sản xuất';
-        $branch_cost_crm    = $branch_cost + ($branch_cost * $item->branch_cost_new / 100) + $branch_fee;
+        $branch_cost_crm    = $branch_cost + $item->branch_cost_new + $branch_fee;
         $branch_onHand      = $item->branch_onHand; // Tồn kho
         $branch_reserved    = $item->branch_reserved; // Khách đặt
+        $branch           = $this->sale_branch[$item->branch_id]['name']; // Kho hàng
 
         $cid            = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
         $controlStatus  = $this->linkAdminStatus($id, $item->status);
@@ -66,6 +68,7 @@ if($this->items->count() > 0) {
         $xhtmlItems .= '<tr id="tr_'.$id.'">
     							<td>'. $cid .'</td>
                                 <td  class="text-center">'. $stt .'</td>
+                                <td>'.$branch.'</td>
                                 <td>'.$categoryId.'</td>
                                 <td class="text-center">'.$code.'</td>
                                 <td>'.$fullName.'</td>
@@ -73,7 +76,7 @@ if($this->items->count() > 0) {
                                 <td class="text-center">'.$branch_onHand.'</td>
                                 <td class="text-center">'.$branch_reserved.'</td>
                                 <td class="text-right"><span class="mask_currency">'. $branch_cost .'</span></td>
-                                <td class="text-right"><span class="mask_currency">'. $branch_cost_new .$unit.'</span></td>
+                                <td class="text-right"><span class="mask_currency">'. $branch_cost_new .'</span></td>
                                 <td class="text-right"><span class="mask_currency">'. $branch_fee .'</span></td>
                                 <td class="text-right"><span class="mask_currency">'. $branch_cost_crm .'</span></td>
                                 <td class="text-right"><span class="mask_currency">'. $basePrice .'</span></td>

@@ -45,17 +45,17 @@ class KovProduct extends Form{
         ));
 
         // Đánh giá thợ may
-        $this->add(array(
-            'name'			=> 'filter_evaluate',
-            'type'			=> 'Select',
-            'attributes'	=> array(
-                'class'		=> 'form-control select2 select2_basic',
-            ),
-            'options'		=> array(
-                'empty_option'	=> '- Đánh giá thợ may -',
-                'value_options'	=> array('1' => 'Có', '2' => 'Không'),
-            )
-        ));
+//        $this->add(array(
+//            'name'			=> 'filter_evaluate',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Đánh giá thợ may -',
+//                'value_options'	=> array('1' => 'Có', '2' => 'Không'),
+//            )
+//        ));
 
         // Đánh giá thợ may
         $this->add(array(
@@ -78,8 +78,9 @@ class KovProduct extends Form{
                 'class'		=> 'form-control select2 select2_basic',
             ),
             'options'		=> array(
-                'empty_option'	=> '- Kho -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\kovBranchesTable')->listItem(null, array('task' => 'list-all')), array('key' => 'id', 'value' => 'branchName')),
+                'empty_option'	=> '- Chi nhánh -',
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\kovBranchesTable')->listItem(null, array('task' => 'list-all')), array('key' => 'id', 'value' => 'branchName')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
             )
         ));
 		

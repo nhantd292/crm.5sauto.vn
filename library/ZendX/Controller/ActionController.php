@@ -289,6 +289,7 @@ class ActionController extends AbstractActionController {
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://id.kiotviet.vn/connect/token",
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_TIMEOUT => 30,
@@ -319,6 +320,7 @@ class ActionController extends AbstractActionController {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://public.kiotapi.com" . $api_endpoint);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_ENCODING, '');
         curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);

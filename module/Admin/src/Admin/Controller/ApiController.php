@@ -270,7 +270,6 @@ class ApiController extends ActionController {
         $viewModel = new ViewModel($this->_viewModel);
         $viewModel->setTerminal(true);
         return $viewModel;
-        exit;
     }
 
     public function addProductToListAction() {
