@@ -1017,11 +1017,11 @@ class ApiController extends ActionController {
     // webhook cập nhật sản phẩm
     public function updateKovProductionsAction(){
 
-        $post_data_test = '{"Id":"d42dcce1-3919-4303-b829-d473a163845f","Attempt":1,"Notifications":[{"Action":"product.update.500400541","Data":[{"__type":"KiotViet.OmniChannelCore.Api.Shared.Model.WebhookProductUpdateRes, KiotViet.OmniChannelCore.Api.Shared","Id":26254255,"RetailerId":500400541,"Code":"SP000150","Name":"Sản phẩm test không bán","FullName":"Sản phẩm test không bán","CategoryId":438730,"CategoryName":"Thảm Sàn Nhựa Đúc Ôtô","AllowsSale":true,"Type":2,"HasVariants":false,"BasePrice":1500000,"ConversionValue":1,"Description":"","ModifiedDate":"2024-03-04T23:39:24.1470000+07:00","isActive":true,"IsRewardPoint":false,"OrderTemplate":"","TradeMarkId":166913,"TradeMarkName":"Ford","Attributes":[],"Units":[],"Inventories":[{"ProductId":26254255,"ProductCode":"SP000150","ProductName":"Sản phẩm test không bán","BranchId":45341,"BranchName":"CÔNG TY NỘI THẤT Ô TÔ FOREWIN","Cost":800000,"OnHand":15,"Reserved":1,"MinQuantity":0,"MaxQuantity":999999999,"isActive":true}],"PriceBooks":[],"Serials":[],"Images":[]}]}]}';
-        $data_post =  json_decode($post_data_test, true);
+//        $post_data_test = '{"Id":"d42dcce1-3919-4303-b829-d473a163845f","Attempt":1,"Notifications":[{"Action":"product.update.500400541","Data":[{"__type":"KiotViet.OmniChannelCore.Api.Shared.Model.WebhookProductUpdateRes, KiotViet.OmniChannelCore.Api.Shared","Id":26254255,"RetailerId":500400541,"Code":"SP000150","Name":"Sản phẩm test không bán","FullName":"Sản phẩm test không bán","CategoryId":438730,"CategoryName":"Thảm Sàn Nhựa Đúc Ôtô","AllowsSale":true,"Type":2,"HasVariants":false,"BasePrice":1500000,"ConversionValue":1,"Description":"","ModifiedDate":"2024-03-04T23:39:24.1470000+07:00","isActive":true,"IsRewardPoint":false,"OrderTemplate":"","TradeMarkId":166913,"TradeMarkName":"Ford","Attributes":[],"Units":[],"Inventories":[{"ProductId":26254255,"ProductCode":"SP000150","ProductName":"Sản phẩm test không bán","BranchId":45341,"BranchName":"CÔNG TY NỘI THẤT Ô TÔ FOREWIN","Cost":800000,"OnHand":15,"Reserved":1,"MinQuantity":0,"MaxQuantity":999999999,"isActive":true}],"PriceBooks":[],"Serials":[],"Images":[]}]}]}';
+//        $data_post =  json_decode($post_data_test, true);
 
-//        $this->postJson(file_get_contents('php://input'));// Đẩy dữ liệu sang webhook.site để kiểm tra
-//        $data_post =  json_decode(file_get_contents('php://input'), true);
+        $this->postJson(file_get_contents('php://input'));// Đẩy dữ liệu sang webhook.site để kiểm tra
+        $data_post =  json_decode(file_get_contents('php://input'), true);
 
         $notifications = $data_post['Notifications'];
         foreach($notifications as $notifi){
