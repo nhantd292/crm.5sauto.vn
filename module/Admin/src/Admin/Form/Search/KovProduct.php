@@ -78,7 +78,7 @@ class KovProduct extends Form{
                 'class'		=> 'form-control select2 select2_basic',
             ),
             'options'		=> array(
-//                'empty_option'	=> '- Kho -',
+                'empty_option'	=> '- Kho -',
                 'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\kovBranchesTable')->listItem(null, array('task' => 'list-all')), array('key' => 'id', 'value' => 'branchName')),
             )
         ));

@@ -290,21 +290,21 @@
 <!--		</ul>-->
 <!--	</li>-->
 
-<!--	<li class="parent">-->
-<!--	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">-->
-<!--			<i class="fa fa-cogs"></i> <span class="title">Kho Kiotviet</span><span class="arrow"></span>-->
-<!--		</a>-->
-<!--		<ul class="dropdown-menu">-->
-<!--			<li>-->
-<!--				<a href="--><?php //echo $this->url('routeAdmin/default', array('controller' => 'kov-branches', 'action' => 'index'));?><!--" target="_self">-->
-<!--					<i class="fa fa-file-text-o"></i> <span class="title">Kho hàng</span><span class="arrow"></span>-->
-<!--				</a>-->
-<!--			</li>-->
-<!--			<li>-->
-<!--				<a href="--><?php //echo $this->url('routeAdmin/default', array('controller' => 'kov-products', 'action' => 'index'));?><!--" target="_self">-->
-<!--					<i class="fa fa-file-text-o"></i> <span class="title">Sản phẩm</span><span class="arrow"></span>-->
-<!--				</a>-->
-<!--			</li>-->
+	<li class="parent">
+	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">
+			<i class="fa fa-cogs"></i> <span class="title">Kho Kiotviet</span><span class="arrow"></span>
+		</a>
+		<ul class="dropdown-menu">
+			<li>
+				<a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'kov-branches', 'action' => 'index'));?>" target="_self">
+					<i class="fa fa-file-text-o"></i> <span class="title">Kho hàng</span><span class="arrow"></span>
+				</a>
+			</li>
+			<li>
+				<a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'kov-products', 'action' => 'index'));?>" target="_self">
+					<i class="fa fa-file-text-o"></i> <span class="title">Sản phẩm</span><span class="arrow"></span>
+				</a>
+			</li>
 <!--			<li>-->
 <!--				<a href="--><?php //echo $this->url('routeAdmin/default', array('controller' => 'kov-discounts', 'action' => 'index'));?><!--" target="_self">-->
 <!--					<i class="fa fa-file-text-o"></i> <span class="title">Khuyến mãi</span><span class="arrow"></span>-->
@@ -315,8 +315,8 @@
 <!--					<i class="fa fa-file-text-o"></i> <span class="title">Kho hàng hoàn</span><span class="arrow"></span>-->
 <!--				</a>-->
 <!--			</li>-->
-<!--		</ul>-->
-<!--	</li>-->
+		</ul>
+	</li>
 
 	<!--Giục đơn-->
 	<li class="parent">

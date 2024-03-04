@@ -23,7 +23,7 @@ class KovProductsController extends ActionController{
 
         $this->_params['ssFilter']['filter_keyword']        = $ssFilter->filter_keyword;
         $this->_params['ssFilter']['filter_categoryId']     = $ssFilter->filter_categoryId;
-        $this->_params['ssFilter']['filter_branches']       = $ssFilter->filter_branches ? $ssFilter->filter_branches : 3134;
+        $this->_params['ssFilter']['filter_branches']       = $ssFilter->filter_branches ;
         $this->_params['ssFilter']['filter_evaluate']       = $ssFilter->filter_evaluate;
         $this->_params['ssFilter']['filter_tailors']        = $ssFilter->filter_tailors;
 
@@ -133,7 +133,7 @@ class KovProductsController extends ActionController{
 
                 if(isset($product['inventories'])){
                     foreach($product['inventories'] as $key => $inven){
-                        if(in_array($inven['branchId'], [13083, 3134])){
+//                        if(in_array($inven['branchId'], [13083, 3134])){
                             $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $inven['productId'], 'branchId' => $inven['branchId']));
                             if($item_inven){
                                 $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $inven), array('task' => 'update'));
@@ -141,7 +141,7 @@ class KovProductsController extends ActionController{
                             else{
                                 $iid = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $inven), array('task' => 'add'));
                             }
-                        }
+//                        }
                     }
                 }
 
