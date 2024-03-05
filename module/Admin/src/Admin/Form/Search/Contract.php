@@ -158,6 +158,18 @@ class Contract extends Form{
 		        'value_options'	=> $user_data,
 		    )
 		));
+
+		$this->add(array(
+		    'name'			=> 'filter_delivery_id',
+		    'type'			=> 'Select',
+		    'attributes'	=> array(
+		        'class'		=> 'form-control select2 select2_basic',
+		    ),
+		    'options'		=> array(
+		        'empty_option'	=> '- NV Giục đơn -',
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'giuc-don'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'))
+		    )
+		));
 		
 		// Phân Nhóm sản phẩm
 		$this->add(array(
@@ -196,8 +208,9 @@ class Contract extends Form{
 		    ),
 		    'options'		=> array(
 //		        'empty_option'	=> '- Sản phẩm-',
-		        'value_options'	=> $products,
-		    )
+//		        'value_options'	=> $products,
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+            )
 		));
 
         // Bộ phận

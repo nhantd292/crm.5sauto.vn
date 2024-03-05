@@ -21,8 +21,9 @@
             array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_delivery_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_update_kov_false'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -46,6 +47,7 @@
             array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_send_ghtk'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_delivery_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_coincider'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -103,6 +105,7 @@
             $price_owed             = $item->price_owed;
             $total_price_owed      += $item->price_owed;
             $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+            $user_gd_name           = $item->delivery_id ? $this->user[$item->delivery_id]['name'] : '';
             $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
             $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
             $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
@@ -123,7 +126,7 @@
             $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
             $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
 
-            $user                   = $this->user[$item->user_id]['name'];
+//            $user                   = $this->user[$item->user_id]['name'];
             $sale_group_user        = $this->user[$item->user_id]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->user_id]['sale_group_id']]['name'] : '';
             $sale_branch_user       = $this->user[$item->user_id]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->user_id]['sale_branch_id']]['name'] : '';
 
@@ -226,6 +229,7 @@
     							<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
     							<td '.$rowSpan.'>'. $date .'<br>'.$shipped_date.'</td>
     							<td '.$rowSpan.'>'. $user_name .'</td>
+    							<td '.$rowSpan.'>'. $user_gd_name .'</td>
     							<td '.$rowSpan.'>'. $contact_name .'</td>
     							<td '.$rowSpan.'>'. $contact_phone .'</td>
     							<td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
@@ -279,6 +283,7 @@
     $xhtmlHead .= '<th width="90">Mã kiotviet</th>';
     $xhtmlHead .= '<th width="80">Ngày</th>';
     $xhtmlHead .= '<th width="150">Nhân viên</th>';
+    $xhtmlHead .= '<th width="150">Giục đơn</th>';
     $xhtmlHead .= '<th width="150">Tên khách hàng</th>';
     $xhtmlHead .= '<th width="90">Điện thoại</th>';
     $xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
@@ -322,6 +327,7 @@
                 array( 'name' => 'print', 'caption' => 'In đóng hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint();') ),
                 array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-check-square-o' ),
                 array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
+                array( 'name' => 'transfer', 'caption' => 'Chuyển quyền quản lý giục đơn', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:changeUser(\'changeDelivery\');') ),
 //                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport();')) ,
 //                array( 'name' => 'hidden', 'caption' => 'Khóa đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'lock\');')),
 //                array( 'name' => 'return', 'caption' => 'Xác nhận hoàn', 'link' => 'javascript:;', 'icon' => 'fa fa-arrow-left', 'attributes' => array('onclick'=>'javascript:updateItem(\'returned\', \'Bạn có muốn xác nhận hoàn các đơn hàng đã chọn\');')),
