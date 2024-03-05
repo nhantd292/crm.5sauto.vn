@@ -11,7 +11,7 @@
     $is_check_oder = true;
     $is_accounting = true;
 
-//    $is_system = false;
+    $is_system = false;
 //    $is_admin = false;
 //    $is_marketing = false;
 //    $is_sales = false;
@@ -19,9 +19,10 @@
 //    $is_check_oder = false;
 //    $is_accounting = false;
 //
-//    if(in_array('system', $permission_ids)){
-//        $is_system = true;
-//    }
+    if(in_array('system', $permission_ids)){
+        $is_system = true;
+    }
+
 //    if(in_array('admin', $permission_ids)){
 //        $is_admin = true;
 //    }
@@ -289,7 +290,7 @@
 <!--			</li>-->
 <!--		</ul>-->
 <!--	</li>-->
-
+<?php if($is_system){?>
 	<li class="parent">
 	    <a href="javascript:;" target="_self" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" class="dropdown-toggle">
 			<i class="fa fa-cogs"></i> <span class="title">Kho Kiotviet</span><span class="arrow"></span>
@@ -317,6 +318,7 @@
 <!--			</li>-->
 		</ul>
 	</li>
+<?php }?>
 
 	<!--Giục đơn-->
 	<li class="parent">
