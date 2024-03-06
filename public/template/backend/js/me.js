@@ -1057,6 +1057,28 @@ function contactChangeUser() {
 
 /**
  * Author: NamNV
+ * Desciption: Chuyển quyền liên hệ
+ */
+function changeUser(action) {
+	var itemId = [];
+
+	jQuery(formAdmin + ' .checkboxes').each(function () {
+		checked = jQuery(this).is(":checked");
+		if (checked) {
+			itemId.push(jQuery(this).val());
+		}
+	});
+
+	if(itemId.length > 0) {
+		var ajaxUrl = jQuery(formAdmin).attr('action').replace('/filter', '/'+action);
+		submitForm(ajaxUrl);
+	} else {
+		xToastr('error', xMessage['no-checked'], '');
+	}
+}
+
+/**
+ * Author: NamNV
  * Desciption: Di chuyển Node
  */
 function moveNode(id, type) {

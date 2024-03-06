@@ -86,6 +86,10 @@ class ContractTable extends DefaultTable {
                         -> UNNEST;
                 }
 
+                if(!empty($ssFilter['filter_delivery_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_delivery_id']);
+                }
+
                 if(!empty($ssFilter['filter_status_type'])) {
                     if(!empty($ssFilter['filter_status'])) {
                         $select -> where -> equalTo(TABLE_CONTRACT .'.'.$ssFilter['filter_status_type'], $ssFilter['filter_status']);
@@ -447,6 +451,10 @@ class ContractTable extends DefaultTable {
                         ->Or
                         -> equalTo(TABLE_CONTRACT .'.created_by', $ssFilter['filter_user'])
                         -> UNNEST;
+                }
+
+                if(!empty($ssFilter['filter_delivery_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_delivery_id']);
                 }
 
                 if(!empty($ssFilter['filter_status_type'])) {
@@ -3065,6 +3073,39 @@ class ContractTable extends DefaultTable {
 
             $sql_update = "UPDATE ".TABLE_CONTRACT." SET cost_ads = ".$cost_ads." WHERE `delete` = 0 AND date >= '".$date."' AND date <= '".$date." 23:59:59'";
             $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
+        }
+
+        if($options['task'] == 'change-delivery') {
+            $arrUser = $arrParam['user'];
+
+            $contract_ids = explode(',', $arrData['contract_ids']);
+            if(count($contract_ids) > 0) {
+                $data = array(
+                    'delivery_id'         => $arrUser['id'],
+                );
+                $where = new Where();
+                $where->in('id', $contract_ids);
+                $this->tableGateway->update($data, $where);
+
+                // Thêm lịch sử hệ thống
+                $arrCheckResult = array(
+                    'contact_ids'     => $contract_ids,
+                    'user_id'         => $arrUser['id'],
+                );
+                $arrParamLogs = array(
+                    'data' => array(
+                        'title'          => 'Liên hệ',
+                        'phone'          => null,
+                        'name'           => null,
+                        'action'         => 'Chuyển quản lý',
+                        'contact_id'     => null,
+                        'options'        => $arrCheckResult
+                    )
+                );
+                $logs = $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
+            }
+
+            return count($contract_ids);
         }
 	}
 
