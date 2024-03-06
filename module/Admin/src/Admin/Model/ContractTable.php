@@ -1837,7 +1837,7 @@ class ContractTable extends DefaultTable {
                 $contract_options = array();
                 $contract_options['product']  = array();
 
-                $product_type_contract =  \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name'));
+//                $product_type_contract =  \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name'));
                 $contract_product['unit_type'] = array_values($contract_product['unit_type']);
 
                 for($i = 0; $i < count($contract_product['product_id']); $i++){
@@ -1856,6 +1856,15 @@ class ContractTable extends DefaultTable {
                         $contract_options['product'][$i]['length']           = $contract_product['length'][$i]; // Chiều dài
                         $contract_options['product'][$i]['width']            = $contract_product['width'][$i]; // Chiều rộng
                         $contract_options['product'][$i]['height']           = $contract_product['height'][$i]; // Chiều cao
+
+                        $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $contract_product['product_id'][$i], 'branchId' => $this->userInfo->getUserInfo('sale_branch_id')));
+                        if($item_inven){
+                            $capital_default = (int)($contract_product['cost'][$i] + $item_inven['cost_new']) * $number->formatToData($contract_product['numbers'][$i]);
+
+                            $contract_options['product'][$i]['capital_default'] = (int)$capital_default; // Giá vốn mới
+                            $contract_options['product'][$i]['cost_new']        = $item_inven['cost_new']; // giá vốn thăng theo chi nhánh
+                            $contract_options['product'][$i]['fee']             = $item_inven['fee']; // phụ phí
+                        }
                     }
                 }
 
@@ -1993,6 +2002,15 @@ class ContractTable extends DefaultTable {
                     $contract_options['product'][$i]['length']           = $contract_product['length'][$i]; // Chiều dài
                     $contract_options['product'][$i]['width']            = $contract_product['width'][$i]; // Chiều rộng
                     $contract_options['product'][$i]['height']           = $contract_product['height'][$i]; // Chiều cao
+
+                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $contract_product['product_id'][$i], 'branchId' => $arrItem['sale_branch_id']));
+                    if($item_inven){
+                        $capital_default = (int)($contract_product['cost'][$i] + $item_inven['cost_new']) * $number->formatToData($contract_product['numbers'][$i]);
+
+                        $contract_options['product'][$i]['capital_default'] = (int)$capital_default; // Giá vốn mới
+                        $contract_options['product'][$i]['cost_new']        = $item_inven['cost_new']; // giá vốn thăng theo chi nhánh
+                        $contract_options['product'][$i]['fee']             = $item_inven['fee']; // phụ phí
+                    }
                 }
             }
 
@@ -2097,6 +2115,15 @@ class ContractTable extends DefaultTable {
                     $contract_options['product'][$i]['length']           = $contract_product['length'][$i]; // Chiều dài
                     $contract_options['product'][$i]['width']            = $contract_product['width'][$i]; // Chiều rộng
                     $contract_options['product'][$i]['height']           = $contract_product['height'][$i]; // Chiều cao
+
+                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $contract_product['product_id'][$i], 'branchId' => $arrItem['sale_branch_id']));
+                    if($item_inven){
+                        $capital_default = (int)($contract_product['cost'][$i] + $item_inven['cost_new']) * $number->formatToData($contract_product['numbers'][$i]);
+
+                        $contract_options['product'][$i]['capital_default'] = (int)$capital_default; // Giá vốn mới
+                        $contract_options['product'][$i]['cost_new']        = $item_inven['cost_new']; // giá vốn thăng theo chi nhánh
+                        $contract_options['product'][$i]['fee']             = $item_inven['fee']; // phụ phí
+                    }
                 }
             }
 
