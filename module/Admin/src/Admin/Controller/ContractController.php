@@ -1507,7 +1507,7 @@ class ContractController extends ActionController {
     public function changeDeliveryAction()
     {
         $myForm  = new \Admin\Form\Contract\ChangeDelivery($this->getServiceLocator(), $this->_userInfo->getUserInfo());
-        $caption = 'Đơn hàng - Chuyển quyền quản lý giục đơn';
+        $caption = 'Đơn hàng - Thêm quyền giục đơn';
 
         if ($this->getRequest()->isPost()) {
             if (!empty($this->_params['data']['contract_ids'])) {
