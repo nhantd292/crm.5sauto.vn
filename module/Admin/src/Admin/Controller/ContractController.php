@@ -2492,6 +2492,20 @@ class ContractController extends ActionController {
         $this->goRoute();
     }
 
+    // đã Thanh toán giá vốn
+    public function paidCostAction() {
+        $result = $this->getTable()->saveItem($this->_params, array('task' => 'paidcost'));
+        $this->flashMessenger()->addMessage('Đã xác nhận thanh toán giá vốn '.$result.' đơn hàng thành công');
+        $this->goRoute();
+    }
+
+    // Chưa thanh toán giá vốn
+    public function noPaidCostAction() {
+        $result = $this->getTable()->saveItem($this->_params, array('task' => 'nopaidcost'));
+        $this->flashMessenger()->addMessage('Bỏ xác nhận thanh toán giá vốn '.$result.' đơn hàng thành công');
+        $this->goRoute();
+    }
+
     // Thêm giảm trừ doanh thu
     public function editReduceAction() {
         $myForm = new \Admin\Form\Contract\EditReduce($this->getServiceLocator(), $this->_params);

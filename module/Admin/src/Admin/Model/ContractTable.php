@@ -1902,6 +1902,7 @@ class ContractTable extends DefaultTable {
                     'price_total'             => $number->formatToData($arrData['total_contract_product'])+$number->formatToData($arrData['total_contract_vat'])+$number->formatToData($arrData['fee_other']),
 
                     'status_id'               => DA_CHOT,
+                    'paid_cost'               => 'f',
                     'sale_note'               => $arrData['sale_note'],
                     'ghtk_note'               => $arrData['ghtk_note'],
 
@@ -3027,7 +3028,6 @@ class ContractTable extends DefaultTable {
                 $where->in('id', $arrData['cid']);
                 $this->tableGateway->update($data, $where);
             }
-
             return count($arrData['cid']);
         }
 
@@ -3041,7 +3041,32 @@ class ContractTable extends DefaultTable {
                 $where->in('id', $arrData['cid']);
                 $this->tableGateway->update($data, $where);
             }
+            return count($arrData['cid']);
+        }
 
+        // ĐÃ thanh toán giá vốn
+        if($options['task'] == 'paidcost') {
+            if(count($arrData['cid']) > 0) {
+                $data = array(
+                    'paid_cost'            => 't',
+                );
+                $where = new Where();
+                $where->in('id', $arrData['cid']);
+                $this->tableGateway->update($data, $where);
+            }
+            return count($arrData['cid']);
+        }
+
+        // Chưa thanh toán giá vốn
+        if($options['task'] == 'nopaidcost') {
+            if(count($arrData['cid']) > 0) {
+                $data = array(
+                    'paid_cost'            => 'f',
+                );
+                $where = new Where();
+                $where->in('id', $arrData['cid']);
+                $this->tableGateway->update($data, $where);
+            }
             return count($arrData['cid']);
         }
 
@@ -3753,6 +3778,9 @@ class ContractTable extends DefaultTable {
                 }
                 if(isset($ssFilter['status_store']) && $ssFilter['status_store'] != '') {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.status_store', $ssFilter['status_store']);
+                }
+                if(isset($ssFilter['paid_cost']) && $ssFilter['paid_cost'] != '') {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.paid_cost', $ssFilter['paid_cost']);
                 }
 
                 if(isset($ssFilter['contract_type_bh']) && $ssFilter['contract_type_bh'] != '') {
