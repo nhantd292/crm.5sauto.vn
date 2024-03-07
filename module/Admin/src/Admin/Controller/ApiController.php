@@ -1063,7 +1063,7 @@ class ApiController extends ActionController {
                         if($item_inven){
                             $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->saveItem(array('data' => $data_inven), array('task' => 'update'));
                             if($data_inven['cost'] != $item_inven['cost']){
-                                $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ssFilter' => array('filter_product_id' => $item_inven['productId'])), array('task' => 'list-item-update-cost',));
+                                $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ssFilter' => array('filter_product_id' => $item_inven['productId'], 'filter_sale_branch' => $banch->id)), array('task' => 'list-item-update-cost',));
                                 if(!empty($contracts)){
                                     foreach($contracts as $contract){
                                         $options = unserialize($contract->options);

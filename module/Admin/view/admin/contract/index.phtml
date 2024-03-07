@@ -74,10 +74,10 @@
         $stt = 0;
         $sum = 0;
         $total_price = $total_cod = $total_discount =  $total_price_owed = 0;
-        $manager_edit = false;
-        if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-            $manager_edit = true;
-        }
+//        $manager_edit = false;
+//        if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
+//            $manager_edit = true;
+//        }
         foreach ($this->items AS $key => $item) {
         	$stt++;
         	$cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
@@ -89,29 +89,29 @@
             $contact_date           = $dateFormat->formatToView($item->contact_date, 'd/m/Y H:i');
             $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
             $contact_name           = $item->contact_name;
-            $contact_contract_number= $item->contact_contract_number;
-            $index_number           = $item->index_number;
-            $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
+//            $contact_contract_number= $item->contact_contract_number;
+//            $index_number           = $item->index_number;
+//            $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
 
 //            $fee_cod                = !empty($item->ghtk_result) ? number_format(unserialize($item->ghtk_result)['fee']) : '';
             $fee_cod                = number_format($item->price_transport);
-            $price_promotion        = number_format($item->price_promotion);
+//            $price_promotion        = number_format($item->price_promotion);
             $price_total            = $item->price_total;
             $total_price           += $price_total;
             $total_cod             += $item->price_transport;
             $total_discount        += $item->price_reduce_sale;
-            $price_paid             = $item->price_paid;
-            $price_accrued          = $item->price_accrued;
+//            $price_paid             = $item->price_paid;
+//            $price_accrued          = $item->price_accrued;
             $price_owed             = $item->price_owed;
             $total_price_owed      += $item->price_owed;
             $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
             $user_gd_name           = $item->delivery_id ? $this->user[$item->delivery_id]['name'] : '';
-            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
-            $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
-            $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
-            $bill_code              = $item->bill_code;
-            $product_return         = $item->product_return;
-            $shipper_id             = $this->user[$item->shipper_id]['name'];
+//            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
+//            $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
+//            $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
+//            $bill_code              = $item->bill_code;
+//            $product_return         = $item->product_return;
+//            $shipper_id             = $this->user[$item->shipper_id]['name'];
 
             $status_sales           = $item->status_id ? $this->status_sales[$item->status_id]['name'] : '';
             if($item->unit_transport == 'viettel')
