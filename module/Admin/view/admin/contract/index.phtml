@@ -106,6 +106,7 @@
             $total_price_owed      += $item->price_owed;
             $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
             $user_gd_name           = $item->delivery_id ? $this->user[$item->delivery_id]['name'] : '';
+            $paid_cost              = $item->paid_cost == 't' ? "Đã thanh toán" : 'Chưa thanh toán';
 //            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
 //            $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
 //            $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
@@ -229,7 +230,6 @@
     							<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
     							<td '.$rowSpan.'>'. $date .'<br>'.$shipped_date.'</td>
     							<td '.$rowSpan.'>'. $user_name .'</td>
-    							<td '.$rowSpan.'>'. $user_gd_name .'</td>
     							<td '.$rowSpan.'>'. $contact_name .'</td>
     							<td '.$rowSpan.'>'. $contact_phone .'</td>
     							<td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
@@ -252,6 +252,8 @@
             $xhtmlItems .= '<td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
                             <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
                             <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'</td>
+    						<td '.$rowSpan.'>'. $user_gd_name .'</td>
+                            <td '.$rowSpan.'>'. $paid_cost .'</td>
                         </tr>';
 
             if (count($options['product']) > 0) {
@@ -283,7 +285,6 @@
     $xhtmlHead .= '<th width="90">Mã kiotviet</th>';
     $xhtmlHead .= '<th width="80">Ngày</th>';
     $xhtmlHead .= '<th width="150">Nhân viên</th>';
-    $xhtmlHead .= '<th width="150">Giục đơn</th>';
     $xhtmlHead .= '<th width="150">Tên khách hàng</th>';
     $xhtmlHead .= '<th width="90">Điện thoại</th>';
     $xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
@@ -297,6 +298,8 @@
     $xhtmlHead .= '<th width="150">Ghi chú</th>';
     $xhtmlHead .= '<th width="140">Người tạo</th>';
     $xhtmlHead .= '<th width="140">Marketer</th>';
+    $xhtmlHead .= '<th width="150">Giục đơn</th>';
+    $xhtmlHead .= '<th width="150">Thanh toán giá vốn</th>';
     $xhtmlHead .= '</tr>';
 
     $sendViettelAccount = [];

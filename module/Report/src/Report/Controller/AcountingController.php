@@ -1310,7 +1310,7 @@ class AcountingController extends ActionController {
                 $status_acccounting     = $item['status_acounting_id'] ? $status_accounting[$item['status_acounting_id']]['name'] : '';
 
                 $status         = 'Sales: '.$status_sales.'<br>'.'Giục đơn: '.$status_check.'<br>'.'Kế toán: '.$status_acccounting;
-                $paid_cost      = 'Đã thanh toán/ chưa thanh toán';
+                $paid_cost      = $item['paid_cost'] == 't' ? 'Đã thanh toán' : 'Chưa thanh toán';
                 $shipped_date   = $date->formatToView($item['shipped_date']);
                 $code           = $item['code'];
                 $user_name      = $item['user_id'] ? $user[$item['user_id']]['name'] : '';
@@ -1352,7 +1352,7 @@ class AcountingController extends ActionController {
                             					<th width="140" class="text-center">Nhân viên</th>
                             					<th width="200" class="text-center">Sản phẩm</th>
                             					<th width="140" class="text-center">Số lượng</th>
-                            					<th width="140" class="text-center">Giá vốn CRM</th>
+                            					<th width="140" class="text-center">Giá vốn</th>
                             					<th width="140" class="text-center">Phí ship</th>
                             					<th width="140" class="text-center">Giá bán</th>
                             					<th width="140" class="text-center">Đã thanh toán</th>
