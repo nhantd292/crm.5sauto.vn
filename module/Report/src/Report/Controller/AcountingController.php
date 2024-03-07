@@ -1318,7 +1318,7 @@ class AcountingController extends ActionController {
                 $price_total    = $item['price_total'];
                 $price_paid     = $item['price_paid'];
 
-                if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
+                if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
                     $b1 = '<td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_new - $total_cost) .'</td>';
                 }
 
@@ -1339,7 +1339,7 @@ class AcountingController extends ActionController {
                 $xhtmlItems .=  '</tr>';
                 $xhtmlItems .=  $product_row_2;
             }
-            if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
+            if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
                 $h1 = '<th width="140" class="text-center">Phí dịch vụ</th>';
             }
             $result['reportTable'] = '<thead>
