@@ -846,7 +846,7 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_sale_branch'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.sale_branch_id', $ssFilter['filter_sale_branch']);
                 }
-//                $select -> where -> equalTo(TABLE_CONTRACT .'.status_id', 'da-chot');
+                $select -> where -> equalTo(TABLE_CONTRACT .'.status_id', 'da-chot');
             });
         }
 

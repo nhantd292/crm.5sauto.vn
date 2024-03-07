@@ -136,23 +136,23 @@ class ContractController extends ActionController {
         }
 
         // Cập nhật giá vốn mới cho đơn hàng
-        if($this->_userInfo->getUserInfo('id') == '1111111111111111111111'){
-            $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
-            foreach($items as $contract){
-                $options = unserialize($contract->options);
-                $products = $options['product'];
-                foreach($products as $key => $pro){
-                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $pro['product_id'], 'branchId' => $contract->sale_branch_id));
-
-                    $capital_default = (int)($item_inven['cost'] + $item_inven['cost_new']) * $pro['numbers'];
-                    $options['product'][$key]['cost'] = (int)$item_inven['cost'];
-                    $options['product'][$key]['capital_default'] = (int)$capital_default;
-                    $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
-                    $options['product'][$key]['fee'] = $item_inven['fee'];
-                }
-                $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract->id)), array('task' => 'update-product-cost-auto'));
-            }
-        }
+//        if($this->_userInfo->getUserInfo('id') == '1111111111111111111111'){
+//            $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
+//            foreach($items as $contract){
+//                $options = unserialize($contract->options);
+//                $products = $options['product'];
+//                foreach($products as $key => $pro){
+//                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $pro['product_id'], 'branchId' => $contract->sale_branch_id));
+//
+//                    $capital_default = (int)($item_inven['cost'] + $item_inven['cost_new']) * $pro['numbers'];
+//                    $options['product'][$key]['cost'] = (int)$item_inven['cost'];
+//                    $options['product'][$key]['capital_default'] = (int)$capital_default;
+//                    $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
+//                    $options['product'][$key]['fee'] = $item_inven['fee'];
+//                }
+//                $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract->id)), array('task' => 'update-product-cost-auto'));
+//            }
+//        }
         
 
 
@@ -234,10 +234,10 @@ class ContractController extends ActionController {
         }
 
         // Lấy danh mục sản phẩm cho vào bộ lọc
-        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
-        $categories = json_decode($categories, true)['data'];
-        $categories = $this->getNameCat($this->addNew($categories), $result);
-        $this->_params['categories'] = $categories;
+//        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
+//        $categories = json_decode($categories, true)['data'];
+//        $categories = $this->getNameCat($this->addNew($categories), $result);
+//        $this->_params['categories'] = $categories;
 
         // Lấy danh sách sản phẩm đưa vào bộ lọc
 //        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
@@ -306,10 +306,10 @@ class ContractController extends ActionController {
         }
 
         // Lấy danh mục sản phẩm cho vào bộ lọc
-        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
-        $categories = json_decode($categories, true)['data'];
-        $categories = $this->getNameCat($this->addNew($categories), $result);
-        $this->_params['categories'] = $categories;
+//        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
+//        $categories = json_decode($categories, true)['data'];
+//        $categories = $this->getNameCat($this->addNew($categories), $result);
+//        $this->_params['categories'] = $categories;
 
         // Lấy danh sách sản phẩm đưa vào bộ lọc
 //        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
