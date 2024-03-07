@@ -1295,9 +1295,11 @@ class AcountingController extends ActionController {
                         $product_row_1 .= '<td class="mask_currency text-right">'.($value['cost'] + $value['cost_new']).'</td>';
                     }
                     else{
+                        $product_row_2 .= '<tr>';
                         $product_row_2 .= '<td width="200">'.$value['full_name'].'</td>';
                         $product_row_2 .= '<td class="text-center">'.$value['numbers'].'</td>';
                         $product_row_2 .= '<td class="mask_currency text-right">'.($value['cost'] + $value['cost_new']).'</td>';
+                        $product_row_2 .= '</tr>';
                     }
                 }
                 $status_sales           = $item['status_id'] ? $status_sales_arr[$item['status_id']]['name'] : '';
@@ -1335,7 +1337,7 @@ class AcountingController extends ActionController {
         						'.$b1.'
         						';
                 $xhtmlItems .=  '</tr>';
-                $xhtmlItems .=  '<tr>'.$product_row_2.'</tr>';
+                $xhtmlItems .=  $product_row_2;
             }
             if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
                 $h1 = '<th width="140" class="text-center">Phí dịch vụ</th>';
