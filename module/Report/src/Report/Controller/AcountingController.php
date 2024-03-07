@@ -72,8 +72,8 @@ class AcountingController extends ActionController {
                 'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
                 'production_type_id'        => $ssFilter->report['production_type_id'],
                 'code'                      => $ssFilter->report['code'],
-                'filter_status_type'        => 'production_department_type',
-                'filter_status'             => 'success',
+//                'filter_status_type'        => 'production_department_type',
+//                'filter_status'             => 'success',
             );
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
 
@@ -1226,6 +1226,167 @@ class AcountingController extends ActionController {
             $this->_viewModel['myForm']         = $myForm;
             $this->_viewModel['saleGroup']      = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
             $this->_viewModel['caption']        = 'Báo cáo Cước vận chuyển';
+        }
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
+
+    # báo cáo nhập hàng
+    public function importAction() {
+        $date     = new \ZendX\Functions\Date();
+        $ssFilter = new Container(__CLASS__ . str_replace('-', '_', $this->_params['action']));
+        if($this->getRequest()->isPost()) {
+            $user               = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
+            $status_check_arr   = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+            $status_check_vtp   = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+            $status_accounting  = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+            $status_sales_arr   = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+
+            // Lấy giá trị post từ filter
+            $this->_params['data'] = $this->getRequest()->getPost()->toArray();
+            // Quyền user
+            $curent_user = $this->_userInfo->getUserInfo();
+            $permission_ids = explode(',', $curent_user['permission_ids']);
+            if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !in_array(MANAGER, $permission_ids)){
+                if(in_array(GDCN, $permission_ids)){
+                    $this->_params['data']['sale_branch_id'] = $curent_user['sale_branch_id'];
+                }
+            }
+
+            // Gán dữ liệu lọc vào session
+            $ssFilter->report['date_begin']             = $this->_params['data']['date_begin'];
+            $ssFilter->report['date_end']               = $this->_params['data']['date_end'];
+            $ssFilter->report['sale_branch_id']         = $this->_params['data']['sale_branch_id'];
+            $ssFilter->report['paid_cost']              = $this->_params['data']['paid_cost'];
+            $ssFilter->report['sale_id']                = $this->_params['data']['sale_id'];
+            $ssFilter->report['filter_status_type']     = $this->_params['data']['filter_status_type'];
+            $ssFilter->report['filter_status']          = $this->_params['data']['filter_status'];
+
+            $this->_params['ssFilter'] = $ssFilter->report;
+
+            // Lấy dữ liệu doanh số.
+            $where_contract = array(
+                'filter_date_begin'         => $ssFilter->report['date_begin'],
+                'filter_date_end'           => $ssFilter->report['date_end'],
+                'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
+                'paid_cost'                 => $ssFilter->report['paid_cost'],
+                'sale_id'                   => $ssFilter->report['sale_id'],
+                'filter_status_type'        => $ssFilter->report['filter_status_type'],
+                'filter_status'             => $ssFilter->report['filter_status'],
+                'date_type'                 => 'shipped_date',
+            );
+            $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
+
+            $xhtmlItems = '';
+            foreach ($contracts as $keys => $item){
+                $options = unserialize($item['options']);
+                $rowSpan = 'rowspan="'.count($options['product']).'"';
+                $product_row_1 = $product_row_2 = '';
+                $total_cost = $total_cost_new = 0;
+                foreach ($options['product'] as $key => $value){
+                    $total_cost_new += ($value['cost'] + $value['cost_new']) * $value['numbers'];
+                    $total_cost     += $value['cost'] * $value['numbers'];
+                    if($key == 0){
+                        $product_row_1 .= '<td width="200">'.$value['full_name'].'</td>';
+                        $product_row_1 .= '<td class="text-center">'.$value['numbers'].'</td>';
+                        $product_row_1 .= '<td class="mask_currency text-right">'.($value['cost'] + $value['cost_new']).'</td>';
+                    }
+                    else{
+                        $product_row_2 .= '<td width="200">'.$value['full_name'].'</td>';
+                        $product_row_2 .= '<td class="text-center">'.$value['numbers'].'</td>';
+                        $product_row_2 .= '<td class="mask_currency text-right">'.($value['cost'] + $value['cost_new']).'</td>';
+                    }
+                }
+                $status_sales           = $item['status_id'] ? $status_sales_arr[$item['status_id']]['name'] : '';
+                if($item['unit_transport'] == 'viettel')
+                    $status_check           = $item['ghtk_status'] ? $status_check_vtp[$item['ghtk_status']]['name'] : '';
+                else
+                    $status_check           = $item['ghtk_status'] ? $status_check_arr[$item['ghtk_status']]['name'] : '';
+                $status_acccounting     = $item['status_acounting_id'] ? $status_accounting[$item['status_acounting_id']]['name'] : '';
+
+                $status         = 'Sales: '.$status_sales.'<br>'.'Giục đơn: '.$status_check.'<br>'.'Kế toán: '.$status_acccounting;
+                $paid_cost      = 'Đã thanh toán/ chưa thanh toán';
+                $shipped_date   = $date->formatToView($item['shipped_date']);
+                $code           = $item['code'];
+                $user_name      = $item['user_id'] ? $user[$item['user_id']]['name'] : '';
+                $price_transport= $item['price_transport'];
+                $price_total    = $item['price_total'];
+                $price_paid     = $item['price_paid'];
+
+                if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
+                    $b1 = '<td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_new - $total_cost) .'</td>';
+                }
+
+                $xhtmlItems .= '<tr>
+        						<td '.$rowSpan.' class="text-right">'.($keys+1).'</td>
+        						<td '.$rowSpan.'>'.$status.'</td>
+        						<td '.$rowSpan.' class="text-center">'.$paid_cost.'</td>
+        						<td '.$rowSpan.' class="text-center">'.$shipped_date.'</td>
+        		                <td '.$rowSpan.' class="text-bold text-center">'.$code.'</td>
+        						<td '.$rowSpan.' class="">'.$user_name.'</td>
+        						'.$product_row_1.'
+        						<td '.$rowSpan.' class="mask_currency text-right">'.$price_transport.'</td>
+        						<td '.$rowSpan.' class="mask_currency text-right">'.$price_total.'</td>
+        						<td '.$rowSpan.' class="mask_currency text-right">'.$price_paid.'</td>
+        						<td '.$rowSpan.' class="mask_currency text-right">'.($price_paid - $total_cost_new).'</td>
+        						'.$b1.'
+        						';
+                $xhtmlItems .=  '</tr>';
+                $xhtmlItems .=  '<tr>'.$product_row_2.'</tr>';
+            }
+            if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids)){
+                $h1 = '<th width="140" class="text-center">Phí dịch vụ</th>';
+            }
+            $result['reportTable'] = '<thead>
+                        				    <tr>
+                            					<th width="50" class="text-center">STT</th>
+                            					<th width="120" class="text-center">Trạng thái</th>
+                            					<th width="140" class="text-center">Thanh toán giá vốn</th>
+                            					<th width="140" class="text-center">Ngày tháng</th>
+                            					<th width="140" class="text-center">Mã số đơn</th>
+                            					<th width="140" class="text-center">Nhân viên</th>
+                            					<th width="200" class="text-center">Sản phẩm</th>
+                            					<th width="140" class="text-center">Số lượng</th>
+                            					<th width="140" class="text-center">Giá vốn CRM</th>
+                            					<th width="140" class="text-center">Phí ship</th>
+                            					<th width="140" class="text-center">Giá bán</th>
+                            					<th width="140" class="text-center">Đã thanh toán</th>
+                            					<th width="140" class="text-center">Cộng tác viên</th>
+                            					'.$h1.'
+                        					</tr>
+                        				</thead>
+                        				<tbody>
+                        				    '. $xhtmlItems .'
+                        				</tbody>';
+
+            echo json_encode($result);
+            return $this->response;
+        }
+        else {
+            // Khai báo giá trị ngày tháng
+            $default_date_begin     = date('01/m/Y');
+            $default_date_end       = date('t/m/Y');
+
+            $ssFilter->report                   = $ssFilter->report ? $ssFilter->report : array();
+            $ssFilter->report['date_begin']     = $ssFilter->report['date_begin'] ? $ssFilter->report['date_begin'] : $default_date_begin;
+            $ssFilter->report['date_end']       = $ssFilter->report['date_end'] ? $ssFilter->report['date_end'] : $default_date_end;
+            $ssFilter->report['sale_id']        = $ssFilter->report['sale_id'] ? $ssFilter->report['sale_id'] : '';
+            $ssFilter->report['paid_cost']      = $ssFilter->report['paid_cost'] ? $ssFilter->report['paid_cost'] : '';
+            $ssFilter->report['filter_status']  = $ssFilter->report['filter_status'] ? $ssFilter->report['filter_status'] : '';
+            $ssFilter->report['filter_status_type'] = $ssFilter->report['filter_status_type'] ? $ssFilter->report['filter_status_type'] : '';
+
+            $this->_params['ssFilter']          = $ssFilter->report;
+
+            // Set giá trị cho form
+            $myForm	= new \Report\Form\Report($this->getServiceLocator(), $ssFilter->report);
+            $myForm->setData($ssFilter->report);
+
+            $this->_viewModel['params']         = $this->_params;
+            $this->_viewModel['myForm']         = $myForm;
+            $this->_viewModel['caption']        = 'Báo cáo nhập hàng';
         }
 
         $viewModel = new ViewModel($this->_viewModel);

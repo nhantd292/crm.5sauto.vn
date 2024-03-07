@@ -124,5 +124,22 @@ $is_accounting = true;
                 </ul>
             </li>
         <?php }?>
+
+        <?php if($is_system || $is_admin || $is_accounting){?>
+            <li>
+                <a href="javascript:;">
+                    <i class="fa fa-bar-chart"></i>
+                    <span class="title">Báo cáo kế toán</span><span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="<?php echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'acounting', 'code' => 'import'));?>">
+                            <i class="fa fa-dot-circle-o"></i>
+                            Báo cáo nhập hàng
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        <?php }?>
     </ul>
 </div>

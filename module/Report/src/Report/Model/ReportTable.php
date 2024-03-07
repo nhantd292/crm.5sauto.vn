@@ -40,7 +40,7 @@ class ReportTable extends AbstractTableGateway implements ServiceLocatorAwareInt
 		        if(!empty($arrData['filter_date_begin']) && !empty($arrData['filter_date_end'])) {
 	    	        $select -> where -> NEST
 	                    	         -> greaterThanOrEqualTo('success_date', $date->formatToData($arrData['filter_date_begin']))
-	                    	         -> AND
+	                    	         ->AND
 	                    	         -> lessThanOrEqualTo('success_date', $date->formatToData($arrData['filter_date_end']))
 	                    	         -> UNNEST;
 	    	    }
