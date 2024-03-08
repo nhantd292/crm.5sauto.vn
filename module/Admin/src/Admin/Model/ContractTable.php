@@ -3782,6 +3782,15 @@ class ContractTable extends DefaultTable {
                 if(isset($ssFilter['paid_cost']) && $ssFilter['paid_cost'] != '') {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.paid_cost', $ssFilter['paid_cost']);
                 }
+                if(isset($ssFilter['filter_status_sale']) && $ssFilter['filter_status_sale'] != '') {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.status_id', $ssFilter['filter_status_sale']);
+                }
+                if(isset($ssFilter['filter_status_check']) && $ssFilter['filter_status_check'] != '') {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.ghtk_status', $ssFilter['filter_status_check']);
+                }
+                if(isset($ssFilter['filter_status_accounting']) && $ssFilter['filter_status_accounting'] != '') {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.status_acounting_id', $ssFilter['filter_status_accounting']);
+                }
 
                 if(isset($ssFilter['contract_type_bh']) && $ssFilter['contract_type_bh'] != '') {
                     if ($ssFilter['contract_type_bh'] == 1){

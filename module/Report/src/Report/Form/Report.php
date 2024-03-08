@@ -112,44 +112,50 @@ class Report extends Form{
             )
         ));
 
-        // Bộ phận
+        // Trạng thái sale
         $this->add(array(
-            'name'			=> 'filter_status_type',
+            'name'			=> 'filter_status_sale',
             'type'			=> 'Select',
             'attributes'	=> array(
                 'class'		=> 'form-control select2 select2_basic',
             ),
             'options'		=> array(
-                'empty_option'	=> '- Bộ phận -',
+                'empty_option'	=> '- Trạng thái sale -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> array('status_id' => 'Sales', 'ghtk_status' => 'Giục đơn', 'status_acounting_id' => 'Kế toán', ),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name')),
             ),
         ));
 
-        $list_status = [];
-        if($ssFilter['filter_status_type'] == 'ghtk_status'){
-            $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "ghtk-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
-        }
-        if($ssFilter['filter_status_type'] == 'status_acounting_id'){
-            $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status-acounting" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
-        }
-        if($ssFilter['filter_status_type'] == 'status_id'){
-            $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
-        }
-
-        // Trạng thái theo bộ phận
+        // Trạng thái giục đơn
+        $list_check_ghtk    = \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "ghtk-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
+        $list_check_viettel   = \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "viettel-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
         $this->add(array(
-            'name'			=> 'filter_status',
+            'name'			=> 'filter_status_check',
             'type'			=> 'Select',
             'attributes'	=> array(
                 'class'		=> 'form-control select2 select2_basic',
             ),
             'options'		=> array(
-                'empty_option'	=> '- Trạng thái -',
+                'empty_option'	=> '- Trạng thái giục đơn -',
                 'disable_inarray_validator' => true,
-                'value_options'	=> $list_status,
+                'value_options'	=> array_merge($list_check_ghtk, $list_check_viettel),
             ),
         ));
+
+        // Trạng thái kế toán
+        $this->add(array(
+            'name'			=> 'filter_status_accounting',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Trạng thái kế toán -',
+                'disable_inarray_validator' => true,
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status-acounting" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name')),
+            ),
+        ));
+
 		
 		// Danh mục sản phẩm
 		$this->add(array(

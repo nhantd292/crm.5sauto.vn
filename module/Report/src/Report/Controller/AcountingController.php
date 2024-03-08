@@ -1261,9 +1261,12 @@ class AcountingController extends ActionController {
             $ssFilter->report['date_end']               = $this->_params['data']['date_end'];
             $ssFilter->report['sale_branch_id']         = $this->_params['data']['sale_branch_id'];
             $ssFilter->report['paid_cost']              = $this->_params['data']['paid_cost'];
+            $ssFilter->report['code']                   = $this->_params['data']['code'];
             $ssFilter->report['sale_id']                = $this->_params['data']['sale_id'];
-            $ssFilter->report['filter_status_type']     = $this->_params['data']['filter_status_type'];
-            $ssFilter->report['filter_status']          = $this->_params['data']['filter_status'];
+//            $ssFilter->report['filter_status_type']     = $this->_params['data']['filter_status_type'];
+            $ssFilter->report['filter_status_sale']     = $this->_params['data']['filter_status_sale'];
+            $ssFilter->report['filter_status_check']    = $this->_params['data']['filter_status_check'];
+            $ssFilter->report['filter_status_accounting']= $this->_params['data']['filter_status_accounting'];
 
             $this->_params['ssFilter'] = $ssFilter->report;
 
@@ -1272,15 +1275,19 @@ class AcountingController extends ActionController {
                 'filter_date_begin'         => $ssFilter->report['date_begin'],
                 'filter_date_end'           => $ssFilter->report['date_end'],
                 'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
+                'code'                      => $ssFilter->report['code'],
                 'paid_cost'                 => $ssFilter->report['paid_cost'],
                 'sale_id'                   => $ssFilter->report['sale_id'],
-                'filter_status_type'        => $ssFilter->report['filter_status_type'],
-                'filter_status'             => $ssFilter->report['filter_status'],
+//                'filter_status_type'        => $ssFilter->report['filter_status_type'],
+                'filter_status_sale'        => $ssFilter->report['filter_status_sale'],
+                'filter_status_check'       => $ssFilter->report['filter_status_check'],
+                'filter_status_accounting'  => $ssFilter->report['filter_status_accounting'],
                 'date_type'                 => 'shipped_date',
             );
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
 
             $xhtmlItems = '';
+            $sum_cost_new = $sum_cost = $sum_price_total = $sum_price_paid = $sum_price_transport = $sum_number = 0;
             foreach ($contracts as $keys => $item){
                 $options = unserialize($item['options']);
                 $rowSpan = 'rowspan="'.count($options['product']).'"';
@@ -1289,6 +1296,11 @@ class AcountingController extends ActionController {
                 foreach ($options['product'] as $key => $value){
                     $total_cost_new += ($value['cost'] + $value['cost_new']) * $value['numbers'];
                     $total_cost     += $value['cost'] * $value['numbers'];
+
+                    $sum_cost_new += ($value['cost'] + $value['cost_new']) * $value['numbers'];
+                    $sum_cost += $total_cost;
+                    $sum_number += $value['numbers'];
+
                     if($key == 0){
                         $product_row_1 .= '<td width="200">'.$value['full_name'].'</td>';
                         $product_row_1 .= '<td class="text-center">'.$value['numbers'].'</td>';
@@ -1316,10 +1328,15 @@ class AcountingController extends ActionController {
                 $user_name      = $item['user_id'] ? $user[$item['user_id']]['name'] : '';
                 $price_transport= $item['price_transport'];
                 $price_total    = $item['price_total'];
-                $price_paid     = $item['price_paid'];
+                $price_paid     = $item['price_paid'] - $item['price_deposits'];
+
+                $sum_price_paid += $price_paid;
+                $sum_price_total += $price_total;
+                $sum_price_transport += $price_transport;
 
                 if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-                    $b1 = '<td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_new - $total_cost) .'</td>';
+                    $b1     =   '<td '.$rowSpan.' class="mask_currency text-right">'.($price_paid - $total_cost_new).'</td>
+                                <td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_new - $total_cost) .'</td>';
                 }
 
                 $xhtmlItems .= '<tr>
@@ -1333,14 +1350,16 @@ class AcountingController extends ActionController {
         						<td '.$rowSpan.' class="mask_currency text-right">'.$price_transport.'</td>
         						<td '.$rowSpan.' class="mask_currency text-right">'.$price_total.'</td>
         						<td '.$rowSpan.' class="mask_currency text-right">'.$price_paid.'</td>
-        						<td '.$rowSpan.' class="mask_currency text-right">'.($price_paid - $total_cost_new).'</td>
         						'.$b1.'
         						';
                 $xhtmlItems .=  '</tr>';
                 $xhtmlItems .=  $product_row_2;
             }
             if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-                $h1 = '<th width="140" class="text-center">Phí dịch vụ</th>';
+                $h1 = '<th width="140" class="text-center">Cộng tác viên</th>
+                        <th width="140" class="text-center">Phí dịch vụ</th>';
+                $h2 = '<th width="140" class="mask_currency text-right text-red">'.($sum_price_paid - $sum_cost_new).'</th>
+                        <th width="140" class="mask_currency text-right text-red">'. ($sum_cost_new - $sum_cost) .'</th>';
             }
             $result['reportTable'] = '<thead>
                         				    <tr>
@@ -1356,8 +1375,22 @@ class AcountingController extends ActionController {
                             					<th width="140" class="text-center">Phí ship</th>
                             					<th width="140" class="text-center">Giá bán</th>
                             					<th width="140" class="text-center">Đã thanh toán</th>
-                            					<th width="140" class="text-center">Cộng tác viên</th>
                             					'.$h1.'
+                        					</tr>
+                        				    <tr>
+                            					<th width="50" class="text-center"></th>
+                            					<th width="120" class="text-center"></th>
+                            					<th width="140" class="text-center"></th>
+                            					<th width="140" class="text-center"></th>
+                            					<th width="140" class="text-center"></th>
+                            					<th width="140" class="text-center"></th>
+                            					<th width="200" class="text-center"></th>
+                            					<th width="140" class="mask_currency text-center text-red">'.$sum_number.'</th>
+                            					<th width="140" class="mask_currency text-right text-red">'.($sum_cost_new).'</th>
+                            					<th width="140" class="mask_currency text-right text-red">'.$sum_price_transport.'</th>
+                            					<th width="140" class="mask_currency text-right text-red">'.$sum_price_total.'</th>
+                            					<th width="140" class="mask_currency text-right text-red">'.$sum_price_paid.'</th>
+                            					'.$h2.'
                         					</tr>
                         				</thead>
                         				<tbody>
@@ -1372,18 +1405,22 @@ class AcountingController extends ActionController {
             $default_date_begin     = date('01/m/Y');
             $default_date_end       = date('t/m/Y');
 
-            $ssFilter->report                   = $ssFilter->report ? $ssFilter->report : array();
-            $ssFilter->report['date_begin']     = $ssFilter->report['date_begin'] ? $ssFilter->report['date_begin'] : $default_date_begin;
-            $ssFilter->report['date_end']       = $ssFilter->report['date_end'] ? $ssFilter->report['date_end'] : $default_date_end;
-            $ssFilter->report['sale_id']        = $ssFilter->report['sale_id'] ? $ssFilter->report['sale_id'] : '';
-            $ssFilter->report['paid_cost']      = $ssFilter->report['paid_cost'] ? $ssFilter->report['paid_cost'] : '';
-            $ssFilter->report['filter_status']  = $ssFilter->report['filter_status'] ? $ssFilter->report['filter_status'] : '';
-            $ssFilter->report['filter_status_type'] = $ssFilter->report['filter_status_type'] ? $ssFilter->report['filter_status_type'] : '';
+            $ssFilter->report                       = $ssFilter->report ? $ssFilter->report : array();
+            $ssFilter->report['date_begin']         = $ssFilter->report['date_begin'] ? $ssFilter->report['date_begin'] : $default_date_begin;
+            $ssFilter->report['date_end']           = $ssFilter->report['date_end'] ? $ssFilter->report['date_end'] : $default_date_end;
+            $ssFilter->report['sale_id']            = $ssFilter->report['sale_id'] ? $ssFilter->report['sale_id'] : '';
+            $ssFilter->report['code']               = $ssFilter->report['code'] ? $ssFilter->report['code'] : '';
+            $ssFilter->report['paid_cost']          = $ssFilter->report['paid_cost'] ? $ssFilter->report['paid_cost'] : '';
+//            $ssFilter->report['filter_status_type'] = $ssFilter->report['filter_status_type'] ? $ssFilter->report['filter_status_type'] : '';
+            $ssFilter->report['filter_status_sale'] = $ssFilter->report['filter_status_sale'] ? $ssFilter->report['filter_status_sale'] : '';
+            $ssFilter->report['filter_status_check']= $ssFilter->report['filter_status_check'] ? $ssFilter->report['filter_status_check'] : '';
+            $ssFilter->report['filter_status_accounting']= $ssFilter->report['filter_status_accounting'] ? $ssFilter->report['filter_status_accounting'] : '';
 
             $this->_params['ssFilter']          = $ssFilter->report;
 
             // Set giá trị cho form
-            $myForm	= new \Report\Form\Report($this->getServiceLocator(), $ssFilter->report);
+//            $myForm	= new \Report\Form\Report($this->getServiceLocator(), $ssFilter->report);
+            $myForm	= new \Report\Form\Report($this->getServiceLocator(), $this->_params);
             $myForm->setData($ssFilter->report);
 
             $this->_viewModel['params']         = $this->_params;
