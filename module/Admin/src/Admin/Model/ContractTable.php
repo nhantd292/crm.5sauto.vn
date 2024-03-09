@@ -55,17 +55,25 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_date_type'])) {
                     $date_type = $ssFilter['filter_date_type'];
                 }
-
-                if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                if($date_type == 'not_shipped'){
                     $select -> where -> NEST
-                        -> greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']))
-                        ->AND
-                        -> lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'))
+                        -> isNull(TABLE_CONTRACT .'.shipped_date')
+                        ->OR
+                        -> equalTo(TABLE_CONTRACT .'.shipped_date', '')
                         -> UNNEST;
-                } elseif (!empty($ssFilter['filter_date_begin'])) {
-                    $select->where->greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']));
-                } elseif (!empty($ssFilter['filter_date_end'])) {
-                    $select->where->lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'));
+                }
+                else {
+                    if (!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                        $select->where->NEST
+                            ->greaterThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_begin']))
+                            ->AND
+                            ->lessThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'))
+                            ->UNNEST;
+                    } elseif (!empty($ssFilter['filter_date_begin'])) {
+                        $select->where->greaterThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_begin']));
+                    } elseif (!empty($ssFilter['filter_date_end'])) {
+                        $select->where->lessThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'));
+                    }
                 }
 
                 if(!empty($ssFilter['filter_sale_branch'])) {
@@ -420,18 +428,28 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['filter_date_type'])) {
                     $date_type = $ssFilter['filter_date_type'];
                 }
-
-                if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                if($date_type == 'not_shipped'){
                     $select -> where -> NEST
-                                     -> greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']))
-                                     ->AND
-                                     -> lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']. ' 23:59:59') )
-                                     -> UNNEST;
-                } elseif (!empty($ssFilter['filter_date_begin'])) {
-                    $select->where->greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']));
-                } elseif (!empty($ssFilter['filter_date_end'])) {
-                    $select->where->lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']. ' 23:59:59') );
+                        -> isNull(TABLE_CONTRACT .'.shipped_date')
+                        ->OR
+                        -> equalTo(TABLE_CONTRACT .'.shipped_date', '')
+                        -> UNNEST;
                 }
+                else{
+                    if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                        $select -> where -> NEST
+                            -> greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']))
+                            ->AND
+                            -> lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']. ' 23:59:59') )
+                            -> UNNEST;
+                    } elseif (!empty($ssFilter['filter_date_begin'])) {
+                        $select->where->greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']));
+                    } elseif (!empty($ssFilter['filter_date_end'])) {
+                        $select->where->lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']. ' 23:59:59') );
+                    }
+                }
+
+
     			
 	            if(!empty($ssFilter['filter_sale_branch'])) {
     			    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_branch_id', $ssFilter['filter_sale_branch']);

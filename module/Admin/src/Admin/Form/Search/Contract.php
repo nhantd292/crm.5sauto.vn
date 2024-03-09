@@ -328,7 +328,7 @@ class Contract extends Form{
             ),
             'options' => array(
 //                'empty_option'	=> '- Ngày lên đơn -',
-                'value_options' => array('date' => 'Ngày lên đơn', 'shipped_date' => 'Ngày xuất kho'),
+                'value_options' => array('date' => 'Ngày lên đơn', 'shipped_date' => 'Ngày xuất kho', 'not_shipped' => 'Chưa có ngày xuất kho'),
             )
         ));
 		
