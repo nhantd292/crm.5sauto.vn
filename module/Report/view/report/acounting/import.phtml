@@ -44,10 +44,25 @@
         );
     }
     $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+
+$arrControl = array(
+    array(
+        'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
+        'children' => array(
+            array( 'name' => 'hidden', 'caption' => 'Đã thanh toán giá vốn', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'paidCost\');')),
+            array( 'name' => 'hidden', 'caption' => 'Chưa thanh toán giá vốn', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'noPaidCost\');')),
+        ), 'children-class' => 'dropdown-menu pull-right'
+    ),
+);
+
 ?>
 <div class="report1" id="adminReport_<?php echo $random; ?>">
     <div class="report-control">
     	<div class="title pull-left"><?php echo $this->caption;?></div>
+        <div class="control pull-right">
+            <?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+        </div>
 		<div class="clearfix"></div>
 	</div>
 	<div class="report-wrapper">
@@ -58,6 +73,7 @@
                 </div>
             </form>
     	</div>
+        <form method="post" id="adminFormFilter" action="/xadmin/contract/filter/">
     	<div class="report-content">
             <div class="row">
                 <div class="col-sm-12">
@@ -71,6 +87,7 @@
                 </div>
             </div>
         </div>
+        </form>
     </div>
 </div>
 <style>
@@ -80,10 +97,14 @@
     .report1 .report-control {
         min-height: 36px;
         line-height: 36px;
-        background-color: #444;
-        color: #FFF;
         padding-left: 10px;
         margin-bottom: 10px;
+        border-bottom: 1px solid #d8d8d8;
+        color: #333;
+        font-size: 14px;
+    }
+    .report1 .report-control a{
+        color: #333;
     }
     div.table-fixed thead tr:nth-child(2) th {
         top: 28px;

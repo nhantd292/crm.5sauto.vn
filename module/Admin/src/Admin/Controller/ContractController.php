@@ -2570,14 +2570,16 @@ class ContractController extends ActionController {
     public function paidCostAction() {
         $result = $this->getTable()->saveItem($this->_params, array('task' => 'paidcost'));
         $this->flashMessenger()->addMessage('Đã xác nhận thanh toán giá vốn '.$result.' đơn hàng thành công');
-        $this->goRoute();
+//        $this->goRoute();
+        $this->goUrl('/xreport/index/index/id/acounting/code/import/');
     }
 
     // Chưa thanh toán giá vốn
     public function noPaidCostAction() {
         $result = $this->getTable()->saveItem($this->_params, array('task' => 'nopaidcost'));
         $this->flashMessenger()->addMessage('Bỏ xác nhận thanh toán giá vốn '.$result.' đơn hàng thành công');
-        $this->goRoute();
+//        $this->goRoute();
+        $this->goUrl('/xreport/index/index/id/acounting/code/import/');
     }
 
     // Thêm giảm trừ doanh thu

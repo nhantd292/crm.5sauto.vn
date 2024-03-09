@@ -380,6 +380,7 @@ function contractLock(url) {
 	if(itemId.length > 0) {
 		var actionForm  = $(formAdmin).attr('action').split('/');
 		var ajaxUrl 	= '/' + actionForm[1] + '/' + actionForm[2] + '/' + url;
+		console.log(ajaxUrl, itemId)
 		submitForm(ajaxUrl);
 	} else {
 		xToastr('error', xMessage['no-checked'], '');

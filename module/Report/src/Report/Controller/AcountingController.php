@@ -1275,12 +1275,10 @@ class AcountingController extends ActionController {
             $where_contract = array(
                 'filter_date_begin'         => $ssFilter->report['date_begin'],
                 'filter_date_end'           => $ssFilter->report['date_end'],
-                'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
                 'code'                      => $ssFilter->report['code'],
                 'paid_cost'                 => $ssFilter->report['paid_cost'],
                 'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
                 'sale_id'                   => $ssFilter->report['sale_id'],
-//                'filter_status_type'        => $ssFilter->report['filter_status_type'],
                 'filter_status_sale'        => $ssFilter->report['filter_status_sale'],
                 'filter_status_check'       => $ssFilter->report['filter_status_check'],
                 'filter_status_accounting'  => $ssFilter->report['filter_status_accounting'],
@@ -1291,6 +1289,7 @@ class AcountingController extends ActionController {
             $xhtmlItems = '';
             $sum_cost_new = $sum_cost = $sum_price_total = $sum_price_paid = $sum_price_transport = $sum_number = 0;
             foreach ($contracts as $keys => $item){
+                $id = $item['id'];
                 $options = unserialize($item['options']);
                 $rowSpan = 'rowspan="'.count($options['product']).'"';
                 $product_row_1 = $product_row_2 = '';
@@ -1333,9 +1332,9 @@ class AcountingController extends ActionController {
                 $price_total    = $item['price_total'];
                 $price_paid     = $item['price_paid'] - $item['price_deposits'];
 
-                $sum_price_paid += $price_paid;
-                $sum_price_total += $price_total;
-                $sum_price_transport += $price_transport;
+                $sum_price_paid         += $price_paid;
+                $sum_price_total        += $price_total;
+                $sum_price_transport    += $price_transport;
 
                 if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
                     $b1     =   '<td '.$rowSpan.' class="mask_currency text-right">'.($price_paid - $total_cost_new).'</td>
@@ -1343,7 +1342,8 @@ class AcountingController extends ActionController {
                 }
 
                 $xhtmlItems .= '<tr>
-        						<td '.$rowSpan.' class="text-right">'.($keys+1).'</td>
+        						<td '.$rowSpan.' class="text-center"><input type="checkbox" name="cid[]" class="checkboxes" id="cid[]" value="'.$id.'"></td>
+        						<td '.$rowSpan.' class="text-center">'.($keys+1).'</td>
         						<td '.$rowSpan.'>'.$status.'</td>
         						<td '.$rowSpan.' class="text-center">'.$paid_cost.'</td>
         						<td '.$rowSpan.' class="text-center">'.$shipped_date.'</td>
@@ -1366,6 +1366,7 @@ class AcountingController extends ActionController {
             }
             $result['reportTable'] = '<thead>
                         				    <tr>
+                                                <th width="30" class="table-checkbox fix-head"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>
                             					<th width="50" class="text-center">STT</th>
                             					<th width="120" class="text-center">Trạng thái</th>
                             					<th width="140" class="text-center">Thanh toán giá vốn</th>
@@ -1381,6 +1382,7 @@ class AcountingController extends ActionController {
                             					'.$h1.'
                         					</tr>
                         				    <tr>
+                            					<th width="50" class="text-center"></th>
                             					<th width="50" class="text-center"></th>
                             					<th width="120" class="text-center"></th>
                             					<th width="140" class="text-center"></th>
