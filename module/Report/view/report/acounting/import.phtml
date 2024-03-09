@@ -19,6 +19,7 @@
             array('element' => $myForm->get('date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('code'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('paid_cost'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('sale_branch_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('sale_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status_sale'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
@@ -33,6 +34,7 @@
             array('element' => $myForm->get('date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('code'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('paid_cost'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//            array('element' => $myForm->get('sale_branch_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('sale_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_status_type'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_status_sale'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
@@ -82,6 +84,9 @@
         color: #FFF;
         padding-left: 10px;
         margin-bottom: 10px;
+    }
+    div.table-fixed thead tr:nth-child(2) th {
+        top: 28px;
     }
 </style>
 

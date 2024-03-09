@@ -241,6 +241,10 @@ class Report extends Form{
         ));
 
         // Nhân viên sales
+        $arr_condition_sale_id = array(
+            'company_department_id' => 'sales',
+            'sale_branch_id' => $ssFilter['sale_branch_id'],
+        );
         $this->add(array(
             'name'			=> 'sale_id',
             'type'			=> 'Select',
@@ -249,7 +253,7 @@ class Report extends Form{
             ),
             'options'		=> array(
                 'empty_option'	=> '- Nhân viên sales -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'sales'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem($arr_condition_sale_id, array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
             )
         ));
 

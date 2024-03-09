@@ -3833,7 +3833,6 @@ class ContractTable extends DefaultTable {
 
                 // Đơn hàng chưa xóa có trạng thái = 0
                 $select -> where -> equalTo(TABLE_CONTRACT .'.delete', 0);
-
 	        })->toArray();
 	    }
 

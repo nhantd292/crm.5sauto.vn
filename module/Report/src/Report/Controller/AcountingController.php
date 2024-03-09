@@ -1262,6 +1262,7 @@ class AcountingController extends ActionController {
             $ssFilter->report['sale_branch_id']         = $this->_params['data']['sale_branch_id'];
             $ssFilter->report['paid_cost']              = $this->_params['data']['paid_cost'];
             $ssFilter->report['code']                   = $this->_params['data']['code'];
+            $ssFilter->report['sale_branch_id']         = $this->_params['data']['sale_branch_id'];
             $ssFilter->report['sale_id']                = $this->_params['data']['sale_id'];
 //            $ssFilter->report['filter_status_type']     = $this->_params['data']['filter_status_type'];
             $ssFilter->report['filter_status_sale']     = $this->_params['data']['filter_status_sale'];
@@ -1277,6 +1278,7 @@ class AcountingController extends ActionController {
                 'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
                 'code'                      => $ssFilter->report['code'],
                 'paid_cost'                 => $ssFilter->report['paid_cost'],
+                'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
                 'sale_id'                   => $ssFilter->report['sale_id'],
 //                'filter_status_type'        => $ssFilter->report['filter_status_type'],
                 'filter_status_sale'        => $ssFilter->report['filter_status_sale'],
@@ -1294,23 +1296,24 @@ class AcountingController extends ActionController {
                 $product_row_1 = $product_row_2 = '';
                 $total_cost = $total_cost_new = 0;
                 foreach ($options['product'] as $key => $value){
-                    $total_cost_new += ($value['cost'] + $value['cost_new']) * $value['numbers'];
+                    $cost = ($value['cost'] + $value['cost_new']) * $value['numbers'];
+                    $total_cost_new += $cost;
                     $total_cost     += $value['cost'] * $value['numbers'];
 
-                    $sum_cost_new += ($value['cost'] + $value['cost_new']) * $value['numbers'];
+                    $sum_cost_new += $cost;
                     $sum_cost += $total_cost;
                     $sum_number += $value['numbers'];
 
                     if($key == 0){
                         $product_row_1 .= '<td width="200">'.$value['full_name'].'</td>';
                         $product_row_1 .= '<td class="text-center">'.$value['numbers'].'</td>';
-                        $product_row_1 .= '<td class="mask_currency text-right">'.($value['cost'] + $value['cost_new']).'</td>';
+                        $product_row_1 .= '<td class="mask_currency text-right">'.$cost.'</td>';
                     }
                     else{
                         $product_row_2 .= '<tr>';
                         $product_row_2 .= '<td width="200">'.$value['full_name'].'</td>';
                         $product_row_2 .= '<td class="text-center">'.$value['numbers'].'</td>';
-                        $product_row_2 .= '<td class="mask_currency text-right">'.($value['cost'] + $value['cost_new']).'</td>';
+                        $product_row_2 .= '<td class="mask_currency text-right">'.$cost.'</td>';
                         $product_row_2 .= '</tr>';
                     }
                 }
@@ -1408,6 +1411,7 @@ class AcountingController extends ActionController {
             $ssFilter->report                       = $ssFilter->report ? $ssFilter->report : array();
             $ssFilter->report['date_begin']         = $ssFilter->report['date_begin'] ? $ssFilter->report['date_begin'] : $default_date_begin;
             $ssFilter->report['date_end']           = $ssFilter->report['date_end'] ? $ssFilter->report['date_end'] : $default_date_end;
+            $ssFilter->report['sale_branch_id']     = $ssFilter->report['sale_branch_id'] ? $ssFilter->report['sale_branch_id'] : '';
             $ssFilter->report['sale_id']            = $ssFilter->report['sale_id'] ? $ssFilter->report['sale_id'] : '';
             $ssFilter->report['code']               = $ssFilter->report['code'] ? $ssFilter->report['code'] : '';
             $ssFilter->report['paid_cost']          = $ssFilter->report['paid_cost'] ? $ssFilter->report['paid_cost'] : '';
