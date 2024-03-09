@@ -1035,6 +1035,18 @@ class ContractTable extends DefaultTable {
             return true;
 		}
 
+        // Cập nhật bản ghi
+		if ($options['task'] == 'udpate-item') {
+            $id = $arrData['id'];
+            
+            if($arrData['shipped_date']){
+                $data['shipped_date'] = $arrData['shipped_date'];
+            }
+
+            $this->tableGateway->update($data, array('id' => $id));
+            return true;
+		}
+
 		// Cập nhật lịch sử chăm sóc đơn hàng
 		if ($options['task'] == 'update-history-contract') {
             $id      = $arrParam['data']['id'];

@@ -1670,6 +1670,80 @@ class ContractController extends ActionController {
 
         return $viewModel;
     }
+
+
+    public function importShipedAction()
+    {
+        $myForm = new \Admin\Form\Contract\Import($this->getServiceLocator(), $this->_params);
+        $myForm->setInputFilter(new \Admin\Filter\Contract\Import($this->_params));
+        $this->_viewModel['caption'] = 'Cập nhật ngày xuất kho cho đơn hàng';
+        $this->_viewModel['myForm']  = $myForm;
+        $viewModel                   = new ViewModel($this->_viewModel);
+
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($this->getRequest()->isPost()) {
+                if(!empty($this->_params['data']['ghtk_code'])){
+                    $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('ghtk_code' => $this->_params['data']['ghtk_code']), array('task' => 'ghtk-code'));
+                    if(empty($contract)){
+                        $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $this->_params['data']['code']), array('task' => 'by-code'));
+                    }
+                    if (empty($contract)) {
+                        echo json_encode(array(
+                            'status'=> 1,
+                            'data' => [],
+                            'message' => 'Đơn hàng không tồn tại',
+                        ));
+                    } else {
+                        if(!empty($contract['shipped_date'])){
+                            echo json_encode(array(
+                                'status'=> 1,
+                                'data' => [],
+                                'message' => 'Ngày xuất kho đã tồn tại',
+                            ));
+                        }
+                        else{
+                            $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => array('id' => $contract['id'], 'shipped_date' => $this->_params['data']['shipped_date'])), array('task' => 'udpate-item'));
+                            if($result){
+                                echo json_encode(array(
+                                    'status'=> 2,
+                                    'message' => 'Thành công',
+                                ));
+                            }
+                        }
+                    }
+                }
+                else{
+                    echo json_encode(array(
+                        'status'=> 1,
+                        'data' => [],
+                        'message' => 'Mã vận đơn không tồn tại',
+                    ));
+                }
+                return $this->response;
+            }
+        }
+        else {
+            if ($this->getRequest()->isPost()) {
+                $myForm->setData($this->_params['data']);
+                if ($myForm->isValid()) {
+                    if (!empty($this->_params['data']['file_import']['tmp_name'])) {
+                        $upload      = new \ZendX\File\Upload();
+                        $file_import = $upload->uploadFile('file_import', PATH_FILES . '/import/', array());
+                    }
+                    $viewModel->setVariable('file_import', $file_import);
+                    $viewModel->setVariable('import', true);
+
+                    require_once PATH_VENDOR . '/Excel/PHPExcel/IOFactory.php';
+                    $objPHPExcel = \PHPExcel_IOFactory::load(PATH_FILES . '/import/' . $file_import);
+
+                    $sheetData = $objPHPExcel->getActiveSheet(1)->toArray(null, true, true, true);
+                    $viewModel->setVariable('sheetData', $sheetData);
+                }
+            }
+        }
+
+        return $viewModel;
+    }
     
     public function exportAction() {
         $dateFormat             = new \ZendX\Functions\Date();
