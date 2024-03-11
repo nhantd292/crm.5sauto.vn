@@ -52,6 +52,7 @@ $arrControl = array(
         'children' => array(
             array( 'name' => 'hidden', 'caption' => 'Đã thanh toán giá vốn', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'paidCost\');')),
             array( 'name' => 'hidden', 'caption' => 'Chưa thanh toán giá vốn', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'noPaidCost\');')),
+            array( 'name' => 'hidden', 'caption' => 'Xuất excel', 'link' => 'javascript:;', 'icon' => 'fa fa-file-excel-o', 'attributes' => array('class'=>'exportToExcel')),
         ), 'children-class' => 'dropdown-menu pull-right'
     ),
 );
@@ -61,7 +62,6 @@ $arrControl = array(
     <div class="report-control">
     	<div class="title pull-left"><?php echo $this->caption;?></div>
         <div class="control pull-right">
-            <p class="exportToExcel btn btn-primary" style="float: right;margin-bottom: 5px;">Xuất excel</p>
             <?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
         </div>
 		<div class="clearfix"></div>

@@ -11,7 +11,7 @@
     
     $elements = array(
         array('div' => '', 'boxClass' => 'col-md-12', 'boxId' => 'result_check_contact'),
-        array('element' => $myForm->get('file_import'), 'label' => 'Chọn file cần cập nhật <a href="'. URL_FILES .'/template/Nhap_ngay_xuat_kho_viettel.xlsx"><b>(Tải file mẫu)</b></a>', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('file_import'), 'label' => 'Chọn file cần cập nhật <a href="'. URL_FILES .'/template/Nhap_ngay_xuat_kho_trang_thai_viettel.xlsx"><b>(Tải file mẫu)</b></a>', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
         array('element' => $myForm->get('submit'), 'label' => '', 'boxClass' => 'col-md-12'),
     );
     
@@ -51,6 +51,7 @@
             						<th>Mã Vận Đơn Đơn vị vận chuyển</th>
             						<th>Mã đơn hàng CRM</th>
                                     <th>Ngày xuất kho</th>
+                                    <th>Trạng thái</th>
             					</tr>
             				</thead>
             				<tbody>
@@ -66,6 +67,7 @@
         							<td><span class="ghtk_code"><?php echo trim($val['B']);?></span></td>
         							<td><span class="code"><?php echo trim($val['C']);?></span></td>
                                     <td><span class="shipped_date"><?php echo $dateFormat->formatToData(trim($val['D']), 'Y-m-d');?></span></td>
+                                    <td><span class="ghtk_status"><?php echo trim($val['E']);?></span></td>
         						</tr>
         						<?php
             					    }

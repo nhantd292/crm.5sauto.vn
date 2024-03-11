@@ -1283,6 +1283,7 @@ class AcountingController extends ActionController {
                 'filter_status_check'       => $ssFilter->report['filter_status_check'],
                 'filter_status_accounting'  => $ssFilter->report['filter_status_accounting'],
                 'date_type'                 => 'shipped_date',
+                'order'                     => 'shipped_date',
             );
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
 

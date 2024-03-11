@@ -1694,21 +1694,45 @@ class ContractController extends ActionController {
                             'message' => 'Đơn hàng không tồn tại',
                         ));
                     } else {
-                        if(!empty($contract['shipped_date'])){
+                        if(empty($this->_params['data']['shipped_date'])){
                             echo json_encode(array(
                                 'status'=> 1,
                                 'data' => [],
-                                'message' => 'Ngày xuất kho đã tồn tại',
+                                'message' => 'Nhập ngày xuất kho',
                             ));
+                            return $this->response;
+                        }
+                        if(empty($this->_params['data']['ghtk_status'])){
+                            echo json_encode(array(
+                                'status'=> 1,
+                                'data' => [],
+                                'message' => 'Nhập mã trạng thái',
+                            ));
+                            return $this->response;
                         }
                         else{
-                            $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => array('id' => $contract['id'], 'shipped_date' => $this->_params['data']['shipped_date'])), array('task' => 'udpate-item'));
-                            if($result){
+                            $status_code = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => $this->_params['data']['ghtk_status'], 'code' => 'viettel-status'), array('task' => 'by-custom-alias'));
+                            if(empty($status_code)){
                                 echo json_encode(array(
-                                    'status'=> 2,
-                                    'message' => 'Thành công',
+                                    'status'=> 1,
+                                    'data' => [],
+                                    'message' => 'Mã trạng thái không tồn tại',
                                 ));
+                                return $this->response;
                             }
+                        }
+
+                        $data_update = array(
+                            'id' => $contract['id'],
+                            'shipped_date' => $this->_params['data']['shipped_date'],
+                            'ghtk_status' => $this->_params['data']['ghtk_status'],
+                        );
+                        $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => $data_update), array('task' => 'udpate-item'));
+                        if($result){
+                            echo json_encode(array(
+                                'status'=> 2,
+                                'message' => 'Thành công',
+                            ));
                         }
                     }
                 }

@@ -1060,6 +1060,9 @@ class ContractTable extends DefaultTable {
             if($arrData['shipped_date']){
                 $data['shipped_date'] = $arrData['shipped_date'];
             }
+            if($arrData['ghtk_status']){
+                $data['ghtk_status'] = $arrData['ghtk_status'];
+            }
 
             $this->tableGateway->update($data, array('id' => $id));
             return true;
@@ -3775,7 +3778,11 @@ class ContractTable extends DefaultTable {
         	                    'contact_type' => 'type',
         	                    'contact_contract_time_success' => 'contract_time_success',
         	                ), 'inner');
-							
+
+                if(!empty($ssFilter['order'])) {
+                    $select -> order(array(TABLE_CONTRACT .'.'.$ssFilter['order'] => 'ASC'));
+                }
+
                 if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
                     $select -> where -> NEST
                             -> greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $dateFormat->formatToSearch($ssFilter['filter_date_begin']))

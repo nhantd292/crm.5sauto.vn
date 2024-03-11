@@ -10,6 +10,7 @@ $phone_code = true;
 if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || !in_array('sale_contract', $encode_phone)) {
     $phone_code = false;
 }
+$is_system = in_array(SYSTEM, $permission_ids) ? true: false;
 $myForm->get('filter_action')->setValue($this->params['action']);
 if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
     $elements = array(
@@ -227,33 +228,36 @@ if($this->items->count() > 0) {
     							<td '.$rowSpan.'>'. $status .'</td>
                                 <td '.$rowSpan.'>'. $ghtk_code .'</td>
     							<td '.$rowSpan.'><span class="text-bold">'. $code .'</span><br><span style="color: #a70101;">'.$item->coincider_code.'</span></td>
-    							<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
     							<td '.$rowSpan.'>'. $date .'<br>'.$shipped_date.'</td>
-    							<td '.$rowSpan.'>'. $user_name .'</td>
-    							<td '.$rowSpan.'>'. $contact_name .'</td>
-    							<td '.$rowSpan.'>'. $contact_phone .'</td>
-    							<td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
-    							<td '.$rowSpan.' class="text-right">'. number_format($price_total) .'</td>
-    							<td '.$rowSpan.' class="text-right">'. $fee_cod .'</td>
-    							<td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>
-    							<td '.$rowSpan.' class="text-right">'. number_format($price_owed) .'</td>';
+    							<td '.$rowSpan.'>'. $user_name .'</td>';
         if (count($options['product']) > 0) {
             foreach($options['product'] as $key => $item_product) {
                 if ($key == 0 && !empty($item_product['product_id'])) {
-                    $xhtmlItems    .= '<td>' . $item_product['full_name'].'</td>
-                                            <td>' . $item_product['car_year'] . '</td>
-                                            <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>';
+                    $xhtmlItems    .= '
+                                        <td>' . $item_product['full_name'].'</td>
+                                        <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
+                                        <td>' . $item_product['car_year'] . '</td>
+                                        ';
                 }
             }
         }
         else{
             $xhtmlItems    .= '<td></td><td></td><td></td>';
         }
-        $xhtmlItems .= '<td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
+        $xhtmlItems .= '
+                            <td '.$rowSpan.' class="text-right">'. number_format($price_total) .'</td>
+                            <td '.$rowSpan.' class="text-right">'. $fee_cod .'</td>
+                            <td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>
+                            <td '.$rowSpan.' class="text-right">'. number_format($price_owed) .'</td>
+                            <td '.$rowSpan.'>'. $contact_name .'</td>
+                            <td '.$rowSpan.'>'. $contact_phone .'</td>
+                            <td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
+                            <td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
+                            <td '.$rowSpan.'>'. $user_gd_name .'</td>
                             <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
                             <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'</td>
-                            <td '.$rowSpan.'>'. $user_gd_name .'</td>
                             <td '.$rowSpan.'>'. $paid_cost .'</td>
+                            <td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
                         </tr>';
 
         if (count($options['product']) > 0) {
@@ -261,8 +265,8 @@ if($this->items->count() > 0) {
                 if ($key > 0 && !empty($item_product['product_id'])) {
                     $xhtmlItems .= '<tr ' . $color_text_row . '>
                                     <td>' . $item_product['full_name'].'</td>
-                                    <td>' . $item_product['car_year'] . '</td>
                                     <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
+                                    <td>' . $item_product['car_year'] . '</td>
                                     </tr>';
                 }
             }
@@ -282,24 +286,24 @@ $xhtmlHead .= '<th width="70" class="fix-head" style="left: 23px;">Công cụ</t
 $xhtmlHead .= '<th width="180">Trạng thái</th>';
 $xhtmlHead .= '<th width="200">Mã đơn vận chuyển</th>';
 $xhtmlHead .= '<th width="90">Mã số đơn</th>';
-$xhtmlHead .= '<th width="90">Mã kiotviet</th>';
 $xhtmlHead .= '<th width="80">Ngày</th>';
 $xhtmlHead .= '<th width="150">Nhân viên</th>';
-$xhtmlHead .= '<th width="150">Tên khách hàng</th>';
-$xhtmlHead .= '<th width="90">Điện thoại</th>';
-$xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
+$xhtmlHead .= '<th width="200">Sản phẩm</th>';
+$xhtmlHead .= '<th width="120">Số lượng</th>';
+$xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu'.$text_total_discount.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Công nợ'.$text_total_price_owed.'</th>';
-$xhtmlHead .= '<th width="200">Sản phẩm</th>';
-$xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
-$xhtmlHead .= '<th width="120">Số lượng</th>';
+$xhtmlHead .= '<th width="150">Tên khách hàng</th>';
+$xhtmlHead .= '<th width="90">Điện thoại</th>';
+$xhtmlHead .= '<th class="av-read">Địa chỉ</th>';
 $xhtmlHead .= '<th width="150">Ghi chú</th>';
+$xhtmlHead .= '<th width="150">Giục đơn</th>';
 $xhtmlHead .= '<th width="140">Người tạo</th>';
 $xhtmlHead .= '<th width="140">Marketer</th>';
-$xhtmlHead .= '<th width="150">Giục đơn</th>';
 $xhtmlHead .= '<th width="150">Thanh toán giá vốn</th>';
+$xhtmlHead .= '<th width="90">Mã kiotviet</th>';
 $xhtmlHead .= '</tr>';
 
 $sendViettelAccount = [];
@@ -310,6 +314,7 @@ $sendGhtkAccount = [];
 foreach($this->ghtkKeyList as $key => $value){
     $sendGhtkAccount[] = array( 'name' => 'share','link' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendGhtk', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
 }
+$menu_edit_shipped_date = $is_system ? array( 'name' => 'import-date-shiped', 'caption' => 'Cập nhật ngày xuất kho Viettel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import-shiped')), 'icon' => 'fa fa-check-square-o' ) : [];
 
 // Control
 $arrControl = array(
@@ -354,7 +359,7 @@ $arrControl = array(
                     'title' => 'Cập nhật số lượng sang kiotviet',
                 ),
             ) ,
-            array( 'name' => 'import-date-shiped', 'caption' => 'Cập nhật ngày xuất kho Viettel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import-shiped')), 'icon' => 'fa fa-check-square-o' ),
+            $menu_edit_shipped_date,
 
 //                array( 'name' => 'hidden', 'caption' => 'Mở khóa', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'unlock\');')),
         ), 'children-class' => 'dropdown-menu pull-right'
