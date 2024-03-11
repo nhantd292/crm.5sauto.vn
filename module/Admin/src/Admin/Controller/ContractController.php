@@ -677,6 +677,49 @@ class ContractController extends ActionController {
         return new ViewModel($this->_viewModel);
     }
 
+    // Cập nhật giá vốn sản phẩm
+    public function updatePriceCostAction() {
+        $myForm = new \Admin\Form\Contract\UpdatePriceCost($this->getServiceLocator(), $this->_params);
+
+        if(!empty($this->_params['data']['id'])) {
+            $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->_params['data']['id']));
+            $contract_options = !empty($contract['options']) ? unserialize($contract['options']) : array();
+            $myForm->setData($contract);
+            $this->_viewModel['contract']           = $contract;
+            $this->_viewModel['option_product']     = $contract_options['product'];
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
+        }
+
+        if($this->getRequest()->isPost()){
+            if($this->_params['data']['modal'] == 'success') {
+                $myForm->setInputFilter(new \Admin\Filter\Contract\UpdatePriceCost($this->_params));
+                $myForm->setData($this->_params['data']);
+
+                if($myForm->isValid()){
+                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+                    $this->_params['item'] = $contract;
+                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'update-item'));
+                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
+                    echo 'print';
+                    return $this->response;
+                }
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+        }
+
+        $this->_viewModel['myForm']     = $myForm;
+        $this->_viewModel['contract']   = $contract;
+        $this->_viewModel['data']       = $this->_params['data'];
+        $this->_viewModel['caption']    = 'Cập nhật giá vốn';
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
+
     public function createOrderKov($params, $method = 'POST'){
         $numberFormat = new \ZendX\Functions\Number();
 

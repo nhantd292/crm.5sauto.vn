@@ -1342,9 +1342,12 @@ class AcountingController extends ActionController {
                                 <td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_new - $total_cost) .'</td>';
                 }
 
+
+
                 $xhtmlItems .= '<tr>
         						<td '.$rowSpan.' class="text-center"><input type="checkbox" name="cid[]" class="checkboxes" id="cid[]" value="'.$id.'"></td>
         						<td '.$rowSpan.' class="text-center">'.($keys+1).'</td>
+        						<td '.$rowSpan.' class="text-center"><a href="javascript:;" class="" onclick="javascript:popupAction(\'/xadmin/contract/update-price-cost/\', {\'id\': \''.$item['id'].'\'});"><i class="fa fa-pencil-square-o"></i></a></td>
         						<td '.$rowSpan.'>'.$status.'</td>
         						<td '.$rowSpan.' class="text-center">'.$paid_cost.'</td>
         						<td '.$rowSpan.' class="text-center">'.$shipped_date.'</td>
@@ -1369,6 +1372,7 @@ class AcountingController extends ActionController {
                         				    <tr>
                                                 <th width="30" class="table-checkbox fix-head"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>
                             					<th width="50" class="text-center">STT</th>
+                            					<th width="20" class="text-center"></th>
                             					<th width="120" class="text-center">Trạng thái</th>
                             					<th width="140" class="text-center">Thanh toán giá vốn</th>
                             					<th width="140" class="text-center">Ngày tháng</th>

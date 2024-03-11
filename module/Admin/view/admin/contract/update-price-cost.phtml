@@ -1,0 +1,127 @@
+<?php
+    $myForm = $this->myForm;
+    $myForm->prepare();
+    $data = $this->data;
+    $classx = $data['unit_transport'] == '5sauto' ? '' : 'hidden';
+    $classy = $data['unit_transport'] == '5sauto' ? 'hidden' : '';
+
+    $elements = array(
+        array('element' => $myForm->get('id'), 'validate' => array('require' => true)),
+        array('element' => $myForm->get('modal'), 'validate' => array('require' => true))
+    );
+
+    $xhtml = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+?>
+
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	<h4 class="modal-title"><?php echo $this->caption;?></h4>
+</div>
+<div class="modal-body">
+<?php
+} 
+?>
+    <?php echo @$this->xViewElementErrors($elements);?>
+	<form method="post" action="" class="horizontal-form adminForm" role="form" name="adminFormModal" id="adminFormModal">
+    	<div class="row">
+			<?php echo $xhtml;?>
+            <div class="col-md-12">
+                <h3 class="form-section">Danh sách sản phẩm</h3>
+                <div class="contract_product table-scrollable" style="min-height: 213px;" >
+                    <table class="table table-striped table-bordered table-hover table-product">
+                        <thead>
+                        <tr>
+                            <th width="100px" class="text-center">Mã sản phẩm</th>
+                            <th width="150px" class="text-center">Tên sản phẩm</th>
+                            <th width="" class="text-center">Tên xe - năm sản xuât</th>
+                            <th width="80px" class="text-center">S.lượng</th>
+                            <th width="100px" class="text-center">Giá tiền</th>
+                            <th width="100px" class="text-center">Thành tiền</th>
+                            <th width="10px" class="text-center">C.Dài</th>
+                            <th width="10px" class="text-center">C.Rộng</th>
+                            <th width="10px" class="text-center">C.Cao</th>
+                        </tr>
+                        </thead>
+                        <tbody class="product_body list-product-contract">
+                        <?php
+                        if(!empty($this->productList)){
+                            $number   = new \ZendX\Functions\Number();
+                            $productList = $this->productList;
+                            $productHtml = '';
+                            for($i = 0; $i < count($productList['product_id']); $i++) {
+                                $check_name = empty($productList['product_name'][$i]) ? 'has-error' : "";
+                                $check_number = empty($productList['numbers'][$i]) ? 'has-error' : "";
+                                $check_price = empty($productList['price'][$i]) ? 'has-error' : "";
+
+                                $productHtml .= '<tr id="tr_'.$productList['product_id'][$i].' data-id="'.$productList['product_id'][$i].'">
+                                                        <td width="100px" class="text-bold text-red text-middle">'.$productList['code'][$i].'</td>
+                                                        <td width="100px" class="text-middle">'.$productList['full_name'][$i].'</td>
+                                                        <td width="100px" class="text-middle">'.$productList['car_year'][$i].'</td>
+                                                        <td class="numbers" >'.$productList['numbers'][$i].'</td>
+                                                        <td class="price text-middle text-right box-price">'.$productList['price'][$i].'</td>
+                                                        <td class="text-middle text-right hidden">'.number_format($productList['listed_price'][$i]).'</td>
+                                                        <td class="total">'.$productList['total'][$i].'</td>
+                                                        <td class="hidden">
+                                                            <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$productList['product_id'][$i].'">
+                                                            <input class="form-control" type="text" name="contract_product[full_name][]" value="'.$productList['full_name'][$i].'">
+                                                            <input class="form-control" type="text" name="contract_product[code][]" value="'.$productList['code'][$i].'">
+                                                            <input class="form-control" type="text" name="contract_product[cost][]" value="'.$productList['cost'][$i].'"> 
+                                                            <input class="form-control" type="text" name="contract_product[weight][]" value="'.$productList['weight'][$i].'"> 
+                                                            <input class="form-control" type="text" name="contract_product[categoryId][]" value="'.$productList['categoryId'][$i].'"> 
+                                                            <input class="form-control" type="text" name="contract_product[categoryName][]" value="'.$productList['categoryName'][$i].'"> 
+                                                        </td>
+                                                       
+                                                        <td class="text-center"><i class="fa fa-trash delete-row" aria-hidden="true" style="color:red; margin: 10px 0 0 5px; font-size: 20px;"></i></td>
+                                                    </tr>';
+                            }
+                            echo $productHtml;
+                        }
+                        else if(!empty($this->option_product)){
+                            $productHtml = '';
+                            foreach($this->option_product as $pro_item){
+
+                                $tr_name = 'id="tr_'.$pro_item['product_id'].'"';
+                                $text_number = '';
+                                $productHtml .= '<tr '.$tr_name.' data-id="'.$pro_item['product_id'].'">
+                                                    <td width="100px" class="text-bold text-red text-middle">'.$pro_item['code'].'</td>
+                                                    <td width="100px" class="text-middle">'.$pro_item['full_name'].'</td>
+                                                    <td class="car_year">'.$pro_item['car_year'].'</td>
+                                                    <td class="numbers ">'.$pro_item['numbers'].'</td>
+                                                    <td class="price text-middle text-right box-price">'.number_format($pro_item['price']).'</td>
+                                                    <td class="total">'.number_format($pro_item['total']).'</td>
+                                                    
+                                                    <td class="hidden">
+                                                        <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$pro_item['product_id'].'">
+                                                        <input class="form-control" type="text" name="contract_product[full_name][]" value="'.$pro_item['full_name'].'">
+                                                        <input class="form-control" type="text" name="contract_product[code][]" value="'.$pro_item['code'].'">
+                                                        <input class="form-control" type="text" name="contract_product[cost][]" value="'.$pro_item['cost'].'"> 
+                                                        <input class="form-control" type="text" name="contract_product[weight][]" value="'.$pro_item['weight'].'"> 
+                                                        <input class="form-control" type="text" name="contract_product[categoryId][]" value="'.$pro_item['categoryId'].'"> 
+                                                        <input class="form-control" type="text" name="contract_product[categoryName][]" value="'.$pro_item['categoryName'].'"> 
+                                                    </td>
+                                                </tr>';
+                            }
+                            echo $productHtml;
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+		</div>
+    </form>
+<?php
+if($this->params['data']['modal'] != 'success') { 
+?>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn green save-close">Lưu & Đóng</button>
+	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
+</div>
+<?php
+} 
+?>
+
