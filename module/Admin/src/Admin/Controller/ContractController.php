@@ -704,21 +704,23 @@ class ContractController extends ActionController {
                     $data_tm = [];
                     for ($i = 0; $i < count($contract_product['product_id']); $i++ ){
                         $data_tm[$contract_product['product_id'][$i]]['cost']       = $numberFormat->formatToData($contract_product['cost'][$i]);
-                        if(trim($contract_product['cost'][$i]) == "")
+                        $data_tm[$contract_product['product_id'][$i]]['cost_new']   = $numberFormat->formatToData($contract_product['cost_new'][$i]);
+                        if(trim($contract_product['cost'][$i]) == "" || trim($contract_product['cost_new'][$i]) == "")
                         {
                             $check_emty_data = false;
                         }
                     }
-
                     if($check_emty_data) {
                         foreach($option_product as $key => $value){
                             $option_product[$key]['cost']               =  $data_tm[$value['product_id']]['cost'];
-                            $option_product[$key]['capital_default']    =  $data_tm[$value['product_id']]['cost'] + $value['cost_new'];
+                            $option_product[$key]['cost_new']           =  $data_tm[$value['product_id']]['cost_new'];
+                            $option_product[$key]['capital_default']    =  $data_tm[$value['product_id']]['cost'] + $data_tm[$value['product_id']]['cost_new'];
                         }
                         $data_update = array(
                             'id' => $contract['id'],
                             'options' => array('product' => $option_product)
                         );
+
                         
                         $this->_params['item'] = $contract;
                         $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => $data_update), array('task' => 'update-item'));

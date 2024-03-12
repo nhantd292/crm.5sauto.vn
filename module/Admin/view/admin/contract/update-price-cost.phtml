@@ -56,6 +56,7 @@ if($this->params['data']['modal'] != 'success') {
                             <th width="100px" class="text-center">Giá tiền</th>
                             <th width="100px" class="text-center">Thành tiền</th>
                             <th width="100px" class="text-center">Giá vốn kiotviet</th>
+                            <th width="100px" class="text-center">Tăng thêm</th>
                         </tr>
                         </thead>
                         <tbody class="product_body list-product-contract">
@@ -66,6 +67,7 @@ if($this->params['data']['modal'] != 'success') {
                             $productHtml = '';
                             for($i = 0; $i < count($productList['product_id']); $i++) {
                                 $check_cost = empty($productList['cost'][$i]) ? 'has-error' : "";
+                                $check_cost_new = empty($productList['cost_new'][$i]) ? 'has-error' : "";
 
                                 $productHtml .= '<tr id="tr_'.$productList['product_id'][$i].' data-id="'.$productList['product_id'][$i].'">
                                                         <td width="100px" class="text-bold text-red text-middle">'.$this->option_product[$i]['code'].'</td>
@@ -75,6 +77,7 @@ if($this->params['data']['modal'] != 'success') {
                                                         <td class="price text-middle text-right box-price">'.$this->option_product[$i]['price'].'</td>
                                                         <td class="total text-right text-middle">'.$this->option_product[$i]['total'].'</td>
                                                         <td class="cost '.$check_cost.'"><input class="form-control text-right money" type="text" name="contract_product[cost][]" value="'.$productList['cost'][$i].'"></td>
+                                                        <td class="cost_new '.$check_cost_new.'"><input class="form-control text-right money" type="text" name="contract_product[cost_new][]" value="'.$productList['cost_new'][$i].'"></td>
                                                         <td class="hidden">
                                                             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$productList['product_id'][$i].'">
                                                         </td>
@@ -96,6 +99,7 @@ if($this->params['data']['modal'] != 'success') {
                                                     <td class="price text-middle text-right box-price">'.number_format($pro_item['price']).'</td>
                                                     <td class="total text-middle text-right">'.number_format($pro_item['total']).'</td>
                                                     <td class="cost"><input class="form-control text-right money" type="text" name="contract_product[cost][]" value="'.number_format($pro_item['cost']).'"></td>
+                                                    <td class="cost_new"><input class="form-control text-right money" type="text" name="contract_product[cost_new][]" value="'.number_format($pro_item['cost_new']).'"></td>
                                                     <td class="hidden">
                                                         <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$pro_item['product_id'].'">
                                                     </td>
