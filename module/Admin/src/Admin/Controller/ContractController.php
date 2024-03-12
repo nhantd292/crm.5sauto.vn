@@ -136,23 +136,23 @@ class ContractController extends ActionController {
         }
 
         // Cập nhật giá vốn mới cho đơn hàng
-        if($this->_userInfo->getUserInfo('id') == '1111111111111111111111'){
-            $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
-            foreach($items as $contract){
-                $options = unserialize($contract->options);
-                $products = $options['product'];
-                foreach($products as $key => $pro){
-                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $pro['product_id'], 'branchId' => $contract->sale_branch_id));
-
-                    $capital_default = (int)($item_inven['cost'] + $item_inven['cost_new']) * $pro['numbers'];
-                    $options['product'][$key]['cost'] = (int)$item_inven['cost'];
-                    $options['product'][$key]['capital_default'] = (int)$capital_default;
-                    $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
-                    $options['product'][$key]['fee'] = $item_inven['fee'];
-                }
-                $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract->id)), array('task' => 'update-product-cost-auto'));
-            }
-        }
+//        if($this->_userInfo->getUserInfo('id') == '1111111111111111111111'){
+//            $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
+//            foreach($items as $contract){
+//                $options = unserialize($contract->options);
+//                $products = $options['product'];
+//                foreach($products as $key => $pro){
+//                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $pro['product_id'], 'branchId' => $contract->sale_branch_id));
+//
+//                    $capital_default = (int)($item_inven['cost'] + $item_inven['cost_new']) * $pro['numbers'];
+//                    $options['product'][$key]['cost'] = (int)$item_inven['cost'];
+//                    $options['product'][$key]['capital_default'] = (int)$capital_default;
+//                    $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
+//                    $options['product'][$key]['fee'] = $item_inven['fee'];
+//                }
+//                $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract->id)), array('task' => 'update-product-cost-auto'));
+//            }
+//        }
         
 
 
@@ -679,6 +679,7 @@ class ContractController extends ActionController {
 
     // Cập nhật giá vốn sản phẩm
     public function updatePriceCostAction() {
+        $numberFormat = new \ZendX\Functions\Number();
         $myForm = new \Admin\Form\Contract\UpdatePriceCost($this->getServiceLocator(), $this->_params);
 
         if(!empty($this->_params['data']['id'])) {
@@ -686,7 +687,7 @@ class ContractController extends ActionController {
             $contract_options = !empty($contract['options']) ? unserialize($contract['options']) : array();
             $myForm->setData($contract);
             $this->_viewModel['contract']           = $contract;
-            $this->_viewModel['option_product']     = $contract_options['product'];
+            $this->_viewModel['option_product']     = $option_product = $contract_options['product'];
         } else {
             return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
         }
@@ -696,13 +697,41 @@ class ContractController extends ActionController {
                 $myForm->setInputFilter(new \Admin\Filter\Contract\UpdatePriceCost($this->_params));
                 $myForm->setData($this->_params['data']);
 
+                $contract_product = $this->_params['data']['contract_product'];
+                $check_emty_data = true;// kiểm tra thông tin sản phẩm của đơn hàng đã đầy đủ chưa
+
                 if($myForm->isValid()){
-                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                    $this->_params['item'] = $contract;
-                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'update-item'));
-                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
-                    echo 'print';
-                    return $this->response;
+                    $data_tm = [];
+                    for ($i = 0; $i < count($contract_product['product_id']); $i++ ){
+                        $data_tm[$contract_product['product_id'][$i]]['cost']       = $numberFormat->formatToData($contract_product['cost'][$i]);
+                        $data_tm[$contract_product['product_id'][$i]]['cost_new']   = $numberFormat->formatToData($contract_product['cost_new'][$i]);
+                        if((int)trim($contract_product['cost'][$i]) == 0 || (int)trim($contract_product['cost_new'][$i]) == 0)
+                        {
+                            $check_emty_data = false;
+                        }
+                    }
+                    if($check_emty_data) {
+                        foreach($option_product as $key => $value){
+                            $option_product[$key]['cost']               =  $data_tm[$value['product_id']]['cost'];
+                            $option_product[$key]['cost_new']           =  $data_tm[$value['product_id']]['cost_new'];
+                            $option_product[$key]['capital_default']    =  $data_tm[$value['product_id']]['cost'] + $data_tm[$value['product_id']]['cost_new'];
+                        }
+                        $data_update = array(
+                            'id' => $contract['id'],
+                            'options' => array('product' => $option_product)
+                        );
+                        
+                        
+                        $this->_params['item'] = $contract;
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => $data_update), array('task' => 'update-item'));
+                        $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
+                        echo 'success';
+                        return $this->response;
+                    }
+                    else{
+                        $this->_viewModel['check_product_id'] = 'Cần nhập đầy đủ thông tin của sản phẩm';
+                        $this->_viewModel['productList'] = $this->_params['data']['contract_product'];
+                    }
                 }
             }
         } else {
@@ -1770,7 +1799,7 @@ class ContractController extends ActionController {
                             'shipped_date' => $this->_params['data']['shipped_date'],
                             'ghtk_status' => $this->_params['data']['ghtk_status'],
                         );
-                        $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => $data_update), array('task' => 'udpate-item'));
+                        $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => $data_update), array('task' => 'update-item'));
                         if($result){
                             echo json_encode(array(
                                 'status'=> 2,

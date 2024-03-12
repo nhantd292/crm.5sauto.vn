@@ -1395,6 +1395,7 @@ class AcountingController extends ActionController {
                             					<th width="140" class="text-center"></th>
                             					<th width="140" class="text-center"></th>
                             					<th width="200" class="text-center"></th>
+                            					<th width="200" class="text-center"></th>
                             					<th width="140" class="mask_currency text-center text-red">'.$sum_number.'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.($sum_cost_new).'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_transport.'</th>

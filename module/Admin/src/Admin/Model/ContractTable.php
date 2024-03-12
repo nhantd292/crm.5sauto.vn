@@ -1054,7 +1054,7 @@ class ContractTable extends DefaultTable {
 		}
 
         // Cập nhật bản ghi
-		if ($options['task'] == 'udpate-item') {
+		if ($options['task'] == 'update-item') {
             $id = $arrData['id'];
             
             if($arrData['shipped_date']){
@@ -1062,6 +1062,9 @@ class ContractTable extends DefaultTable {
             }
             if($arrData['ghtk_status']){
                 $data['ghtk_status'] = $arrData['ghtk_status'];
+            }
+            if($arrData['options']){
+                $data['options'] = serialize($arrData['options']);
             }
 
             $this->tableGateway->update($data, array('id' => $id));
