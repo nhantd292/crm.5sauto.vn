@@ -131,6 +131,7 @@ $arrControl = array(
         			$(idReport + ' .report-table table').html(result.reportTable);
         			pageLoading('close', idReport + ' .report-content');
         			Form.init();
+        			checkAll();
                     // resize_col_table('#table-manager');
         		}
         	});
