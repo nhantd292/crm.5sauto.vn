@@ -1330,7 +1330,7 @@ class ContractController extends ActionController {
     public function cancelAction() {
         $item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->params('id')));
 
-        if($item['lock']){
+        if($item['lock'] || $item['status_id'] == DANG_DONG_GOI){
             return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock'));
         }
         if(!empty($item['ghtk_code'])){

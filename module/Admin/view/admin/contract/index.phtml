@@ -175,7 +175,7 @@
             }
             //            $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
             $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
-            $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
+            $menuCancel = empty($item->ghtk_code) && $item->status_id != DANG_DONG_GOI? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
 
             if($item->unit_transport == 'ghtk' || $item->unit_transport == 'viettel'){
                 $menu_edit_status = '';
