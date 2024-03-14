@@ -28,7 +28,8 @@ class   MarketingReportController extends ActionController
         $this->_params['ssFilter']['filter_date_end']   = $ssFilter->filter_date_end;
         $this->_params['ssFilter']['filter_sale_branch']= $ssFilter->filter_sale_branch;
         $this->_params['ssFilter']['filter_sale_group'] = $ssFilter->filter_sale_group;
-        $this->_params['ssFilter']['filter_marketer_id'] = $ssFilter->filter_marketer_id;
+        $this->_params['ssFilter']['filter_marketer_id']= $ssFilter->filter_marketer_id;
+        $this->_params['ssFilter']['filter_product_id'] = $ssFilter->filter_product_id;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage']  = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : 50;
@@ -55,7 +56,8 @@ class   MarketingReportController extends ActionController
             $ssFilter->filter_keyword    = $data['filter_keyword'];
             $ssFilter->filter_date_begin = $data['filter_date_begin'];
             $ssFilter->filter_date_end   = $data['filter_date_end'];
-            $ssFilter->filter_marketer_id   = $data['filter_marketer_id'];
+            $ssFilter->filter_marketer_id= $data['filter_marketer_id'];
+            $ssFilter->filter_product_id = $data['filter_product_id'];
 
             $ssFilter->filter_sale_group = $data['filter_sale_group'];
             if(!empty($data['filter_sale_branch'])) {
@@ -115,10 +117,11 @@ class   MarketingReportController extends ActionController
         $this->_viewModel['count']        = $this->getTable()->countItem($this->_params, array('task' => 'list-item-type'));
 
         $this->_viewModel['user']         = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
+        $this->_viewModel['products']     = $this->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem(null, array('task' => 'cache'));
         $this->_viewModel['sale_group']   = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
         $this->_viewModel['sale_branch']  = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
         $this->_viewModel['product_type'] = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'product-type')), array('task' => 'cache'));
-        $this->_viewModel['caption']      = 'Báo cáo marketing theo giờ';
+        $this->_viewModel['caption']      = 'Báo cáo chi phí chạy ADS';
         return new ViewModel($this->_viewModel);
     }
 
@@ -263,11 +266,8 @@ class   MarketingReportController extends ActionController
             $this->_params['data']['type']  = "mkt_report_day_hour";
 
             $myForm->setData($this->_params['data']);
-            $controlAction = $this->_params['data']['control-action'];
 
             if ($myForm->isValid()) {
-                $user_marketing = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-marketing'));
-
                 $date_begin = date($dateFormat->formatToData($this->_params['data']['from_date']));
                 $date_end   = date($dateFormat->formatToData($this->_params['data']['to_date']));
                 $day_begin     = strtotime($date_begin);
@@ -284,9 +284,12 @@ class   MarketingReportController extends ActionController
                     if(count($this->_params['data']['user_marketing'])){
                         foreach ($this->_params['data']['user_marketing'] as $user) {
                             $this->_params['data']['marketer_id']  = $user;
-                            $report_item = $this->getTable()->getItem(array('date' => $day, 'marketer_id' => $user, 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
-                            if(empty($report_item)){
-                                $this->getTable()->saveItem($this->_params, array('task' => "add-all"));
+                            foreach($this->_params['data']['product_ids'] as $product_id){
+                                $this->_params['data']['product_id']  = $product_id;
+                                $report_item = $this->getTable()->getItem(array('date' => $day, 'marketer_id' => $user, 'product_id' => $product_id, 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
+                                if(empty($report_item)){
+                                    $this->getTable()->saveItem($this->_params, array('task' => "add-all"));
+                                }
                             }
                         }
                     }
@@ -301,6 +304,7 @@ class   MarketingReportController extends ActionController
         }
 
         $this->_viewModel['user_marketing'] = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-marketing'));
+        $this->_viewModel['list_products']  = $this->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem(null, array('task' => 'list-all'));
         $this->_viewModel['myForm']         = $myForm;
         $this->_viewModel['caption']        = $caption;
         return new ViewModel($this->_viewModel);

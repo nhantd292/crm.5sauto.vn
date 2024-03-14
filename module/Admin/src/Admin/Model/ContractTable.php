@@ -1530,7 +1530,7 @@ class ContractTable extends DefaultTable {
 
                 // cập nhật doanh thu cho Marketer
                 if ($arrData['production_department_type'] == STATUS_CONTRACT_PRODUCT_PRODUCTED) {
-                    $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $id)), array('task' => 'update-sales-finish'));
+                    $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $id)), array('task' => 'update-sales-finish')); # bỏ
                 }
 
                 $data['price'] = $data['price_total'] + $data['price_promotion'];
@@ -1800,7 +1800,7 @@ class ContractTable extends DefaultTable {
 				$data['production_department_type'] = $arrData['production_department_type'];
 				// cập nhật doanh thu cho Marketer
 				if ($arrItem['production_department_type'] != STATUS_CONTRACT_PRODUCT_PRODUCTED && $arrData['production_department_type'] == STATUS_CONTRACT_PRODUCT_PRODUCTED) {
-					$this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $arrItem['id'])), array('task' => 'update-sales-finish'));
+					$this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $arrItem['id'])), array('task' => 'update-sales-finish')); # bỏ
 				}
 			}
 			if(!empty($arrData['price_carpet'])) {
@@ -2325,7 +2325,7 @@ class ContractTable extends DefaultTable {
 				$data['production_department_type'] = $arrData['production_department_type'];
 				// cập nhật doanh thu cho Marketer
 				if ($arrItem['production_department_type'] != STATUS_CONTRACT_PRODUCT_PRODUCTED && $arrData['production_department_type'] == STATUS_CONTRACT_PRODUCT_PRODUCTED) {
-					$this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $arrItem['id'])), array('task' => 'update-sales-finish'));
+					$this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $arrItem['id'])), array('task' => 'update-sales-finish')); # bỏ
 				}
 				// lưu ngày chuyển trạng thái đã giao hàng
 				if ($arrItem['production_department_type'] != STATUS_CONTRACT_PRODUCT_POST && $arrData['production_department_type'] == STATUS_CONTRACT_PRODUCT_POST) {
@@ -2448,7 +2448,7 @@ class ContractTable extends DefaultTable {
 				$data['production_department_type'] = $arrData['production_department_type'];
 				// cập nhật doanh thu cho Marketer
 				if ($arrItem['production_department_type'] != STATUS_CONTRACT_PRODUCT_PRODUCTED && $arrData['production_department_type'] == STATUS_CONTRACT_PRODUCT_PRODUCTED) {
-					$this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $arrItem['id'])), array('task' => 'update-sales-finish'));
+					$this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem(array('data'=> array('contract_id' => $arrItem['id'])), array('task' => 'update-sales-finish')); # bỏ
 				}
 			}
 

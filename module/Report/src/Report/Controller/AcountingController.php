@@ -1366,7 +1366,7 @@ class AcountingController extends ActionController {
                 $h1 = '<th width="140" class="text-center">Cộng tác viên</th>
                         <th width="140" class="text-center">Phí dịch vụ</th>';
                 $h2 = '<th width="140" class="mask_currency text-right text-red">'.($sum_price_paid - $sum_cost_new).'</th>
-                        <th width="140" class="mask_currency text-right text-red">'. ($sum_cost_new - $sum_cost) .'</th>';
+                        <th width="140" class="mask_currency text-right text-red">'. abs($sum_cost_new - $sum_cost) .'</th>';
             }
             $result['reportTable'] = '<thead>
                         				    <tr>

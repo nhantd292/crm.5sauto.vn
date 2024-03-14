@@ -3,43 +3,20 @@ $myForm = $this->myForm;
 $myForm->prepare();
 
 $arrControl = array(
-    array('name'       => 'save-close',
-          'caption'    => 'Lưu &amp; Đóng',
-          'link'       => 'javascript:;',
-          'icon'       => 'fa-save',
-          'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');',
-                                'class'   => 'btn')),
-    array('name'       => 'close',
-          'caption'    => 'Hủy',
-          'link'       => $this->url('routeAdmin/default', array('controller' => $this->params['controller'],
-                                                                 'action'     => 'index')),
-          'onclick'    => '',
-          'icon'       => 'fa-times',
-          'attributes' => array('class' => 'btn')),
+    array('name' => 'save-close', 'caption' => 'Lưu &amp; Đóng', 'link' => 'javascript:;', 'icon' => 'fa-save', 'attributes' => array('onclick' => 'javascript:controlSubmitForm(\'save-close\');', 'class' => 'btn')),
+    array('name' => 'close', 'caption' => 'Hủy', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'onclick' => '', 'icon' => 'fa-times', 'attributes' => array('class' => 'btn')),
 );
 
 $elements = array(
-//    array('element'  => $myForm->get('month'),
-//          'label'    => 'Tháng',
-//          'validate' => array('require' => true),
-//          'boxClass' => 'col-md-1'),
-//
-//    array('element'  => $myForm->get('year'),
-//          'label'    => 'Năm',
-//          'validate' => array('require' => true),
-//          'boxClass' => 'col-md-1'),
-
-    array('element'  => $myForm->get('from_date'),
-          'label'    => 'Từ Ngày',
-          'validate' => array('require' => true),
-          'boxClass' => 'col-md-2'),
-
-    array('element'  => $myForm->get('to_date'),
-          'label'    => 'Đến ngày',
-          'validate' => array('require' => true),
-          'boxClass' => 'col-md-2'),
+    array('element'  => $myForm->get('from_date'),'label'    => 'Từ Ngày', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
+    array('element'  => $myForm->get('to_date'), 'label'    => 'Đến ngày', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
 );
 $xhtml    = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+$elements_products = array(
+    array('element'  => $myForm->get('product_ids'),'label'    => 'Sản phẩm chạy ADS', 'validate' => array('require' => true), 'boxClass' => 'col-md-12'),
+);
+$xhtml_products    = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements_products);
 
 $userhtml = '';
 foreach ($this->user_marketing AS $item) {
@@ -70,12 +47,18 @@ foreach ($this->user_marketing AS $item) {
         <div class="row">
             <?php echo $xhtml; ?>
         </div>
-        <h4 class="row">
-            <h4>Chọn nhân viên</h4><br>
-            <label class="checkbox-inline checkbox2 col-md-2 col-xs-12">
-                <input type="checkbox" name="tick_all" value="choice_all">Tất cả
-            </label>
-            <?php echo $userhtml; ?>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Chọn nhân viên</h4><br>
+                <label class="checkbox-inline checkbox2 col-md-2 col-xs-12">
+                    <input type="checkbox" name="tick_all" value="choice_all">Tất cả
+                </label>
+                <?php echo $userhtml; ?>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <?php echo $xhtml_products; ?>
         </div>
         <div class="row">
             <div class="col-md-12">

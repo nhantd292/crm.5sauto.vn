@@ -76,5 +76,22 @@ class addAll extends InputFilter {
                 )
             )
         ));
+
+        // Sản phẩm
+        $this->add(array(
+            'name'		=> 'product_ids',
+            'required'	=> true,
+            'validators'	=> array(
+                array(
+                    'name'		=> 'NotEmpty',
+                    'options'	=> array(
+                        'messages'	=> array(
+                            \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
+                        )
+                    ),
+                    'break_chain_on_failure'	=> true
+                )
+            )
+        ));
 	}
 }

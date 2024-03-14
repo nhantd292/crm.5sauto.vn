@@ -31,7 +31,8 @@ class MarketingReportTable extends DefaultTable {
 
                 $select -> join(TABLE_USER, TABLE_USER .'.ID = '. TABLE_MARKETING_REPORT .'.marketer_id',
                     array('user_name' => 'name', 'user_sale_branch_id' => 'sale_branch_id', 'user_sale_group_id' => 'sale_group_id',
-                    ), 'inner');
+                    ), 'inner')
+                    -> join(TABLE_KOV_PRODUCTS, TABLE_KOV_PRODUCTS .'.id = '. TABLE_MARKETING_REPORT .'.product_id', array('product_name' => 'fullName'), 'inner');
 
                 if(isset($ssFilter['filter_status']) && $ssFilter['filter_status'] != '') {
                     $select->where->equalTo('status', $ssFilter['filter_status']);
@@ -63,6 +64,10 @@ class MarketingReportTable extends DefaultTable {
 
                 if(isset($ssFilter['filter_marketer_id']) && $ssFilter['filter_marketer_id'] != '') {
                     $select->where->equalTo(TABLE_MARKETING_REPORT.'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
+                if(!empty($ssFilter['filter_product_id'])) {
+                    $select->where->equalTo(TABLE_MARKETING_REPORT.'.product_id', $ssFilter['filter_product_id']);
                 }
 
                 $select->where->equalTo('type', $ssFilter['filter_type']);
@@ -108,15 +113,15 @@ class MarketingReportTable extends DefaultTable {
                 $ssFilter  = $arrParam['ssFilter'];
 
                 $select -> join(TABLE_USER, TABLE_USER .'.ID = '. TABLE_MARKETING_REPORT .'.marketer_id',
-                    array('user_name' => 'name', 'user_sale_branch_id' => 'sale_branch_id', 'user_sale_group_id' => 'sale_group_id',
-                    ), 'inner');
+                    array('user_name' => 'name', 'user_sale_branch_id' => 'sale_branch_id', 'user_sale_group_id' => 'sale_group_id',), 'inner')
+                    -> join(TABLE_KOV_PRODUCTS, TABLE_KOV_PRODUCTS .'.id = '. TABLE_MARKETING_REPORT .'.product_id', array('product_name' => 'fullName'), 'inner');
 
                 if(!isset($options['paginator']) || $options['paginator'] == true) {
                     $select -> limit($paginator['itemCountPerPage'])
                         -> offset(($paginator['currentPageNumber'] - 1) * $paginator['itemCountPerPage']);
                 }
 
-    			$select -> order(array('date' => 'ASC', 'user_name' => 'ASC' ));
+    			$select -> order(array('date' => 'ASC', 'user_name' => 'ASC', 'product_name' ));
 
                 if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
                     $select -> where -> NEST
@@ -144,6 +149,10 @@ class MarketingReportTable extends DefaultTable {
 
                 if(!empty($ssFilter['filter_marketer_id'])) {
                     $select->where->equalTo(TABLE_MARKETING_REPORT.'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
+                if(!empty($ssFilter['filter_product_id'])) {
+                    $select->where->equalTo(TABLE_MARKETING_REPORT.'.product_id', $ssFilter['filter_product_id']);
                 }
 
                 $select->where->equalTo('type', $ssFilter['filter_type']);
@@ -176,8 +185,8 @@ class MarketingReportTable extends DefaultTable {
                 $ssFilter  = $arrParam['ssFilter'];
 
                 $select -> join(TABLE_USER, TABLE_USER .'.ID = '. TABLE_MARKETING_REPORT .'.marketer_id',
-                    array('user_name' => 'name', 'user_sale_branch_id' => 'sale_branch_id', 'user_sale_group_id' => 'sale_group_id',
-                    ), 'inner');
+                    array('user_name' => 'name', 'user_sale_branch_id' => 'sale_branch_id', 'user_sale_group_id' => 'sale_group_id',), 'inner')
+                    -> join(TABLE_KOV_PRODUCTS, TABLE_KOV_PRODUCTS .'.id = '. TABLE_MARKETING_REPORT .'.product_id', array('product_name' => 'fullName'), 'inner');
 
                 if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
                     $select -> where -> NEST
@@ -201,6 +210,10 @@ class MarketingReportTable extends DefaultTable {
 
                 if(!empty($ssFilter['filter_marketer_id'])) {
                     $select->where->equalTo(TABLE_MARKETING_REPORT.'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
+                if(!empty($ssFilter['filter_product_id'])) {
+                    $select->where->equalTo(TABLE_MARKETING_REPORT.'.product_id', $ssFilter['filter_product_id']);
                 }
 
                 $select->where->equalTo('type', $ssFilter['filter_type']);
@@ -234,6 +247,9 @@ class MarketingReportTable extends DefaultTable {
 		        if(!empty($arrParam['marketer_id'])){
                     $select -> where -> equalTo('marketer_id', $arrParam['marketer_id']);
                 }
+		        if(!empty($arrParam['product_id'])){
+                    $select -> where -> equalTo('product_id', $arrParam['product_id']);
+                }
 		        if(!empty($arrParam['type'])){
                     $select -> where -> equalTo('type', $arrParam['type']);
                 }
@@ -261,6 +277,7 @@ class MarketingReportTable extends DefaultTable {
 	            'date'          => $date->formatToData($arrData['date']),
 	            'month'         => $arrData['month'],
 	            'marketer_id'   => $arrData['marketer_id'],
+	            'product_id'    => $arrData['product_id'],
 	            'year'          => $arrData['year'],
 	            'type'          => $arrData['type'],
 	            'created'       => date('Y-m-d H:i:s'),
@@ -326,9 +343,10 @@ class MarketingReportTable extends DefaultTable {
 	    // Cập nhật số điện thoại đổ về crm theo giờ từ nguồn (Nhập tay, import, landing page) cho marketer
 	    if($options['task'] == 'update-number-phone') {
             $marketer_id = $arrData['marketer_id'];
+            $product_id  = $arrData['product_id'];
             $date_time   = $arrData['date'];
             $datex       = substr($date->formatToData($date_time), 0, 10);
-            $report_item = $this->getItem(array('date' => $datex, 'marketer_id' => $marketer_id, 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
+            $report_item = $this->getItem(array('date' => $datex, 'marketer_id' => $marketer_id, 'product_id' => $product_id, 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
 
             if(!empty($report_item)){
                 $id = $report_item['id'];
@@ -366,7 +384,7 @@ class MarketingReportTable extends DefaultTable {
             $marketer_id = $arrData['marketer_id'];
             $date_time   = $arrData['date'];
             $datex       = substr($date->formatToData($date_time), 0, 10);
-            $report_item = $this->getItem(array('date' => $datex, 'marketer_id' => $marketer_id, 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
+            $report_item = $this->getItem(array('date' => $datex, 'marketer_id' => $marketer_id, 'product_id' => $product_id, 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
 
             if(!empty($report_item)){
                 $id = $report_item['id'];
@@ -521,7 +539,7 @@ class MarketingReportTable extends DefaultTable {
 			        $logsTitle   = 'Xóa phiếu chi';
 			        $old_type_detail = $accrued_type_id[$arrItem['accrued_type_id']];
 			    }
-
+                $logsContent = '';
 			    $logsContent .= 'THÔNG TIN<br>';
 			    $logsContent .= 'Ngày: '. $old_date .'<br>';
 			    $logsContent .= 'Số phiếu: '. $old_number .'<br>';

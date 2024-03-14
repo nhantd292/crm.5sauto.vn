@@ -87,5 +87,19 @@ class addAll extends Form
                 'placeholder'	=> 'dd/mm/yyyy',
             )
         ));
+
+        $this->add(array(
+            'name'			=> 'product_ids',
+            'type'			=> 'Select',
+
+            'attributes'	=> array(
+                'multiple'	=> true,
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Sản phẩm chạy ADS-',
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem(null, array('task' => 'cache')), array('key' => 'id', 'value' => 'fullName')),
+            )
+        ));
     }
 }

@@ -147,6 +147,19 @@ class MarketingReport extends Form{
                 'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem($data_filter, array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
             )
         ));
+
+        $this->add(array(
+            'name'			=> 'filter_product_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'multiple'	=> true,
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+		        'empty_option'	=> '- Sản phẩm-',
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'id', 'value' => 'fullName')),
+            )
+        ));
 		
 		// Submit
 		$this->add(array(

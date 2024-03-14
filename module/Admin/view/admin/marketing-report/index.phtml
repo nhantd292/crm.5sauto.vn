@@ -16,6 +16,7 @@
             array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_marketer_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -29,6 +30,7 @@
             array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_marketer_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -51,7 +53,7 @@
     // Head
     $xhtmlBodyHead  = '<tr>';
     $xhtmlBodyHead .= '<th class="table-checkbox  fix-head"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
-    $xhtmlBodyHead .= '<th width ="150" colspan="2"  class="fix-head text-center">Thời gian báo cáo</th>';
+    $xhtmlBodyHead .= '<th width ="150" colspan="3"  class="fix-head text-center">Thời gian báo cáo</th>';
 //    $xhtmlBodyHead .= '<th width ="150" colspan="3" class="text-center">9h30</th>';
 //    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">11h00</th>';
 //    $xhtmlBodyHead .= '<th width ="90" colspan="3" class="text-center">15h00</th>';
@@ -66,6 +68,7 @@
     $xhtmlBodyHead  .= '<th></th>';
     $xhtmlBodyHead  .= '<th style="min-width: 90px" class="fix-head">Ngày</th>';
     $xhtmlBodyHead  .= '<th class="fix-head">Nhân viên</th>';
+    $xhtmlBodyHead  .= '<th class="fix-head">Sản phẩm</th>';
 //    for($i = 0; $i <= 6; $i++) {
         $xhtmlBodyHead .= '<th class="col-100 text-center">SDT</th>';
         $xhtmlBodyHead .= '<th class="col-100 text-center">Chi phí</th>';
@@ -103,6 +106,7 @@
             
             $id                     = $item->id;
             $name                   = $item->user_name;
+            $product                = $item->product_name;
             $date                   = $date_old != $item->date ? $dateFormat->formatToView($item->date) : '';
             $month                  = $item->month;
             $year                   = $item->year;
@@ -166,6 +170,7 @@
             $xhtmlItems .= '<th>'. $cid .'</th>';
             $xhtmlItems .= '<th><b>'. $date .'</b></th>';
     		$xhtmlItems .= '<th><b>'. $name .'</b></th>';
+    		$xhtmlItems .= '<td>'. $product .'</td>';
 
 //            $xhtmlItems .= '<td class="text-right mask_currency">'. $params['9h30_sdt'] .'</td>';
 //            if($edit_target || empty($params['9h30_cp'])) {
