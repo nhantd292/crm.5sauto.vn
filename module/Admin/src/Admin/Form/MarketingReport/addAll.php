@@ -98,7 +98,9 @@ class addAll extends Form
             ),
             'options'		=> array(
                 'empty_option'	=> '- Sản phẩm chạy ADS-',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem(null, array('task' => 'cache')), array('key' => 'id', 'value' => 'fullName')),
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem(null, array('task' => 'cache')), array('key' => 'id', 'value' => 'fullName')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'product-group')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+
             )
         ));
     }

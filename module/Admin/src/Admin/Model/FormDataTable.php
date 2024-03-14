@@ -236,6 +236,9 @@ class FormDataTable extends DefaultTable {
                 if(!empty($arrParam['product_id'])){
                     $select -> where -> equalTo(TABLE_FORM_DATA.'.product_id', $arrParam['product_id']);
                 }
+                if(!empty($arrParam['product_group_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.product_id', $arrParam['product_group_id']);
+                }
                 if(!empty($arrParam['date'])){
                     $select -> where -> like(TABLE_FORM_DATA.'.date', '%'.$arrParam['date'].'%');
                 }
@@ -571,6 +574,9 @@ class FormDataTable extends DefaultTable {
                 if(!empty($arrParam['product_id'])){
                     $select -> where -> equalTo(TABLE_FORM_DATA.'.product_id', $arrParam['product_id']);
                 }
+                if(!empty($arrParam['product_group_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.product_group_id', $arrParam['product_group_id']);
+                }
                 if(!empty($arrParam['date'])){
                     $select -> where -> like(TABLE_FORM_DATA.'.date', '%'.$arrParam['date'].'%');
                 }
@@ -637,7 +643,7 @@ class FormDataTable extends DefaultTable {
 
             // Cập nhật số điện thoại marketing cho marketer.
             $param['data']["marketer_id"] = $this->userInfo->getUserInfo('id');
-            $param['data']["product_id"]  = $arrData['product_id'];
+            $param['data']["product_group_id"]  = $arrData['product_group_id'];
             $param['data']["date"]        = date('Y-m-d H:i:s');
             $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem($param, array('task' => 'update-number-phone')); # oki
 
@@ -669,7 +675,7 @@ class FormDataTable extends DefaultTable {
 
             // Cập nhật số điện thoại marketing cho marketer.
             $param['data']["marketer_id"] = $arrData['marketer_id'];
-            $param['data']["product_id"] = $arrData['product_id'];
+            $param['data']["product_group_id"] = $arrData['product_group_id'];
             $param['data']["date"]        = date('Y-m-d H:i:s');
             $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem($param, array('task' => 'update-number-phone')); # ok
 
@@ -707,6 +713,7 @@ class FormDataTable extends DefaultTable {
 
             // Cập nhật số điện thoại marketing cho marketer.
             $param['data']["marketer_id"] = $arrData['marketer_id'];
+            $param['data']["product_group_id"] = $arrData['product_group_id'];
             $param['data']["date"]        = $dateFormat->formatToData($arrData['date']);
             $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem($param, array('task' => 'update-number-phone')); # bỏ
 
@@ -784,10 +791,10 @@ class FormDataTable extends DefaultTable {
         if($options['task'] == 'update-cost-ads') {
             $cost_ads    = $arrParam['cost_ads'];
             $marketer_id = $arrParam['marketer_id'];
-            $product_id  = $arrParam['product_id'];
+            $product_group_id  = $arrParam['product_group_id'];
             $date        = $arrParam['date'];
 
-            $sql_update = "UPDATE ".TABLE_FORM_DATA." SET cost_ads = ".$cost_ads." WHERE marketer_id = '".$marketer_id."' AND product_id = '".$product_id."' AND date >= '".$date."' AND date <= '".$date." 23:59:59'";
+            $sql_update = "UPDATE ".TABLE_FORM_DATA." SET cost_ads = ".$cost_ads." WHERE marketer_id = '".$marketer_id."' AND product_group_id = '".$product_group_id."' AND date >= '".$date."' AND date <= '".$date." 23:59:59'";
             $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
         }
 

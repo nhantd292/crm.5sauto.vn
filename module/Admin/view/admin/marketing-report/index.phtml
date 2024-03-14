@@ -16,7 +16,7 @@
             array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 //            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_marketer_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product_group_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -106,7 +106,7 @@
             
             $id                     = $item->id;
             $name                   = $item->user_name;
-            $product                = $item->product_name;
+            $product                = $this->products[$item->product_group_id];
             $date                   = $date_old != $item->date ? $dateFormat->formatToView($item->date) : '';
             $month                  = $item->month;
             $year                   = $item->year;

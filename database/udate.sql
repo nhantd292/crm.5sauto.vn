@@ -8,4 +8,4 @@
 -- ALTER TABLE `x_contract`
 --     ADD COLUMN `paid_cost` CHAR(1) NULL DEFAULT 'f' COMMENT 'Đã thanh toán giá vốn chưa f: chưa , t: rồi' AFTER `returned`;
 ALTER TABLE `x_marketing_report`
-    ADD COLUMN `product_id` CHAR(25) NULL DEFAULT NULL AFTER `marketer_id`;
+    ADD COLUMN `product_group_id` CHAR(25) NULL DEFAULT NULL AFTER `marketer_id`;

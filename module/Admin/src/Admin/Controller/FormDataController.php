@@ -784,11 +784,11 @@ class FormDataController extends ActionController{
                     $item = $this->getTable()->getItem(array('id' => $value, null));
                     if(empty($item['sales_id'])){
                         $item_data['data']['marketer_id'] = $item['marketer_id'];
-                        $item_data['data']['product_id'] = $item['product_id'];
+                        $item_data['data']['product_group_id'] = $item['product_group_id'];
                         $item_data['data']['date'] = $item['date'];
 
                         $data_update[$key]['marketer_id'] = $item['marketer_id'];
-                        $data_update[$key]['product_id'] = $item['product_id'];
+                        $data_update[$key]['product_group_id'] = $item['product_group_id'];
                         $data_update[$key]['date'] =  substr($item['date'], 0, 10);
                     }
                     $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem($item_data, array('task' => 'update-number-phone-2')); # ok
@@ -799,19 +799,19 @@ class FormDataController extends ActionController{
 
                 // Khi xóa data cần cập nhật lại chi phí mkt cho các data khác về cùng ngày
                 foreach ($data_update as $key => $value){
-                    $report_item = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->getItem(array('date' => $value['date'], 'marketer_id' => $value['marketer_id'], 'product_id' => $value['product_id'], 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date")); # oki
+                    $report_item = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->getItem(array('date' => $value['date'], 'marketer_id' => $value['marketer_id'], 'product_group_id' => $value['product_group_id'], 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date")); # oki
                     if(!empty($report_item)){
                         $params = !empty($report_item['params']) ? unserialize($report_item['params']) : array();
                         $total_cp   = str_replace(',', '', $params['total_cp']);
 
                         if(!empty($total_cp)){
-                            $count_data = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->countItem(array('marketer_id' => $value['marketer_id'] ,'product_id' => $value['product_id'] ,'date' => $value['date'],), array('task' => 'by-condition'));
+                            $count_data = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->countItem(array('marketer_id' => $value['marketer_id'] ,'product_group_id' => $value['product_group_id'] ,'date' => $value['date'],), array('task' => 'by-condition'));
                             $cost_ads = (int)($total_cp / $count_data);
 
                             $params_update = array(
                                 'cost_ads'      => $cost_ads,
                                 'marketer_id'   => $value['marketer_id'],
-                                'product_id'    => $value['product_id'],
+                                'product_group_id'    => $value['product_group_id'],
                                 'date'          => $value['date'],
                             );
                             $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem($params_update, array('task' => 'update-cost-ads'));

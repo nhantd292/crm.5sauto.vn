@@ -149,7 +149,7 @@ class MarketingReport extends Form{
         ));
 
         $this->add(array(
-            'name'			=> 'filter_product_id',
+            'name'			=> 'filter_product_group_id',
             'type'			=> 'Select',
             'attributes'	=> array(
                 'multiple'	=> true,
@@ -157,7 +157,7 @@ class MarketingReport extends Form{
             ),
             'options'		=> array(
 		        'empty_option'	=> '- Sản phẩm-',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'id', 'value' => 'fullName')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'product-group')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
             )
         ));
 		
