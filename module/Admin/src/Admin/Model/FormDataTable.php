@@ -537,6 +537,11 @@ class FormDataTable extends DefaultTable {
 	        }
 	    }
 
+	    if($options['task'] == 'query'){
+	        $query = $arrParam['query'];
+            $result = $this->tableGateway->getAdapter()->driver->getConnection()->execute($query);
+        }
+
 		return $result;
 	}
 	

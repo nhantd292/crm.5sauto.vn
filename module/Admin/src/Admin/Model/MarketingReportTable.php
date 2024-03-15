@@ -321,6 +321,17 @@ class MarketingReportTable extends DefaultTable {
 	        return $id;
 	    }
 
+        if ($options['task'] == 'update-item') {
+            $id = $arrData['id'];
+
+            if($arrData['params']){
+                $data['params'] = serialize($arrData['params']);
+            }
+
+            $this->tableGateway->update($data, array('id' => $id));
+            return true;
+        }
+
 	    if($options['task'] == 'save-ajax') {
 	        $id = $arrData['id'];
             $params = !empty($arrItem['params']) ? unserialize($arrItem['params']) : array();

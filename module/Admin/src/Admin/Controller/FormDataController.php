@@ -826,4 +826,28 @@ class FormDataController extends ActionController{
     
         $this->goRoute(array('action' => 'index'));
     }
+
+    public function updatePhoneAction() {
+        $select = array(
+            'query' => "SELECT SUBSTRING(date, 1, 10) AS date , marketer_id, product_group_id, COUNT(id) AS total_sdt FROM ".TABLE_FORM_DATA." WHERE date <= '2024-03-14 23:59:59' GROUP BY SUBSTRING(date, 1, 10),marketer_id,product_group_id order by date desc;"
+        );
+        $items = $this->getTable()->listItem($select, array('task' => 'query'));
+        foreach($items as $key => $value){
+            $report_item = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->getItem(array('date' => $value['date'], 'marketer_id' => $value['marketer_id'], 'product_group_id' => $value['product_group_id'], 'type' => 'mkt_report_day_hour'), array('task' => "marketer-date"));
+            if(!empty($report_item)){
+                $params = unserialize($report_item['params']);
+                $params['total_sdt'] = $value['total_sdt'];
+
+                $data_update['data'] = array(
+                    'id' => $report_item['id'],
+                    'params' => $params
+                );
+                $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->saveItem($data_update, array('task' => 'update-item'));
+            }
+        }
+        echo "<pre>";
+        print_r('thành công');
+        echo "</pre>";
+        exit;
+    }
 }
