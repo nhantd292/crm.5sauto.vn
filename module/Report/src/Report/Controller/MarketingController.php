@@ -419,8 +419,6 @@ class MarketingController extends ActionController {
             $data_report = [];
             foreach ($marketers as $key => $value) {
                 $data_report[$value['id']]['name']           = $value['name'];
-                $data_report[$value['id']]['target_phone']   = 0;
-                $data_report[$value['id']]['target_sales']   = 0;
                 $data_report[$value['id']]['new_phone']      = 0;
                 $data_report[$value['id']]['new_contract']   = 0;
                 $data_report[$value['id']]['new_sales']      = 0;
@@ -428,11 +426,9 @@ class MarketingController extends ActionController {
                 $data_report[$value['id']]['old_sales']      = 0;
                 $data_report[$value['id']]['cost_ads']       = 0;
                 $data_report[$value['id']]['cost_capital']   = 0;
-                $data_report[$value['id']]['cod_total']   = 0;
+                $data_report[$value['id']]['cod_total']      = 0;
             }
             $data_report['total']['name']           = "Tổng";
-            $data_report['total']['target_phone']   = 0;
-            $data_report['total']['target_sales']   = 0;
             $data_report['total']['new_phone']      = 0;
             $data_report['total']['new_contract']   = 0;
             $data_report['total']['new_sales']      = 0;
@@ -440,31 +436,13 @@ class MarketingController extends ActionController {
             $data_report['total']['old_sales']      = 0;
             $data_report['total']['cost_ads']       = 0;
             $data_report['total']['cost_capital']   = 0;
-            $data_report['total']['cod_total']   = 0;
+            $data_report['total']['cod_total']      = 0;
 
-            // Lấy dữ liệu mục tiêu.
-            $where_target = array(
-                'filter_type'       => 'mkt_target',
-                'filter_date_begin' => $ssFilter->report['date_begin'],
-                'filter_date_end'   => $ssFilter->report['date_end'],
-            );
-            $marketing_target = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->report(array('ssFilter' => $where_target), array('task' => 'list-item-type'));
-            foreach ($marketing_target as $key => $value){
-                if (array_key_exists($value['marketer_id'], $data_report)) {
-                    if (!empty($value['params'])) {
-                        $params                                             = unserialize($value['params']);
-                        $data_report[$value['marketer_id']]['target_phone'] += str_replace(",", "", $params['phone']);
-                        $data_report['total']['target_phone'] += str_replace(",", "", $params['phone']);
-
-                        $data_report[$value['marketer_id']]['target_sales'] += str_replace(",", "", $params['sales']);
-                        $data_report['total']['target_sales'] += str_replace(",", "", $params['sales']);
-                    }
-                }
-            }
             // Lấy dữ liệu doanh số mới, cũ.
             $where_contract = array(
                 'filter_date_begin'     => $ssFilter->report['date_begin'],
                 'filter_date_end'       => $ssFilter->report['date_end'],
+                'date_type'             => 'shipped_date',
                 'filter_status'         => 'success',
             );
 
@@ -475,16 +453,16 @@ class MarketingController extends ActionController {
                     $data_report[$value['marketer_id']]['new_contract'] += 1;
                     $data_report['total']['new_contract']               += 1;
 
-                    $data_report[$value['marketer_id']]['new_sales'] += $value['price_total'] - $value['vat'] - $value['price_reduce_sale'];
-                    $data_report['total']['new_sales']               += $value['price_total'] - $value['vat'] - $value['price_reduce_sale'];
+                    $data_report[$value['marketer_id']]['new_sales'] += $value['price_paid'];
+                    $data_report['total']['new_sales']               += $value['price_paid'];
 
                     // Tính giá vốn
                     if (!empty($value['options'])) {
                         $options = unserialize($value['options']);
                         if (count($options['product'])) {
                             foreach ($options['product'] as $k => $v) {
-                                $data_report[$value['marketer_id']]['cost_capital'] += $v['cost'] * $v['numbers'];
-                                $data_report['total']['cost_capital'] += $v['cost'] * $v['numbers'];
+                                $data_report[$value['marketer_id']]['cost_capital'] += ($v['cost'] + $v['cost_new']) * $v['numbers'];
+                                $data_report['total']['cost_capital'] += ($v['cost'] + $v['cost_new']) * $v['numbers'];
                             }
                         }
                     }
@@ -573,9 +551,6 @@ class MarketingController extends ActionController {
             foreach ($key_sort as $key => $value){
                 $xhtmlItems .= '<tr data-key="'.$value['id'].'">
                                     <th class="text-bold">'.$data_report[$value['id']]['name'].'</th>
-                                    <!--<td class="mask_currency text-center">'.$data_report[$value['id']]['target_phone'].'</td>
-                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['target_sales'].'</td>
-                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['target_percent'].'%</td> -->
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_sales'].'</td>
@@ -595,9 +570,6 @@ class MarketingController extends ActionController {
             // Hiển thị dòng tổng.
             $xhtmlItems .= '<tr class="text-bold text-red">
                                     <th class="text-bold">'.$data_report['total']['name'].'</th>
-                                    <!--<td class="mask_currency text-center">'.$data_report['total']['target_phone'].'</td>
-                                    <td class="mask_currency text-right">'.$data_report['total']['target_sales'].'</td>
-                                    <td class="mask_currency text-right">'.$data_report['total']['target_percent'].'%</td> -->
                                     <td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_sales'].'</td>
@@ -622,7 +594,6 @@ class MarketingController extends ActionController {
             $result['reportTable'] = '<thead data-count_contracts="'.count($contracts).'">
                         				    <tr>
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
-                            					<!--<th colspan="3" class="text-center">Mục tiêu tổng</th>-->
                             					<th colspan="3" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
                             					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
@@ -632,9 +603,6 @@ class MarketingController extends ActionController {
                             					'.$cost_capital.'
                         					</tr>
                         				    <tr>
-                            					<!--<th style="min-width: 80px;" class="text-center">SĐT</th>
-                            					<th style="min-width: 80px;" class="text-center">Doanh Số</th>
-                            					<th style="min-width: 80px;" class="text-center">% Mục Tiêu</th>-->
                             					<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>
                             					<th style="min-width: 80px;" class="text-center">Số Đơn</th>
                             					<th style="min-width: 80px;" class="text-center">Doanh Số</th>
