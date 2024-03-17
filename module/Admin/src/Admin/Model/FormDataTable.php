@@ -1021,6 +1021,10 @@ class FormDataTable extends DefaultTable {
                 if(!empty($ssFilter['marketer_id'])) {
                     $select -> where -> equalTo(TABLE_FORM_DATA .'.marketer_id', $ssFilter['marketer_id']);
                 }
+
+                if(!empty($ssFilter['product_group_id'])) {
+                    $select -> where -> equalTo(TABLE_FORM_DATA .'.product_group_id', $ssFilter['product_group_id']);
+                }
             })->toArray();
         }
 

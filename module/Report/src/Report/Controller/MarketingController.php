@@ -19,6 +19,7 @@ class MarketingController extends ActionController {
         $this->_params['ssFilter']['filter_date_begin']     = $ssFilter->filter_date_begin;
         $this->_params['ssFilter']['filter_date_end']       = $ssFilter->filter_date_end;
         $this->_params['ssFilter']['product_cat_id']        = $ssFilter->product_cat_id;
+        $this->_params['ssFilter']['product_group_id']      = $ssFilter->product_group_id;
 
         // Truyển dữ dữ liệu ra ngoài view
         $this->_viewModel['params'] = $this->_params;
@@ -405,12 +406,12 @@ class MarketingController extends ActionController {
                 }
             }
             // Gán dữ liệu lọc vào session
-            $ssFilter->report['date_begin']     = $this->_params['data']['date_begin'];
-            $ssFilter->report['date_end']       = $this->_params['data']['date_end'];
-            $ssFilter->report['sale_branch_id'] = $this->_params['data']['sale_branch_id'];
-            $ssFilter->report['sale_group_id']  = $this->_params['data']['sale_group_id'];
-            $ssFilter->report['marketer_id']    = $this->_params['data']['marketer_id'];
-            $ssFilter->report['product_cat_id'] = $this->_params['data']['product_cat_id'];
+            $ssFilter->report['date_begin']         = $this->_params['data']['date_begin'];
+            $ssFilter->report['date_end']           = $this->_params['data']['date_end'];
+            $ssFilter->report['sale_branch_id']     = $this->_params['data']['sale_branch_id'];
+            $ssFilter->report['sale_group_id']      = $this->_params['data']['sale_group_id'];
+            $ssFilter->report['marketer_id']        = $this->_params['data']['marketer_id'];
+            $ssFilter->report['product_group_id']   = $this->_params['data']['product_group_id'];
 
             $this->_params['ssFilter']          = $ssFilter->report;
 
@@ -442,6 +443,7 @@ class MarketingController extends ActionController {
             $where_contract = array(
                 'filter_date_begin'     => $ssFilter->report['date_begin'],
                 'filter_date_end'       => $ssFilter->report['date_end'],
+                'filter_product_group_id'       => $ssFilter->report['product_group_id'],
                 'date_type'             => 'shipped_date',
                 'filter_status'         => 'success',
             );
@@ -480,8 +482,7 @@ class MarketingController extends ActionController {
 //                    $data_report['total']['new_phone'] += 1;
 //                }
 //            }
-
-            $contacts = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->report($this->_params, array('task' => 'list-item-shared'))->toArray();
+            $contacts = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->report($this->_params, array('task' => 'list-item-shared'));
             foreach ($contacts as $key => $value){
                 if(!empty($value['marketer_id'])  && array_key_exists($value['marketer_id'], $data_report)){
                     $data_report[$value['marketer_id']]['new_phone'] += 1;
@@ -491,9 +492,10 @@ class MarketingController extends ActionController {
 
             // Lấy dữ liệu chi phí quảng cáo.
             $where_report = array(
-                'filter_type'       => 'mkt_report_day_hour',
-                'filter_date_begin' => $ssFilter->report['date_begin'],
-                'filter_date_end'   => $ssFilter->report['date_end'],
+                'filter_type'               => 'mkt_report_day_hour',
+                'filter_date_begin'         => $ssFilter->report['date_begin'],
+                'filter_date_end'           => $ssFilter->report['date_end'],
+                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
             );
             $marketing_report = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->report(array('ssFilter' => $where_report), array('task' => 'list-item-type'));
 
@@ -634,7 +636,7 @@ class MarketingController extends ActionController {
             $ssFilter->report['sale_branch_id'] = $ssFilter->report['sale_branch_id'] ? $ssFilter->report['sale_branch_id'] : $this->_userInfo->getUserInfo('sale_branch_id');
             $ssFilter->report['sale_group_id']  = $ssFilter->report['sale_group_id'] ? $ssFilter->report['sale_group_id'] : $this->_userInfo->getUserInfo('sale_group_id');
             $ssFilter->report['marketer_id']    = $ssFilter->report['marketer_id'] ? $ssFilter->report['marketer_id'] : '';
-            $ssFilter->report['product_cat_id'] = $ssFilter->report['product_cat_id'] ? $ssFilter->report['product_cat_id'] : '';
+            $ssFilter->report['product_group_id'] = $ssFilter->report['product_group_id'] ? $ssFilter->report['product_group_id'] : '';
 
             $this->_params['ssFilter']          = $ssFilter->report;
 

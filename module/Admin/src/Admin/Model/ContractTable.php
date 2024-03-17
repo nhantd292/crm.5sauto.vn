@@ -3890,6 +3890,9 @@ class ContractTable extends DefaultTable {
                 if(isset($ssFilter['status_store']) && $ssFilter['status_store'] != '') {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.status_store', $ssFilter['status_store']);
                 }
+                if(!empty($ssFilter['filter_product_group_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT .'.product_group_id', $ssFilter['filter_product_group_id']);
+                }
 
                 if(isset($ssFilter['contract_type_bh']) && $ssFilter['contract_type_bh'] != '') {
                     if ($ssFilter['contract_type_bh'] == 1){

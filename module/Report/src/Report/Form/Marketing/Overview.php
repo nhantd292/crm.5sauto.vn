@@ -39,14 +39,15 @@ class Overview extends Form{
 
 		// Danh mục sản phẩm
 		$this->add(array(
-		    'name'			=> 'product_cat_id',
+		    'name'			=> 'product_group_id',
 		    'type'			=> 'Select',
 		    'attributes'	=> array(
 		        'class'		=> 'form-control select2 select2_basic',
 		    ),
 		    'options'		=> array(
 		        'empty_option'	=> '- Sản phẩm -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\ProductTable')->listItem(null, array('task' => 'list-item')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'product-group')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\ProductTable')->listItem(null, array('task' => 'list-item')), array('key' => 'id', 'value' => 'name')),
 		    )
 		));
 
