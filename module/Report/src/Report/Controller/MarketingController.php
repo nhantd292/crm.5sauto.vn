@@ -451,7 +451,7 @@ class MarketingController extends ActionController {
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
 
             foreach ($contracts as $key => $value){
-                if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report)){
+                if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
                     $data_report[$value['marketer_id']]['new_contract'] += 1;
                     $data_report['total']['new_contract']               += 1;
 
@@ -724,7 +724,7 @@ class MarketingController extends ActionController {
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
 
             foreach ($contracts as $key => $value){
-                if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report)){
+                if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
                     $data_report[$value['marketer_id']]['new_contract'] += 1;
                     $data_report['total']['new_contract']               += 1;
 

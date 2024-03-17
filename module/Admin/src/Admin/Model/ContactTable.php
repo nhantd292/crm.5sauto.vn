@@ -737,7 +737,7 @@ class ContactTable extends DefaultTable {
             $contract_id       = $arrParam['contract_id'];
             $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $contract_id));
             $contact  = $this->getItem(array('id' => $contract['contact_id']));
-            if($contract['index_number'] == 1 && empty($contact['contract_first_code'])){
+            if(empty($contact['contract_first_code'])){
                 $data = [];
                 $data['contract_first_date'] = $contract['created'];
                 $data['contract_first_code'] = $contract['code'];
