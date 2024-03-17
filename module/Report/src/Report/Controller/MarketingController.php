@@ -453,8 +453,8 @@ class MarketingController extends ActionController {
                     $data_report[$value['marketer_id']]['new_contract'] += 1;
                     $data_report['total']['new_contract']               += 1;
 
-                    $data_report[$value['marketer_id']]['new_sales'] += $value['price_paid'];
-                    $data_report['total']['new_sales']               += $value['price_paid'];
+                    $data_report[$value['marketer_id']]['new_sales'] += $value['price_paid'] + $value['price_deposits'];
+                    $data_report['total']['new_sales']               += $value['price_paid'] + $value['price_deposits'];
 
                     // Tính giá vốn
                     if (!empty($value['options'])) {
@@ -469,12 +469,19 @@ class MarketingController extends ActionController {
 
                     $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'];
                     $data_report['total']['cod_total']               += $value['price_transport'];
-
                 }
             }
 
             // Lấy số điện thoại của mkt_x đã được chia.
-            $contacts = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report($this->_params, array('task' => 'join-user'))->toArray();
+//            $contacts = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report($this->_params, array('task' => 'join-user'))->toArray();
+//            foreach ($contacts as $key => $value){
+//                if(!empty($value['marketer_id'])  && array_key_exists($value['marketer_id'], $data_report)){
+//                    $data_report[$value['marketer_id']]['new_phone'] += 1;
+//                    $data_report['total']['new_phone'] += 1;
+//                }
+//            }
+
+            $contacts = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->report($this->_params, array('task' => 'list-item-shared'))->toArray();
             foreach ($contacts as $key => $value){
                 if(!empty($value['marketer_id'])  && array_key_exists($value['marketer_id'], $data_report)){
                     $data_report[$value['marketer_id']]['new_phone'] += 1;
