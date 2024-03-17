@@ -417,7 +417,6 @@ class ContractController extends ActionController {
                         $contract_new = $this->getTable()->getItem(array('id' => $result));
                         $order_data['description'] = $this->_params['data']['sale_note'].'(Đơn hàng đẩy từ CRM '.$contract_new['code'].')';
                         $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/'.$contract_new['id_kov'], $order_data, 'PUT');
-
                         
                         if($controlAction == 'save-new') {
                             $this->goRoute(array('action' => 'add-kov'));
@@ -1743,6 +1742,49 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
+    // cập nhật công nợ khách hàng
+    public function editPricePaidAction() {
+        $myForm = new \Admin\Form\Contract\EditPricePaid($this->getServiceLocator(), $this->_params);
+
+        if(!empty($this->_params['data']['id'])) {
+            $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->_params['data']['id']));
+            $myForm->setData($contract);
+            if($contract['lock']){
+                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'modal'));
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
+        }
+
+        if($this->getRequest()->isPost()){
+            if($this->_params['data']['modal'] == 'success') {
+                $myForm->setInputFilter(new \Admin\Filter\Contract\EditPricePaid($this->_params));
+                $myForm->setData($this->_params['data']);
+
+                if($myForm->isValid()){
+                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+                    $this->_params['item'] = $contract;
+                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'update-price'));
+                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
+                    echo 'success';
+                    return $this->response;
+                }
+            } else {
+                $myForm->setData($this->_params['data']);
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+        }
+
+        $this->_viewModel['myForm']     = $myForm;
+        $this->_viewModel['contract']   = $contract;
+        $this->_viewModel['caption']    = 'Đối soát thủ công';
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
 
     public function importShipedAction()
     {
@@ -2188,125 +2230,6 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
-    // Đẩy đơn sang ghtk
-//    public function sendGhtkAction() {
-//        $locations = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
-//        $contracts_type	= \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'alias'));
-//
-//        $ids = $this->_params['data']['cid'];
-//        $listData_ghtk = [];
-//        foreach($ids as $id){
-//            $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
-//            if($contract['status_id'] == DA_CHOT && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
-//                $contract['options'] = unserialize($contract['options'])['product'];
-//
-//                $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
-//                if(!empty($warehouse)){
-//                    $address = explode(',', $warehouse['address']);
-//                    $order_item['pick_name']        = $warehouse['name'];
-//                    $order_item['pick_province']    = $address[sizeof($address)-1];
-//                    $order_item['pick_district']    = $address[sizeof($address)-2];
-//                    $order_item['pick_ward']        = $address[sizeof($address)-3];
-//                    $order_item['pick_address']     = $address[sizeof($address)-4];
-//                    $order_item['pick_tel']         = $warehouse['phone'];
-//                }
-////                else{
-////                    $dclh_list = json_decode($this->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
-////                    $dclh = [];
-////                    foreach($dclh_list as $key => $value){
-////                        if($value['pick_address_id'] == $contract['groupaddressId']){
-////                            $dclh = $value;
-////                            break;
-////                        }
-////                    }
-////                    $address_dclh = explode(',', $dclh['address']);
-////
-////                    $order_item['pick_name'] = $dclh['pick_name'];
-////                    $order_item['pick_address'] = $dclh['address'];
-////                    $order_item['pick_province'] = $address_dclh[sizeof($address_dclh)-1];
-////                    $order_item['pick_district'] = $address_dclh[sizeof($address_dclh)-2];
-////                    $order_item['pick_ward'] = $address_dclh[sizeof($address_dclh)-3];
-////                    $order_item['pick_tel'] = $dclh['pick_tel'];
-////                }
-//
-//                $products = [];
-//                $total_weight = 0;
-//                $list_name = '';
-//                foreach($contract['options'] as $key => $value){
-//                    $pname = $value['full_name'].' - '.$value['car_year'];
-//                    $list_name .= $pname.', ';
-//                    if($value['weight'] > 1){
-//                        $pro['name'] = $pname;
-//                        $pro['weight'] = $value['weight'];
-//                        $pro['quantity'] = $value['numbers'];
-//                        $pro['product_code'] = $value['code'];
-//                        $pro['length'] = $value['length'];
-//                        $pro['width'] = $value['width'];
-//                        $pro['height'] = $value['height'];
-//                        $total_weight += $value['weight'];
-//
-//                        $products[] = $pro;
-//                    }
-//                }
-//                $products[0]['name'] = $list_name;
-//                $listData_ghtk[$contract['code']]['products'] = $products;
-//
-//                $order_item['id'] = $contract['code'];
-//
-//                // Thông tin khách hàng ships giao hàng
-//                $order_item['tel']       = $contract['phone'];
-//                $order_item['name']      = $contract['name'];
-//                $order_item['province']  = $locations[$contract['location_city_id']]->name;
-//                $order_item['district']  = $locations[$contract['location_district_id']]->fullname;
-//                $order_item['ward']      = $locations[$contract['location_town_id']]->fullname;
-//                $order_item['street']    = $contract['address'];
-//                $order_item['address']   = $contract['address'];
-//                $order_item['hamlet']    = "Khác";
-//
-//                $order_item['is_freeship'] = "1";
-//                $order_item['pick_money'] = $contract['price_owed']; // Tiền hàng ship phải thu
-//                $order_item['note'] = $contract['ghtk_note'];
-//                $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
-//                $order_item['transport'] = "road"; // road đường bộ, fly đường bay
-//                $order_item['deliver_work_shift'] = $contract['deliver_work_shift']; // Thời gian giao hàng
-//                if($total_weight >= 20){
-//                    $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
-//                }
-//
-//                $listData_ghtk[$contract['code']]['order'] = $order_item;
-//            }
-//        }
-//
-//        foreach ($listData_ghtk as $key => $value){
-//            $result = $this->ghtk_call('/services/shipment/order/?ver=1.5', $value, 'POST');
-//            $res = json_decode($result, true);
-//
-//            if($res['success']){
-//                $contract_code_success[] = $key;
-//
-//                $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
-//                $arrParam['id']             = $contract_item['id'];
-//                $arrParam['ghtk_code']      = $res['order']['label'];
-//                $arrParam['ghtk_result']    = $res['order'];
-//                $arrParam['ghtk_status']    = $res['order']['status_id'];
-//                $arrParam['price_transport']= $res['order']['fee'];
-//                $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
-//            }
-//            else{
-//                $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
-//            }
-//        }
-//
-//        if(!empty($contract_code_success)){
-//            $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang ghtk '.implode(', ', $contract_code_success) );
-//        }
-//        if(!empty($contract_code_error)){
-//            $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
-//        }
-//
-//        $this->goRoute();
-//    }
-
     public function sendGhtkAction() {
         $id_viettel_key = $this->params('id');
         if(!empty($id_viettel_key)){
@@ -2715,50 +2638,6 @@ class ContractController extends ActionController {
         $this->_viewModel['myForm']     = $myForm;
         $this->_viewModel['contract']   = $contract;
         $this->_viewModel['caption']    = 'Giảm trừ doanh thu';
-
-        $viewModel = new ViewModel($this->_viewModel);
-        $viewModel->setTerminal(true);
-
-        return $viewModel;
-    }
-
-    // cập nhật công nợ khách hàng
-    public function editPricePaidAction() {
-        $myForm = new \Admin\Form\Contract\EditPricePaid($this->getServiceLocator(), $this->_params);
-
-        if(!empty($this->_params['data']['id'])) {
-            $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->_params['data']['id']));
-            $myForm->setData($contract);
-            if($contract['lock']){
-                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'modal'));
-            }
-        } else {
-            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
-        }
-
-        if($this->getRequest()->isPost()){
-            if($this->_params['data']['modal'] == 'success') {
-                $myForm->setInputFilter(new \Admin\Filter\Contract\EditPricePaid($this->_params));
-                $myForm->setData($this->_params['data']);
-
-                if($myForm->isValid()){
-                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                    $this->_params['item'] = $contract;
-                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'update-price'));
-                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
-                    echo 'success';
-                    return $this->response;
-                }
-            } else {
-                $myForm->setData($this->_params['data']);
-            }
-        } else {
-            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
-        }
-
-        $this->_viewModel['myForm']     = $myForm;
-        $this->_viewModel['contract']   = $contract;
-        $this->_viewModel['caption']    = 'Đối soát thủ công';
 
         $viewModel = new ViewModel($this->_viewModel);
         $viewModel->setTerminal(true);

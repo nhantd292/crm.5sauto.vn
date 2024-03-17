@@ -1925,7 +1925,7 @@ class ContractTable extends DefaultTable {
                     'location_town_id'        => $arrData['location_town_id'],
                     'address'                 => $arrData['address'],
                     'price_deposits'          => $number->formatToData($arrData['price_deposits']),
-                    'price_paid'              => $number->formatToData($arrData['price_deposits']),
+                    'price_paid'              => 0,
                     'price_owed'              => $number->formatToData($arrData['price_owed']),
                     'total_price_product'     => $number->formatToData($arrData['total_contract_product']),
                     'contact_id'              => $contact_id,
@@ -2070,7 +2070,7 @@ class ContractTable extends DefaultTable {
                 'location_town_id'        => $arrData['location_town_id'],
                 'address'                 => $arrData['address'],
                 'price_deposits'          => $number->formatToData($arrData['price_deposits']),
-                'price_paid'              => $number->formatToData($arrData['price_deposits']),
+                'price_paid'              => 0,
                 'price_owed'              => $number->formatToData($arrData['price_owed']),
                 'total_price_product'     => $number->formatToData($arrData['total_contract_product']),
                 'contact_id'              => $contact_id_new,
@@ -2177,7 +2177,7 @@ class ContractTable extends DefaultTable {
 
             $data = array(
                 'price_deposits'          => $number->formatToData($arrData['price_deposits']),
-                'price_paid'              => $number->formatToData($arrData['price_deposits']),
+                'price_paid'              => 0,
                 'price_owed'              => $number->formatToData($arrData['price_owed']),
                 'total_price_product'     => $number->formatToData($arrData['total_contract_product']),
                 'vat'		      		  => $number->formatToData($arrData['total_contract_vat']),
@@ -2901,99 +2901,16 @@ class ContractTable extends DefaultTable {
 
 		// Đối soát
 		if($options['task'] == 'compare-order') {
-//			$data	= array(
-//			    'status_acounting_id'  => $arrData['status_acounting_id'],
-//			);
 			if(!empty($arrData['status_acounting_id'])){
 			    $data['status_acounting_id'] = $arrData['status_acounting_id'];
             }
 			if(!empty($arrData['price_paid'])){
 			    $data['price_paid'] = $arrData['price_paid'];
-                $data['price_owed'] = $arrItem['price_total'] - $arrData['price_paid'];
+                $data['price_owed'] = $arrItem['price_total'] - $arrItem['price_deposits'] - $arrData['price_paid'];
             }
 			$this->tableGateway->update($data, ['id' => $arrData['id']]);
 
 			return $id;
-		}
-
-		// Cập nhật vật phẩm
-		if($options['task'] == 'add-matter') {
-		    $arrContact = $arrParam['contact'];
-		    $arrContract = $arrParam['contract'];
-
-		    $id = $arrContract['id'];
-		    $matter_ids = !empty($arrContract['matter_ids']) ? unserialize($arrContract['matter_ids']) : array();
-		    $matter_add = array();
-		    if(!empty($arrData['matter_ids'])) {
-		        foreach ($arrData['matter_ids'] AS $key => $val) {
-		            $matter_ids[$val] = array(
-		                'date' => $arrData['date'],
-		                'created_by' => $this->userInfo->getUserInfo('id')
-		            );
-		            $matter_add[] = $val;
-		        }
-		    }
-		    $data = array(
-		        'matter_ids' => serialize($matter_ids)
-		    );
-
-		    $this->tableGateway->update($data, array('id' => $id));
-
-		    // Thêm lịch sử hệ thống
-		    if(!empty($id)) {
-	            $arrParamLogs = array(
-	                'data' => array(
-	                    'title'          => 'Vật phẩm',
-	                    'phone'          => $arrContact['phone'],
-	                    'name'           => $arrContact['name'],
-	                    'action'         => 'Thêm mới',
-	                    'contact_id'     => $arrContact['id'],
-	                    'contract_id'    => $id,
-	                    'options'        => array(
-	                        'date' => $arrData['date'],
-	                        'created_by' => $this->userInfo->getUserInfo('id'),
-	                        'matter_ids' => implode(',', $matter_add)
-	                    )
-	                )
-	            );
-	            $logs = $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
-		    }
-		    return $id;
-		}
-
-		// Xóa vật phẩm
-		if($options['task'] == 'delete-matter') {
-		    $arrContract = $arrParam['contract'];
-		    $arrContact = $arrParam['contact'];
-		    $arrItem = $arrParam['item'];
-
-		    $id = $arrContract['id'];
-		    $matter_ids = !empty($arrContract['matter_ids']) ? unserialize($arrContract['matter_ids']) : array();
-		    unset($matter_ids[$arrItem['matter_id']]);
-		    $data = array(
-		        'matter_ids' => !empty($matter_ids) ? serialize($matter_ids) : null
-		    );
-		    $this->tableGateway->update($data, array('id' => $id));
-
-		    // Thêm lịch sử hệ thống
-		    if(!empty($id)) {
-	            $arrParamLogs = array(
-	                'data' => array(
-	                    'title'          => 'Vật phẩm',
-	                    'phone'          => $arrContact['phone'],
-	                    'name'           => $arrContact['name'],
-	                    'action'         => 'Xóa',
-	                    'contact_id'     => $arrContact['id'],
-	                    'contract_id'    => $id,
-	                    'options'        => array(
-	                        'matter_ids' => $arrItem['matter_id'],
-	                        'note_log' => $arrData['note_log'],
-	                    )
-	                )
-	            );
-	            $logs = $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
-		    }
-		    return $id;
 		}
 
         // Ẩn đơn hàng
