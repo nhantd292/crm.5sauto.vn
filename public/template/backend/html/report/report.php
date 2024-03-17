@@ -75,7 +75,13 @@ $is_accounting = true;
                     <li>
                         <a href="<?php echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'marketing', 'code' => 'overview12'));?>">
                             <i class="fa fa-dot-circle-o"></i>
-                            Báo cáo Marketing
+                            Báo cáo MKT thành công
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'marketing', 'code' => 'overview13'));?>">
+                            <i class="fa fa-dot-circle-o"></i>
+                            Báo cáo MKT xuất hàng
                         </a>
                     </li>
                     <?php if($is_system || $is_admin){?>
