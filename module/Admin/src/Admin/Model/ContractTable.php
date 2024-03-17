@@ -1964,6 +1964,8 @@ class ContractTable extends DefaultTable {
                 $this->saveItem(array('data' => $id), array('task' => 'update-code'));
                 // Cập nhật tổng số lượng sản phẩm trong đơn hàng
                 $this->saveItem(array('data' => $id), array('task' => 'update-number-product-total'));
+                // Cập nhật thông tin đơn hàng đầu tiên cho khách hàng
+                $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contract_id' => $id), array('task' => 'update-contract-first'));
                 // Thêm chi tiết sản phẩm đơn hàng
                 foreach($contract_options['product'] as $arraydata){
                     $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
