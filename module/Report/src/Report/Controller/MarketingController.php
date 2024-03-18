@@ -441,11 +441,11 @@ class MarketingController extends ActionController {
 
             // Lấy dữ liệu doanh số mới, cũ.
             $where_contract = array(
-                'filter_date_begin'     => $ssFilter->report['date_begin'],
-                'filter_date_end'       => $ssFilter->report['date_end'],
-                'filter_product_group_id'       => $ssFilter->report['product_group_id'],
-                'date_type'             => 'shipped_date',
-                'filter_status'         => 'success',
+                'filter_date_begin'         => $ssFilter->report['date_begin'],
+                'filter_date_end'           => $ssFilter->report['date_end'],
+                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
+                'date_type'                 => 'shipped_date',
+                'filter_status'             => 'success',
             );
 
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
