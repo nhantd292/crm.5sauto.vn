@@ -181,18 +181,18 @@
                     </li>
                 </ul>
             </li>
-<!--            <li class="dropdown-submenu">-->
-<!--                <a href="javascript:;" target="_self">-->
-<!--                    <i class="fa fa-folder-o"></i> <span class="title">Báo cáo</span><span class="arrow"></span>-->
-<!--                </a>-->
-<!--                <ul class="dropdown-menu" style="display: none;">-->
-<!--                    <li>-->
-<!--                        <a href="--><?php //echo $this->url('routeAdmin/default', array('controller' => 'marketing-report', 'action' => 'index'));?><!--" target="_self">-->
-<!--                            <i class="fa fa-bar-chart"></i> <span class="title">Báo cáo chi phí ADS</span><span class="arrow"></span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </li>-->
+            <li class="dropdown-submenu">
+                <a href="javascript:;" target="_self">
+                    <i class="fa fa-folder-o"></i> <span class="title">Báo cáo</span><span class="arrow"></span>
+                </a>
+                <ul class="dropdown-menu" style="display: none;">
+                    <li>
+                        <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'marketing-report', 'action' => 'index'));?>" target="_self">
+                            <i class="fa fa-bar-chart"></i> <span class="title">Báo cáo chi phí ADS</span><span class="arrow"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
         </ul>
     </li>
 

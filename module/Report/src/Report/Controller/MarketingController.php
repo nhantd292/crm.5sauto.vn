@@ -560,11 +560,11 @@ class MarketingController extends ActionController {
             foreach ($key_sort as $key => $value){
                 $xhtmlItems .= '<tr data-key="'.$value['id'].'">
                                     <th class="text-bold">'.$data_report[$value['id']]['name'].'</th>
-                                    <!--<td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_sales'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['contract_percent'].'%</td>
-                                    <!--<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_sales'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td>';
@@ -579,11 +579,11 @@ class MarketingController extends ActionController {
             // Hiển thị dòng tổng.
             $xhtmlItems .= '<tr class="text-bold text-red">
                                     <th class="text-bold">'.$data_report['total']['name'].'</th>
-                                    <!--<td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_sales'].'</td>
                                     <td class="mask_currency text-right" data-field="contract_percent">'.$data_report['total']['contract_percent'].'%</td>
-                                    <!--<td class="mask_currency text-right">'.$data_report['total']['cost_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report['total']['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_sales'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_ads'].'</td>';
@@ -605,14 +605,14 @@ class MarketingController extends ActionController {
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
                             					<th colspan="2" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
-                            					<!--<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>-->
+                            					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
                             					<th rowspan="2" class="text-center">% Chi Phí QC</br>/ Doanh Số</th>
                             					<th rowspan="2" class="text-center">Chi Phí QC</br>/ Đơn Hàng</th>
                             					<th rowspan="2" class="text-center">Chi Phí QC</th>
                             					'.$cost_capital.'
                         					</tr>
                         				    <tr>
-                            					<!--<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>-->
+                            					<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>
                             					<th style="min-width: 80px;" class="text-center">Số Đơn</th>
                             					<th style="min-width: 80px;" class="text-center">Doanh Số</th>
                         					</tr>
@@ -833,11 +833,11 @@ class MarketingController extends ActionController {
             foreach ($key_sort as $key => $value){
                 $xhtmlItems .= '<tr data-key="'.$value['id'].'">
                                     <th class="text-bold">'.$data_report[$value['id']]['name'].'</th>
-                                    <!--<td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_sales'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['contract_percent'].'%</td>
-                                    <!--<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_sales'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td>';
@@ -852,11 +852,11 @@ class MarketingController extends ActionController {
             // Hiển thị dòng tổng.
             $xhtmlItems .= '<tr class="text-bold text-red">
                                     <th class="text-bold">'.$data_report['total']['name'].'</th>
-                                    <!--<td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_sales'].'</td>
                                     <td class="mask_currency text-right" data-field="contract_percent">'.$data_report['total']['contract_percent'].'%</td>
-                                    <!--<td class="mask_currency text-right">'.$data_report['total']['cost_phone'].'</td>-->
+                                    <td class="mask_currency text-right">'.$data_report['total']['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_sales'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_ads'].'</td>';
@@ -878,14 +878,14 @@ class MarketingController extends ActionController {
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
                             					<th colspan="2" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
-                            					<!--<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>-->
+                            					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
                             					<th rowspan="2" class="text-center">% Chi Phí QC</br>/ Doanh Số</th>
                             					<th rowspan="2" class="text-center">Chi Phí QC</br>/ Đơn Hàng</th>
                             					<th rowspan="2" class="text-center">Chi Phí QC</th>
                             					'.$cost_capital.'
                         					</tr>
                         				    <tr>
-                            					<!--<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>-->
+                            					<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>
                             					<th style="min-width: 80px;" class="text-center">Số Đơn</th>
                             					<th style="min-width: 80px;" class="text-center">Doanh Số</th>
                         					</tr>
