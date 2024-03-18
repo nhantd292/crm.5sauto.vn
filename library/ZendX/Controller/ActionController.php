@@ -45,7 +45,7 @@ class ActionController extends AbstractActionController {
             $_COOKIE['kiotviet_token'] = $token;
             $this->kiotviet_token = $token;
         }
-//        echo $this->kiotviet_token;
+        echo $this->kiotviet_token;
 
 //        setcookie('viettelPost_token', '', time() - 1000);
         if(isset($_COOKIE['viettelPost_token'])){
