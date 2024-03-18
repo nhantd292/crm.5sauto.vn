@@ -993,6 +993,8 @@ class FormDataTable extends DefaultTable {
                 $ssFilter  	= $arrParam['data'];
                 $date      	= new \ZendX\Functions\Date();
 
+                $select -> join(TABLE_CONTACT, TABLE_CONTACT .'.id = '. TABLE_FORM_DATA .'.contact_id',array(), 'inner');
+
                 $date_begin = $date->formatToSearch($ssFilter['date_begin']);
                 $date_end 	= $date->formatToSearch($ssFilter['date_end']);
 
@@ -1024,6 +1026,9 @@ class FormDataTable extends DefaultTable {
 
                 if(!empty($ssFilter['product_group_id'])) {
                     $select -> where -> equalTo(TABLE_FORM_DATA .'.product_group_id', $ssFilter['product_group_id']);
+                }
+                if(!empty($ssFilter['huy_contact'])) { // bỏ những liên hệ có lịch sử chăm sóc là hủy
+                    $select -> where -> notLike(TABLE_CONTACT .'.options', '%157067544127338io70657%');
                 }
             })->toArray();
         }

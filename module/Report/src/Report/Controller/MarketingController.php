@@ -482,6 +482,7 @@ class MarketingController extends ActionController {
 //                    $data_report['total']['new_phone'] += 1;
 //                }
 //            }
+            $this->_params['data']['huy_contact'] = 1;
             $contacts = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->report($this->_params, array('task' => 'list-item-shared'));
             foreach ($contacts as $key => $value){
                 if(!empty($value['marketer_id'])  && array_key_exists($value['marketer_id'], $data_report)){
@@ -755,6 +756,7 @@ class MarketingController extends ActionController {
 //                    $data_report['total']['new_phone'] += 1;
 //                }
 //            }
+            $this->_params['data']['huy_contact'] = 1;
             $contacts = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->report($this->_params, array('task' => 'list-item-shared'));
             foreach ($contacts as $key => $value){
                 if(!empty($value['marketer_id'])  && array_key_exists($value['marketer_id'], $data_report)){
