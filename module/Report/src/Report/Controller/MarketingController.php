@@ -603,7 +603,7 @@ class MarketingController extends ActionController {
             $result['reportTable'] = '<thead data-count_contracts="'.count($contracts).'">
                         				    <tr>
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
-                            					<th colspan="2" class="text-center">Doanh số</th>
+                            					<th colspan="3" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
                             					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
                             					<th rowspan="2" class="text-center">% Chi Phí QC</br>/ Doanh Số</th>
@@ -876,7 +876,7 @@ class MarketingController extends ActionController {
             $result['reportTable'] = '<thead data-count_contracts="'.count($contracts).'">
                         				    <tr>
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
-                            					<th colspan="2" class="text-center">Doanh số</th>
+                            					<th colspan="3" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
                             					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
                             					<th rowspan="2" class="text-center">% Chi Phí QC</br>/ Doanh Số</th>
