@@ -1843,6 +1843,7 @@ class ContractController extends ActionController {
                         );
                         $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract, 'data' => $data_update), array('task' => 'update-item'));
                         if($result){
+                            $this->updateNumberKiotviet($contract); // trừ số lượng sang kiotviet
                             echo json_encode(array(
                                 'status'=> 2,
                                 'message' => 'Thành công',
@@ -2561,7 +2562,7 @@ class ContractController extends ActionController {
             $this->flashMessenger()->addMessage('Chưa cập nhật thành công thành công '.implode(', ', $contract_code_error) );
         }
 
-        $this->goRoute();
+        $this->goRoute(['action' => 'index-accounting']);
     }
 
     // Xác nhận đã nhận hoàn đơn hàng

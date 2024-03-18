@@ -461,6 +461,43 @@ class ActionController extends AbstractActionController {
         return $arr;
     }
 
+    public function updateNumberKiotviet($contract_item){
+        $result = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/'.$contract_item['id_kov']);
+        $result = json_decode($result, true);
+        if(isset($result['id'])){
+            $invoiceDetails = $result['orderDetails'];
+            foreach($invoiceDetails as $key => $value){
+                unset($invoiceDetails[$key]['viewDiscount']);
+            }
+            $invoiceOrderSurcharges = $result['invoiceOrderSurcharges'];
+            foreach($invoiceOrderSurcharges as $key => $value){
+                $invoiSurcharges[$key]['id']    = $value['id'];
+                $invoiSurcharges[$key]['code']  = $value['surchargeCode'];
+                $invoiSurcharges[$key]['price'] = $value['price'];
+            }
+
+            $invoi_data['branchId']         = $result['branchId'];
+            $invoi_data['customerId']       = $result['customerId'];
+            $invoi_data['discount']         = $result['discount'];
+            $invoi_data['totalPayment']     = $result['totalPayment'];
+            $invoi_data['soldById']         = $result['soldById'];
+            $invoi_data['orderId']          = $result['id'];
+            $invoi_data['invoiceDetails']   = $invoiceDetails;
+            $invoi_data['deliveryDetail']   = array(
+                'status' => 2,
+                'surchages' => $invoiSurcharges
+            );
+        }
+        $result_kov = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/invoices', $invoi_data, 'POST');
+        $result_kov = json_decode($result_kov, true);
+
+        if(isset($result_kov['id'])){
+            $params['data']['id']       = $contract_item['id'];
+            $params['data']['shipped']  = 1;
+            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($params, array('task' => 'update-shipped'));
+        }
+    }
+
     public function getNameCat($array, &$result){
         foreach($array as $key => $value){
             $result[$value['categoryId']] = $value['categoryName'];
