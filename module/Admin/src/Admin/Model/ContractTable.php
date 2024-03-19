@@ -1346,7 +1346,7 @@ class ContractTable extends DefaultTable {
             $data = array();
             if($arrData['price_paid']){
                 $data['price_paid'] = $number->formatToData($arrData['price_paid']);
-                $data['price_owed'] = $arrItem['price_total'] - $number->formatToData($arrData['price_paid']);
+                $data['price_owed'] = $arrItem['price_total'] - $arrItem['price_deposits'] - $number->formatToData($arrData['price_paid']);
             }
             if($arrData['status_acounting_id']){
                 $data['status_acounting_id'] = $arrData['status_acounting_id'];
