@@ -244,6 +244,33 @@ class FormDataTable extends DefaultTable {
                 }
             })->current();
         }
+
+        // lấy data_item theo các điều kiện join với contact
+        if($options['task'] == 'by-condition-join') {
+            $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+                $select -> columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(1)')));
+                $select -> join(TABLE_CONTACT, TABLE_CONTACT .'.id = '. TABLE_FORM_DATA .'.contact_id',array(), 'inner');
+
+                if(!empty($arrParam['phone'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.phone', $arrParam['phone']);
+                }
+                if(!empty($arrParam['marketer_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.marketer_id', $arrParam['marketer_id']);
+                }
+                if(!empty($arrParam['product_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.product_id', $arrParam['product_id']);
+                }
+                if(!empty($arrParam['product_group_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.product_id', $arrParam['product_group_id']);
+                }
+                if(!empty($arrParam['date'])){
+                    $select -> where -> like(TABLE_FORM_DATA.'.date', '%'.$arrParam['date'].'%');
+                }
+                if(!empty($ssFilter['huy_contact'])) { // bỏ những liên hệ có lịch sử chăm sóc là hủy
+                    $select -> where -> notLike(TABLE_CONTACT .'.options', '%157067544127338io70657%');
+                }
+            })->current();
+        }
 	    
 	    return $result->count;
 	}
