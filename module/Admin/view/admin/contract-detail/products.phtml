@@ -11,11 +11,14 @@
         $phone_code = false;
     }
 
+    $myForm->get('filter_action')->setValue($this->params['action']);
     if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
         $elements = array(
-            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+//            array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_action'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('order')),
             array('element' => $myForm->get('order_by')),
         );
@@ -36,6 +39,7 @@
             $onHand = isset($item['onHand']) ? number_format($item['onHand']) : 0;
             $xhtmlItems .= '<tr>
     							<td >'. $stt .'</td>
+    							<td >'. $item['code'] .'</td>
     							<td >'. $item['name'] .'</td>
     							
     							<td class="text-right">'. $order .'</td>
@@ -48,6 +52,7 @@
     // Head
     $xhtmlHead  = '<tr>';
     $xhtmlHead .= '<th width="40" class="text-center">STT</th>';
+    $xhtmlHead .= '<th>Mã sản phẩm</th>';
     $xhtmlHead .= '<th>Tên sản phẩm</th>';
     $xhtmlHead .= '<th>Số lượng khách đặt</th>';
     $xhtmlHead .= '<th>Đã giao cho GHTK</th>';

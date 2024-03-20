@@ -170,7 +170,12 @@ class ContractDetailController extends ActionController {
     
     // Danh sách
     public function productsAction() {
-        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100&includeInventory=true');
+        $ssFilter = new Container(__CLASS__.'products');
+        $param_search_product = 'pageSize=100&includeInventory=true';
+        if($this->_params['ssFilter']['filter_product']){
+            $param_search_product = $param_search_product.'&name='.$this->_params['ssFilter']['filter_product'];
+        }
+        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?'.$param_search_product);
         $products = json_decode($products, true);
         if($products['total'] < $products['pageSize']){
             $product_data = $products['data'];
@@ -183,25 +188,28 @@ class ContractDetailController extends ActionController {
             for ($index = 0; $index < $pageTotal; $index++) {
                 $currentItem = $index * $pageSize;
                 $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token,
-                    '/products?pageSize=100&currentItem=' . $currentItem.'&includeInventory=true');
+                    '/products?'.$param_search_product.'&currentItem=' . $currentItem);
                 $products = json_decode($products, true);
                 $product_data = array_merge($product_data, $products['data']);
             }
         }
         $result_data = [];
         foreach($product_data as $key => $value){
+            $result_data[$value['id']]['code'] = $value['code'];
             $result_data[$value['id']]['name'] = $value['fullName'];
             $result_data[$value['id']]['onHand'] = $value['inventories'][0]['onHand'];
         }
 
         $products_order = $this->getTable()->listItem(['query' => 'SELECT product_id, SUM(numbers) as quantity FROM x_contract_detail GROUP BY product_id order by quantity DESC'], array('task' => 'list-query'));
         foreach($products_order as $key => $value){
-            $result_data[$value['product_id']]['order'] = $value['quantity'];
+            if(array_key_exists($value['product_id'], $result_data))
+                $result_data[$value['product_id']]['order'] = $value['quantity'];
         }
 
         $products_ghtk = $this->getTable()->listItem(['query' => 'SELECT product_id, SUM(numbers) as quantity FROM x_contract_detail INNER JOIN x_contract ON x_contract_detail.contract_id = x_contract.id WHERE x_contract.shipped = 1 GROUP BY product_id order by quantity DESC'], array('task' => 'list-query'));
         foreach($products_ghtk as $key => $value){
-            $result_data[$value['product_id']]['ghtk'] = $value['quantity'];
+            if(array_key_exists($value['product_id'], $result_data))
+                $result_data[$value['product_id']]['ghtk'] = $value['quantity'];
         }
 
         $myForm	= new \Admin\Form\Search\ContractDetail($this, $this->_params);

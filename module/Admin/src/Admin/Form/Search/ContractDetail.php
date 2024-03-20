@@ -127,12 +127,14 @@ class ContractDetail extends Form{
 		    'name'			=> 'filter_product',
 		    'type'			=> 'Select',
 		    'attributes'	=> array(
-                'multiple'	=> true,
+//                'multiple'	=> true,
 		        'class'		=> 'form-control select2 select2_basic',
 		    ),
 		    'options'		=> array(
-//		        'empty_option'	=> '- Sản phẩm-',
-		        'value_options'	=> $products,
+		        'empty_option'	=> '- Sản phẩm-',
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'name', 'value' => 'name')),
+//                'value_options'	=> $products,
 		    )
 		));
 
