@@ -93,6 +93,7 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                         <th width="10px" class="text-center">C.Dài</th>
                         <th width="10px" class="text-center">C.Rộng</th>
                         <th width="10px" class="text-center">C.Cao</th>
+                        <th width="10px" class="text-center">KG</th>
                         <th width="30px" class="text-center">Xóa</th>
                     </tr>
                     </thead>
@@ -106,6 +107,7 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                             $check_name = empty($productList['product_name'][$i]) ? 'has-error' : "";
                             $check_number = empty($productList['numbers'][$i]) ? 'has-error' : "";
                             $check_price = empty($productList['price'][$i]) ? 'has-error' : "";
+                            $check_weight = empty($productList['weight'][$i]) ? 'has-error' : "";
 
                             $productHtml .= '<tr id="tr_'.$productList['product_id'][$i].' data-id="'.$productList['product_id'][$i].'">
                                                         <td width="100px" class="text-bold text-red text-middle">'.$productList['code'][$i].'</td>
@@ -126,12 +128,14 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                                                         <td class="height">
                                                             <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.$productList['height'][$i].'" required min="1" max="300">
                                                         </td>
+                                                        <td class="weight">
+                                                            <input class="form-control text-right w-60 p5" type="number" name="contract_product[weight][]" value="'.$productList['weight'][$i].'" required>
+                                                        </td>
                                                         <td class="hidden">
                                                             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$productList['product_id'][$i].'">
                                                             <input class="form-control" type="text" name="contract_product[full_name][]" value="'.$productList['full_name'][$i].'">
                                                             <input class="form-control" type="text" name="contract_product[code][]" value="'.$productList['code'][$i].'">
                                                             <input class="form-control" type="text" name="contract_product[cost][]" value="'.$productList['cost'][$i].'"> 
-                                                            <input class="form-control" type="text" name="contract_product[weight][]" value="'.$productList['weight'][$i].'"> 
                                                             <input class="form-control" type="text" name="contract_product[categoryId][]" value="'.$productList['categoryId'][$i].'"> 
                                                             <input class="form-control" type="text" name="contract_product[categoryName][]" value="'.$productList['categoryName'][$i].'"> 
                                                         </td>
@@ -165,12 +169,14 @@ $xhtmlBottom = $this->partialLoop($this->params['module'] . '/partial/form-defau
                                                     <td class="height">
                                                         <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.$pro_item['height'].'" required min="1" max="300">
                                                     </td>
+                                                    <td class="weight">
+                                                        <input class="form-control text-right w-60 p5" type="number" name="contract_product[weight][]" value="'.$pro_item['weight'].'" required min="1" max="300">
+                                                    </td>
                                                     <td class="hidden">
                                                         <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$pro_item['product_id'].'">
                                                         <input class="form-control" type="text" name="contract_product[full_name][]" value="'.$pro_item['full_name'].'">
                                                         <input class="form-control" type="text" name="contract_product[code][]" value="'.$pro_item['code'].'">
                                                         <input class="form-control" type="text" name="contract_product[cost][]" value="'.$pro_item['cost'].'"> 
-                                                        <input class="form-control" type="text" name="contract_product[weight][]" value="'.$pro_item['weight'].'"> 
                                                         <input class="form-control" type="text" name="contract_product[categoryId][]" value="'.$pro_item['categoryId'].'"> 
                                                         <input class="form-control" type="text" name="contract_product[categoryName][]" value="'.$pro_item['categoryName'].'"> 
                                                     </td>

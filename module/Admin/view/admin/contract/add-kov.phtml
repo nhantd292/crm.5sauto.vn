@@ -93,6 +93,7 @@
                         <th width="10px" class="text-center">C.Dài</th>
                         <th width="10px" class="text-center">C.Rộng</th>
                         <th width="10px" class="text-center">C.Cao</th>
+                        <th width="10px" class="text-center">KG</th>
                         <th width="30px" class="text-center">Xóa</th>
                     </tr>
                     </thead>
@@ -109,6 +110,7 @@
                                     $check_length = empty($productList['length'][$i]) ? 'has-error' : "";
                                     $check_width = empty($productList['width'][$i]) ? 'has-error' : "";
                                     $check_height = empty($productList['height'][$i]) ? 'has-error' : "";
+                                    $check_weight = empty($productList['weight'][$i]) ? 'has-error' : "";
 
                                     $productHtml .= '<tr data-id="'.$productList['product_id'][$i].'">
                                                         <td width="100px" class="text-bold text-red text-middle">'.$productList['code'][$i].'</td>
@@ -128,12 +130,14 @@
                                                         <td class="height">
                                                             <input class="form-control text-right w-60 p5 '.$check_height.'" type="number" name="contract_product[height][]" value="'.$productList['height'][$i].'" required min="1" max="300">
                                                         </td>
+                                                        <td class="weight">
+                                                            <input class="form-control text-right w-60 p5 '.$check_weight.'" type="number" name="contract_product[weight][]" value="'.$productList['weight'][$i].'" required>
+                                                        </td>
                                                         <td class="hidden">
                                                             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$productList['product_id'][$i].'">
                                                             <input class="form-control" type="text" name="contract_product[full_name][]" value="'.$productList['full_name'][$i].'">
                                                             <input class="form-control" type="text" name="contract_product[code][]" value="'.$productList['code'][$i].'">
                                                             <input class="form-control" type="text" name="contract_product[cost][]" value="'.$productList['cost'][$i].'"> 
-                                                            <input class="form-control" type="text" name="contract_product[weight][]" value="'.$productList['weight'][$i].'"> 
                                                             <input class="form-control" type="text" name="contract_product[categoryId][]" value="'.$productList['categoryId'][$i].'"> 
                                                             <input class="form-control" type="text" name="contract_product[categoryName][]" value="'.$productList['categoryName'][$i].'"> 
                                                         </td>

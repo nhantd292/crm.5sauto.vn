@@ -21,12 +21,15 @@ $xhtml = '
         <td class="height">
             <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.(int)$size[2].'" required min="1" max="300">
         </td>
+        <td class="weight">
+            <input class="form-control text-right w-60 p5" type="number" name="contract_product[weight][]" value="'.$this->product['weight'].'" required>
+        </td>
         <td class="hidden">
             <input class="form-control" type="text" name="contract_product[product_id][]" value="'.$this->product['id'].'">
             <input class="form-control" type="text" name="contract_product[full_name][]" value="'.$this->product['fullName'].'">
             <input class="form-control" type="text" name="contract_product[code][]" value="'.$this->product['code'].'">
             <input class="form-control" type="text" name="contract_product[cost][]" value="'.$this->product['inventories'][0]['cost'].'"> 
-            <input class="form-control" type="text" name="contract_product[weight][]" value="'.$this->product['weight'].'"> 
+            <!--<input class="form-control" type="text" name="contract_product[weight][]" value="'.$this->product['weight'].'"> -->
             <input class="form-control" type="text" name="contract_product[categoryId][]" value="'.$this->product['categoryId'].'"> 
             <input class="form-control" type="text" name="contract_product[categoryName][]" value="'.$this->product['categoryName'].'"> 
         </td>

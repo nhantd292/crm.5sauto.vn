@@ -230,6 +230,8 @@ class Contract extends Form{
         $list_status = [];
         if($ssFilter['filter_status_type'] == 'ghtk_status'){
             $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "ghtk-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
+            if($ssFilter['filter_unit_transport'] == 'viettel')
+                $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "viettel-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
         }
         if($ssFilter['filter_status_type'] == 'status_acounting_id'){
             $list_status = \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "status-acounting" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));

@@ -387,6 +387,7 @@ class ContractController extends ActionController {
                     if(
                         trim($contract_product['product_id'][$i]) == "" ||
                         trim($contract_product['car_year'][$i]) == "" ||
+                        trim($contract_product['weight'][$i]) == "" ||
                         (int)trim($contract_product['length'][$i]) == 0 ||
                         (int)trim($contract_product['width'][$i]) == 0 ||
                         (int)trim($contract_product['height'][$i]) == 0 ||
@@ -509,6 +510,7 @@ class ContractController extends ActionController {
                     if(
                         trim($contract_product['product_id'][$i]) == "" ||
                         trim($contract_product['car_year'][$i]) == "" ||
+                        trim($contract_product['weight'][$i]) == "" ||
                         (int)trim($contract_product['length'][$i]) == 0 ||
                         (int)trim($contract_product['width'][$i]) == 0 ||
                         (int)trim($contract_product['height'][$i]) == 0 ||
