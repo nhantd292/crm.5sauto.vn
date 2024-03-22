@@ -302,9 +302,10 @@ class SaleController extends ActionController {
 
             // Lấy dữ liệu doanh số.
             $where_contract = array(
-                'filter_date_begin'   => $ssFilter->report['date_begin'],
-                'filter_date_end'     => $ssFilter->report['date_end'],
-                'date_type'           => "date",
+                'filter_date_begin'         => $ssFilter->report['date_begin'],
+                'filter_date_end'           => $ssFilter->report['date_end'],
+                'date_type'                 => "shipped_date",
+                'filter_sales_status_id'    => "true",
             );
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
             foreach ($contracts as $key => $value){
