@@ -1243,6 +1243,49 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
+    // Cập nhật trạng thái sale
+    public function editStatusSaleAction() {
+        $myForm = new \Admin\Form\Contract\EditStatusSale($this->getServiceLocator(), $this->_params);
+
+        if(!empty($this->_params['data']['id'])) {
+            $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $this->_params['data']['id']));
+            $myForm->setData($contract);
+
+            if($contract['lock']){
+                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'lock', 'type' => 'modal'));
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'modal'));
+        }
+
+        if($this->getRequest()->isPost()){
+            if($this->_params['data']['modal'] == 'success') {
+                $myForm->setInputFilter(new \Admin\Filter\Contract\EditStatusSale($this->_params));
+                $myForm->setData($this->_params['data']);
+
+                if($myForm->isValid()){
+                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+                    $this->getTable()->updateItem($this->_params, array('task' => 'update-status'));
+                    $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
+
+                    echo 'success';
+                    return $this->response;
+                }
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+        }
+
+        $this->_viewModel['myForm']     = $myForm;
+        $this->_viewModel['contract']   = $contract;
+        $this->_viewModel['caption']    = 'Sửa trạng thái sale';
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
+
     // Chuyển đơn hàng sang đơn hàng lẻ
     public function convertOrderAction() {
         $myForm = new \Admin\Form\Contract\ConvertOrder($this->getServiceLocator(), $this->_params);

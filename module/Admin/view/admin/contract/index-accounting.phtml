@@ -153,6 +153,7 @@ if($this->items->count() > 0) {
         $linkView               = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'view')) .'\', {\'id\': \''. $id .'\'});';
         $linkEditNote           = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-note')) .'\', {\'id\': \''. $id .'\'});';
         $linkEditStatus         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status')) .'\', {\'id\': \''. $id .'\'});';
+        $linkEditStatusSale     = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status-sale')) .'\', {\'id\': \''. $id .'\'});';
         $linkConvertOrder       = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'convert-order')) .'\', {\'id\': \''. $id .'\'});';
         $linkDelete             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'delete', 'id' => $id));
         $linkCancel             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'cancel', 'id' => $id));
@@ -181,6 +182,9 @@ if($this->items->count() > 0) {
         else{
             $menu_edit_status = '<li><a href="javascript:;" onclick="'. $linkEditStatus .'"><i class="fa fa-edit"></i> Sửa trạng thái giục đơn</a></li>';
         }
+        if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
+            $menu_edit_status_sale = '<li><a href="javascript:;" onclick="'. $linkEditStatusSale .'"><i class="fa fa-edit"></i> Sửa trạng thái sale</a></li>';
+        }
 
 //            $menu_edit_status_acountant = in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)? '<li><a href="javascript:;" onclick="'. $linkEditStatusAccount .'"><i class="fa fa-pencil-square-o"></i> Sửa trạng thái kế toán</a></li>' : '';
 
@@ -190,7 +194,7 @@ if($this->items->count() > 0) {
     									   <i class="fa fa-cog"></i> <i class="fa fa-angle-down"></i>
     									</button>
     									<ul class="dropdown-menu" role="menu">
-    										'.$menu_edit_contract.$menuConver.$menu_edit_status.'
+    										'.$menu_edit_contract.$menuConver.$menu_edit_status.$menu_edit_status_sale.'
     										<li><a href="javascript:;" onclick="'. $linkEditPricePaid .'"><i class="fa fa-money"></i> Đối soát thủ công</a></li>
     										<li><a href="javascript:;" onclick="'. $linkEditShippingFee .'"><i class="fa fa-money"></i> Xác nhận Hoàn có hỗ trợ ship</a></li>
     										<li><a href="'. $linkDelete .'"><i class="fa fa-trash"></i> Xóa</a></li>
