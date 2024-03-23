@@ -32,7 +32,7 @@
         array('element' => $myForm->get('deliver_work_shift'), 'label' => 'Thời gian giao', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('production_type_id'), 'label' => 'Loại đơn', 'validate' => array('require' => true), 'boxClass' => 'col-md-2'),
         array('element' => $myForm->get('sale_note'), 'label' => 'Ghi chú sale', 'boxClass' => 'col-md-3'),
-        array('element' => $myForm->get('ghtk_note'), 'label' => 'Ghi chú GHTK', 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('ghtk_note'), 'label' => 'Ghi chú GHTK', 'validate' => array('require' => true), 'boxClass' => 'col-md-3'),
 
     );
     

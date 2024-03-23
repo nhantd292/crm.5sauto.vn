@@ -28,6 +28,7 @@ return array (
 			'Admin\Controller\SalesTarget'            => Controller\SalesTargetController::class,
 			'Admin\Controller\MarketingReport'        => Controller\MarketingReportController::class,
 			'Admin\Controller\MarketingTarget'        => Controller\MarketingTargetController::class,
+			'Admin\Controller\MarketingAds'           => Controller\MarketingAdsController::class,
 			'Admin\Controller\Material'               => Controller\MaterialController::class,
 		    'Admin\Controller\EventDemo'              => Controller\EventDemoController::class,
 		    'Admin\Controller\EventTest'              => Controller\EventTestController::class,

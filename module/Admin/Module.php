@@ -117,6 +117,11 @@ class Module {
                     $tableGateway = new TableGateway(TABLE_MARKETING_REPORT, $adapter, null);
                     return new \Admin\Model\MarketingReportTable($tableGateway);
                 },
+                'Admin\Model\MarketingAdsTable'	=> function ($sm) {
+                    $adapter = $sm->get('dbConfig');
+                    $tableGateway = new TableGateway(TABLE_MARKETING_ADS, $adapter, null);
+                    return new \Admin\Model\MarketingAdsTable($tableGateway);
+                },
                 'Admin\Model\MaterialTable'	=> function ($sm) {
                     $adapter = $sm->get('dbConfig');
                     $tableGateway = new TableGateway(TABLE_MATERIAL, $adapter, null);
@@ -407,6 +412,11 @@ class Module {
                 'formAdminMarketingReport' => function($sm) {
                     $myForm	= new \Admin\Form\MarketingReport($sm);
                     $myForm->setInputFilter(new \Admin\Filter\MarketingReport());
+                    return $myForm;
+                },
+                'formAdminMarketingAds' => function($sm) {
+                    $myForm	= new \Admin\Form\MarketingAds($sm);
+                    $myForm->setInputFilter(new \Admin\Filter\MarketingAds());
                     return $myForm;
                 },
                 'formAdminMarketingTarget' => function($sm) {

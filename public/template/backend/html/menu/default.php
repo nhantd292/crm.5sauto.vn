@@ -191,6 +191,11 @@
                             <i class="fa fa-bar-chart"></i> <span class="title">Báo cáo chi phí ADS</span><span class="arrow"></span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'marketing-ads', 'action' => 'index'));?>" target="_self">
+                            <i class="fa fa-bar-chart"></i> <span class="title">Báo cáo ADS theo ngày</span><span class="arrow"></span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         </ul>
