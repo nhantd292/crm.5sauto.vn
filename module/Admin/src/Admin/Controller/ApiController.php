@@ -829,7 +829,7 @@ class ApiController extends ActionController {
 
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
 //                        if($data['ORDER_STATUS'] == 105 || $data['ORDER_STATUS'] == 103){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
-                        if($data['ORDER_STATUS'] == 105){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
+                        if($data['ORDER_STATUS'] == 105 || $data['ORDER_STATUS'] == 200){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
                             $this->updateNumberKiotviet($contract_item);
                         }
                         $response->setStatusCode(Response::STATUS_CODE_200);
