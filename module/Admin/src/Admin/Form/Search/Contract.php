@@ -209,7 +209,7 @@ class Contract extends Form{
 		    'options'		=> array(
 //		        'empty_option'	=> '- Sản phẩm-',
 //		        'value_options'	=> $products,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\KovProductsTable')->listItem([], array('task' => 'cache')), array('key' => 'id', 'value' => 'fullName')),
             )
 		));
 
