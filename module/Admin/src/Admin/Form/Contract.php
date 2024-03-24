@@ -6,6 +6,8 @@ class Contract extends Form {
 	
 	public function __construct($sm, $options){
 		parent::__construct();
+        $userInfo = new \ZendX\System\UserInfo();
+        $sale_branch_id = $userInfo->getUserInfo('sale_branch_id');
 		
 		// FORM Attribute
 		$this->setAttributes(array(
@@ -161,6 +163,8 @@ class Contract extends Form {
 //        $groupaddress = json_decode($sm->ghtk_call('/services/shipment/list_pick_add'), true)['data'];
 //        $inventorys = \ZendX\Functions\CreateArray::create($groupaddress, array('key' => 'pick_address_id', 'value' => 'pick_name,address', 'sprintf' =>'%s - %s'));
 
+        $branch = $sm->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $sale_branch_id));
+        $warehouse_id = $branch['document_id'];
         $this->add(array(
             'name'			=> 'groupaddressId',
             'type'			=> 'Select',
@@ -171,7 +175,7 @@ class Contract extends Form {
                 'empty_option'	=> '- Kho gửi hàng -',
                 'disable_inarray_validator' => true,
 //                'value_options'	=> $inventorys,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'warehouses')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name,phone,address', 'sprintf' =>'%s - %s - %s')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'warehouses', 'id' => $warehouse_id)), array('task' => 'cache')), array('key' => 'id', 'value' => 'name,phone,address', 'sprintf' =>'%s - %s - %s')),
             )
         ));
 

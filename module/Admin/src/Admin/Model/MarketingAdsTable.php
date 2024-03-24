@@ -9,19 +9,40 @@ class MarketingAdsTable extends DefaultTable {
     public function countItem($arrParam = null, $options = null){
 	    if($options['task'] == 'list-item') {
 	        $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
-                $ssFilter  = $arrParam['ssFilter']; 
+                $ssFilter  = $arrParam['ssFilter'];
+                $date       = new \ZendX\Functions\Date();
+
+                $date_type = !empty($ssFilter['filter_date_type']) ? $ssFilter['filter_date_type'] : 'from_date';
+
+                if (!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                    $select->where->NEST
+                        ->greaterThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_begin']))
+                        ->AND
+                        ->lessThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'))
+                        ->UNNEST;
+                } elseif (!empty($ssFilter['filter_date_begin'])) {
+                    $select->where->greaterThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_begin']));
+                } elseif (!empty($ssFilter['filter_date_end'])) {
+                    $select->where->lessThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'));
+                }
                  
                 if(isset($ssFilter['filter_status']) && $ssFilter['filter_status'] != '') {
                     $select->where->equalTo('status', $ssFilter['filter_status']);
                 }
-                
+                if(isset($ssFilter['filter_sale_branch']) && $ssFilter['filter_sale_branch'] != '') {
+                    $select->where->equalTo('sale_branch_id', $ssFilter['filter_sale_branch']);
+                }
+                if(isset($ssFilter['filter_marketer_id']) && $ssFilter['filter_marketer_id'] != '') {
+                    $select->where->equalTo('marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
                 if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
-    		        $select->where->NEST
-                			      ->like('name', '%'. $ssFilter['filter_keyword'] . '%')
-                			      ->or
-                			      ->equalTo('id', $ssFilter['filter_keyword'])
-                			      ->UNNEST;
-    			}
+                    $select->where->NEST
+                        ->like('note', '%'. $ssFilter['filter_keyword'] . '%')
+                        ->or
+                        ->equalTo('id', $ssFilter['filter_keyword'])
+                        ->UNNEST;
+                }
             })->count();
 	    }
 	    
@@ -39,16 +60,36 @@ class MarketingAdsTable extends DefaultTable {
                     $select -> limit($paginator['itemCountPerPage'])
                         -> offset(($paginator['currentPageNumber'] - 1) * $paginator['itemCountPerPage']);
                 }
-    			
-    			$select -> order(array('from_date' => 'DESC'));
+
+                $select -> order(array('from_date' => 'DESC'));
+                $date       = new \ZendX\Functions\Date();
+                $date_type = !empty($ssFilter['filter_date_type']) ? $ssFilter['filter_date_type'] : 'from_date';
+
+                if (!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                    $select->where->NEST
+                        ->greaterThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_begin']))
+                        ->AND
+                        ->lessThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'))
+                        ->UNNEST;
+                } elseif (!empty($ssFilter['filter_date_begin'])) {
+                    $select->where->greaterThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_begin']));
+                } elseif (!empty($ssFilter['filter_date_end'])) {
+                    $select->where->lessThanOrEqualTo($date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'));
+                }
     			
     			if(isset($ssFilter['filter_status']) && $ssFilter['filter_status'] != '') {
     			    $select->where->equalTo('status', $ssFilter['filter_status']);
     			}
+    			if(isset($ssFilter['filter_sale_branch']) && $ssFilter['filter_sale_branch'] != '') {
+    			    $select->where->equalTo('sale_branch_id', $ssFilter['filter_sale_branch']);
+    			}
+    			if(isset($ssFilter['filter_marketer_id']) && $ssFilter['filter_marketer_id'] != '') {
+    			    $select->where->equalTo('marketer_id', $ssFilter['filter_marketer_id']);
+    			}
     			
     			if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
     		        $select->where->NEST
-                			      ->like('name', '%'. $ssFilter['filter_keyword'] . '%')
+                			      ->like('note', '%'. $ssFilter['filter_keyword'] . '%')
                 			      ->or
                 			      ->equalTo('id', $ssFilter['filter_keyword'])
                 			      ->UNNEST;
