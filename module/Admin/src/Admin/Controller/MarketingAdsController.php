@@ -124,12 +124,7 @@ class MarketingAdsController extends ActionController{
                 if($controlAction == 'save-new') {
                     $this->goRoute(array('action' => 'add'));
                 } else if($controlAction == 'save') {
-                    if($result != ''){
-                        $this->goRoute(array('action' => 'edit', 'id' => $result));
-                    }
-                    else{
-                        $this->goRoute(array('action' => 'add'));
-                    }
+                    $this->goRoute(array('action' => 'edit', 'id' => $result));
                 } else {
                     $this->goRoute();
                 }
@@ -142,6 +137,7 @@ class MarketingAdsController extends ActionController{
     }
 
     public function editAction() {
+        $dateFormat = new \ZendX\Functions\Date();
         $myForm = $this->getForm();
         $item_id = $this->params('id');
         if (!empty($item_id)) {
@@ -149,33 +145,32 @@ class MarketingAdsController extends ActionController{
             $item = $this->getTable()->getItem($this->_params['data']);
             if (!empty($item)) {
                 if (!$this->getRequest()->isPost()) {
+                    $item['from_date'] = $dateFormat->formatToView($item['from_date']);
+                    $item['to_date'] = $dateFormat->formatToView($item['to_date']);
                     $myForm->setData($item);
                 }
             }
+            else {
+                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'not-found'));
+            }
         }
         if ($this->getRequest()->isPost()) {
-            $myForm->setInputFilter(new \Admin\Filter\FormData(array('id' => $this->_params['data']['id'], 'data' => $this->_params['data'], 'route' => $this->_params['route'])));
+            $myForm->setInputFilter(new \Admin\Filter\MarketingAds(array('id' => $this->_params['data']['id'], 'data' => $this->_params['data'], 'route' => $this->_params['route'])));
             $myForm->setData($this->_params['data']);
             $controlAction = $this->_params['data']['control-action'];
 
             if ($myForm->isValid()) {
                 $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']), array('task' => 'by-phone'));
-                if (!empty($contact)){
-                    $this->flashMessenger()->addMessage('Data đã tồn tại trong liên hệ - không thể cập nhật lại thông tin');
-                    $this->goRoute(array('action' => 'edit', 'id' => $item_id));
-                }
-                else{
-                    $this->getServiceLocator()->get('Admin\Model\MarketingAdsTable')->saveItem($this->_params, array('task' => 'edit-item'));
-                    $this->flashMessenger()->addMessage('Chi phí ads đã được cập nhật');
+                $this->_params['item'] = $item;
+                $this->getServiceLocator()->get('Admin\Model\MarketingAdsTable')->saveItem($this->_params, array('task' => 'edit-item'));
+                $this->flashMessenger()->addMessage('Chi phí ads đã được cập nhật');
 
-                    if($controlAction == 'save-new') {
-                        $this->goRoute(array('action' => 'add'));
-                    } else if($controlAction == 'save') {
-                        $this->goRoute(array('action' => 'edit', 'id' => $item_id));
-                    } else {
-                        $this->goRoute();
-                    }
+                if($controlAction == 'save-new') {
+                    $this->goRoute(array('action' => 'add'));
+                } else if($controlAction == 'save') {
+                    $this->goRoute(array('action' => 'edit', 'id' => $item_id));
+                } else {
+                    $this->goRoute();
                 }
             }
         }

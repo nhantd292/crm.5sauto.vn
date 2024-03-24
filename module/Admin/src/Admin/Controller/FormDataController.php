@@ -650,88 +650,37 @@ class FormDataController extends ActionController{
 
                 $check_date = $date->check_date_format_to_data($this->_params['data']['date']);
                 if($check_date == true){
-                    if(!empty($contact)){
-//                        echo 'Trùng liên hệ';
+                    $product_group = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('name' => $this->_params['data']['product_group'], 'code' => 'product-group'), array('task' => 'by-custom-name'));
+                    if(!empty($product_group)){
+                        $this->_params['data']['product_group_id'] = $product_group['id'];
+                        if(!empty($contact)){
+                            // Thêm data trùng
+                            $this->_params['data']['branch_id'] = $user_mkt['sale_branch_id'];
+                            $this->_params['data']['group_id'] = $user_mkt['sale_group_id'];
+                            $this->_params['data']['contact_coin'] = 1;
+                            $this->_params['data']['contact_id']   = $contact['id'];
+                            $this->getTable()->saveItem($this->_params, array('task' => 'import-insert'));
+                            echo 'Thành công';
+                        }
+                        else {
 
-                        // Cập nhật liên hệ trùng
-//                        $product_group = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('name' => $this->_params['data']['product_group'], 'code' => 'product-group'), array('task' => 'by-custom-name'));
-//                        $arr_data = array(
-//                            'id'                => $contact['id'],
-//                            'marketer_id'       => $this->_params['data']['marketer_id'],
-//                            'product_group_id'  => $product_group['id'],
-//                        );
-//                        $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem($arr_data, array('task' => 'update-new-data'));
-                        // Thêm data trùng
-                        $this->_params['data']['branch_id'] = $user_mkt['sale_branch_id'];
-                        $this->_params['data']['group_id'] = $user_mkt['sale_group_id'];
-                        $this->_params['data']['contact_coin'] = 1;
-                        $this->_params['data']['contact_id']   = $contact['id'];
-                        $this->getTable()->saveItem($this->_params, array('task' => 'import-insert'));
-                        echo 'Thành công';
-
-
-                        // Begin Tạo thông báo cho sale đang quản lý liên hệ
-                            $condition = array(
-                                'phone' => $contact['phone'],
-                            );
-                            // Lấy thông tin người quản lý liên hệ hiện tại.
-                            $manager_user = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(array('id' => $contact['user_id']));
-                            $content = '';
-                            $user_ids = "";
-                            if($manager_user['status'] == 1){
-                                $content = 'Khách hàng '.$contact['name'].'('.$contact['phone'].') đăng kí lại cần chăm sóc ngay';
-                                $user_ids = $contact['user_id'];
-                            }
-                            else{
-                                $content = 'Khách hàng '.$contact['name'].'('.$contact['phone'].') đăng kí lại nhưng nhân viên ('.$manager_user['name'].') đã nghỉ cần chuyển cho sale khác chăm sóc';
-                                $list_sale_admin = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-sale-admin'));
-                                if(!empty($list_sale_admin)){
-                                    foreach ($list_sale_admin as $index => $u_item) {
-                                        $user_ids .= $u_item['id'].',';
-                                    }
-                                }
-                                else{ // nếu không có sale admin thì thông báo cho admin.
-                                    $user_ids = '2222222222222222222222';
-                                }
-                            }
-                            $arrNotify['data'] = array(
-                                'content'   => $content,
-                                'user_ids'  => $user_ids,
-                                'type'      => 'phone',
-                                'link'      => '/xadmin/contact/index/',
-                                'options'   => serialize($condition),
-                            );
-                            $this->getServiceLocator()->get('Notifycation\Model\NotifyTable')->saveItem($arrNotify, array('task' => 'add-item'));
-                        // End tạo thông báo.
-                    }
-                    else {
-                        $product_group = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('name' => $this->_params['data']['product_group'], 'code' => 'product-group'), array('task' => 'by-custom-name'));
-
-                        if(!empty($product_group)){
-                            $this->_params['data']['product_group_id'] = $product_group['id'];
-                            if ($item_coin_phone) {
-//                                if (!empty($item_coin_phone_mkt)) {
-//                                    echo 'Data trùng';
-//                                } else if ($item_coin_other > 0) {
-//                                    echo 'Data trùng trong ngày với marketer khác';
-//                                } else {
+                                if ($item_coin_phone) {
                                     $this->_params['data']['branch_id'] = $user_mkt['sale_branch_id'];
                                     $this->_params['data']['group_id'] = $user_mkt['sale_group_id'];
                                     $this->_params['data']['contact_coin'] = 1;
                                     $this->getTable()->saveItem($this->_params, array('task' => 'import-insert'));
                                     $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem(array('contact_coin' => 1, 'phone' => $this->_params['data']['phone']), array('task' => 'update-contact-coin'));
                                     echo 'Thành công';
-//                                }
-                            } else {
-                                $this->_params['data']['branch_id'] = $user_mkt['sale_branch_id'];
-                                $this->_params['data']['group_id'] = $user_mkt['sale_group_id'];
-                                $this->getTable()->saveItem($this->_params, array('task' => 'import-insert'));
-                                echo 'Thành công';
+                                } else {
+                                    $this->_params['data']['branch_id'] = $user_mkt['sale_branch_id'];
+                                    $this->_params['data']['group_id'] = $user_mkt['sale_group_id'];
+                                    $this->getTable()->saveItem($this->_params, array('task' => 'import-insert'));
+                                    echo 'Thành công';
+                                }
                             }
                         }
-                        else{
-                            echo 'Không có Nhóm SP quan tâm';
-                        }
+                    else{
+                        echo 'Không có Nhóm SP quan tâm';
                     }
                 }
                 else{
