@@ -1616,7 +1616,7 @@ class SaleController extends ActionController {
                     if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
 
                         # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
-                        if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144){
+                        if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])){
                             $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
                             $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
                         }
@@ -1703,12 +1703,12 @@ class SaleController extends ActionController {
         						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_total'] - $data_report[$value['id']]['sales_cancel_sale']).'</td> <!--Tổng doanh số-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['da-lay-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['dang-giao-hang'].'</td> 
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td> <!--Giảm trừ doanh thu-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td> <!--Hỗ trợ ship-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td> <!--Mới + mua thêm-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td> <!--% Hoàn-->
-        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_new'] + $data_report[$value['id']]['sales_care']).'</td> <!--% Hoàn-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td><!--Hoàn-->
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td> <!--Mới -->
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td> <!--% chăm sóc-->
+        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_new'] + $data_report[$value['id']]['sales_care']).'</td> <!--% tổng-->
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td><!--% Hoàn-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['cod_total'].'</td><!--COD-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td><!--Chi phí MKT-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_cost_tc'].'%</td><!--% CPQC/Doanh Thu-->';
@@ -1724,12 +1724,12 @@ class SaleController extends ActionController {
         						<td class="mask_currency text-right">'.($data_report['total']['sales_total'] - $data_report['total']['sales_cancel_sale']).'</td> <!--Tổng doanh số-->
         						<td class="mask_currency text-right">'.$data_report['total']['da-lay-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report['total']['dang-giao-hang'].'</td> 
-        						<td class="mask_currency text-right">'.$data_report['total']['giam-tru-doanh-thu'].'</td> <!--Giảm trừ doanh thu-->
-        						<td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td> <!--Hỗ trợ shipp-->
-        						<td class="mask_currency text-right">'.$data_report['total']['sales_new'].'</td> <!--Mới + mua thêm-->
-        						<td class="mask_currency text-right">'.$data_report['total']['sales_care'].'</td> <!--% Hoàn-->
-        						<td class="mask_currency text-right">'.($data_report['total']['sales_new'] + $data_report['total']['sales_care']).'</td> <!--% Hoàn-->
-        						<td class="mask_currency text-right">'.$data_report['total']['percent_return'].'</td> <!--% COD -->
+        						<td class="mask_currency text-right">'.$data_report['total']['giam-tru-doanh-thu'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report['total']['sales_new'].'</td> <!--Mới -->
+        						<td class="mask_currency text-right">'.$data_report['total']['sales_care'].'</td> <!--% chăm sóc-->
+        						<td class="mask_currency text-right">'.($data_report['total']['sales_new'] + $data_report['total']['sales_care']).'</td> <!--% tổng ds-->
+        						<td class="mask_currency text-right">'.$data_report['total']['percent_return'].'%</td> <!--% haonf -->
         						<td class="mask_currency text-right">'.$data_report['total']['cod_total'].'</td> <!--% COD -->
         						<td class="mask_currency text-right">'.$data_report['total']['cost_ads'].'</td><!--Chi phí MKT-->
         						<td class="mask_currency text-right">'.$data_report['total']['percent_cost_tc'].'%</td><!--% CPQC/Doanh Thu-->';
