@@ -1611,8 +1611,9 @@ class SaleController extends ActionController {
 
                     // Dục đơn - Thành công
                     if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
-                        # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên
-                        if($date_format->diff($value['contact_contract_first_date'], $value['created']) >= 144){
+
+                        # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
+                        if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144){
                             $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
                             $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
                         }
@@ -1725,6 +1726,7 @@ class SaleController extends ActionController {
         						<td class="mask_currency text-right">'.$data_report['total']['sales_new'].'</td> <!--Mới + mua thêm-->
         						<td class="mask_currency text-right">'.$data_report['total']['sales_care'].'</td> <!--% Hoàn-->
         						<td class="mask_currency text-right">'.($data_report['total']['sales_new'] + $data_report['total']['sales_care']).'</td> <!--% Hoàn-->
+        						<td class="mask_currency text-right">'.$data_report['total']['percent_return'].'</td> <!--% COD -->
         						<td class="mask_currency text-right">'.$data_report['total']['cod_total'].'</td> <!--% COD -->
         						<td class="mask_currency text-right">'.$data_report['total']['cost_ads'].'</td><!--Chi phí MKT-->
         						<td class="mask_currency text-right">'.$data_report['total']['percent_cost_tc'].'%</td><!--% CPQC/Doanh Thu-->';
