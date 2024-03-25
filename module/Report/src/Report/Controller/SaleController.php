@@ -1582,8 +1582,8 @@ class SaleController extends ActionController {
                     $data_report[$value['user_id']]['cod_total'] += $value['price_transport'];
                     $data_report['total']['cod_total'] += $value['price_transport'];
 
-                    $data_report[$value['user_id']]['cost_ads'] += $value['contact_cost_ads'];
-                    $data_report['total']['cost_ads'] += $value['contact_cost_ads'];
+//                    $data_report[$value['user_id']]['cost_ads'] += $value['contact_cost_ads'];
+//                    $data_report['total']['cost_ads'] += $value['contact_cost_ads'];
 
                     $data_report[$value['user_id']]['sales_total'] += $value['price_total'];
                     $data_report['total']['sales_total'] += $value['price_total'];
@@ -1645,15 +1645,19 @@ class SaleController extends ActionController {
                     }
                 }
             }
+            $product_group_condition = !empty($ssFilter->report['product_group_id']) ? " and product_group_id = '".$ssFilter->report['product_group_id']."' " : '';
+            $sale_id_condition = !empty($ssFilter->report['sale_id']) ? " and user_id = '".$ssFilter->report['sale_id']."' " : '';
 
-            // Tính chi phí quảng cáo cho sales
-//            $contracts_cost_ads = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->report($this->_params, array('task' => 'list-item-shared'));
-//            foreach ($contracts_cost_ads as $key => $value){
-//                if(array_key_exists($value['sales_id'], $data_report)){
-//                    $data_report[$value['sales_id']]['cost_ads'] +=  $value['cost_ads'];
-//                    $data_report['total']['cost_ads'] +=  $value['cost_ads'];
-//                }
-//            }
+            # lấy chi phí quảng cáo cho khi liên hệ chia cho sale
+            $sql_select = "SELECT user_id, sum(cost_ads) as cost_ads FROM ".TABLE_CONTACT." WHERE date >= '".$date_format->formatToData($ssFilter->report['date_begin'], 'Y-m-d')." 00:00:00'
+            and date <= '".$date_format->formatToData($ssFilter->report['date_end'], 'Y-m-d')." 23:59:59' ".$product_group_condition . $sale_id_condition . " GROUP BY user_id;";
+            $contact_cost_ads = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report(array('sql' => $sql_select), array('task' => 'query'));
+            foreach($contact_cost_ads as $key => $value){
+                if (array_key_exists($value['user_id'], $data_report)) {
+                    $data_report[$value['user_id']]['cost_ads'] += $value['cost_ads'];
+                    $data_report['total']['cost_ads'] += $value;
+                }
+            }
 
             // Người có quyền hiển thị chi phí giá vốn, doanh thu thực tế
             $show_cost_capital = false;

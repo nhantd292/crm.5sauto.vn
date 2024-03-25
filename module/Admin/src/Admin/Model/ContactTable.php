@@ -1211,6 +1211,12 @@ class ContactTable extends DefaultTable {
             });
         }
 
+        if($options['task'] == 'query') {
+            if(!empty($arrParam['sql'])){
+                $result = $this->tableGateway->getAdapter()->driver->getConnection()->execute($arrParam['sql']);
+            }
+        }
+
 	    return $result;
 	}
 }
