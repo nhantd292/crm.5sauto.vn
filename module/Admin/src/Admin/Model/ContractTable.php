@@ -3704,6 +3704,7 @@ class ContractTable extends DefaultTable {
         	                    'contact_marketer_id' => 'marketer_id',
         	                    'contact_type' => 'type',
         	                    'contact_cost_ads' => 'cost_ads',
+        	                    'contact_contract_first_date' => 'contract_first_date',
         	                    'contact_contract_time_success' => 'contract_time_success',
         	                ), 'inner');
 

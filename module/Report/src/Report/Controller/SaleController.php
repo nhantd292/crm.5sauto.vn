@@ -1497,6 +1497,7 @@ class SaleController extends ActionController {
 
     // Báo cáo sale 3: Báo cáo doanh thu sales
     public function sale3Action() {
+        $date_format     = new \ZendX\Functions\Date();
         $ssFilter = new Container(__CLASS__ . str_replace('-', '_', $this->_params['action']));
 
         if($this->getRequest()->isPost()) {
@@ -1581,11 +1582,8 @@ class SaleController extends ActionController {
                     $data_report[$value['user_id']]['cod_total'] += $value['price_transport'];
                     $data_report['total']['cod_total'] += $value['price_transport'];
 
-                    $data_report[$value['user_id']]['cost_ads'] += $value['cost_ads'];
-                    $data_report['total']['cost_ads'] += $value['cost_ads'];
-
-
-
+                    $data_report[$value['user_id']]['cost_ads'] += $value['contact_cost_ads'];
+                    $data_report['total']['cost_ads'] += $value['contact_cost_ads'];
 
                     // Sales - Hủy sales
                     if ($value['status_id'] == HUY_SALES) {
@@ -1612,13 +1610,17 @@ class SaleController extends ActionController {
                     }
 
                     // Dục đơn - Thành công
-//                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
-                        $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
-                        $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
-
-                        $data_report[$value['user_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'];
-                        $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'];
-//                    }
+                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
+                        # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên
+                        if($date_format->diff($value['contact_contract_first_date'], $value['created']) >= 144){
+                            $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                            $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                        }
+                        else{
+                            $data_report[$value['user_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                            $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                        }
+                    }
 
                     // Thanh toán trước
                     $data_report[$value['user_id']]['deposit'] += $value['price_deposits'];
@@ -1660,9 +1662,9 @@ class SaleController extends ActionController {
             // Tham số bảng báo cáo
             foreach ($data_report as $key => $value){
                 $percent_target  = ($value['target'] > 0 ? round($value['sales_total'] / $value['target'] * 100, 2) : 0);
-                $percent_return  = (($value['sales_total'] - $value['sales_cancel_sale']) > 0 ? round(($value['sales_return'] + $value['sales_refund']) / ($value['sales_total'] - $value['sales_cancel_sale']) * 100, 2) : 0);
+                $percent_return  = (($value['da-lay-hang']) > 0 ? round(($value['giam-tru-doanh-thu'] + $value['hang-hoan']) / ($value['da-lay-hang']) * 100, 2) : 0);
                 $revenue         = ($value['sales_success_new'] + $value['sales_success_add']) - $value['cost_capital'] - $value['cost_ads'] - $value['cod_total'];
-                $tc              = $value['sales_success'] - $value['sales_refund'];
+                $tc              = $value['sales_new'] - $value['sales_care'];
                 $percent_cost_tc = ($tc > 0 ? round($value['cost_ads'] / $tc * 100, 2) : 0);
 
                 $data_report[$key]['percent_target']  = $percent_target;
@@ -1702,6 +1704,7 @@ class SaleController extends ActionController {
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td> <!--Mới + mua thêm-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td> <!--% Hoàn-->
         						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_new'] + $data_report[$value['id']]['sales_care']).'</td> <!--% Hoàn-->
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td><!--Hoàn-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['cod_total'].'</td><!--COD-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td><!--Chi phí MKT-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_cost_tc'].'%</td><!--% CPQC/Doanh Thu-->';
