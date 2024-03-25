@@ -1702,18 +1702,18 @@ class SaleController extends ActionController {
             foreach ($key_sort as $key => $value){
                 $xhtmlItems .= '<tr>
         		                <th class="text-bold">'.$data_report[$value['id']]['name'].'</th> <!--Tên nhân viên-->
-        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_total'] - $data_report[$value['id']]['sales_cancel_sale']).'</td> <!--Tổng doanh số-->
+        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_total'] - $data_report[$value['id']]['sales_cancel_sale']).'</td>
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['da-lay-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['dang-giao-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td>
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td> 
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td> <!--Mới -->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td> <!--% chăm sóc-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']['sales_new_care'].'</td> <!--% tổng-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td><!--% Hoàn-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['cod_total'].'</td><!--COD-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td><!--Chi phí MKT-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_cost_tc'].'%</td><!--% CPQC/Doanh Thu-->';
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new_care'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['cod_total'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_cost_tc'].'%</td>';
                 if($show_cost_capital){
                     $xhtmlItems .= '<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_capital'].'</td><!--Giá vốn-->
         						                    <td class="mask_currency text-right">'.$data_report[$value['id']]['revenue'].'</td><!--Điểm hòa vốn-->';
