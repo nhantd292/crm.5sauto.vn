@@ -1669,8 +1669,7 @@ class SaleController extends ActionController {
                 $percent_target  = ($value['target'] > 0 ? round($value['sales_total'] / $value['target'] * 100, 2) : 0);
                 $percent_return  = ($sales_new_care > 0 ? round(($value['giam-tru-doanh-thu'] + $value['hang-hoan']) / $sales_new_care * 100, 2) : 0);
                 $revenue         = ($value['sales_success_new'] + $value['sales_success_add']) - $value['cost_capital'] - $value['cost_ads'] - $value['cod_total'];
-                $tc              = $value['sales_new'] - $value['sales_care'];
-                $percent_cost_tc = ($tc > 0 ? round($value['cost_ads'] / $tc * 100, 2) : 0);
+                $percent_cost_tc = ($sales_new_care > 0 ? round($value['cost_ads'] / $sales_new_care * 100, 2) : 0);
 
                 $data_report[$key]['percent_target']  = $percent_target;
                 $data_report[$key]['percent_return']  = $percent_return;
