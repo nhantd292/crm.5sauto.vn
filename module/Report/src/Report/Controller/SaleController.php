@@ -1665,8 +1665,9 @@ class SaleController extends ActionController {
 
             // Tham số bảng báo cáo
             foreach ($data_report as $key => $value){
+                $sales_new_care = $data_report[$value['id']]['sales_new'] + $data_report[$value['id']]['sales_care'];
                 $percent_target  = ($value['target'] > 0 ? round($value['sales_total'] / $value['target'] * 100, 2) : 0);
-                $percent_return  = (($value['da-lay-hang']) > 0 ? round(($value['giam-tru-doanh-thu'] + $value['hang-hoan']) / ($value['da-lay-hang']) * 100, 2) : 0);
+                $percent_return  = ($sales_new_care > 0 ? round(($value['giam-tru-doanh-thu'] + $value['hang-hoan']) / $sales_new_care * 100, 2) : 0);
                 $revenue         = ($value['sales_success_new'] + $value['sales_success_add']) - $value['cost_capital'] - $value['cost_ads'] - $value['cod_total'];
                 $tc              = $value['sales_new'] - $value['sales_care'];
                 $percent_cost_tc = ($tc > 0 ? round($value['cost_ads'] / $tc * 100, 2) : 0);
@@ -1675,6 +1676,7 @@ class SaleController extends ActionController {
                 $data_report[$key]['percent_return']  = $percent_return;
                 $data_report[$key]['revenue']         = $revenue;
                 $data_report[$key]['percent_cost_tc'] = $percent_cost_tc;
+                $data_report[$key]['sales_new_care']  = $sales_new_care;
             }
             // sắp xếp theo doanh tổng doanh thu
             $key_sort = [];
@@ -1707,7 +1709,7 @@ class SaleController extends ActionController {
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td> 
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td> <!--Mới -->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td> <!--% chăm sóc-->
-        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_new'] + $data_report[$value['id']]['sales_care']).'</td> <!--% tổng-->
+        						<td class="mask_currency text-right">'.$data_report[$key]['sales_new_care'].'</td> <!--% tổng-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td><!--% Hoàn-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['cod_total'].'</td><!--COD-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td><!--Chi phí MKT-->
@@ -1728,7 +1730,7 @@ class SaleController extends ActionController {
         						<td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td> 
         						<td class="mask_currency text-right">'.$data_report['total']['sales_new'].'</td> <!--Mới -->
         						<td class="mask_currency text-right">'.$data_report['total']['sales_care'].'</td> <!--% chăm sóc-->
-        						<td class="mask_currency text-right">'.($data_report['total']['sales_new'] + $data_report['total']['sales_care']).'</td> <!--% tổng ds-->
+        						<td class="mask_currency text-right">'.$data_report[$key]['sales_new_care'].'</td> <!--% tổng ds-->
         						<td class="mask_currency text-right">'.$data_report['total']['percent_return'].'%</td> <!--% haonf -->
         						<td class="mask_currency text-right">'.$data_report['total']['cod_total'].'</td> <!--% COD -->
         						<td class="mask_currency text-right">'.$data_report['total']['cost_ads'].'</td><!--Chi phí MKT-->

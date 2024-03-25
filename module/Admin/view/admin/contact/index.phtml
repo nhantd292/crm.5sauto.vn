@@ -42,28 +42,10 @@
         array('element' => $myForm->get('order_by')),
     );
     $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
-
-    // Head
-    $xhtmlHead  = '<tr>';
-    $xhtmlHead .= '<th width ="30" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
-    $xhtmlHead .= '<th width ="110">Công cụ</th>';
-    $xhtmlHead .= $this->linkAdminSort('Ngày', 'date', $this->params['ssFilter'], array('class' => 'col-150', 'width' => '110'));
-    $xhtmlHead .= '<th width ="90">Điện thoại</th>';
-    $xhtmlHead .= '<th width ="150">Họ tên</th>';
-    $xhtmlHead .= '<th width ="100">Phân loại KH</th>';
-    $xhtmlHead .= '<th width ="150">SP quan tâm</th>';
-    $xhtmlHead .= '<th width ="140">Số lần mua sản phẩm</th>';
-    $xhtmlHead .= '<th width ="200">Tên xe - Năm sản xuất</th>';
-    $xhtmlHead .= '<th width ="220">Nội dung tư vấn</th>';
-    $xhtmlHead .= '<th width ="150">Số lần được chăm sóc</th>';
-    $xhtmlHead .= '<th width ="310">Lịch sử chăm sóc cuối</th>';
-    $xhtmlHead .= '<th width ="90">Chăm sóc lại</th>';
-    $xhtmlHead .= '<th width ="200">Người quản lý</th>';
-    $xhtmlHead .= '<th width ="200">Marketer</th>';
-	$xhtmlHead .= '</tr>';
     
     // Danh sách
     $xhtmlItems = '';
+    $total_cost_ads = 0;
     if($this->items->count() > 0) {
         foreach ($this->items AS $item) {
             $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
@@ -74,6 +56,8 @@
             $name                   = $item->name;
             $email                  = $item->email;
             $contract_number        = $item->contract_number;
+            $cost_ads               = $item->cost_ads;
+            $total_cost_ads         += $cost_ads;
             $hisstory_success       = $item->history_success > 0 ? $item->history_success: '';
             $birthday_year          = $item->birthday_year;
             $date_return            = $dateFormat->formatToView($item->date_return, 'd/m/Y');
@@ -148,6 +132,7 @@
             $xhtmlItems .= '<td><div class="col-190 text-wrap">'. $note .'</div></td>';
             $xhtmlItems .= '<td><div class="col-190 text-wrap">'. $content .'</div></td>';
             $xhtmlItems .= '<td class="text-center">'. $hisstory_success .'</td>';
+            $xhtmlItems .= '<td class="mask_currency text-right">'. $cost_ads .'</td>';
             $xhtmlItems .= '<td><div class="col-300 text-wrap">'. $x_history .'</div></td>';
             $xhtmlItems .= '<td>'. $history_return .'</td>';
             $xhtmlItems .= '<td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>';
@@ -155,6 +140,25 @@
     		$xhtmlItems .= '</tr>';
         }
     }
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th width ="30" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th width ="110">Công cụ</th>';
+    $xhtmlHead .= $this->linkAdminSort('Ngày', 'date', $this->params['ssFilter'], array('class' => 'col-150', 'width' => '110'));
+    $xhtmlHead .= '<th width ="90">Điện thoại</th>';
+    $xhtmlHead .= '<th width ="150">Họ tên</th>';
+    $xhtmlHead .= '<th width ="100">Phân loại KH</th>';
+    $xhtmlHead .= '<th width ="150">SP quan tâm</th>';
+    $xhtmlHead .= '<th width ="140">Số lần mua sản phẩm</th>';
+    $xhtmlHead .= '<th width ="200">Tên xe - Năm sản xuất</th>';
+    $xhtmlHead .= '<th width ="220">Nội dung tư vấn</th>';
+    $xhtmlHead .= '<th width ="150">Số lần được chăm sóc</th>';
+    $xhtmlHead .= '<th width ="150" class="text-right">Chi phí ADS: <span class="mask_currency text-red">'.$total_cost_ads.'</span></th>';
+    $xhtmlHead .= '<th width ="310">Lịch sử chăm sóc cuối</th>';
+    $xhtmlHead .= '<th width ="90">Chăm sóc lại</th>';
+    $xhtmlHead .= '<th width ="200">Người quản lý</th>';
+    $xhtmlHead .= '<th width ="200">Marketer</th>';
+    $xhtmlHead .= '</tr>';
     
     // Control
     $arrControl = array(

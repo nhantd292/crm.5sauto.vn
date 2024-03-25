@@ -34,7 +34,7 @@
     if(!empty($this->items)) {
         $index = 0;
         $list_item  = $this->items;
-
+        $total_price = 0;
         foreach ($list_item AS $item) {
             $index++;
             $id                     = $item['id'];
@@ -43,6 +43,7 @@
             $to_date                = $dateFormat->formatToView($item['to_date'], 'd/m/Y');
             $created                = $dateFormat->formatToView($item['created'], 'd/m/Y H:i:s');
             $price                  = $numberFormat->formatToNumber($item['price']);
+            $total_price            += $price;
             $note                   = $item['note'];
             $marketer               = $item['marketer_id'] ? $this->user[$item['marketer_id']]['name'] : '';
             $branch                 = $item['sale_branch_id'] ? '<br>'.$this->branch[$item['sale_branch_id']]['name'] : '';
@@ -76,7 +77,7 @@
     $xhtmlHead .= $this->linkAdminSort('Đến ngày', 'to_date', $this->params['ssFilter'], array('width' => '150'));
     $xhtmlHead .= '<th width="160">Nhân viên MKT</th>';
     $xhtmlHead .= '<th width="150">Sản phẩm quan tâm</th>';
-    $xhtmlHead .= '<th width="160"  class="text-right">Chi phí</th>';
+    $xhtmlHead .= '<th width="160" class="text-right">Chi phí: <span class="mask_currency text-red">'.$total_price.'</span></th>';
     $xhtmlHead .= '<th width="130">Ghi chú</th>';
     $xhtmlHead .= '<th width="130">Ngày tạo</th>';
     $xhtmlHead .= '</tr>';
