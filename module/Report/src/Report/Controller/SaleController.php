@@ -1655,7 +1655,7 @@ class SaleController extends ActionController {
             foreach($contact_cost_ads as $key => $value){
                 if (array_key_exists($value['user_id'], $data_report)) {
                     $data_report[$value['user_id']]['cost_ads'] += $value['cost_ads'];
-                    $data_report['total']['cost_ads'] += $value;
+                    $data_report['total']['cost_ads'] += $value['cost_ads'];
                 }
             }
 
