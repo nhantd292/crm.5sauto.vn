@@ -1585,6 +1585,9 @@ class SaleController extends ActionController {
                     $data_report[$value['user_id']]['cost_ads'] += $value['contact_cost_ads'];
                     $data_report['total']['cost_ads'] += $value['contact_cost_ads'];
 
+                    $data_report[$value['user_id']]['sales_total'] += $value['price_total'];
+                    $data_report['total']['sales_total'] += $value['price_total'];
+
                     // Sales - Hủy sales
                     if ($value['status_id'] == HUY_SALES) {
                         $data_report[$value['user_id']]['sales_cancel_sale'] += $value['price_total'] - $value['vat'];
@@ -1697,7 +1700,7 @@ class SaleController extends ActionController {
             foreach ($key_sort as $key => $value){
                 $xhtmlItems .= '<tr>
         		                <th class="text-bold">'.$data_report[$value['id']]['name'].'</th> <!--Tên nhân viên-->
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_total'].'</td> <!--Tổng doanh số-->
+        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_total'] - $data_report[$value['id']]['sales_cancel_sale']).'</td> <!--Tổng doanh số-->
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['da-lay-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['dang-giao-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td> <!--Giảm trừ doanh thu-->
@@ -1718,7 +1721,7 @@ class SaleController extends ActionController {
             // Hiển thị dòng tổng tất cả.
             $xhtmlItems .= '<tr class="text-bold text-red">
         		                <th class="text-bold">'.$data_report['total']['name'].'</th> <!--Tên nhân viên-->
-        						<td class="mask_currency text-right">'.$data_report['total']['sales_total'].'</td> <!--Tổng doanh số-->
+        						<td class="mask_currency text-right">'.($data_report['total']['sales_total'] - $data_report['total']['sales_cancel_sale']).'</td> <!--Tổng doanh số-->
         						<td class="mask_currency text-right">'.$data_report['total']['da-lay-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report['total']['dang-giao-hang'].'</td> 
         						<td class="mask_currency text-right">'.$data_report['total']['giam-tru-doanh-thu'].'</td> <!--Giảm trừ doanh thu-->
