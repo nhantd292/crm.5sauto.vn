@@ -3703,12 +3703,16 @@ class ContractTable extends DefaultTable {
         	                    'contact_created' => 'created',
         	                    'contact_marketer_id' => 'marketer_id',
         	                    'contact_type' => 'type',
+        	                    'contact_cost_ads' => 'cost_ads',
         	                    'contact_contract_time_success' => 'contract_time_success',
         	                ), 'inner');
 
                 if(!empty($ssFilter['order'])) {
                     $select -> order(array(TABLE_CONTRACT .'.'.$ssFilter['order'] => 'ASC'));
                 }
+
+                // Đơn hàng chưa xóa có trạng thái = 0
+                $select -> where -> equalTo(TABLE_CONTRACT .'.delete', 0);
 
                 if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
                     $select -> where -> NEST
@@ -3791,12 +3795,12 @@ class ContractTable extends DefaultTable {
                                         ->OR
                                         ->equalTo(TABLE_CONTRACT .'.'.$ssFilter['filter_status_type'], STATUS_CONTRACT_PRODUCT_POST)
                                         ->UNNEST;
-
                     }
 				}
 
-                // Đơn hàng chưa xóa có trạng thái = 0
-                $select -> where -> equalTo(TABLE_CONTRACT .'.delete', 0);
+                if(!empty($ssFilter['filter_product_group_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT .'.product_group_id', $ssFilter['filter_product_group_id']);
+                }
 	        })->toArray();
 	    }
 

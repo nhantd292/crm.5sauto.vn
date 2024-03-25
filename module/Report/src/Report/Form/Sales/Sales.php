@@ -52,6 +52,18 @@ class Sales extends Form{
 		    )
 		));
 
+        $this->add(array(
+            'name'			=> 'product_group_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Sản phẩm quan tâm -',
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'product-group')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+            )
+        ));
+
 		// Cơ sở
 		$this->add(array(
 		    'name'			=> 'sale_branch_id',
