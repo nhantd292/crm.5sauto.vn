@@ -73,15 +73,19 @@ class SaleController extends ActionController {
                 $data_report[$value['id']]['name']           = $value['name'];
                 $data_report[$value['id']]['phone']          = 0;
                 $data_report[$value['id']]['cancel']         = 0;
+                $data_report[$value['id']]['called']         = 0;
                 $data_report[$value['id']]['latched']        = 0; // Đã chốt
                 $data_report[$value['id']]['sales_expected'] = 0; // Doanh số tạm tính
+                $data_report[$value['id']]['sales_order']    = 0; // Doanh số lên đơn
                 $data_report[$value['id']]['not_call']       = 0;
             }
             $data_report['total']['name']           = "Tổng";
             $data_report['total']['phone']          = 0;
             $data_report['total']['cancel']         = 0;
+            $data_report['total']['called']         = 0;
             $data_report['total']['latched']        = 0; // Đã chốt
             $data_report['total']['sales_expected'] = 0; // Doanh số tạm tính
+            $data_report['total']['sales_order']    = 0; // Doanh số lên đơn
             $data_report['total']['not_call']       = 0;
 
             // Lấy số điện thoại của sale_x đã được nhận.
@@ -102,9 +106,14 @@ class SaleController extends ActionController {
                     if(!empty($options)){
                         $sale_history_type = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-history-type')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'id'));
                         $id_status = $sale_history_type[STATUS_CONTACT_CANCEL]; // id trạng thái hủy. ['huy']
-                        if($options['history_type_id'] == $id_status && $options['history_created_by'] == $value['user_id']){
+//                        if($options['history_type_id'] == $id_status && $options['history_created_by'] == $value['user_id']){
+                        if($options['history_type_id'] == $id_status){
                             $data_report[$value['user_id']]['cancel'] += 1;
                             $data_report['total']['cancel'] += 1;
+                        }
+                        else{
+                            $data_report[$value['user_id']]['called'] += 1;
+                            $data_report['total']['called'] += 1;
                         }
                     }
                     // Đếm số contact đã được chốt
@@ -151,8 +160,10 @@ class SaleController extends ActionController {
                                     <td class="text-bold">'.$data_report[$value['id']]['name'].'</td>
                                     <td class="mask_currency text-center">'.$data_report[$value['id']]['phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cancel'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['called'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['latched'].'</td> 
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['sales_expected'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['sales_order'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['percent'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['not_call'].'</td>
                                 </tr>';
@@ -162,8 +173,10 @@ class SaleController extends ActionController {
                                     <td class="text-bold">'.$data_report['total']['name'].'</td>
                                     <td class="mask_currency text-center">'.$data_report['total']['phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cancel'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report['total']['called'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['latched'].'</td> 
                                     <td class="mask_currency text-right">'.$data_report['total']['sales_expected'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report['total']['sales_order'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['percent'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['not_call'].'</td>
                                 </tr>';
@@ -189,15 +202,17 @@ class SaleController extends ActionController {
             $result['reportTable'] = '<thead>
                         				    <tr>
                             					<th width="180" rowspan="2" class="text-center">Tên NV Sale</th>
-                            					<th width="150" rowspan="2" class="text-center">Số điện thoại</th>
-                            					<th width="150" rowspan="2" class="text-center">Số hủy</th>
-                            					<th width="150" colspan="2" class="text-center">Tổng chốt</th>
+                            					<th width="150" rowspan="2" class="text-center">SĐT nhận</th>
+                            					<th width="150" rowspan="2" class="text-center">SĐT hủy</th>
+                            					<th width="150" rowspan="2" class="text-center">SĐT tư vấn</th>
+                            					<th width="150" colspan="3" class="text-center">Tổng chốt</th>
                             					<th width="150" rowspan="2" class="text-center">% Tỉ lệ chốt</th>
-                            					<th width="150" rowspan="2" class="text-center">Số chưa gọi</th>
+                            					<th width="150" rowspan="2" class="text-center">Số chưa tương tác</th>
                         					</tr>
                         				    <tr>
-                            					<th width="150" class="text-center">Đã chốt</th>
+                            					<th width="150" class="text-center">Số đơn</th>
                             					<th width="150" class="text-center">Doanh số tạm tính</th>
+                            					<th width="150" class="text-center">Doanh số lên đơn</th>
                         					</tr>
                         				</thead>
                         				<tbody>

@@ -115,11 +115,11 @@ $is_accounting = true;
                     <span class="title">Báo cáo Sales</span><span class="arrow"></span>
                 </a>
                 <ul class="sub-menu">
-<!--                    <li>-->
-<!--                        <a href="--><?php //echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'sale', 'code' => 'share'));?><!--"><i class="fa fa-dot-circle-o"></i> Báo cáo chia số</a>-->
-<!--                    </li>-->
                     <li>
                         <a href="<?php echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'sale', 'code' => 'sale3'));?>"><i class="fa fa-dot-circle-o"></i> Báo cáo doanh thu sale</a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'sale', 'code' => 'share'));?>"><i class="fa fa-dot-circle-o"></i> Báo cáo chia số</a>
                     </li>
 <!--                    <li>-->
 <!--                        <a href="--><?php //echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'sale', 'code' => 'sale-store'));?><!--"><i class="fa fa-dot-circle-o"></i> Báo cáo doanh thu cửa hàng</a>-->
