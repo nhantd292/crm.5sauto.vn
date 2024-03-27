@@ -106,8 +106,10 @@ class SaleController extends ActionController {
             foreach ($contacts as $key => $value){
                 // Nếu người quản lý contact nằm trong danh sách nhân viên sale
                 if (array_key_exists($value['user_id'], $data_report)){
-                    $data_report[$value['user_id']]['phone'] += 1;
-                    $data_report['total']['phone'] += 1;
+                    if(!empty($value['marketer_id'])){
+                        $data_report[$value['user_id']]['phone'] += 1;
+                        $data_report['total']['phone'] += 1;
+                    }
 
                     // Đếm số contact chưa được chăm sóc (số contact chưa phát sinh lịch sử chăm sóc chưa có ngày 'history_created')
                     if(empty($value['history_created'])){
@@ -125,8 +127,10 @@ class SaleController extends ActionController {
                                 $data_report['total']['cancel'] += 1;
                             }
                             else{
-                                $data_report[$value['user_id']]['called'] += 1;
-                                $data_report['total']['called'] += 1;
+                                if(!empty($value['marketer_id'])) {
+                                    $data_report[$value['user_id']]['called'] += 1;
+                                    $data_report['total']['called'] += 1;
+                                }
                             }
                         }
                     }
