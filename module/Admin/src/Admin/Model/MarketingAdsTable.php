@@ -35,6 +35,9 @@ class MarketingAdsTable extends DefaultTable {
                 if(isset($ssFilter['filter_marketer_id']) && $ssFilter['filter_marketer_id'] != '') {
                     $select->where->equalTo('marketer_id', $ssFilter['filter_marketer_id']);
                 }
+                if(isset($ssFilter['filter_product_group_id']) && $ssFilter['filter_product_group_id'] != '') {
+                    $select->where->equalTo('product_group_id', $ssFilter['filter_product_group_id']);
+                }
 
                 if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
                     $select->where->NEST
@@ -85,6 +88,9 @@ class MarketingAdsTable extends DefaultTable {
     			}
     			if(isset($ssFilter['filter_marketer_id']) && $ssFilter['filter_marketer_id'] != '') {
     			    $select->where->equalTo('marketer_id', $ssFilter['filter_marketer_id']);
+    			}
+    			if(isset($ssFilter['filter_product_group_id']) && $ssFilter['filter_product_group_id'] != '') {
+    			    $select->where->equalTo('product_group_id', $ssFilter['filter_product_group_id']);
     			}
     			
     			if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
