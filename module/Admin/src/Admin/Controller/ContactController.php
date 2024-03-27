@@ -40,6 +40,7 @@ class ContactController extends ActionController
         $this->_params['ssFilter']['filter_history_status']    = $ssFilter->filter_history_status;
         $this->_params['ssFilter']['filter_number_contract']   = $ssFilter->filter_number_contract;
         $this->_params['ssFilter']['filter_number_contract2']   = $ssFilter->filter_number_contract2;
+        $this->_params['ssFilter']['filter_product_group_id']   = $ssFilter->filter_product_group_id;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage']  = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : $this->_paginator['itemCountPerPage'];
@@ -80,6 +81,7 @@ class ContactController extends ActionController
             $ssFilter->filter_history_status    = $data['filter_history_status'];
             $ssFilter->filter_number_contract   = $data['filter_number_contract'];
             $ssFilter->filter_number_contract2   = $data['filter_number_contract2'];
+            $ssFilter->filter_product_group_id   = $data['filter_product_group_id'];
 
             $ssFilter->filter_user              = $data['filter_user'];
             $ssFilter->filter_marketer_id       = $data['filter_marketer_id'];
