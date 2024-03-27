@@ -5,6 +5,7 @@
     $classx = $data['unit_transport'] == '5sauto' ? '' : 'hidden';
     $classy = $data['unit_transport'] == '5sauto' ? 'hidden' : '';
 
+    $myForm->get('ghtk_status')->setAttributes(array('data-parent' => $myForm->get('unit_transport')->getValue() == 'viettel' ? 'viettel-status' : 'ghtk-status'));
     $elements = array(
         array('element' => $myForm->get('unit_transport'), 'label' => 'Đơn vị vận chuyển', 'boxClass' => 'col-md-3', 'validate' => array('require' => true)),
         array('element' => $myForm->get('ghtk_code'), 'label' => 'Mã đơn vận chuyển', 'boxClass' => 'col-md-3 unit-child '.$classy, 'validate' => array('require' => true)),
@@ -44,6 +45,16 @@ if($this->params['data']['modal'] != 'success') {
 	<button type="button" data-dismiss="modal" class="btn btn-default">Đóng</button>
 </div>
     <script>
+        $('select[name="unit_transport"]').change(function() {
+            var select = 'input[name="ghtk_status"]';
+            var parent = $(select).parent();
+            $('.select2-container', parent).select2('val', '');
+            var code = 'ghtk-status';
+            if($(this).val() == 'viettel')
+                code = 'viettel-status';
+            $(select).attr('data-parent', code);
+        });
+
         $('select[name="unit_transport"]').change(function() {
             var unit = $(this).val();
             if(unit == '5sauto'){

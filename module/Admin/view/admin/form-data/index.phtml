@@ -37,19 +37,13 @@
         array('element' => $myForm->get('order_by')),
     );
     $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
-
     // Danh sách
     $xhtmlItems = '';
-
-    $total_sales = 0;
-    $total_sales_expected = 0;
-    
+    $total_cost_ads = $total_sales = $total_sales_expected =  0;
     if(!empty($this->items)) {
         $index = 0;
         $list_item  = $this->items;
-
         foreach ($list_item AS $item) {
-
             $index++;
             $id                     = $item['id'];
             $cid                    = $this->xFormInput('cid[]', $item['id'], array('type' => 'checkbox', 'class' => 'checkboxes'));
@@ -60,6 +54,7 @@
             $city                   = $this->location_city[$item['city_id']]['name'];
             $district               = $this->location_district[$item['district_id']]['name'];
             $note                   = $item['note'];
+            $contact_cost_ads       = $item['contact_cost_ads'];
             $content                = $item['content'];
             $sales_expected         = $item['sales_id'] ? $item['contact_sales_expected'] : null;
             $marketer               = $item['marketer_id'] ? $this->user[$item['marketer_id']]['name'] : '';
@@ -89,13 +84,11 @@
                     $coincide = "Trùng data<br>(Về đầu tiên)";
                 }
             }
-
             $contact_options        = $item['contact_options'] ? unserialize($item['contact_options']) : array();
             $history_type           = $this->sale_history_type[$contact_options['history_type_id']]['name'];
-
             $total_sales += $this->items_sales[$id]->sum_total_price;
             $total_sales_expected += $sales_expected;
-
+            $total_cost_ads += $contact_cost_ads;
             $contact_sales = !empty($item['sales_id']) ? $contact_sales : '';
             
             // Link Action
@@ -135,6 +128,7 @@
     							<td>'. $product_group .'</td>
     							<td class="text-right mask_currency text-green">'. $this->items_sales[$id]->sum_total_price .'</td>
     							<td class="text-right mask_currency text-green">'. $sales_expected .'</td>
+    							<td class="text-right mask_currency">'. $contact_cost_ads .'</td>
     							<td class="text-red">'. $coincide .'</td>
     							<td>'. $history_type .'</td>
     							<td title="'.$contact_options['history_content'].'">'. $contact_options['history_content'] .'</td>
@@ -157,8 +151,9 @@
     $xhtmlHead .= '<th width="160">Họ tên</th>';
     $xhtmlHead .= '<th width="100">Điện thoại</th>';
     $xhtmlHead .= '<th width="150">Sản phẩm quan tâm</th>';
-    $xhtmlHead .= '<th width="150">Doanh thu<br>Tổng:<span class="mask_currency text-red">'.$total_sales.'</span></th>';
-    $xhtmlHead .= '<th width="150">Doanh số tạm tính<br>Tổng:<span class="mask_currency text-red">'.$total_sales_expected.'</span></th>';
+    $xhtmlHead .= '<th width="150" class="text-right">Doanh thu<br><span class="mask_currency text-red">'.$total_sales.'</span></th>';
+    $xhtmlHead .= '<th width="150" class="text-right">Doanh số tạm tính<br><span class="mask_currency text-red">'.$total_sales_expected.'</span></th>';
+    $xhtmlHead .= '<th width="160" class="text-right">Chi phí ADS<br><span class="mask_currency text-red">'.$total_cost_ads.'</span></th>';
     $xhtmlHead .= '<th width="160">Dữ liệu</th>';
     $xhtmlHead .= '<th width="130">Phân loại chăm sóc</th>';
     $xhtmlHead .= '<th width="130">Ghi chú</th>';

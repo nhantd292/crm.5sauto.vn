@@ -180,4 +180,17 @@ class MarketingAdsController extends ActionController{
         $this->_viewModel['caption']    = 'Sửa báo cáo chi phí ADS';
         return new ViewModel($this->_viewModel);
     }
+
+    public function deleteAction() {
+        if($this->getRequest()->isPost()) {
+            if(!empty($this->_params['data']['cid'])) {
+                // Xóa data đã chọn
+                $cdata = $this->getTable()->deleteItem($this->_params, array('task' => 'delete-item'));
+                $message = 'Xóa '. $cdata .' phần tử thành công';
+                $this->flashMessenger()->addMessage($message);
+            }
+        }
+
+        $this->goRoute(array('action' => 'index'));
+    }
 }

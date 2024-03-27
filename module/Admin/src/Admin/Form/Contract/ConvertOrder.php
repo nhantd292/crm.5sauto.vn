@@ -43,6 +43,33 @@ class ConvertOrder extends Form {
             ),
         ));
 
+        // Trạng thái
+//        $this->add(array(
+//            'name'			=> 'ghtk_status',
+//            'type'			=> 'Select',
+//            'attributes'	=> array(
+//                'class'		=> 'form-control select2 select2_basic',
+//            ),
+//            'options'		=> array(
+//                'empty_option'	=> '- Chọn -',
+//                'disable_inarray_validator' => true,
+//                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "ghtk-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name')),
+//            ),
+//        ));
+        $this->add(array(
+            'name'			=> 'ghtk_status',
+            'type'			=> 'Text',
+            'attributes'	=> array(
+                'class'		          => 'form-control select2 select2_advance',
+                'value'               => '',
+                'data-table'          => TABLE_DOCUMENT,
+                'data-id'             => 'alias',
+                'data-text'           => 'name',
+                'data-parent'         => '',
+                'data-parent-field'   => 'code',
+            ),
+        ));
+
         $this->add(array(
             'name'			=> 'price_transport',
             'type'			=> 'Text',
@@ -70,20 +97,6 @@ class ConvertOrder extends Form {
 		        'empty_option'	=> '- Chọn -',
 		        'disable_inarray_validator' => true,
 		        'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "shipper" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
-		    ),
-		));
-		
-		// Trạng thái
-		$this->add(array(
-		    'name'			=> 'ghtk_status',
-		    'type'			=> 'Select',
-		    'attributes'	=> array(
-				'class'		=> 'form-control select2 select2_basic',
-		    ),
-		    'options'		=> array(
-		        'empty_option'	=> '- Chọn -',
-		        'disable_inarray_validator' => true,
-		        'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "ghtk-status" )), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name')),
 		    ),
 		));
 	}

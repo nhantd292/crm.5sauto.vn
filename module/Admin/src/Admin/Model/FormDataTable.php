@@ -16,7 +16,8 @@ class FormDataTable extends DefaultTable {
                 
                 $select -> columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(1)')));
 
-                $select -> join(TABLE_USER, TABLE_USER .'.id = '. TABLE_FORM_DATA .'.marketer_id',array(), 'inner');
+                $select -> join(TABLE_USER, TABLE_USER .'.id = '. TABLE_FORM_DATA .'.marketer_id',array(), 'inner')
+                ->join(TABLE_CONTACT, TABLE_CONTACT .'.id = '. TABLE_FORM_DATA .'.contact_id',array('contact_cost_ads' => 'cost_ads'), 'inner');
                 
     			if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
     			    $select -> where -> NEST
@@ -304,6 +305,7 @@ class FormDataTable extends DefaultTable {
                         'contact_user_id' => 'user_id',
                         'contact_sales_expected'  => 'sales_expected',
                         'contact_options'  => 'options',
+                        'contact_cost_ads' => 'cost_ads'
                     ), 'left');
     			
 			    if(!empty($date_begin) && !empty($date_end)) {

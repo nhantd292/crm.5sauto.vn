@@ -296,7 +296,7 @@ class Contact extends InputFilter {
 		));
 		
 		// Check nhập lịch sử chăm sóc
-		if(!empty($optionData['history_type_id']) || !empty($optionData['history_success']) || !empty($optionData['history_action_id']) || !empty($optionData['history_result_id']) || !empty($optionData['history_return']) || !empty($optionData['history_content'])) {
+//		if(!empty($optionData['history_type_id']) || !empty($optionData['history_success']) || !empty($optionData['history_action_id']) || !empty($optionData['history_result_id']) || !empty($optionData['history_return']) || !empty($optionData['history_content'])) {
 		    $this->add(array(
 		        'name'		=> 'history_action_id',
 		        'required'	=> true,
@@ -346,7 +346,7 @@ class Contact extends InputFilter {
 		    ));
 		    
 		    $this->add(array(
-		        'name'		=> 'history_content',
+		        'name'		=> 'history_return',
 		        'required'	=> true,
 		        'validators'	=> array(
 		            array(
@@ -361,8 +361,24 @@ class Contact extends InputFilter {
 		        )
 		    ));
 
+            $this->add(array(
+                'name'		=> 'history_success',
+                'required'	=> true,
+                'validators'	=> array(
+                    array(
+                        'name'		=> 'NotEmpty',
+                        'options'	=> array(
+                            'messages'	=> array(
+                                \Zend\Validator\NotEmpty::IS_EMPTY => 'Giá trị này không được để trống'
+                            )
+                        ),
+                        'break_chain_on_failure'	=> true
+                    )
+                )
+            ));
+
 		    $this->add(array(
-		        'name'		=> 'history_success',
+		        'name'		=> 'history_content',
 		        'required'	=> true,
 		        'validators'	=> array(
 		            array(
@@ -394,26 +410,27 @@ class Contact extends InputFilter {
     		        )
     		    ));
 		    }
-		} else {
-		    $this->add(array(
-		        'name'		=> 'history_action_id',
-		        'required'	=> false,
-		    ));
-		    
-		    $this->add(array(
-		        'name'		=> 'history_result_id',
-		        'required'	=> false,
-		    ));
-
-		    $this->add(array(
-		        'name'		=> 'history_type_id',
-		        'required'	=> false,
-		    ));
-
-            $this->add(array(
-                'name'		=> 'history_success',
-                'required'	=> false,
-            ));
-		}
+//		}
+//		else {
+//		    $this->add(array(
+//		        'name'		=> 'history_action_id',
+//		        'required'	=> false,
+//		    ));
+//
+//		    $this->add(array(
+//		        'name'		=> 'history_result_id',
+//		        'required'	=> false,
+//		    ));
+//
+//		    $this->add(array(
+//		        'name'		=> 'history_type_id',
+//		        'required'	=> false,
+//		    ));
+//
+//            $this->add(array(
+//                'name'		=> 'history_success',
+//                'required'	=> false,
+//            ));
+//		}
 	}
 }

@@ -291,4 +291,16 @@ class MarketingAdsTable extends DefaultTable {
 	    }
 	    return $result;
 	}
+
+    public function deleteItem($arrParam = null, $options = null){
+        if($options['task'] == 'delete-item') {
+            $arrData  = $arrParam['data'];
+
+            $where = new Where();
+            $where->in('id', $arrData['cid']);
+            $where->equalTo('price', 0);
+            $result = $this->tableGateway->delete($where);
+        }
+        return $result;
+    }
 }
