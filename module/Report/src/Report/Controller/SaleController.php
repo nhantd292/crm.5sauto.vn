@@ -1703,7 +1703,7 @@ class SaleController extends ActionController {
 
             // Tham số bảng báo cáo
             foreach ($data_report as $key => $value){
-                $sale_tm = $data_report[$value['id']]['sales_total'] - $data_report[$value['id']]['sales_cancel_sale'];
+                $sale_tm = $value['sales_total'] - $value['sales_cancel_sale'];
                 $sales_new_care  = $value['sales_new'] + $value['sales_care'];
                 $percent_target  = ($value['target'] > 0 ? round($value['sales_total'] / $value['target'] * 100, 2) : 0);
                 $percent_return  = ($sale_tm > 0 ? round(($value['giam-tru-doanh-thu'] + $value['hang-hoan']) / $sale_tm * 100, 2) : 0);
