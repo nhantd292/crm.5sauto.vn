@@ -108,20 +108,18 @@ class SaleController extends ActionController {
                         $data_report[$value['user_id']]['not_call'] += 1;
                         $data_report['total']['not_call'] += 1;
                     }
-                    else{
-                        // Đếm số contact hủy.
-                        $options = !empty($value['options']) ? unserialize($value['options']) : null;
-                        if(!empty($options)){
-                            $id_status = $sale_history_type[STATUS_CONTACT_CANCEL]; // id trạng thái hủy. ['huy']
-                            //if($options['history_type_id'] == $id_status && $options['history_created_by'] == $value['user_id']){
-                            if($options['history_type_id'] == $id_status){
-                                $data_report[$value['user_id']]['cancel'] += 1;
-                                $data_report['total']['cancel'] += 1;
-                            }
-                            else{
-                                $data_report[$value['user_id']]['called'] += 1;
-                                $data_report['total']['called'] += 1;
-                            }
+                    // Đếm số contact hủy.
+                    $options = !empty($value['options']) ? unserialize($value['options']) : null;
+                    if(!empty($options)){
+                        $id_status = $sale_history_type[STATUS_CONTACT_CANCEL]; // id trạng thái hủy. ['huy']
+                        //if($options['history_type_id'] == $id_status && $options['history_created_by'] == $value['user_id']){
+                        if($options['history_type_id'] == $id_status){
+                            $data_report[$value['user_id']]['cancel'] += 1;
+                            $data_report['total']['cancel'] += 1;
+                        }
+                        else{
+                            $data_report[$value['user_id']]['called'] += 1;
+                            $data_report['total']['called'] += 1;
                         }
                     }
 
