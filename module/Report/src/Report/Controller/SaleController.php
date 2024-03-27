@@ -93,7 +93,7 @@ class SaleController extends ActionController {
             $contacts_2 = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report($this->_params, array('task' => 'join-contract'))->toArray();
             $sale_history_type = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-history-type')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'id'));
 
-            foreach ($contacts as $key => $value) {
+            foreach ($contacts_2 as $key => $value) {
                 // Nếu người quản lý contact nằm trong danh sách nhân viên sale
                 if (array_key_exists($value['user_id'], $data_report)) {
                     if ($value['contract_status_id'] != HUY_SALES) {
