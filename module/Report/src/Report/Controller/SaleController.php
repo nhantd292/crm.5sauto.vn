@@ -90,7 +90,18 @@ class SaleController extends ActionController {
 
             // Lấy số điện thoại của sale_x đã được nhận.
             $contacts = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report($this->_params, array('task' => 'date'))->toArray();
+            $contacts_2 = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report($this->_params, array('task' => 'join-contract'))->toArray();
             $sale_history_type = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-history-type')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'id'));
+
+            foreach ($contacts as $key => $value) {
+                // Nếu người quản lý contact nằm trong danh sách nhân viên sale
+                if (array_key_exists($value['user_id'], $data_report)) {
+                    if ($value['contract_status_id'] != HUY_SALES) {
+                        $data_report[$value['user_id']]['sales_order'] += $value['contract_price_total'];
+                        $data_report['total']['sales_order'] += $value['contract_price_total'];
+                    }
+                }
+            }
 
             foreach ($contacts as $key => $value){
                 // Nếu người quản lý contact nằm trong danh sách nhân viên sale
@@ -98,28 +109,25 @@ class SaleController extends ActionController {
                     $data_report[$value['user_id']]['phone'] += 1;
                     $data_report['total']['phone'] += 1;
 
-                    if($value['contract_status_id'] != HUY_SALES){
-                        $data_report[$value['user_id']]['sales_order'] += $value['contract_price_total'];
-                        $data_report['total']['sales_order'] += $value['contract_price_total'];
-                    }
-
                     // Đếm số contact chưa được chăm sóc (số contact chưa phát sinh lịch sử chăm sóc chưa có ngày 'history_created')
                     if(empty($value['history_created'])){
                         $data_report[$value['user_id']]['not_call'] += 1;
                         $data_report['total']['not_call'] += 1;
                     }
-                    // Đếm số contact hủy.
-                    $options = !empty($value['options']) ? unserialize($value['options']) : null;
-                    if(!empty($options)){
-                        $id_status = $sale_history_type[STATUS_CONTACT_CANCEL]; // id trạng thái hủy. ['huy']
-                        //if($options['history_type_id'] == $id_status && $options['history_created_by'] == $value['user_id']){
-                        if($options['history_type_id'] == $id_status){
-                            $data_report[$value['user_id']]['cancel'] += 1;
-                            $data_report['total']['cancel'] += 1;
-                        }
-                        else{
-                            $data_report[$value['user_id']]['called'] += 1;
-                            $data_report['total']['called'] += 1;
+                    else{
+                        // Đếm số contact hủy.
+                        $options = !empty($value['options']) ? unserialize($value['options']) : null;
+                        if(!empty($options)){
+                            $id_status = $sale_history_type[STATUS_CONTACT_CANCEL]; // id trạng thái hủy. ['huy']
+                            //if($options['history_type_id'] == $id_status && $options['history_created_by'] == $value['user_id']){
+                            if($options['history_type_id'] == $id_status){
+                                $data_report[$value['user_id']]['cancel'] += 1;
+                                $data_report['total']['cancel'] += 1;
+                            }
+                            else{
+                                $data_report[$value['user_id']]['called'] += 1;
+                                $data_report['total']['called'] += 1;
+                            }
                         }
                     }
 

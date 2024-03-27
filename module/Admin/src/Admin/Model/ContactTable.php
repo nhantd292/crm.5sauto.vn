@@ -1142,6 +1142,32 @@ class ContactTable extends DefaultTable {
             $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
                 $arrData  = $arrParam['data'];
                 $dateFormat = new \ZendX\Functions\Date();
+
+                $select ->  where -> greaterThanOrEqualTo(TABLE_CONTACT.'.'.'date', $dateFormat->formatToSearch($arrData['date_begin']) .' 00:00:00')
+                    -> lessThanOrEqualTo(TABLE_CONTACT.'.'.'date', $dateFormat->formatToSearch($arrData['date_end']) .' 23:59:59');
+
+                if(!empty($arrData['sale_branch_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT.'.'.'sale_branch_id', $arrData['sale_branch_id']);
+                }
+                if(!empty($arrData['sale_group_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT.'.'.'sale_group_id', $arrData['sale_group_id']);
+                }
+                if(!empty($arrData['user_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT.'.'.'user_id', $arrData['user_id']);
+                }
+                if(!empty($arrData['sale_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT.'.'.'user_id', $arrData['sale_id']);
+                }
+                if(!empty($arrData['location_city_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTACT.'.'.'location_city_id', $arrData['location_city_id']);
+                }
+            });
+        }
+
+        if($options['task'] == 'join-contract') {
+            $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+                $arrData  = $arrParam['data'];
+                $dateFormat = new \ZendX\Functions\Date();
                 $select -> join(TABLE_CONTRACT, TABLE_CONTRACT .'.contact_id = '. TABLE_CONTACT .'.id',
                     array(
                         'contract_price_total' => 'price_total',
