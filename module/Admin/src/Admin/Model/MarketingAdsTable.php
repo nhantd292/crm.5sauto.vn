@@ -254,7 +254,7 @@ class MarketingAdsTable extends DefaultTable {
             );
 
             $record = $this->tableGateway->update($data, array('id' => $id));
-            if($record){
+//            if($record){
                 # cập nhật chi phí mkt cho liên hệ
                 $from_date          = $data['from_date'];
                 $to_date            = $data['to_date'];
@@ -273,7 +273,7 @@ class MarketingAdsTable extends DefaultTable {
                 $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$from_date."' 
                 AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
                 $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
-            }
+//            }
             return $id;
         }
 	}
