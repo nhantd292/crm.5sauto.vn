@@ -385,6 +385,7 @@ class MarketingController extends ActionController {
 
     // Báo cáo marketing thành công
     public function overview12Action() {
+        $date_format     = new \ZendX\Functions\Date();
         $ssFilter = new Container(__CLASS__ . str_replace('-', '_', $this->_params['action']));
         if($this->getRequest()->isPost()) {
             // Lấy giá trị post từ filter
@@ -493,19 +494,31 @@ class MarketingController extends ActionController {
             }
 
             // Lấy dữ liệu chi phí quảng cáo.
-            $where_report = array(
-                'filter_type'               => 'mkt_report_day_hour',
-                'filter_date_begin'         => $ssFilter->report['date_begin'],
-                'filter_date_end'           => $ssFilter->report['date_end'],
-                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
-            );
-            $marketing_report = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->report(array('ssFilter' => $where_report), array('task' => 'list-item-type'));
+//            $where_report = array(
+//                'filter_type'               => 'mkt_report_day_hour',
+//                'filter_date_begin'         => $ssFilter->report['date_begin'],
+//                'filter_date_end'           => $ssFilter->report['date_end'],
+//                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
+//            );
+//            $marketing_report = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->report(array('ssFilter' => $where_report), array('task' => 'list-item-type'));
+//
+//            foreach ($marketing_report as $key => $value){
+//                if(!empty($value['params'])  && array_key_exists($value['marketer_id'], $data_report)){
+//                    $params = unserialize($value['params']);
+//                    $data_report[$value['marketer_id']]['cost_ads'] +=  str_replace(",","",$params['total_cp']);
+//                    $data_report['total']['cost_ads'] +=  str_replace(",","",$params['total_cp']);
+//                }
+//            }
 
-            foreach ($marketing_report as $key => $value){
-                if(!empty($value['params'])  && array_key_exists($value['marketer_id'], $data_report)){
-                    $params = unserialize($value['params']);
-                    $data_report[$value['marketer_id']]['cost_ads'] +=  str_replace(",","",$params['total_cp']);
-                    $data_report['total']['cost_ads'] +=  str_replace(",","",$params['total_cp']);
+            $product_group_condition = !empty($ssFilter->report['product_group_id']) ? " and product_group_id = '".$ssFilter->report['product_group_id']."' " : '';
+            $marketer_id_condition = !empty($ssFilter->report['marketer_id']) ? " and marketer_id = '".$ssFilter->report['marketer_id']."' " : '';
+            $sql_select = "SELECT marketer_id, sum(cost_ads) as cost_ads FROM ".TABLE_CONTACT." WHERE date >= '".$date_format->formatToData($ssFilter->report['date_begin'], 'Y-m-d')." 00:00:00'
+            and date <= '".$date_format->formatToData($ssFilter->report['date_end'], 'Y-m-d')." 23:59:59' ".$product_group_condition . $marketer_id_condition . " GROUP BY marketer_id;";
+            $contact_cost_ads = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report(array('sql' => $sql_select), array('task' => 'query'));
+            foreach($contact_cost_ads as $key => $value){
+                if (array_key_exists($value['marketer_id'], $data_report)) {
+                    $data_report[$value['marketer_id']]['cost_ads'] += $value['cost_ads'];
+                    $data_report['total']['cost_ads'] += $value['cost_ads'];
                 }
             }
 
@@ -660,6 +673,7 @@ class MarketingController extends ActionController {
 
     // Báo cáo marketing xuất hàng
     public function overview13Action() {
+        $date_format     = new \ZendX\Functions\Date();
         $ssFilter = new Container(__CLASS__ . str_replace('-', '_', $this->_params['action']));
         if($this->getRequest()->isPost()) {
             // Lấy giá trị post từ filter
@@ -767,19 +781,31 @@ class MarketingController extends ActionController {
             }
 
             // Lấy dữ liệu chi phí quảng cáo.
-            $where_report = array(
-                'filter_type'               => 'mkt_report_day_hour',
-                'filter_date_begin'         => $ssFilter->report['date_begin'],
-                'filter_date_end'           => $ssFilter->report['date_end'],
-                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
-            );
-            $marketing_report = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->report(array('ssFilter' => $where_report), array('task' => 'list-item-type'));
+//            $where_report = array(
+//                'filter_type'               => 'mkt_report_day_hour',
+//                'filter_date_begin'         => $ssFilter->report['date_begin'],
+//                'filter_date_end'           => $ssFilter->report['date_end'],
+//                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
+//            );
+//            $marketing_report = $this->getServiceLocator()->get('Admin\Model\MarketingReportTable')->report(array('ssFilter' => $where_report), array('task' => 'list-item-type'));
+//
+//            foreach ($marketing_report as $key => $value){
+//                if(!empty($value['params'])  && array_key_exists($value['marketer_id'], $data_report)){
+//                    $params = unserialize($value['params']);
+//                    $data_report[$value['marketer_id']]['cost_ads'] +=  str_replace(",","",$params['total_cp']);
+//                    $data_report['total']['cost_ads'] +=  str_replace(",","",$params['total_cp']);
+//                }
+//            }
 
-            foreach ($marketing_report as $key => $value){
-                if(!empty($value['params'])  && array_key_exists($value['marketer_id'], $data_report)){
-                    $params = unserialize($value['params']);
-                    $data_report[$value['marketer_id']]['cost_ads'] +=  str_replace(",","",$params['total_cp']);
-                    $data_report['total']['cost_ads'] +=  str_replace(",","",$params['total_cp']);
+            $product_group_condition = !empty($ssFilter->report['product_group_id']) ? " and product_group_id = '".$ssFilter->report['product_group_id']."' " : '';
+            $marketer_id_condition = !empty($ssFilter->report['marketer_id']) ? " and marketer_id = '".$ssFilter->report['marketer_id']."' " : '';
+            $sql_select = "SELECT marketer_id, sum(cost_ads) as cost_ads FROM ".TABLE_CONTACT." WHERE date >= '".$date_format->formatToData($ssFilter->report['date_begin'], 'Y-m-d')." 00:00:00'
+            and date <= '".$date_format->formatToData($ssFilter->report['date_end'], 'Y-m-d')." 23:59:59' ".$product_group_condition . $marketer_id_condition . " GROUP BY marketer_id;";
+            $contact_cost_ads = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report(array('sql' => $sql_select), array('task' => 'query'));
+            foreach($contact_cost_ads as $key => $value){
+                if (array_key_exists($value['marketer_id'], $data_report)) {
+                    $data_report[$value['marketer_id']]['cost_ads'] += $value['cost_ads'];
+                    $data_report['total']['cost_ads'] += $value['cost_ads'];
                 }
             }
 
