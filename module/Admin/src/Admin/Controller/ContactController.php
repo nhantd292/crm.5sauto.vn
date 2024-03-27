@@ -29,6 +29,7 @@ class ContactController extends ActionController
         $this->_params['ssFilter']['filter_sale_branch']       = $ssFilter->filter_sale_branch;
         $this->_params['ssFilter']['filter_sale_group']        = $ssFilter->filter_sale_group;
         $this->_params['ssFilter']['filter_user']              = $ssFilter->filter_user;
+        $this->_params['ssFilter']['filter_marketer_id']       = $ssFilter->filter_marketer_id;
         $this->_params['ssFilter']['filter_source_group']      = $ssFilter->filter_source_group;
         $this->_params['ssFilter']['filter_history_result']    = $ssFilter->filter_history_result;
         $this->_params['ssFilter']['filter_contact_type']      = $ssFilter->filter_contact_type;
@@ -81,6 +82,7 @@ class ContactController extends ActionController
             $ssFilter->filter_number_contract2   = $data['filter_number_contract2'];
 
             $ssFilter->filter_user              = $data['filter_user'];
+            $ssFilter->filter_marketer_id       = $data['filter_marketer_id'];
             $ssFilter->filter_sale_group        = $data['filter_sale_group'];
 
             if (!empty($data['filter_sale_branch'])) {

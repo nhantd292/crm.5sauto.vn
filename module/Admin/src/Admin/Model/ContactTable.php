@@ -73,6 +73,9 @@ class ContactTable extends DefaultTable {
     			if(!empty($ssFilter['filter_user'])) {
     			    $select -> where -> equalTo('user_id', $ssFilter['filter_user']);
     			}
+    			if(!empty($ssFilter['filter_marketer_id'])) {
+    			    $select -> where -> equalTo('marketer_id', $ssFilter['filter_marketer_id']);
+    			}
     			
     			if(!empty($ssFilter['filter_history_result'])) {
     				$select -> where -> like('options', '%'. $ssFilter['filter_history_result'] .'%');
@@ -198,6 +201,9 @@ class ContactTable extends DefaultTable {
     			if(!empty($ssFilter['filter_user'])) {
     			    $select -> where -> equalTo('user_id', $ssFilter['filter_user']);
     			}
+                if(!empty($ssFilter['filter_marketer_id'])) {
+                    $select -> where -> equalTo('marketer_id', $ssFilter['filter_marketer_id']);
+                }
     			
     			if(!empty($ssFilter['filter_history_result'])) {
     			    $select -> where -> like('options', '%'. $ssFilter['filter_history_result'] .'%');
