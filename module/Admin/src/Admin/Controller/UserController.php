@@ -316,10 +316,10 @@ class UserController extends ActionController {
                         $linkRedirect = $this->url()->fromRoute('routeAdmin/default', array('controller' => 'form-data', 'action' => 'index'), array('force_canonical' => true));
                     }
                     elseif($department == 'phong-ke-toan'){
-                        $linkRedirect = $this->url()->fromRoute('routeAdmin/default', array('controller' => 'contract-owed', 'action' => 'index'), array('force_canonical' => true));
+                        $linkRedirect = $this->url()->fromRoute('routeAdmin/default', array('controller' => 'contract', 'action' => 'index-accounting'), array('force_canonical' => true));
                     }
                     elseif($department == 'phong-san-xuat'){
-                        $linkRedirect = $this->url()->fromRoute('routeAdmin/default', array('controller' => 'production', 'action' => 'new'), array('force_canonical' => true));
+                        $linkRedirect = $this->url()->fromRoute('routeAdmin/default', array('controller' => 'contract', 'action' => 'index'), array('force_canonical' => true));
                     }
                     
                     $this->redirect()->toUrl($linkRedirect);
