@@ -205,8 +205,10 @@
             $rowSpan = '';
             $number_row = 0;
             $countProduct = count($options['product']);
+            $total_kg = 0;
             if ($countProduct > 0) {
                 foreach ($options['product'] as $keyp => $valuep){
+                    $total_kg += $valuep['weight'];
                     if(!empty($valuep['product_id'])){
                         $number_row++;
                         $rowSpan = 'rowspan="'.$number_row.'"';
@@ -235,6 +237,7 @@
                     if ($key == 0 && !empty($item_product['product_id'])) {
                         $xhtmlItems    .= '<td>' . $item_product['full_name'].'</td>
                                             <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
+                                            <td '.$rowSpan.' class="text-right">'.$total_kg.' kg</td>
                                             <td>' . $item_product['car_year'] . '</td>
                                             ';
                     }
@@ -289,6 +292,7 @@
     $xhtmlHead .= '<th width="150">Nhân viên</th>';
     $xhtmlHead .= '<th width="200">Sản phẩm</th>';
     $xhtmlHead .= '<th width="120">Số lượng</th>';
+    $xhtmlHead .= '<th width="120" class="text-center">Kg</th>';
     $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
     $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
     $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';

@@ -93,8 +93,6 @@ if($this->items->count() > 0) {
         $contact_contract_number= $item->contact_contract_number;
         $index_number           = $item->index_number;
         $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
-
-//            $fee_cod                = !empty($item->ghtk_result) ? number_format(unserialize($item->ghtk_result)['fee']) : '';
         $fee_cod                = number_format($item->price_transport);
         $price_promotion        = number_format($item->price_promotion);
         $price_total            = $item->price_total;
@@ -159,7 +157,6 @@ if($this->items->count() > 0) {
         $linkCancel             = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'cancel', 'id' => $id));
         $linkBillAdd            = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'bill-add')) .'\', {\'id\': \''. $id .'\'});';
         $linkContactEdit        = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'contact-edit')) .'\', {\'id\': \''. $item['contact_id'] .'\'});';
-//            $linkEditStatusAccount  = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-status-account')) .'\', {\'id\': \''. $id .'\'});';
         $linkEdit = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-kov', 'id' => $id));
         $linkEditReduce         = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-reduce')) .'\', {\'id\': \''. $id .'\'});';
         $linkEditPricePaid      = 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'edit-price-paid')) .'\', {\'id\': \''. $id .'\'});';
@@ -172,7 +169,6 @@ if($this->items->count() > 0) {
         $controlPrint           = $item->unit_transport == '5sauto' ? '<a href="/xadmin/production/print-multi/id/'.$item->id.'/" target="_blank" title="In đơn hàng" class="btn btn-xs yellow"><i class="fa fa-print"></i></a>': '';
 
         $menu_edit_contract = empty($item->ghtk_code) ? '<li><a href="'.$linkEdit.'"><i class="fa fa-edit"></i> Sửa đơn hàng</a></li>' : '<li><a href="'.$linkEditProduct.'"><i class="fa fa-edit"></i> Cập nhật giá bán</a></li>';
-//            $menuConver = empty($item->ghtk_code) ? '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>' : '';
         $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
         $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
 
@@ -185,33 +181,30 @@ if($this->items->count() > 0) {
         if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
             $menu_edit_status_sale = '<li><a href="javascript:;" onclick="'. $linkEditStatusSale .'"><i class="fa fa-edit"></i> Sửa trạng thái sale</a></li>';
         }
-
-//            $menu_edit_status_acountant = in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)? '<li><a href="javascript:;" onclick="'. $linkEditStatusAccount .'"><i class="fa fa-pencil-square-o"></i> Sửa trạng thái kế toán</a></li>' : '';
-
-//            $controls               = $controlView;
-        $controls              = '<div class="btn-group">
-    									<button class="btn green btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
-    									   <i class="fa fa-cog"></i> <i class="fa fa-angle-down"></i>
-    									</button>
-    									<ul class="dropdown-menu" role="menu">
-    										'.$menu_edit_contract.$menuConver.$menu_edit_status.$menu_edit_status_sale.'
-    										<li><a href="javascript:;" onclick="'. $linkEditPricePaid .'"><i class="fa fa-money"></i> Đối soát thủ công</a></li>
-    										<li><a href="javascript:;" onclick="'. $linkEditShippingFee .'"><i class="fa fa-money"></i> Xác nhận Hoàn có hỗ trợ ship</a></li>
-    										<li><a href="'. $linkDelete .'"><i class="fa fa-trash"></i> Xóa</a></li>
-    									</ul>
-                                    </div>';
+        $controls = '<div class="btn-group">
+                        <button class="btn green btn-xs dropdown-toggle" type="button" data-toggle="dropdown">
+                           <i class="fa fa-cog"></i> <i class="fa fa-angle-down"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            '.$menu_edit_contract.$menuConver.$menu_edit_status.$menu_edit_status_sale.'
+                            <li><a href="javascript:;" onclick="'. $linkEditPricePaid .'"><i class="fa fa-money"></i> Đối soát thủ công</a></li>
+                            <li><a href="javascript:;" onclick="'. $linkEditShippingFee .'"><i class="fa fa-money"></i> Xác nhận Hoàn có hỗ trợ ship</a></li>
+                            <li><a href="'. $linkDelete .'"><i class="fa fa-trash"></i> Xóa</a></li>
+                        </ul>
+                    </div>';
         if (!empty($options['contact_info'])) {
             $contact_phone          = $options['contact_info']['phone'];
             $contact_name           = $options['contact_info']['name'];
         }
         $controlAddHistoryContract = '<a href="javascript:;" onclick="'. $linkAddHistoryContract .'" title="Thêm lịch sử chăm sóc" class="btn btn-xs green"><i class="fa fa-volume-control-phone"></i></a>';
 
-
         $rowSpan = '';
         $number_row = 0;
         $countProduct = count($options['product']);
+        $total_kg = 0;
         if ($countProduct > 0) {
             foreach ($options['product'] as $keyp => $valuep){
+                $total_kg += $valuep['weight'];
                 if(!empty($valuep['product_id'])){
                     $number_row++;
                     $rowSpan = 'rowspan="'.$number_row.'"';
@@ -240,6 +233,7 @@ if($this->items->count() > 0) {
                     $xhtmlItems    .= '
                                         <td>' . $item_product['full_name'].'</td>
                                         <td class="text-center">' . (new \ZendX\Functions\StringHelper)->badgeCount($item_product['numbers']?:1) . '</td>
+                                        <td '.$rowSpan.' class="text-right">'.$total_kg.' kg</td>
                                         <td>' . $item_product['car_year'] . '</td>
                                         ';
                 }
@@ -294,6 +288,7 @@ $xhtmlHead .= '<th width="80">Ngày</th>';
 $xhtmlHead .= '<th width="150">Nhân viên</th>';
 $xhtmlHead .= '<th width="200">Sản phẩm</th>';
 $xhtmlHead .= '<th width="120">Số lượng</th>';
+$xhtmlHead .= '<th width="120" class="text-center">Kg</th>';
 $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
