@@ -332,7 +332,7 @@ $arrControl = array(
     array(
         'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
         'children' => array(
-            array( 'name' => 'print', 'caption' => 'In đóng hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint();') ),
+            array( 'name' => 'print', 'caption' => 'In đóng hàng', 'link' => 'javascript:;',  'icon' => 'fa-print', 'attributes' => array( 'onclick' => 'javascript:contractPrint(\'_blank\');') ),
             array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-check-square-o' ),
             array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
 //                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport();')) ,

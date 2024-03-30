@@ -83,6 +83,9 @@ class ContactTable extends DefaultTable {
     			if(!empty($ssFilter['filter_history_result'])) {
     				$select -> where -> like('options', '%'. $ssFilter['filter_history_result'] .'%');
     			}
+    			if(!empty($ssFilter['filter_history_type_id'])) {
+    				$select -> where -> like('options', '%'. $ssFilter['filter_history_type_id'] .'%');
+    			}
     			
     			if(!empty($ssFilter['filter_contact_type'])) {
     			    if($ssFilter['filter_contact_type'] == 'contract') {
@@ -213,6 +216,9 @@ class ContactTable extends DefaultTable {
     			
     			if(!empty($ssFilter['filter_history_result'])) {
     			    $select -> where -> like('options', '%'. $ssFilter['filter_history_result'] .'%');
+    			}
+    			if(!empty($ssFilter['filter_history_type_id'])) {
+    			    $select -> where -> like('options', '%'. $ssFilter['filter_history_type_id'] .'%');
     			}
     			
 			    if(!empty($ssFilter['filter_contact_type'])) {

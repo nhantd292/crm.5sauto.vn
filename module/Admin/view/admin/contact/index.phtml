@@ -29,7 +29,7 @@
         array('element' => $myForm->get('filter_number_contract'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_number_contract2'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_sale_branch'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-        array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+//        array('element' => $myForm->get('filter_sale_group'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_user'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_marketer_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_product_group_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
@@ -38,6 +38,7 @@
 //        array('element' => $myForm->get('filter_location_city'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
 //        array('element' => $myForm->get('filter_location_district'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_history_status'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_history_type_id'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('order')),
@@ -48,10 +49,6 @@
     // Danh sách
     $xhtmlItems = '';
     $total_cost_ads = 0;
-//    echo "<pre>";
-//    print_r($this->sale_history_type);
-//    echo "</pre>";
-//    exit;
     if($this->items->count() > 0) {
         foreach ($this->items AS $item) {
             $cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
@@ -126,7 +123,6 @@
             if($this->sale_history_type[$options['history_type_id']]['alias'] != DA_CHOT){
                 $addContract = '';
             }
-            echo $this->sale_history_type[$options['history_type_id']]['alias'];
 
             $controls               = $controlView . $controlEdit.$controlHistory. $addContract;;
 

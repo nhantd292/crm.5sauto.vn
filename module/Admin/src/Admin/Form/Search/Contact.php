@@ -222,6 +222,18 @@ class Contact extends Form
                 'value_options' => \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-history-result')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
             )
         ));
+        // Kết quả chăm sóc
+        $this->add(array(
+            'name' => 'filter_history_type_id',
+            'type' => 'Select',
+            'attributes' => array(
+                'class' => 'form-control select2 select2_basic',
+            ),
+            'options' => array(
+                'empty_option' => '- Phân loại chăm sóc -',
+                'value_options' => \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-history-type')), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+            )
+        ));
 
         // Tình trạng chăm sóc
         $this->add(array(
