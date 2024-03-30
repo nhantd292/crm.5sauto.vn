@@ -862,7 +862,7 @@ class CheckController extends ActionController {
             $this->_viewModel['params']         = $this->_params;
             $this->_viewModel['myForm']         = $myForm;
             $this->_viewModel['saleGroup']      = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
-            $this->_viewModel['caption']        = 'Báo cáo giục đơn tỉnh';
+            $this->_viewModel['caption']        = 'Báo cáo giục đơn';
         }
 
         $viewModel = new ViewModel($this->_viewModel);
@@ -917,6 +917,8 @@ class CheckController extends ActionController {
 
             $product_type = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'production-type')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'id'));
             $id_don_ha_noi  = $product_type[DON_TINH];
+            
+
 
             // Tạo mảng lưu báo cáo.
             $data_report = [];
@@ -930,12 +932,11 @@ class CheckController extends ActionController {
             // Lấy dữ liệu doanh số.
             // Chỉ lấy danh sách đơn hà nội
             $where_contract = array(
-                'date_type'                 => 'production_date_send',
                 'filter_date_begin'         => $ssFilter->report['date_begin'],
                 'filter_date_end'           => $ssFilter->report['date_end'],
                 'sale_branch_id'            => $ssFilter->report['sale_branch_id'],
-                'production_type_id'        => $id_don_ha_noi,
-                'contract_type_bh'          => $ssFilter->report['contract_type_bh'],
+//                'production_type_id'        => $id_don_ha_noi,
+//                'contract_type_bh'          => $ssFilter->report['contract_type_bh'],
             );
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
 
@@ -1193,6 +1194,297 @@ class CheckController extends ActionController {
             $this->_viewModel['myForm']         = $myForm;
             $this->_viewModel['saleGroup']      = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
             $this->_viewModel['caption']        = 'Báo cáo giục đơn tỉnh';
+        }
+
+        $viewModel = new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
+
+    public function overviewAction() {
+        $date_format     = new \ZendX\Functions\Date();
+        $ssFilter = new Container(__CLASS__ . str_replace('-', '_', $this->_params['action']));
+
+        if($this->getRequest()->isPost()) {
+            // Lấy giá trị post từ filter
+            $this->_params['data'] = $this->getRequest()->getPost()->toArray();
+
+            // Quyền user
+            $curent_user = $this->_userInfo->getUserInfo();
+            $permission_ids = explode(',', $curent_user['permission_ids']);
+            if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !in_array(MANAGER, $permission_ids)){
+                if(in_array(GDCN, $permission_ids)){
+                    $this->_params['data']['sale_branch_id'] = $curent_user['sale_branch_id'];
+                }
+                elseif (in_array(GROUP_SALES_LEADER, $permission_ids) || in_array(GROUP_MKT_LEADER, $permission_ids)){
+                    $this->_params['data']['sale_branch_id'] = $curent_user['sale_branch_id'];
+                    $this->_params['data']['sale_group_id'] = $curent_user['sale_group_id'];
+                    if(in_array(GROUP_MKT_LEADER, $permission_ids)){
+                        $this->_params['data']['sale_group_id'] = $curent_user['branch_sale_group_id'];
+                    }
+                }
+                else{
+                    $this->_params['data']['sale_id'] = $curent_user['id'];
+                }
+            }
+            // Gán dữ liệu lọc vào session
+            $ssFilter->report['date_begin']     = $this->_params['data']['date_begin'];
+            $ssFilter->report['date_end']       = $this->_params['data']['date_end'];
+            $ssFilter->report['sale_branch_id'] = $this->_params['data']['sale_branch_id'];
+            $ssFilter->report['sale_group_id']  = $this->_params['data']['sale_group_id'];
+            $ssFilter->report['sale_id']        = $this->_params['data']['sale_id'];
+            $ssFilter->report['product_group_id'] = $this->_params['data']['product_group_id'];
+
+            $this->_params['data']['company_department_id'] = 'giuc-don';
+            $sales = $this->getServiceLocator()->get('Admin\Model\UserTable')->report($this->_params, array('task' => 'list-all'));
+
+            // Tạo mảng lưu báo cáo.
+            $data_report = [];
+            foreach ($sales as $key => $value) {
+                $data_report[$value['id']]['name']                  = $value['name'];
+                $data_report[$value['id']]['order_contract']        = 0; // số đơn xuất đi
+                $data_report[$value['id']]['order_sale']            = 0; // doanh số xuất đi
+                $data_report[$value['id']]['transport_contract']    = 0; // đang vận chuyển
+                $data_report[$value['id']]['transport_sale']        = 0;
+                $data_report[$value['id']]['refund_contract']       = 0; // giảm trừ doanh thu
+                $data_report[$value['id']]['refund_sale']           = 0;
+                $data_report[$value['id']]['return_contract']       = 0; // hoàn
+                $data_report[$value['id']]['return_sale']           = 0;
+                $data_report[$value['id']]['complete_contract']     = 0; // hoàn thành
+                $data_report[$value['id']]['complete_sale']         = 0;
+                $data_report[$value['id']]['check_contract']        = 0; // đã đối soát
+                $data_report[$value['id']]['check_sale']            = 0;
+                $data_report[$value['id']]['debt_contract']         = 0; // công nợ
+                $data_report[$value['id']]['debt_sale']             = 0;
+            }
+            $data_report['total']['name']                  = $value['name'];
+            $data_report['total']['order_contract']        = 0; // số đơn xuất đi
+            $data_report['total']['order_sale']            = 0; // doanh số xuất đi
+            $data_report['total']['transport_contract']    = 0; // đang vận chuyển
+            $data_report['total']['transport_sale']        = 0;
+            $data_report['total']['refund_contract']       = 0; // giảm trừ doanh thu
+            $data_report['total']['refund_sale']           = 0;
+            $data_report['total']['return_contract']       = 0; // hoàn
+            $data_report['total']['return_sale']           = 0;
+            $data_report['total']['complete_contract']     = 0; // hoàn thành
+            $data_report['total']['complete_sale']         = 0;
+            $data_report['total']['check_contract']        = 0; // đã đối soát
+            $data_report['total']['check_sale']            = 0;
+            $data_report['total']['debt_contract']         = 0; // công nợ
+            $data_report['total']['debt_sale']             = 0;
+
+            // Lấy dữ liệu doanh số.
+            $where_contract = array(
+                'filter_date_begin'         => $ssFilter->report['date_begin'],
+                'filter_date_end'           => $ssFilter->report['date_end'],
+                'filter_product_group_id'   => $ssFilter->report['product_group_id'],
+                'date_type'                 => "shipped_date",
+            );
+            $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
+
+            $dalayhang_status       = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'da-lay-hang',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
+            $hanghoan_status        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'hang-hoan',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
+            $danggiaohang_status    = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'dang-giao-hang',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
+
+            $dalayhang_arr          = array_merge(explode(',', trim($dalayhang_status['content'])), explode(',', trim($dalayhang_status['note'])));
+            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
+            $danggiaohang_arr       = array_merge(explode(',', trim($danggiaohang_status['content'])), explode(',', trim($danggiaohang_status['note'])));
+
+            foreach ($contracts as $key => $value){
+                // Nếu người lên đơn nằm trong danh sách nhân viên sale.
+                if (array_key_exists($value['delivery_id'], $data_report)) {
+                    $data_report[$value['delivery_id']]['order_contract'] += 1;
+                    $data_report['total']['order_contract'] += 1;
+
+                    $data_report[$value['delivery_id']]['order_sale'] += $value['price_total'];
+                    $data_report['total']['order_sale'] += $value['price_total'];
+
+                    // Sales - Hủy sales
+                    if ($value['status_id'] == HUY_SALES) {
+                        $data_report[$value['delivery_id']]['sales_cancel_sale'] += $value['price_total'] - $value['vat'];
+                        $data_report['total']['sales_cancel_sale'] += $value['price_total'] - $value['vat'];
+                    }
+                    // Giục đơn - đã lấy hàng
+                    if (in_array($value['ghtk_status'], $dalayhang_arr)) {
+                        $data_report[$value['delivery_id']]['da-lay-hang'] += $value['price_total'] - $value['vat'];
+                        $data_report['total']['da-lay-hang'] += $value['price_total'] - $value['vat'];
+                    }
+                    // Giục đơn - đang giao hàng
+                    if (in_array($value['ghtk_status'], $danggiaohang_arr)) {
+                        $data_report[$value['delivery_id']]['dang-giao-hang'] += $value['price_total'] - $value['vat'];
+                        $data_report['total']['dang-giao-hang'] += $value['price_total'] - $value['vat'];
+                    }
+                    // Giảm trừ doanh thu
+                    $data_report[$value['delivery_id']]['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+                    $data_report['total']['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+                    // Dục đơn - hoàn
+                    if (in_array($value['ghtk_status'], $hanghoan_arr)) {
+                        $data_report[$value['delivery_id']]['hang-hoan'] += $value['price_total'] - $value['vat'];
+                        $data_report['total']['hang-hoan'] += $value['price_total'] - $value['vat'];
+                    }
+
+                    // Dục đơn - Thành công
+                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
+
+                        # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
+                        if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])){
+                            $data_report[$value['delivery_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                            $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                        }
+                        else{
+                            $data_report[$value['delivery_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                            $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                        }
+                    }
+
+                    // Thanh toán trước
+                    $data_report[$value['delivery_id']]['deposit'] += $value['price_deposits'];
+                    $data_report['total']['deposit'] += $value['price_deposits'];
+
+                    $data_report[$value['delivery_id']]['sales_shipping_fee'] += $value['shipping_fee'];
+                    $data_report['total']['sales_shipping_fee'] += $value['shipping_fee'];
+                }
+            }
+
+            // Người có quyền hiển thị chi phí giá vốn, doanh thu thực tế
+            $show_cost_capital = false;
+            $curent_user = $this->_userInfo->getUserInfo();
+            $permission_ids = explode(',', $curent_user['permission_ids']);
+            if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids) || in_array(GDCN, $permission_ids) || in_array(MANAGER, $permission_ids)){
+                $show_cost_capital = true;
+            }
+
+            // Tham số bảng báo cáo
+            foreach ($data_report as $key => $value){
+                $sale_tm = $value['sales_total'] - $value['sales_cancel_sale'];
+                $sales_new_care  = $value['sales_new'] + $value['sales_care'];
+                $percent_target  = ($value['target'] > 0 ? round($value['sales_total'] / $value['target'] * 100, 2) : 0);
+                $percent_return  = ($sale_tm > 0 ? round(($value['giam-tru-doanh-thu'] + $value['hang-hoan']) / $sale_tm * 100, 2) : 0);
+                $revenue         = $sales_new_care - $value['cod_total'] - $value['cost_ads'] - $value['cost_capital'];
+                $percent_cost_tc = ($sales_new_care > 0 ? round($value['cost_ads'] / $sales_new_care * 100, 2) : 0);
+
+                $data_report[$key]['percent_target']  = $percent_target;
+                $data_report[$key]['percent_return']  = $percent_return;
+                $data_report[$key]['revenue']         = $revenue;
+                $data_report[$key]['percent_cost_tc'] = $percent_cost_tc;
+                $data_report[$key]['sales_new_care']  = $sales_new_care;
+            }
+            // sắp xếp theo doanh tổng doanh thu
+            $key_sort = [];
+            $i = 0;
+            foreach ($data_report as $key => $value) {
+                if($key != 'total'){
+                    $key_sort[$i]['id'] = $key;
+                    $key_sort[$i]['sales_success'] = $data_report[$key]['sales_success'];
+                    $i++;
+                }
+            }
+            for($i = 0; $i < count($key_sort) - 1; $i++){
+                for($j = $i+1; $j < count($key_sort); $j++){
+                    if($key_sort[$i]['sales_success'] < $key_sort[$j]['sales_success']){
+                        $tm           = $key_sort[$i];
+                        $key_sort[$i] = $key_sort[$j];
+                        $key_sort[$j] = $tm;
+                    }
+                }
+            }
+
+            $xhtmlItems = '';
+            foreach ($key_sort as $key => $value){
+                $xhtmlItems .= '<tr>
+        		                <th class="text-bold">'.$data_report[$value['id']]['name'].'</th> <!--Tên nhân viên-->
+        						<td class="mask_currency text-right">'.($data_report[$value['id']]['sales_total'] - $data_report[$value['id']]['sales_cancel_sale']).'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['da-lay-hang'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['dang-giao-hang'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_care'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['sales_new_care'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['cod_total'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_ads'].'</td>
+        						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_cost_tc'].'%</td>';
+                if($show_cost_capital){
+                    $xhtmlItems .= '<td class="mask_currency text-right">'.$data_report[$value['id']]['cost_capital'].'</td><!--Giá vốn-->
+        						                    <td class="mask_currency text-right">'.$data_report[$value['id']]['revenue'].'</td><!--Điểm hòa vốn-->';
+                }
+                $xhtmlItems .=  '</tr>';
+            }
+            // Hiển thị dòng tổng tất cả.
+            $xhtmlItems .= '<tr class="text-bold text-red">
+        		                <th class="text-bold">'.$data_report['total']['name'].'</th> <!--Tên nhân viên-->
+        						<td class="mask_currency text-right">'.($data_report['total']['sales_total'] - $data_report['total']['sales_cancel_sale']).'</td> <!--Tổng doanh số-->
+        						<td class="mask_currency text-right">'.$data_report['total']['da-lay-hang'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report['total']['dang-giao-hang'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report['total']['giam-tru-doanh-thu'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td> 
+        						<td class="mask_currency text-right">'.$data_report['total']['sales_new'].'</td> <!--Mới -->
+        						<td class="mask_currency text-right">'.$data_report['total']['sales_care'].'</td> <!--% chăm sóc-->
+        						<td class="mask_currency text-right">'.$data_report['total']['sales_new_care'].'</td> <!--% tổng ds-->
+        						<td class="mask_currency text-right">'.$data_report['total']['percent_return'].'%</td> <!--% haonf -->
+        						<td class="mask_currency text-right">'.$data_report['total']['cod_total'].'</td> <!--% COD -->
+        						<td class="mask_currency text-right">'.$data_report['total']['cost_ads'].'</td><!--Chi phí MKT-->
+        						<td class="mask_currency text-right">'.$data_report['total']['percent_cost_tc'].'%</td><!--% CPQC/Doanh Thu-->';
+            if($show_cost_capital){
+                $xhtmlItems .= '<td class="mask_currency text-right">'.$data_report['total']['cost_capital'].'</td><!--Giá vốn-->
+                                <td class="mask_currency text-right">'.$data_report['total']['revenue'].'</td><!--Điểm hòa vốn-->';
+            }
+            $xhtmlItems .=  '</tr>';
+
+            $cost_capital = '';
+            if($show_cost_capital){
+                $cost_capital .= '<th rowspan="2">Giá Vốn mặc định</th>
+                            	  <th rowspan="2">Điểm hòa vốn </th>';
+            }
+            $result['reportTable'] = '<thead>
+                        				    <tr>
+                            					<th class="text-center  fix-head">Tên nhân viên</th>
+                            					<th class="text-center">Tổng doanh số</th>
+                            					<th class="text-center">Bưu điện đã lấy hàng</th>
+                            					<th class="text-center">Đang vận chuyển + đang giao hàng</th>
+                            					<th class="text-center">Giảm trừ doanh thu</th>
+                            					<th class="text-center">Hàng hoàn</th>
+                            					<th class="text-center">DS mới thành công</th>
+                            					<th class="text-center">DS chăm sóc thành công</th>
+                            					<th class="text-center">Tổng DS thành công</th>
+                            					<th class="text-center">% Hoàn</th>
+                            					<th class="text-center">COD</th>
+                            					<th class="text-center">Chi phí MKT</th>
+                            					<th class="text-center">% CPQC/Doanh Thu</th>
+                            					'.$cost_capital.'
+                        					</tr>
+                        				</thead>
+                        				<tbody>
+                        				    '. $xhtmlItems .'
+                        				</tbody>';
+
+            echo json_encode($result);
+
+            return $this->response;
+        }
+        else {
+            // Khai báo giá trị ngày tháng
+            $default_date_begin     = date('01/m/Y');
+            $default_date_end       = date('t/m/Y');
+
+            $ssFilter->report                   = $ssFilter->report ? $ssFilter->report : array();
+            $ssFilter->report['date_begin']     = $ssFilter->report['date_begin'] ? $ssFilter->report['date_begin'] : $default_date_begin;
+            $ssFilter->report['date_end']       = $ssFilter->report['date_end'] ? $ssFilter->report['date_end'] : $default_date_end;
+            $ssFilter->report['sale_branch_id'] = $ssFilter->report['sale_branch_id'] ? $ssFilter->report['sale_branch_id'] : $this->_userInfo->getUserInfo('sale_branch_id');
+            $ssFilter->report['sale_group_id']  = $ssFilter->report['sale_group_id'] ? $ssFilter->report['sale_group_id'] : $this->_userInfo->getUserInfo('sale_group_id');
+            $ssFilter->report['sale_id']        = $ssFilter->report['sale_id'] ? $ssFilter->report['sale_id'] : '';
+            $ssFilter->report['product_group_id'] = $ssFilter->report['product_group_id'] ? $ssFilter->report['product_group_id'] : '';
+
+            // Set giá trị cho form
+            $myForm	= new \Report\Form\Sales\Sales($this->getServiceLocator(), $ssFilter->report);
+            $myForm->setData($ssFilter->report);
+
+            $this->_viewModel['params']         = $this->_params;
+            $this->_viewModel['myForm']         = $myForm;
+            $this->_viewModel['saleGroup']      = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
+            $this->_viewModel['caption']        = 'Báo cáo doanh thu sale';
         }
 
         $viewModel = new ViewModel($this->_viewModel);

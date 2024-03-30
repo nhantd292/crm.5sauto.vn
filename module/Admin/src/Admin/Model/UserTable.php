@@ -391,6 +391,10 @@ class UserTable extends AbstractTableGateway implements ServiceLocatorAwareInter
                 $select -> where -> notEqualTo('id', '1111111111111111111111');
                 $select -> where -> notEqualTo('id', '3333333333333333333333');
 
+                if(!empty($arrData['company_department_id'])) {
+                    $select -> where -> equalTo('company_department_id', $arrData['company_department_id']);
+                }
+
                 if(!empty($arrData['sale_group_id'])) {
                     $select -> where -> equalTo('sale_group_id', $arrData['sale_group_id']);
                 }

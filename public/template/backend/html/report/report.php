@@ -131,6 +131,23 @@ $is_accounting = true;
             </li>
         <?php }?>
 
+        <?php if($is_system || $is_admin || $is_check_oder){?>
+            <li>
+                <a href="javascript:;">
+                    <i class="fa fa-bar-chart"></i>
+                    <span class="title">Báo cáo giục đơn</span><span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="<?php echo $this->url('routeReport/default', array('controller' => 'index', 'action' => 'index', 'id' => 'check', 'code' => 'overview'));?>">
+                            <i class="fa fa-dot-circle-o"></i>
+                            Báo cáo giục đơn
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        <?php }?>
+
         <?php if($is_system || $is_admin || $is_accounting){?>
             <li>
                 <a href="javascript:;">
