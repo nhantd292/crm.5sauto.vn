@@ -1350,12 +1350,12 @@ class CheckController extends ActionController {
                         $data_report[$value['delivery_id']]['check_sale'] += $value['price_paid'] + $value['price_deposits'];
                         $data_report['total']['check_sale'] += $value['price_paid'] + $value['price_deposits'];
                     }
-                    else{
-                        $data_report[$value['delivery_id']]['debt_contract'] += 1;
-                        $data_report['total']['debt_contract'] += 1;
-                        $data_report[$value['delivery_id']]['debt_sale'] += $value['price_total'] - $value['vat'];
-                        $data_report['total']['debt_sale'] += $value['price_total'] - $value['vat'];
-                    }
+//                    else{
+//                        $data_report[$value['delivery_id']]['debt_contract'] += 1;
+//                        $data_report['total']['debt_contract'] += 1;
+//                        $data_report[$value['delivery_id']]['debt_sale'] += $value['price_total'] - $value['vat'];
+//                        $data_report['total']['debt_sale'] += $value['price_total'] - $value['vat'];
+//                    }
                 }
             }
 
@@ -1363,8 +1363,12 @@ class CheckController extends ActionController {
             foreach ($data_report as $key => $value){
                 $sale_tm = $value['order_contract'] - $value['cancel_contract'];
                 $percent_return  = ($sale_tm > 0 ? round(($value['refund_contract'] + $value['return_contract']) / $sale_tm * 100, 2) : 0);
+                $debt_contract = $value['order_contract'] - $value['cancel_contract'] - $value['refund_contract'] - $value['return_contract'] - $value['check_contract'];
+                $debt_sale = $value['order_sale'] - $value['cancel_sale'] - $value['refund_sale'] - $value['return_sale'] - $value['check_sale'];;
 
                 $data_report[$key]['percent_return']  = $percent_return;
+                $data_report[$key]['debt_contract']  = $debt_contract;
+                $data_report[$key]['debt_sale']  = $debt_sale;
             }
             // sắp xếp theo doanh tổng doanh thu
             $key_sort = [];
