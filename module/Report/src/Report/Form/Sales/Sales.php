@@ -118,6 +118,19 @@ class Sales extends Form{
                 'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'giuc-don', 'sale_group_id' => $params['sale_group_id']), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
             )
         ));
+
+        $this->add(array(
+            'name'			=> 'production_type_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Loại đơn -',
+                'disable_inarray_validator' => true,
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'name')),
+            ),
+        ));
 		
 		// Submit
 		$this->add(array(

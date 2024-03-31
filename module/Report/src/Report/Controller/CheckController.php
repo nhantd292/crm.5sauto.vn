@@ -1229,12 +1229,13 @@ class CheckController extends ActionController {
                 }
             }
             // Gán dữ liệu lọc vào session
-            $ssFilter->report['date_begin']     = $this->_params['data']['date_begin'];
-            $ssFilter->report['date_end']       = $this->_params['data']['date_end'];
-            $ssFilter->report['sale_branch_id'] = $this->_params['data']['sale_branch_id'];
-            $ssFilter->report['sale_group_id']  = $this->_params['data']['sale_group_id'];
+            $ssFilter->report['date_begin']         = $this->_params['data']['date_begin'];
+            $ssFilter->report['date_end']           = $this->_params['data']['date_end'];
+            $ssFilter->report['sale_branch_id']     = $this->_params['data']['sale_branch_id'];
+            $ssFilter->report['sale_group_id']      = $this->_params['data']['sale_group_id'];
             $ssFilter->report['delivery_id']        = $this->_params['data']['delivery_id'];
-            $ssFilter->report['product_group_id'] = $this->_params['data']['product_group_id'];
+            $ssFilter->report['product_group_id']   = $this->_params['data']['product_group_id'];
+            $ssFilter->report['production_type_id'] = $this->_params['data']['production_type_id'];
 
             $this->_params['data']['company_department_id'] = 'giuc-don';
             $sales = $this->getServiceLocator()->get('Admin\Model\UserTable')->report($this->_params, array('task' => 'list-all'));
@@ -1258,7 +1259,7 @@ class CheckController extends ActionController {
                 $data_report[$value['id']]['debt_contract']         = 0; // công nợ
                 $data_report[$value['id']]['debt_sale']             = 0;
             }
-            $data_report['total']['name']                  = $value['name'];
+            $data_report['total']['name']                  = "Tổng";
             $data_report['total']['order_contract']        = 0; // số đơn xuất đi
             $data_report['total']['order_sale']            = 0; // doanh số xuất đi
             $data_report['total']['transport_contract']    = 0; // đang vận chuyển
@@ -1279,6 +1280,7 @@ class CheckController extends ActionController {
                 'filter_date_begin'         => $ssFilter->report['date_begin'],
                 'filter_date_end'           => $ssFilter->report['date_end'],
                 'filter_product_group_id'   => $ssFilter->report['product_group_id'],
+                'production_type_id'        => $ssFilter->report['production_type_id'],
                 'delivery_id'               => $ssFilter->report['delivery_id'],
                 'date_type'                 => "shipped_date",
             );
@@ -1334,7 +1336,7 @@ class CheckController extends ActionController {
                         $data_report['total']['return_sale'] += $value['price_total'] - $value['vat'];
                     }
                     // Dục đơn - thành công
-                    if (in_array($value['ghtk_status'], $hanghoan_arr)) {
+                    if (in_array($value['ghtk_status'], $thanhcong_arr)) {
                         $data_report[$value['delivery_id']]['complete_contract'] += 1;
                         $data_report['total']['complete_contract'] += 1;
                         $data_report[$value['delivery_id']]['complete_sale'] += $value['price_total'] - $value['vat'];
@@ -1345,8 +1347,8 @@ class CheckController extends ActionController {
                     if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
                         $data_report[$value['delivery_id']]['check_contract'] += 1;
                         $data_report['total']['check_contract'] += 1;
-                        $data_report[$value['delivery_id']]['check_sale'] += $value['price_total'] - $value['vat'];
-                        $data_report['total']['check_sale'] += $value['price_total'] - $value['vat'];
+                        $data_report[$value['delivery_id']]['check_sale'] += $value['price_paid'] + $value['price_deposits'];
+                        $data_report['total']['check_sale'] += $value['price_paid'] + $value['price_deposits'];
                     }
                     else{
                         $data_report[$value['delivery_id']]['debt_contract'] += 1;
@@ -1473,6 +1475,7 @@ class CheckController extends ActionController {
             $ssFilter->report['sale_group_id']  = $ssFilter->report['sale_group_id'] ? $ssFilter->report['sale_group_id'] : $this->_userInfo->getUserInfo('sale_group_id');
             $ssFilter->report['delivery_id']    = $ssFilter->report['delivery_id'] ? $ssFilter->report['delivery_id'] : '';
             $ssFilter->report['product_group_id'] = $ssFilter->report['product_group_id'] ? $ssFilter->report['product_group_id'] : '';
+            $ssFilter->report['production_type_id'] = $ssFilter->report['production_type_id'] ? $ssFilter->report['production_type_id'] : '';
 
             // Set giá trị cho form
             $myForm	= new \Report\Form\Sales\Sales($this->getServiceLocator(), $ssFilter->report);
