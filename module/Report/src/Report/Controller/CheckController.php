@@ -1225,7 +1225,7 @@ class CheckController extends ActionController {
                     }
                 }
                 else{
-                    $this->_params['data']['sale_id'] = $curent_user['id'];
+                    $this->_params['data']['delivery_id'] = $curent_user['id'];
                 }
             }
             // Gán dữ liệu lọc vào session
@@ -1233,7 +1233,7 @@ class CheckController extends ActionController {
             $ssFilter->report['date_end']       = $this->_params['data']['date_end'];
             $ssFilter->report['sale_branch_id'] = $this->_params['data']['sale_branch_id'];
             $ssFilter->report['sale_group_id']  = $this->_params['data']['sale_group_id'];
-            $ssFilter->report['sale_id']        = $this->_params['data']['sale_id'];
+            $ssFilter->report['delivery_id']        = $this->_params['data']['delivery_id'];
             $ssFilter->report['product_group_id'] = $this->_params['data']['product_group_id'];
 
             $this->_params['data']['company_department_id'] = 'giuc-don';
@@ -1279,6 +1279,7 @@ class CheckController extends ActionController {
                 'filter_date_begin'         => $ssFilter->report['date_begin'],
                 'filter_date_end'           => $ssFilter->report['date_end'],
                 'filter_product_group_id'   => $ssFilter->report['product_group_id'],
+                'delivery_id'               => $ssFilter->report['delivery_id'],
                 'date_type'                 => "shipped_date",
             );
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
@@ -1470,7 +1471,7 @@ class CheckController extends ActionController {
             $ssFilter->report['date_end']       = $ssFilter->report['date_end'] ? $ssFilter->report['date_end'] : $default_date_end;
             $ssFilter->report['sale_branch_id'] = $ssFilter->report['sale_branch_id'] ? $ssFilter->report['sale_branch_id'] : $this->_userInfo->getUserInfo('sale_branch_id');
             $ssFilter->report['sale_group_id']  = $ssFilter->report['sale_group_id'] ? $ssFilter->report['sale_group_id'] : $this->_userInfo->getUserInfo('sale_group_id');
-            $ssFilter->report['sale_id']        = $ssFilter->report['sale_id'] ? $ssFilter->report['sale_id'] : '';
+            $ssFilter->report['delivery_id']    = $ssFilter->report['delivery_id'] ? $ssFilter->report['delivery_id'] : '';
             $ssFilter->report['product_group_id'] = $ssFilter->report['product_group_id'] ? $ssFilter->report['product_group_id'] : '';
 
             // Set giá trị cho form

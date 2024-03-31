@@ -3736,6 +3736,9 @@ class ContractTable extends DefaultTable {
                 if(!empty($ssFilter['sale_id'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['sale_id']);
                 }
+                if(!empty($ssFilter['delivery_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['delivery_id']);
+                }
                 if(!empty($ssFilter['production_type_id'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.production_type_id', $ssFilter['production_type_id']);
                 }
