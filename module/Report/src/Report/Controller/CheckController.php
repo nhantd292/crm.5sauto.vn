@@ -1407,7 +1407,6 @@ class CheckController extends ActionController {
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['check_contract'].'</td>
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['check_sale'].'</td>
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['percent_return'].'%</td>
-        						<td class="mask_currency text-right">'.$data_report[$value['id']]['debt_contract'].'</td>
         						<td class="mask_currency text-right">'.$data_report[$value['id']]['debt_sale'].'</td>';
                 $xhtmlItems .=  '</tr>';
             }
@@ -1427,7 +1426,6 @@ class CheckController extends ActionController {
         						<td class="mask_currency text-right">'.$data_report['total']['check_contract'].'</td>
         						<td class="mask_currency text-right">'.$data_report['total']['check_sale'].'</td>
         						<td class="mask_currency text-right">'.$data_report['total']['percent_return'].'%</td>
-        						<td class="mask_currency text-right">'.$data_report['total']['debt_contract'].'</td>
         						<td class="mask_currency text-right">'.$data_report['total']['debt_sale'].'</td>';
             $xhtmlItems .=  '</tr>';
             $result['reportTable'] = '<thead>
@@ -1440,11 +1438,9 @@ class CheckController extends ActionController {
                             					<th colspan="2" class="text-center">Thành công</th>
                             					<th colspan="2" class="text-center">Đã đối soát</th>
                             					<th rowspan="2" class="text-center">Tỷ lệ Hoàn</th>
-                            					<th colspan="2" class="text-center">Công nợ</th>
+                            					<th rowspan="2" class="text-center">Công nợ</th>
                         					</tr>
                         				    <tr>
-                            					<th class="text-center">Số đơn</th>
-                            					<th class="text-center">doanh số</th>
                             					<th class="text-center">Số đơn</th>
                             					<th class="text-center">doanh số</th>
                             					<th class="text-center">Số đơn</th>
