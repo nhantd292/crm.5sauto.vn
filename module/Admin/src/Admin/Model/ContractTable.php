@@ -3133,8 +3133,9 @@ class ContractTable extends DefaultTable {
                     'care_id'         => $arrUser['id'],
                 );
                 $where = new Where();
+                $where->isNull('care_id');
                 $where->in('id', $contract_ids);
-                $this->tableGateway->update($data, $where);
+                $result = $this->tableGateway->update($data, $where);
 
                 // Thêm lịch sử hệ thống
                 $arrCheckResult = array(
@@ -3154,7 +3155,7 @@ class ContractTable extends DefaultTable {
                 $logs = $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
             }
 
-            return count($contract_ids);
+            return $result;
         }
 	}
 

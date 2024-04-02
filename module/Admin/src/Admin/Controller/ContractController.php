@@ -1695,10 +1695,12 @@ class ContractController extends ActionController {
                     $contract_ids = explode(',', $this->_params['data']['contract_ids']);
                     foreach($contract_ids as $id){
                         $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
-                        $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contract['contact_id']));
-                        $contact['user_id'] = $this->_params['data']['user_id'];
-                        unset($contact['marketer_id']);
-                        $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('data' => $contact), array('task' => 'add-item'));
+                        if(empty($contract['care_id'])){
+                            $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contract['contact_id']));
+                            $contact['user_id'] = $this->_params['data']['user_id'];
+                            unset($contact['marketer_id']);
+                            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('data' => $contact), array('task' => 'add-item'));
+                        }
                     }
                     $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'change-care'));
 
