@@ -30,8 +30,9 @@
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_care_status'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_action')),
@@ -54,9 +55,10 @@
             array('element' => $myForm->get('filter_unit_transport'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_returned'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_shipper_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_care_status'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_category'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_production_type_id'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
-            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+            array('element' => $myForm->get('filter_product'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
             array('element' => $myForm->get('filter_action')),
@@ -105,6 +107,7 @@
             $price_owed             = $item->price_owed;
             $total_price_owed      += $item->price_owed;
             $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+            $care_name              = $item->care_id ? $this->user[$item->care_id]['name'] : '';
             $user_gd_name           = $item->delivery_id ? $this->user[$item->delivery_id]['name'] : '';
             $paid_cost              = $item->paid_cost == 't' ? "Đã thanh toán" : 'Chưa thanh toán';
 //            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
@@ -230,7 +233,7 @@
                                 <td '.$rowSpan.'>'. $ghtk_code .'</td>
     							<td '.$rowSpan.'><span class="text-bold">'. $code .'</span><br><span style="color: #a70101;">'.$item->coincider_code.'</span></td>
     							<td '.$rowSpan.'>'. $date .'<br>'.$shipped_date.'</td>
-    							<td '.$rowSpan.'>'. $user_name .'</td>
+    							<td '.$rowSpan.'>'. $user_name .'<br>'.$care_name.'</td>
     							';
             if (count($options['product']) > 0) {
                 foreach($options['product'] as $key => $item_product) {
@@ -338,6 +341,7 @@
                 array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-check-square-o' ),
                 array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
                 array( 'name' => 'transfer', 'caption' => 'Thêm quyền giục đơn', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:changeUser(\'changeDelivery\');') ),
+                array( 'name' => 'transfer', 'caption' => 'Thêm quyền chăm sóc', 'link' => 'javascript:;', 'icon' => 'fa-refresh', 'attributes' => array( 'onclick' => 'javascript:changeUser(\'shareOrder\');') ),
 //                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport();')) ,
 //                array( 'name' => 'hidden', 'caption' => 'Khóa đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'lock\');')),
 //                array( 'name' => 'return', 'caption' => 'Xác nhận hoàn', 'link' => 'javascript:;', 'icon' => 'fa fa-arrow-left', 'attributes' => array('onclick'=>'javascript:updateItem(\'returned\', \'Bạn có muốn xác nhận hoàn các đơn hàng đã chọn\');')),

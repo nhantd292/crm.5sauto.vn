@@ -40,7 +40,8 @@ class ContractController extends ActionController {
         $this->_params['ssFilter']['filter_product']        = $ssFilter->filter_product;
         $this->_params['ssFilter']['filter_update_kov_false']        = $ssFilter->filter_update_kov_false;
         $this->_params['ssFilter']['filter_production_type_id']        = $ssFilter->filter_production_type_id;
-        $this->_params['ssFilter']['filter_shipper_id']        = $ssFilter->filter_shipper_id;
+        $this->_params['ssFilter']['filter_shipper_id']     = $ssFilter->filter_shipper_id;
+        $this->_params['ssFilter']['filter_care_status']    = $ssFilter->filter_care_status;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage'] = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : $this->_paginator['itemCountPerPage'];
@@ -85,7 +86,8 @@ class ContractController extends ActionController {
             $ssFilter->filter_product 	        = $data['filter_product'];
             $ssFilter->filter_update_kov_false 	= $data['filter_update_kov_false'];
             $ssFilter->filter_production_type_id 	= $data['filter_production_type_id'];
-            $ssFilter->filter_shipper_id 	= $data['filter_shipper_id'];
+            $ssFilter->filter_shipper_id 	    = $data['filter_shipper_id'];
+            $ssFilter->filter_care_status 	    = $data['filter_care_status'];
 
             $ssFilter->filter_sale_group = $data['filter_sale_group'];
             if(!empty($data['filter_sale_branch'])) {
@@ -1658,7 +1660,49 @@ class ContractController extends ActionController {
 
                     $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'change-delivery'));
 
-                    $this->flashMessenger()->addMessage('Chuyển quyền quản lý ' . $result . ' liên hệ thành công');
+                    $this->flashMessenger()->addMessage('Thêm giục đơn ' . $result . ' 5 đơn hàng thành công');
+                    $this->goRoute();
+                }
+            } else {
+                $contract_ids = @implode(',', $this->_params['data']['cid']);
+            }
+        } else {
+            return $this->redirect()->toRoute('routeAdmin/default', array('controller' => 'notice', 'action' => 'not-found'));
+        }
+
+        $this->_viewModel['contract_ids'] = $contract_ids;
+        $this->_viewModel['myForm']      = $myForm;
+        $this->_viewModel['caption']     = $caption;
+        return new ViewModel($this->_viewModel);
+    }
+
+    public function shareOrderAction()
+    {
+        $myForm  = new \Admin\Form\Contract\ShareOrder($this->getServiceLocator(), $this->_userInfo->getUserInfo());
+        $caption = 'Đơn hàng - Thêm quyền chăm sóc';
+
+        if ($this->getRequest()->isPost()) {
+            if (!empty($this->_params['data']['contract_ids'])) {
+                $dateFormat = new \ZendX\Functions\Date();
+                $contract_ids = $this->_params['data']['contract_ids'];
+                $myForm->setInputFilter(new \Admin\Filter\Contract\ShareOrder(array('data' => $this->_params['data'])));
+                $myForm->setData($this->_params['data']);
+
+                if ($myForm->isValid()) {
+                    $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
+                    $this->_params['user'] = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(array('id' => $this->_params['data']['user_id']));
+                    # tạo liên hệ mới
+                    $contract_ids = explode(',', $this->_params['data']['contract_ids']);
+                    foreach($contract_ids as $id){
+                        $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
+                        $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contract['contact_id']));
+                        $contact['user_id'] = $this->_params['data']['user_id'];
+                        unset($contact['marketer_id']);
+                        $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('data' => $contact), array('task' => 'add-item'));
+                    }
+                    $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'change-care'));
+
+                    $this->flashMessenger()->addMessage('Thêm quyền chăm sóc ' . $result . ' đơn hàng thành công');
                     $this->goRoute();
                 }
             } else {

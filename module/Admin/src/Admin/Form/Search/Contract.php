@@ -105,6 +105,17 @@ class Contract extends Form{
                 'value_options' => array('' => 'Xác nhận xuất kho', '0' => 'Chưa xuất kho', '1' => 'Đã xuất kho'),
             )
         ));
+        $this->add(array(
+            'name' => 'filter_care_status',
+            'type' => 'Select',
+            'attributes' => array(
+                'class' => 'form-control select2 select2_basic',
+            ),
+            'options' => array(
+                'empty_option'	=> '- Phân cho chăm sóc -',
+                'value_options' => array('-1' => 'Chưa chia', '1' => 'Đã chia'),
+            )
+        ));
 
 		// Cơ sở
 		$this->add(array(

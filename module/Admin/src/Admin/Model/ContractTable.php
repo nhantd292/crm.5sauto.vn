@@ -91,6 +91,8 @@ class ContractTable extends DefaultTable {
                         -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user'])
                         ->Or
                         -> equalTo(TABLE_CONTRACT .'.created_by', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT .'.care_id', $ssFilter['filter_user'])
                         -> UNNEST;
                 }
 
@@ -131,6 +133,18 @@ class ContractTable extends DefaultTable {
                             -> UNNEST;
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_care_status'])) {
+                    if($ssFilter['filter_care_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.care_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.care_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.care_id');
                     }
                 }
 
@@ -468,6 +482,8 @@ class ContractTable extends DefaultTable {
                         -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user'])
                         ->Or
                         -> equalTo(TABLE_CONTRACT .'.created_by', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT .'.care_id', $ssFilter['filter_user'])
                         -> UNNEST;
                 }
 
@@ -505,6 +521,18 @@ class ContractTable extends DefaultTable {
                         -> UNNEST;
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_care_status'])) {
+                    if($ssFilter['filter_care_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.care_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.care_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.care_id');
                     }
                 }
 
@@ -3082,10 +3110,43 @@ class ContractTable extends DefaultTable {
                 );
                 $arrParamLogs = array(
                     'data' => array(
-                        'title'          => 'Liên hệ',
+                        'title'          => 'Đơn hàng',
                         'phone'          => null,
                         'name'           => null,
-                        'action'         => 'Chuyển quản lý',
+                        'action'         => 'Thêm giục đơn',
+                        'contact_id'     => null,
+                        'options'        => $arrCheckResult
+                    )
+                );
+                $logs = $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
+            }
+
+            return count($contract_ids);
+        }
+
+        if($options['task'] == 'change-care') {
+            $arrUser = $arrParam['user'];
+
+            $contract_ids = explode(',', $arrData['contract_ids']);
+            if(count($contract_ids) > 0) {
+                $data = array(
+                    'care_id'         => $arrUser['id'],
+                );
+                $where = new Where();
+                $where->in('id', $contract_ids);
+                $this->tableGateway->update($data, $where);
+
+                // Thêm lịch sử hệ thống
+                $arrCheckResult = array(
+                    'contact_ids'     => $contract_ids,
+                    'user_id'         => $arrUser['id'],
+                );
+                $arrParamLogs = array(
+                    'data' => array(
+                        'title'          => 'Đơn hàng',
+                        'phone'          => null,
+                        'name'           => null,
+                        'action'         => 'Thêm giục chăm sóc',
                         'contact_id'     => null,
                         'options'        => $arrCheckResult
                     )

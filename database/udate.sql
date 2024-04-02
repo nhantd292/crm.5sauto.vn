@@ -1,5 +1,2 @@
-ALTER TABLE `x_contact`
-    CHANGE COLUMN `cost_ads` `cost_ads` INT(11) NULL DEFAULT '0' AFTER `id_kov`;
-
-# sửa cấu hình chuyên mục cơ sở kinh doanh bổ sung kho hàng cho cơ sở kinh doanh
-
+ALTER TABLE `x_contract`
+    ADD COLUMN `care_id` CHAR(22) NULL DEFAULT NULL COMMENT 'Lưu ID nhân viên chăm sóc' AFTER `delivery_id`;
