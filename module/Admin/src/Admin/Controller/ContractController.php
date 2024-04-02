@@ -1699,6 +1699,13 @@ class ContractController extends ActionController {
                             $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('id' => $contract['contact_id']));
                             $contact['user_id'] = $this->_params['data']['user_id'];
                             unset($contact['marketer_id']);
+                            unset($contact['contract_number']);
+                            unset($contact['contract_total']);
+                            unset($contact['contract_price_total']);
+                            unset($contact['history_created']);
+                            unset($contact['history_return']);
+                            unset($contact['history_number']);
+                            unset($contact['history_success']);
                             $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('data' => $contact), array('task' => 'add-item'));
                         }
                     }
