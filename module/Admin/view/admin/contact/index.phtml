@@ -99,7 +99,12 @@
                     $color_text_row = 'style ="background-color: #e29494"';
                 }
                 if(empty($history_created)){
-                    $color_text_row = 'style ="background-color: #dcf407"';
+                    if(empty($marketer_id)){
+                        $color_text_row = 'style ="background-color: #ff9901"';
+                    }
+                    else{
+                        $color_text_row = 'style ="background-color: #dcf407"';
+                    }
                 }
             }
 
