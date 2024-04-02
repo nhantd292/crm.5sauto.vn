@@ -175,7 +175,7 @@ class Contract extends Form {
                 'empty_option'	=> '- Kho gửi hàng -',
                 'disable_inarray_validator' => true,
 //                'value_options'	=> $inventorys,
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'warehouses', 'id' => $warehouse_id)), array('task' => 'cache')), array('key' => 'id', 'value' => 'name,phone,address', 'sprintf' =>'%s - %s - %s')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'warehouses', 'id' => [$warehouse_id])), array('task' => 'list-all-multil')), array('key' => 'id', 'value' => 'name,phone,address', 'sprintf' =>'%s - %s - %s')),
             )
         ));
 
