@@ -29,7 +29,7 @@ class ShareOrder extends Form {
             ),
             'options'		=> array(
                 'empty_option'	=> '- Nhân viên chăm sóc -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(['company_department_id' => 'sales'], array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(['company_department_id' => 'sales', 'sale_branch_id' => $userInfo['sale_branch_id']], array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
             )
         ));
 
