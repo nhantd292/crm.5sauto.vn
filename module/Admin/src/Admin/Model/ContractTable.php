@@ -3932,6 +3932,8 @@ class ContractTable extends DefaultTable {
                         'contact_created' => 'created',
                         'contact_marketer_id' => 'marketer_id',
                         'contact_type' => 'type',
+                        'contact_contract_first_date' => 'contract_first_date',
+                        'contact_contract_time_success' => 'contract_time_success',
                     ), 'inner');
 
                 if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
