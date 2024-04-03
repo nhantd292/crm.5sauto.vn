@@ -744,11 +744,13 @@ class MarketingController extends ActionController {
 
             foreach ($contracts as $key => $value){
                 if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
-                    $data_report[$value['marketer_id']]['new_contract'] += 1;
-                    $data_report['total']['new_contract']               += 1;
+                    if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 48 && !empty($value['marketer_id'])){
+                        $data_report[$value['marketer_id']]['new_contract'] += 1;
+                        $data_report['total']['new_contract']               += 1;
 
-                    $data_report[$value['marketer_id']]['new_sales'] += $value['price_total'];
-                    $data_report['total']['new_sales']               += $value['price_total'];
+                        $data_report[$value['marketer_id']]['new_sales'] += $value['price_total'];
+                        $data_report['total']['new_sales']               += $value['price_total'];
+                    }
 
                     // Tính giá vốn
                     if (!empty($value['options'])) {
