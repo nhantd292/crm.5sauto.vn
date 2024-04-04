@@ -462,8 +462,8 @@ class MarketingController extends ActionController {
                         if (in_array($value['ghtk_status'], $thanhcong_arr)) {
                             $data_report[$value['marketer_id']]['new_contract'] += 1;
                             $data_report['total']['new_contract'] += 1;
-                            $data_report[$value['marketer_id']]['new_sales'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
-                            $data_report['total']['new_sales'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
+                            $data_report[$value['marketer_id']]['new_sales'] += $value['price_total'] - $value['price_reduce_sale'];
+                            $data_report['total']['new_sales'] += $value['price_total'] - $value['price_reduce_sale'];
                         }
                         // Tính giá vốn
                         if (!empty($value['options'])) {

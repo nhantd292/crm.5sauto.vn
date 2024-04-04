@@ -1339,8 +1339,8 @@ class CheckController extends ActionController {
                     if (in_array($value['ghtk_status'], $thanhcong_arr)) {
                         $data_report[$value['delivery_id']]['complete_contract'] += 1;
                         $data_report['total']['complete_contract'] += 1;
-                        $data_report[$value['delivery_id']]['complete_sale'] += $value['price_total'] - $value['vat'];
-                        $data_report['total']['complete_sale'] += $value['price_total'] - $value['vat'];
+                        $data_report[$value['delivery_id']]['complete_sale'] += $value['price_total'] - $value['price_reduce_sale'];
+                        $data_report['total']['complete_sale'] += $value['price_total'] - $value['price_reduce_sale'];
                     }
 
                     // Dục đơn - đã đối soát

@@ -116,6 +116,17 @@ class Contract extends Form{
                 'value_options' => array('-1' => 'Chưa chia', '1' => 'Đã chia'),
             )
         ));
+        $this->add(array(
+            'name' => 'filter_marketer_status',
+            'type' => 'Select',
+            'attributes' => array(
+                'class' => 'form-control select2 select2_basic',
+            ),
+            'options' => array(
+                'empty_option'	=> '- Có marketer -',
+                'value_options' => array('-1' => 'Không có mkt', '1' => 'Có mkt'),
+            )
+        ));
 
 		// Cơ sở
 		$this->add(array(

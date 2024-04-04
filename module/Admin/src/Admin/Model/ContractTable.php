@@ -148,6 +148,18 @@ class ContractTable extends DefaultTable {
                     }
                 }
 
+                if (!empty($ssFilter['filter_marketer_status'])) {
+                    if($ssFilter['filter_marketer_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.marketer_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.marketer_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.marketer_id');
+                    }
+                }
+
                 if (!empty($ssFilter['filter_update_kov_false'])) {
                     if($ssFilter['filter_update_kov_false'] == -1) {
                         $select -> where -> NEST
@@ -533,6 +545,18 @@ class ContractTable extends DefaultTable {
                             -> UNNEST;
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.care_id');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_marketer_status'])) {
+                    if($ssFilter['filter_marketer_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.marketer_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.marketer_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.marketer_id');
                     }
                 }
 
