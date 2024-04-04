@@ -85,6 +85,10 @@ class ContractTable extends DefaultTable {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.sale_group_id', $ssFilter['filter_sale_group']);
                 }
 
+                if(!empty($ssFilter['filter_marketer_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
                 if(!empty($ssFilter['filter_user'])) {
 //                    $select -> where -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user']);
                     $select -> where -> NEST
@@ -475,7 +479,9 @@ class ContractTable extends DefaultTable {
                     }
                 }
 
-
+                if(!empty($ssFilter['filter_marketer_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
     			
 	            if(!empty($ssFilter['filter_sale_branch'])) {
     			    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_branch_id', $ssFilter['filter_sale_branch']);

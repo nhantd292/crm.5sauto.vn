@@ -355,6 +355,18 @@ class Contract extends Form{
                 'value_options' => array('date' => 'Ngày lên đơn', 'shipped_date' => 'Ngày xuất kho', 'not_shipped' => 'Chưa có ngày xuất kho'),
             )
         ));
+
+        $this->add(array(
+            'name'			=> 'filter_marketer_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- NV marketing -',
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'marketing'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name')),
+            )
+        ));
 		
 		// Submit
 		$this->add(array(
