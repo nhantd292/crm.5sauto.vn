@@ -1649,7 +1649,7 @@ class SaleController extends ActionController {
                     }
 
                     // Dục đơn - Thành công
-                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
+//                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
 
                         # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
                         if (in_array($value['ghtk_status'], $thanhcong_arr)) {
@@ -1661,7 +1661,7 @@ class SaleController extends ActionController {
                                 $data_report['total']['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
                             }
                         }
-                    }
+//                    }
 
                     // Thanh toán trước
                     $data_report[$value['user_id']]['deposit'] += $value['price_deposits'];
