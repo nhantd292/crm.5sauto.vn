@@ -93,6 +93,7 @@
             $date                   = $dateFormat->formatToView($item->date);
             $shipped_date           = $dateFormat->formatToView($item->shipped_date);
             $contact_date           = $dateFormat->formatToView($item->contact_date, 'd/m/Y H:i');
+            $contact_contract_first_date = $dateFormat->formatToView($item->contact_contract_first_date, 'd/m/Y H:i');
             $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
             $contact_name           = $item->contact_name;
 //            $contact_contract_number= $item->contact_contract_number;
@@ -264,7 +265,7 @@
                             <td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
                             <td '.$rowSpan.'>'. $user_gd_name .'</td>
                             <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
-                            <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'</td>
+                            <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'<br>'.$contact_contract_first_date.'</td>
     						<td '.$rowSpan.'>'. $paid_cost .'</td>
     						<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
                         </tr>';

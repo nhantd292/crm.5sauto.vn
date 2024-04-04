@@ -427,6 +427,7 @@ class ContractTable extends DefaultTable {
     			                 'contact_name' => 'name',
     			                 'contact_date' => 'date',
     			                 'contact_email' => 'email',
+    			                 'contact_contract_first_date' => 'contract_first_date',
     			                 'contact_sex' => 'sex',
     			                 'contact_contract_number' => 'contract_number',
     			                 'contact_birthday' => 'birthday',
