@@ -55,7 +55,8 @@ class SaleController extends ActionController {
                     }
                 }
                 else{
-                    $this->_params['data']['sale_id'] = $curent_user['id'];
+                    $this->_params['data']['sale_branch_id'] = $curent_user['sale_branch_id'];
+//                    $this->_params['data']['sale_id'] = $curent_user['id'];
                 }
             }
             // Gán dữ liệu lọc vào session
