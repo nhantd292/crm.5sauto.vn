@@ -447,7 +447,7 @@ class MarketingController extends ActionController {
                 'filter_product_group_id'   => $ssFilter->report['product_group_id'],
                 'date_type'                 => 'shipped_date',
                 'filter_status'             => 'success',
-                'filter_status_acounting_id'=> 'da-doi-soat',
+//                'filter_status_acounting_id'=> 'da-doi-soat',
             );
 
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
