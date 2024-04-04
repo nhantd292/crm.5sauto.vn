@@ -1361,7 +1361,7 @@ class CheckController extends ActionController {
 
             // Tham số bảng báo cáo
             foreach ($data_report as $key => $value){
-                $sale_tm = $value['order_contract'] - $value['cancel_contract'];
+                $sale_tm = $value['order_sale'] - $value['cancel_sale'];
                 $percent_return  = ($sale_tm > 0 ? round(($value['refund_contract'] + $value['return_contract']) / $sale_tm * 100, 2) : 0);
                 $debt_contract = $value['order_contract'] - $value['cancel_contract'] - $value['refund_contract'] - $value['return_contract'] - $value['check_contract'];
                 $debt_sale = $value['order_sale'] - $value['cancel_sale'] - $value['refund_sale'] - $value['return_sale'] - $value['check_sale'];;
