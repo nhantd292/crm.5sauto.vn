@@ -1654,11 +1654,11 @@ class SaleController extends ActionController {
                         # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
                         if (in_array($value['ghtk_status'], $thanhcong_arr)) {
                             if ($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])) {
-                                $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
-                                $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                                $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
+                                $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
                             } else {
-                                $data_report[$value['user_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'];
-                                $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                                $data_report[$value['user_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
+                                $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
                             }
                         }
                     }
