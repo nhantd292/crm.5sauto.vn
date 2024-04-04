@@ -464,22 +464,20 @@ class MarketingController extends ActionController {
                             $data_report['total']['new_contract'] += 1;
                             $data_report[$value['marketer_id']]['new_sales'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
                             $data_report['total']['new_sales'] += $value['price_paid'] + $value['price_deposits'] - $value['price_reduce_sale'];
-
-
-                            // Tính giá vốn
-                            if (!empty($value['options'])) {
-                                $options = unserialize($value['options']);
-                                if (count($options['product'])) {
-                                    foreach ($options['product'] as $k => $v) {
-                                        $data_report[$value['marketer_id']]['cost_capital'] += ($v['cost'] + $v['cost_new']) * $v['numbers'];
-                                        $data_report['total']['cost_capital'] += ($v['cost'] + $v['cost_new']) * $v['numbers'];
-                                    }
+                        }
+                        // Tính giá vốn
+                        if (!empty($value['options'])) {
+                            $options = unserialize($value['options']);
+                            if (count($options['product'])) {
+                                foreach ($options['product'] as $k => $v) {
+                                    $data_report[$value['marketer_id']]['cost_capital'] += ($v['cost'] + $v['cost_new']) * $v['numbers'];
+                                    $data_report['total']['cost_capital'] += ($v['cost'] + $v['cost_new']) * $v['numbers'];
                                 }
                             }
-
-                            $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'];
-                            $data_report['total']['cod_total'] += $value['price_transport'];
                         }
+
+                        $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'];
+                        $data_report['total']['cod_total'] += $value['price_transport'];
                     }
                 }
             }

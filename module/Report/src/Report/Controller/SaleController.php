@@ -1606,9 +1606,11 @@ class SaleController extends ActionController {
             $dalayhang_status       = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'da-lay-hang',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
             $hanghoan_status        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'hang-hoan',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
             $danggiaohang_status    = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'dang-giao-hang',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
+            $thanhcong_status       = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'thanh-cong',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
             $dalayhang_arr          = array_merge(explode(',', trim($dalayhang_status['content'])), explode(',', trim($dalayhang_status['note'])));
             $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
             $danggiaohang_arr       = array_merge(explode(',', trim($danggiaohang_status['content'])), explode(',', trim($danggiaohang_status['note'])));
+            $thanhcong_arr          = array_merge(explode(',', trim($thanhcong_status['content'])), explode(',', trim($thanhcong_status['note'])));
 
             foreach ($contracts as $key => $value){
                 // Nếu người lên đơn nằm trong danh sách nhân viên sale.
@@ -1650,13 +1652,14 @@ class SaleController extends ActionController {
                     if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
 
                         # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
-                        if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])){
-                            $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
-                            $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
-                        }
-                        else{
-                            $data_report[$value['user_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'];
-                            $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                        if (in_array($value['ghtk_status'], $thanhcong_arr)) {
+                            if ($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])) {
+                                $data_report[$value['user_id']]['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                                $data_report['total']['sales_new'] += $value['price_paid'] + $value['price_deposits'];
+                            } else {
+                                $data_report[$value['user_id']]['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                                $data_report['total']['sales_care'] += $value['price_paid'] + $value['price_deposits'];
+                            }
                         }
                     }
 
