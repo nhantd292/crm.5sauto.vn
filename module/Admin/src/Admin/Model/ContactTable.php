@@ -646,7 +646,9 @@ class ContactTable extends DefaultTable {
 		        $data['marketer_id'] = $arrData['marketer_id'];
 		    }
 		    if(!empty($arrData['phone'])) {
-		        $data['phone'] = $arrData['phone'];
+		        if(empty($arrItem['marketer_id'])){
+                    $data['phone'] = $arrData['phone'];
+		        }
 		    }
 		    if(isset($arrData['email'])) {
 		        $data['email'] = $arrData['email'];

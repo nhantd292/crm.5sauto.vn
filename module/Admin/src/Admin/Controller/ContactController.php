@@ -196,7 +196,9 @@ class ContactController extends ActionController
         $dateFormat = new \ZendX\Functions\Date();
         $ssFilter   = new Container(__CLASS__);
 
-        $myForm = $this->getForm();
+//        $myForm = $this->getForm();
+
+//        $myForm = new \Admin\Form\Contact($this);
         $curent_user_id  = $this->_userInfo->getUserInfo('id');
         $phone_code = true;
 
@@ -212,10 +214,11 @@ class ContactController extends ActionController
                 $item['date_return'] = $dateFormat->formatToView($item['date_return']);
                 $item                = array_merge($item, $item_options);
 
-                if($curent_user_id == $item['user_id']) {
+                if($curent_user_id == $item['user_id'] || $curent_user_id == $item['care_id']) {
                     $phone_code = false;
                 }
 
+                $myForm = new \Admin\Form\Contact($this, $item);
                 if (!$this->getRequest()->isPost()) {
                     unset($item['history_action_id']);
                     unset($item['history_result_id']);
@@ -229,6 +232,9 @@ class ContactController extends ActionController
                 $task    = 'edit-item';
                 $caption = 'Liên hệ - Sửa';
             }
+        }
+        else{
+            $myForm = new \Admin\Form\Contact($this);
         }
 
         if ($this->getRequest()->isPost()) {

@@ -4,7 +4,7 @@ use \Zend\Form\Form as Form;
 
 class Contact extends Form {
 	
-	public function __construct($sm){
+	public function __construct($sm, $options){
 		parent::__construct();
 		
 		// FORM Attribute
@@ -29,6 +29,7 @@ class Contact extends Form {
 		    'type'			=> 'Text',
 		    'attributes'	=> array(
 		        'class'		     => 'form-control mask_phone',
+                'readonly' => !empty($options['marketer_id']) ? true : false,
 		    ),
 		));
 
