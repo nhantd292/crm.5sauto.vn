@@ -361,6 +361,64 @@ class ContractController extends ActionController {
         return new ViewModel($this->_viewModel);
     }
 
+    // Danh sách đơn hàng kế toán
+    public function indexNewAction() {
+        $ssFilter = new Container(__CLASS__.'new');
+        // Phân quyền view
+//        $curent_user = $this->_userInfo->getUserInfo();
+//        $permission_ids = explode(',', $curent_user['permission_ids']);
+//        if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !in_array(MANAGER, $permission_ids)){
+//            if(in_array(GDCN, $permission_ids) || in_array(SALEADMIN, $permission_ids)){
+//                $this->_params['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
+//                $ssFilter->filter_sale_branch = $curent_user['sale_branch_id'];
+//            }
+//            elseif (in_array(GROUP_SALES_LEADER, $permission_ids)){
+//                $this->_params['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
+//                $this->_params['ssFilter']['filter_sale_group'] = $curent_user['sale_group_id'];
+//                $ssFilter->filter_sale_branch = $curent_user['sale_branch_id'];
+//                $ssFilter->filter_sale_group = $curent_user['filter_sale_group'];
+//            }
+//            else{
+//                $this->_params['ssFilter']['filter_user'] = $curent_user['id'];
+//            }
+//        }
+        # chỉ lấy những đơn hàng mới có trạng thái sale là da-chot
+        $this->_params['ssFilter']['filter_status_type'] = 'status_id';
+        $this->_params['ssFilter']['filter_status'] = DA_CHOT;
+        $this->_params['ssFilter']['filter_send_ghtk'] = '-1';
+        $ssFilter->filter_status_type = 'status_id';
+        $ssFilter->filter_status = DA_CHOT;
+        $ssFilter->filter_send_ghtk = -1;
+
+        // Lấy danh mục sản phẩm cho vào bộ lọc
+        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
+        $categories = json_decode($categories, true)['data'];
+        $categories = $this->getNameCat($this->addNew($categories), $result);
+        $this->_params['categories'] = $categories;
+
+        $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
+        $myForm->setData($this->_params['ssFilter']);
+
+        $this->_viewModel['myForm']	                = $myForm;
+        $this->_viewModel['items']                  = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
+        $this->_viewModel['count']                  = $this->getTable()->countItem($this->_params, array('task' => 'list-item'));
+        $this->_viewModel['user']                   = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
+        $this->_viewModel['sale_group']             = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
+        $this->_viewModel['sale_branch']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
+        $this->_viewModel['location_city']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
+        $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
+        $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
+        $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
+
+        $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_sales']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['caption']                = 'Đơn hàng - Danh sách';
+
+        return new ViewModel($this->_viewModel);
+    }
+
     // Thêm mới đơn hàng theo sản phẩm mới
     public function addKovAction() {
         $this->_params['userInfo'] = $this->_userInfo->getUserInfo();

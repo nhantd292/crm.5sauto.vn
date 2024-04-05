@@ -357,6 +357,11 @@
 		</a>
 		<ul class="dropdown-menu">
             <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'index-new'));?>" target="_self">
+                    <i class="fa fa-file-text-o"></i> <span class="title">Danh sách đơn hàng mới</span><span class="arrow"></span>
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'contract', 'action' => 'index-accounting'));?>" target="_self">
                     <i class="fa fa-file-text-o"></i> <span class="title">Danh sách đơn hàng</span><span class="arrow"></span>
                 </a>
