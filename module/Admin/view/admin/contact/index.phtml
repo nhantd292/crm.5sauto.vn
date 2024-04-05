@@ -69,6 +69,7 @@
 
             $marketer_id            = $item->marketer_id ? $this->user[$item->marketer_id]['name'] : '';
             $user_id                = $item->user_id ? $this->user[$item->user_id]['name'] : '';
+            $care_id                = $item->care_id ? $this->user[$item->care_id]['name'] : '';
             $sale_group_id          = $item->sale_group_id ? '<br>'. $this->sale_group[$item->sale_group_id]['name'] : '';
             $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
             $type                   = $this->sale_contact_type[$item->type]['name'];
@@ -76,6 +77,7 @@
             $options                = $item->options ? unserialize($item['options']) : array();
             
             $history_created        = $dateFormat->formatToView($item['history_created']);
+            $care_date              = $dateFormat->formatToView($item['care_date'],'d/m/Y H:i:s');
             $history_return         = !empty($item['history_return']) ? $dateFormat->formatToView($item['history_return'], 'd/m/Y') : '';
             $history_return_content = $options['history_return_content'];
             $history_created_by     = $options['history_created_by'] ? $this->user[$options['history_created_by']]['name'] : '';
@@ -99,13 +101,12 @@
                     $color_text_row = 'style ="background-color: #e29494"';
                 }
                 if(empty($history_created)){
-                    if(empty($marketer_id)){
-                        $color_text_row = 'style ="background-color: #ff9901"';
-                    }
-                    else{
-                        $color_text_row = 'style ="background-color: #dcf407"';
-                    }
+                    $color_text_row = 'style ="background-color: #dcf407"';
                 }
+            }
+
+            if($item['history_created'] < $item['care_date']){
+                $color_text_row = 'style ="background-color: #ff9901"';
             }
 
             $x_history = '';
@@ -146,6 +147,7 @@
             $xhtmlItems .= '<td class="mask_currency text-right">'. $cost_ads .'</td>';
             $xhtmlItems .= '<td><div class="col-300 text-wrap">'. $x_history .'</div></td>';
             $xhtmlItems .= '<td>'. $history_return .'</td>';
+            $xhtmlItems .= '<td>'. $care_id .'<br>'.$care_date.'</td>';
             $xhtmlItems .= '<td>'. $user_id . $sale_group_id . $sale_branch_id .'</td>';
             $xhtmlItems .= '<td>'. $marketer_id .'</td>';
     		$xhtmlItems .= '</tr>';
@@ -167,7 +169,8 @@
     $xhtmlHead .= '<th width ="150" class="text-right">Chi phí ADS: <span class="mask_currency text-red">'.$total_cost_ads.'</span></th>';
     $xhtmlHead .= '<th width ="310">Lịch sử chăm sóc cuối</th>';
     $xhtmlHead .= '<th width ="90">Chăm sóc lại</th>';
-    $xhtmlHead .= '<th width ="200">Người quản lý</th>';
+    $xhtmlHead .= '<th width ="200">NV chăm sóc</th>';
+    $xhtmlHead .= '<th width ="200">NV quản lý</th>';
     $xhtmlHead .= '<th width ="200">Marketer</th>';
     $xhtmlHead .= '</tr>';
     

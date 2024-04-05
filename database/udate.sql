@@ -5,3 +5,6 @@ ALTER TABLE `x_contact`
     CHANGE COLUMN `user_id` `user_id` CHAR(22) NOT NULL COMMENT 'id nhân viên sale' COLLATE 'utf8_general_ci' AFTER `address`,
     CHANGE COLUMN `marketer_id` `marketer_id` CHAR(25) NULL DEFAULT NULL COMMENT 'id nhân viên mkt' COLLATE 'utf8_general_ci' AFTER `user_id`,
     ADD COLUMN `care_id` CHAR(25) NULL DEFAULT NULL COMMENT 'id nhân viên chăm sóc' AFTER `marketer_id`;
+
+ALTER TABLE `x_contact`
+    ADD COLUMN `care_date` DATETIME NULL DEFAULT NULL COMMENT 'Ngày nhận liên hệ chăm sóc' AFTER `care_id`;

@@ -69,9 +69,12 @@ class ContactTable extends DefaultTable {
         			    $select -> where -> in('sale_group_id', explode(',', $this->userInfo->getUserInfo('sale_group_ids')));
         			}
     			}
-    			
     			if(!empty($ssFilter['filter_user'])) {
-    			    $select -> where -> equalTo('user_id', $ssFilter['filter_user']);
+                    $select -> where -> NEST
+                        -> equalTo('user_id', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo('care_id', $ssFilter['filter_user'])
+                        -> UNNEST;
     			}
     			if(!empty($ssFilter['filter_marketer_id'])) {
     			    $select -> where -> equalTo('marketer_id', $ssFilter['filter_marketer_id']);
@@ -203,10 +206,14 @@ class ContactTable extends DefaultTable {
         			    $select -> where -> in('sale_group_id', explode(',', $this->userInfo->getUserInfo('sale_group_ids')));
         			}
     			}
-    			
-    			if(!empty($ssFilter['filter_user'])) {
-    			    $select -> where -> equalTo('user_id', $ssFilter['filter_user']);
-    			}
+
+                if(!empty($ssFilter['filter_user'])) {
+                    $select -> where -> NEST
+                        -> equalTo('user_id', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo('care_id', $ssFilter['filter_user'])
+                        -> UNNEST;
+                }
                 if(!empty($ssFilter['filter_marketer_id'])) {
                     $select -> where -> equalTo('marketer_id', $ssFilter['filter_marketer_id']);
                 }
@@ -879,6 +886,18 @@ class ContactTable extends DefaultTable {
             $data	= array(
                 'marketer_id'       => $arrParam['marketer_id'],
                 'product_group_id'  => $arrParam['product_group_id'],
+            );
+
+            $result = $this->tableGateway->update($data, array('id' => $id));
+            return $result;
+        }
+
+        # cập nhật quyền giục đơn cho liên hệ
+        if($options['task'] == 'update-care-contact') {
+            $id = $arrParam['id'];
+            $data	= array(
+                'care_id'       => $arrParam['care_id'],
+                'care_date'     => date('Y-m-d H:i:s'),
             );
 
             $result = $this->tableGateway->update($data, array('id' => $id));
