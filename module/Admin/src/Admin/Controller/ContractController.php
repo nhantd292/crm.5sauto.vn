@@ -369,7 +369,7 @@ class ContractController extends ActionController {
     public function indexNewAction() {
         $ssFilter = new Container(__CLASS__.'new');
         // Phân quyền view
-//        $curent_user = $this->_userInfo->getUserInfo();
+        $curent_user = $this->_userInfo->getUserInfo();
 //        $permission_ids = explode(',', $curent_user['permission_ids']);
 //        if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !in_array(MANAGER, $permission_ids)){
 //            if(in_array(GDCN, $permission_ids) || in_array(SALEADMIN, $permission_ids)){
