@@ -1217,7 +1217,7 @@ class CheckController extends ActionController {
                 if(in_array(GDCN, $permission_ids)){
                     $this->_params['data']['sale_branch_id'] = $curent_user['sale_branch_id'];
                 }
-                elseif (in_array(GROUP_SALES_LEADER, $permission_ids) || in_array(GROUP_MKT_LEADER, $permission_ids)){
+                elseif (in_array(GROUP_SALES_LEADER, $permission_ids) || in_array(GROUP_MKT_LEADER, $permission_ids) || in_array(CHECK_MANAGER_LEADER, $permission_ids)){
                     $this->_params['data']['sale_branch_id'] = $curent_user['sale_branch_id'];
                     $this->_params['data']['sale_group_id'] = $curent_user['sale_group_id'];
                     if(in_array(GROUP_MKT_LEADER, $permission_ids)){
