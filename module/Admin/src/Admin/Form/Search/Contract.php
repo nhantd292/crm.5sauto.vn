@@ -189,7 +189,7 @@ class Contract extends Form{
 		    ),
 		    'options'		=> array(
 		        'empty_option'	=> '- NV Giục đơn -',
-                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'giuc-don'), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'))
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'giuc-don', 'sale_group_id' => $ssFilter['filter_sale_group']), array('task' => 'list-user-department')), array('key' => 'id', 'value' => 'name'))
 		    )
 		));
 		
