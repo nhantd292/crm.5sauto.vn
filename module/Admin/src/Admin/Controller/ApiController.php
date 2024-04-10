@@ -870,6 +870,7 @@ class ApiController extends ActionController {
             $this->_params['data']['name']       = $_POST['name'];
             $this->_params['data']['phone']      = $_POST['phone'];
             $this->_params['data']['message']    = $_POST['message'];
+            $this->_params['data']['product_group_id']    = $_POST['product_group_id'];
 
             $form = $this->getServiceLocator()->get('Admin\Model\LinkCheckingTable')->getItem(array('link' => $_POST['link']), array('task' => 'by-link'));
             if(!empty($form)){
