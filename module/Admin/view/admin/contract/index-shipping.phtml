@@ -140,7 +140,7 @@ if($this->items->count() > 0) {
         $options                = $item->options ? unserialize($item['options']) : array();
         $contact_options        = $item->contact_options ? unserialize($item['contact_options']) : array();
 
-        $address = !empty($options['contract_received']['address']) ? $options['contract_received']['address'] : $contact_options['address'];
+        $address = $item->address;
         $location_city = !empty($item->location_city_id) ?  ' '.$this->location_city[$item->location_city_id]['name'] : '';
         $location_district = !empty($item->location_district_id) ? ' '.$this->location_district[$item->location_district_id]['name'] : '';
         $location_town = !empty($item->location_town_id) ?  ' '.$this->location_town[$item->location_town_id]['name'] : '';
