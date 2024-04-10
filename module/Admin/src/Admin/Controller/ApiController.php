@@ -930,7 +930,7 @@ class ApiController extends ActionController {
                     // Thêm mới data trùng
                     $this->_params['data']['marketer_id']          = $form['marketer_id'];
                     $this->_params['data']['marketing_channel_id'] = $form['marketing_channel_id'];
-                    $this->_params['data']['product_group_id']     = $form['product_group_id'];
+//                    $this->_params['data']['product_group_id']     = $form['product_group_id'];
                     $this->_params['data']['contact_coin']         = 1;
                     $this->_params['data']['contact_id']           = $contact['id'];
                     $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem($this->_params, array('task' => 'add-data-landing'));
@@ -947,7 +947,7 @@ class ApiController extends ActionController {
 //                        } else {
                             $this->_params['data']['marketer_id']          = $form['marketer_id'];
                             $this->_params['data']['marketing_channel_id'] = $form['marketing_channel_id'];
-                            $this->_params['data']['product_group_id']     = $form['product_group_id'];
+//                            $this->_params['data']['product_group_id']     = $form['product_group_id'];
                             $this->_params['data']['contact_coin']         = 1;
                             $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem($this->_params, array('task' => 'add-data-landing'));
                             $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem(array('contact_coin' => 1, 'phone' => $this->_params['data']['phone']), array('task' => 'update-contact-coin'));
@@ -957,7 +957,7 @@ class ApiController extends ActionController {
                     } else {
                         $this->_params['data']['marketer_id']          = $form['marketer_id'];
                         $this->_params['data']['marketing_channel_id'] = $form['marketing_channel_id'];
-                        $this->_params['data']['product_group_id']     = $form['product_group_id'];
+//                        $this->_params['data']['product_group_id']     = $form['product_group_id'];
 
                         $user                                    = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(array('id' => $form['marketer_id']));
                         $this->_params['data']['sale_branch_id'] = $user['sale_branch_id'];
