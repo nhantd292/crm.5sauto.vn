@@ -116,6 +116,7 @@ class ContractTable extends DefaultTable {
 
                 if(!empty($ssFilter['filter_unit_transport'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.unit_transport', $ssFilter['filter_unit_transport']);
+                    $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
                 }
                 if(!empty($ssFilter['filter_production_type_id'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.production_type_id', $ssFilter['filter_production_type_id']);
@@ -526,6 +527,7 @@ class ContractTable extends DefaultTable {
 
                 if(!empty($ssFilter['filter_unit_transport'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.unit_transport', $ssFilter['filter_unit_transport']);
+                    $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
                 }
 
                 if(!empty($ssFilter['filter_category'])) {
