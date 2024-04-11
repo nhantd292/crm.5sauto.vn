@@ -2393,6 +2393,9 @@ class ContractController extends ActionController {
 
                                     $products = [];
                                     $total_weight = 0;
+                                    foreach($contract['options'] as $key => $value){
+                                        $total_weight += $value['weight'];
+                                    }
                                     $list_name = '';
                                     foreach($contract['options'] as $key => $value){
                                         $pname = $value['full_name'].' - '.$value['car_year'];
@@ -2405,7 +2408,6 @@ class ContractController extends ActionController {
                                             $pro['length'] = $value['length'];
                                             $pro['width'] = $value['width'];
                                             $pro['height'] = $value['height'];
-                                            $total_weight += $value['weight'];
 
                                             $products[] = $pro;
                                         }
