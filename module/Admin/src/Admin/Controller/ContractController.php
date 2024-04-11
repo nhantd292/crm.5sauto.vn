@@ -230,9 +230,17 @@ class ContractController extends ActionController {
             }
             elseif (in_array(CHECK_MANAGER_LEADER, $permission_ids)){
                 $this->_params['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
-                $this->_params['ssFilter']['filter_sale_group'] = $curent_user['sale_group_id'];
+//                $this->_params['ssFilter']['filter_sale_group'] = $curent_user['sale_group_id'];
                 $ssFilter->filter_sale_branch = $curent_user['sale_branch_id'];
-                $ssFilter->filter_sale_group = $curent_user['filter_sale_group'];
+//                $ssFilter->filter_sale_group = $curent_user['filter_sale_group'];
+
+
+                $user_gd = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(array('company_department_id' => 'giuc-don', 'sale_group_id' => $curent_user['sale_group_id']), array('task' => 'list-user-department'));
+                $user_gd_arr = [];
+                foreach($user_gd as $uitem){
+                    $user_gd_arr[] = $uitem['id'];
+                }
+                $this->_params['ssFilter']['filter_gd_ids'] = $user_gd_arr;
             }
             else{
                 $this->_params['ssFilter']['filter_delivery_id'] = $curent_user['id'];

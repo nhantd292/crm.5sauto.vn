@@ -104,6 +104,10 @@ class ContractTable extends DefaultTable {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_delivery_id']);
                 }
 
+                if(!empty($ssFilter['filter_gd_ids'])) {
+                    $select -> where -> in(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_gd_ids']);
+                }
+
                 if(!empty($ssFilter['filter_status_type'])) {
                     if(!empty($ssFilter['filter_status'])) {
                         $select -> where -> equalTo(TABLE_CONTRACT .'.'.$ssFilter['filter_status_type'], $ssFilter['filter_status']);
@@ -508,6 +512,10 @@ class ContractTable extends DefaultTable {
 
                 if(!empty($ssFilter['filter_delivery_id'])) {
                     $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_delivery_id']);
+                }
+
+                if(!empty($ssFilter['filter_gd_ids'])) {
+                    $select -> where -> in(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_gd_ids']);
                 }
 
                 if(!empty($ssFilter['filter_status_type'])) {
