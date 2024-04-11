@@ -228,48 +228,22 @@ class ContractController extends ActionController {
                 $this->_params['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
                 $ssFilter->filter_sale_branch = $curent_user['sale_branch_id'];
             }
-            elseif (in_array(GROUP_SALES_LEADER, $permission_ids) || in_array(CHECK_MANAGER_LEADER, $permission_ids)){
+            elseif (in_array(CHECK_MANAGER_LEADER, $permission_ids)){
                 $this->_params['ssFilter']['filter_sale_branch'] = $curent_user['sale_branch_id'];
                 $this->_params['ssFilter']['filter_sale_group'] = $curent_user['sale_group_id'];
                 $ssFilter->filter_sale_branch = $curent_user['sale_branch_id'];
                 $ssFilter->filter_sale_group = $curent_user['filter_sale_group'];
             }
             else{
-//                $this->_params['ssFilter']['filter_user'] = $curent_user['id'];
                 $this->_params['ssFilter']['filter_delivery_id'] = $curent_user['id'];
             }
         }
-//        echo "<pre>";
-//        print_r($this->_params['ssFilter']);
-//        echo "</pre>";
-//        exit;
 
         // Lấy danh mục sản phẩm cho vào bộ lọc
         $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
         $categories = json_decode($categories, true)['data'];
         $categories = $this->getNameCat($this->addNew($categories), $result);
         $this->_params['categories'] = $categories;
-
-        // Lấy danh sách sản phẩm đưa vào bộ lọc
-//        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
-//        $products = json_decode($products, true);
-//        if($products['total'] < $products['pageSize']){
-//            $product_data = \ZendX\Functions\CreateArray::create($products['data'], array('key' => 'id', 'value' => 'fullName'));
-//        }
-//        else{
-//            $total = $products['total'];
-//            $pageSize = $products['pageSize'];
-//            $pageTotal = (int)($total / $pageSize) + 1;
-//            $product_data = [];
-//            for ($index = 0; $index < $pageTotal; $index++) {
-//                $currentItem = $index * $pageSize;
-//                $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100&currentItem=' . $currentItem);
-//                $products = json_decode($products, true);
-//                $product_data = array_merge($product_data, $products['data']);
-//            }
-//            $product_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'code', 'value' => 'fullName'));
-//        }
-//        $this->_params['products'] = $product_data;
 
         $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
         $myForm->setData($this->_params['ssFilter']);
@@ -316,37 +290,8 @@ class ContractController extends ActionController {
             }
         }
 
-        // Lấy danh mục sản phẩm cho vào bộ lọc
-        $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
-        $categories = json_decode($categories, true)['data'];
-        $categories = $this->getNameCat($this->addNew($categories), $result);
-        $this->_params['categories'] = $categories;
-
-        // Lấy danh sách sản phẩm đưa vào bộ lọc
-//        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
-//        $products = json_decode($products, true);
-//        if($products['total'] < $products['pageSize']){
-//            $product_data = \ZendX\Functions\CreateArray::create($products['data'], array('key' => 'id', 'value' => 'fullName'));
-//        }
-//        else{
-//            $total = $products['total'];
-//            $pageSize = $products['pageSize'];
-//            $pageTotal = (int)($total / $pageSize) + 1;
-//            $product_data = [];
-//            for ($index = 0; $index < $pageTotal; $index++) {
-//                $currentItem = $index * $pageSize;
-//                $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100&currentItem=' . $currentItem);
-//                $products = json_decode($products, true);
-//                $product_data = array_merge($product_data, $products['data']);
-//            }
-//            $product_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'code', 'value' => 'fullName'));
-//        }
-//        $this->_params['products'] = $product_data;
-
         $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
         $myForm->setData($this->_params['ssFilter']);
-//        $user_obj = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(['id' => $curent_user['id']]);
-//        $user_branch = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(['id' => $user_obj['sale_branch_id']]);
         $user_branch = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(['id' => $this->_params['ssFilter']['filter_sale_branch']]);
 
         $this->_viewModel['myForm']	                = $myForm;
