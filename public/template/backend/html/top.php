@@ -26,7 +26,7 @@
 <!--                </a>-->
 <!--            </li>-->
 
-		    <li class="header_notification_bar hidden" id="notification_history_return">
+		    <li class="header_notification_bar" id="notification_history_return">
 				<a href="<?php echo $this->url('routeAdmin/type', array('controller' => 'contact', 'action' => 'filter', 'type' => 'history-return'));?>" title="Danh sách liên hệ cần chăm sóc lại ngày hôm nay">
     				<i class="fa fa-history"></i>
     				<span class="badge">0</span>
