@@ -2400,7 +2400,7 @@ class ContractController extends ActionController {
                                     foreach($contract['options'] as $key => $value){
                                         $pname = $value['full_name'].' - '.$value['car_year'];
                                         $list_name .= $pname.', ';
-                                        if($total_weight >= 20) {
+//                                        if($total_weight >= 20) {
                                             if ($value['weight'] > 1 || count($contract['options']) == 1) {
                                                 $pro['name'] = $pname;
                                                 $pro['weight'] = $value['weight'];
@@ -2412,18 +2412,18 @@ class ContractController extends ActionController {
 
                                                 $products[] = $pro;
                                             }
-                                        }
-                                        else{
-                                            $pro['name'] = $pname;
-                                            $pro['weight'] = $value['weight'];
-                                            $pro['quantity'] = $value['numbers'];
-                                            $pro['product_code'] = $value['code'];
-                                            $pro['length'] = $value['length'];
-                                            $pro['width'] = $value['width'];
-                                            $pro['height'] = $value['height'];
-
-                                            $products[] = $pro;
-                                        }
+//                                        }
+//                                        else{
+//                                            $pro['name'] = $pname;
+//                                            $pro['weight'] = $value['weight'];
+//                                            $pro['quantity'] = $value['numbers'];
+//                                            $pro['product_code'] = $value['code'];
+//                                            $pro['length'] = $value['length'];
+//                                            $pro['width'] = $value['width'];
+//                                            $pro['height'] = $value['height'];
+//
+//                                            $products[] = $pro;
+//                                        }
                                     }
                                     $products[0]['name'] = $list_name;
                                     $listData_ghtk[$contract['code']]['products'] = $products;
