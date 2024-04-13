@@ -2379,7 +2379,6 @@ class ContractController extends ActionController {
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
                                 if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
                                     $contract['options'] = unserialize($contract['options'])['product'];
-
                                     $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
                                     if(!empty($warehouse)){
                                         $address = explode(',', $warehouse['address']);
@@ -2393,17 +2392,34 @@ class ContractController extends ActionController {
 
                                     $products = [];
                                     $total_weight = 0;
+                                    $list_name = '';
+                                    $bbs_type = ''; // b1: có sp trong đơn hàng có khối lượng >= 20, b2 k có sp >= 20kg nhưng tổng lớn hơn 20kg
                                     foreach($contract['options'] as $key => $value){
+                                        if($value['weight'] >=  20){
+                                            $bbs_type = 'b1';
+                                        }
                                         $total_weight += $value['weight'];
                                     }
-                                    $list_name = '';
                                     foreach($contract['options'] as $key => $value){
                                         $pname = $value['full_name'].' - '.$value['car_year'];
                                         $list_name .= $pname.', ';
-//                                        if($total_weight >= 20) {
-                                            if ($value['weight'] > 1 || count($contract['options']) == 1) {
+                                        if($total_weight >= 20) {
+                                            if($bbs_type == 'b1'){
+                                                if ($value['weight'] >= 20) {
+                                                    $pro['name'] = $pname;
+                                                    $pro['weight'] = $value['weight'];
+                                                    $pro['quantity'] = $value['numbers'];
+                                                    $pro['product_code'] = $value['code'];
+                                                    $pro['length'] = $value['length'];
+                                                    $pro['width'] = $value['width'];
+                                                    $pro['height'] = $value['height'];
+
+                                                    $products[] = $pro;
+                                                }
+                                            }
+                                            else{
                                                 $pro['name'] = $pname;
-                                                $pro['weight'] = $value['weight'];
+                                                $pro['weight'] = $total_weight;
                                                 $pro['quantity'] = $value['numbers'];
                                                 $pro['product_code'] = $value['code'];
                                                 $pro['length'] = $value['length'];
@@ -2411,19 +2427,21 @@ class ContractController extends ActionController {
                                                 $pro['height'] = $value['height'];
 
                                                 $products[] = $pro;
+                                                break;
                                             }
-//                                        }
-//                                        else{
-//                                            $pro['name'] = $pname;
-//                                            $pro['weight'] = $value['weight'];
-//                                            $pro['quantity'] = $value['numbers'];
-//                                            $pro['product_code'] = $value['code'];
-//                                            $pro['length'] = $value['length'];
-//                                            $pro['width'] = $value['width'];
-//                                            $pro['height'] = $value['height'];
-//
-//                                            $products[] = $pro;
-//                                        }
+                                        }
+                                        else{
+                                            $pro['name'] = $pname;
+                                            $pro['weight'] = $total_weight;
+                                            $pro['quantity'] = $value['numbers'];
+                                            $pro['product_code'] = $value['code'];
+                                            $pro['length'] = $value['length'];
+                                            $pro['width'] = $value['width'];
+                                            $pro['height'] = $value['height'];
+
+                                            $products[] = $pro;
+                                            break;
+                                        }
                                     }
                                     $products[0]['name'] = $list_name;
                                     $listData_ghtk[$contract['code']]['products'] = $products;
