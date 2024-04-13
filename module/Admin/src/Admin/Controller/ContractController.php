@@ -2393,16 +2393,16 @@ class ContractController extends ActionController {
                                     $products = [];
                                     $total_weight = 0;
                                     $bbs_type = ''; // b1: có sp trong đơn hàng có khối lượng >= 20, b2 k có sp >= 20kg nhưng tổng lớn hơn 20kg
+                                    $list_name = '';
                                     foreach($contract['options'] as $key => $value){
                                         if($value['weight'] >=  20){
                                             $bbs_type = 'b1';
                                         }
                                         $total_weight += $value['weight'];
-                                    }
-                                    $list_name = '';
-                                    foreach($contract['options'] as $key => $value){
                                         $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
                                         $list_name .= $pname.', ';
+                                    }
+                                    foreach($contract['options'] as $key => $value){
                                         if($total_weight >= 20) {
                                             if($bbs_type == 'b1'){
                                                 if ($value['weight'] >= 20) {
