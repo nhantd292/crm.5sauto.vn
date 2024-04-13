@@ -2392,7 +2392,6 @@ class ContractController extends ActionController {
 
                                     $products = [];
                                     $total_weight = 0;
-                                    $list_name = '';
                                     $bbs_type = ''; // b1: có sp trong đơn hàng có khối lượng >= 20, b2 k có sp >= 20kg nhưng tổng lớn hơn 20kg
                                     foreach($contract['options'] as $key => $value){
                                         if($value['weight'] >=  20){
@@ -2400,8 +2399,9 @@ class ContractController extends ActionController {
                                         }
                                         $total_weight += $value['weight'];
                                     }
+                                    $list_name = '';
                                     foreach($contract['options'] as $key => $value){
-                                        $pname = $value['full_name'].' - '.$value['car_year'];
+                                        $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
                                         $list_name .= $pname.', ';
                                         if($total_weight >= 20) {
                                             if($bbs_type == 'b1'){
