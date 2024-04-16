@@ -773,7 +773,7 @@ class ApiController extends ActionController {
             $response->setStatusCode(Response::STATUS_CODE_500);
             $response->setContent(json_encode(array('success' => false, 'message' => 'invalid')));
         }
-
+        header('Content-Type: application/json');
         return $response;
     }
 
