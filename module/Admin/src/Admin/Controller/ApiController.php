@@ -756,12 +756,12 @@ class ApiController extends ActionController {
                         $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
                     }
                     else{
-                        $response->setStatusCode(Response::STATUS_CODE_404);
+                        $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('success' => false, 'message' => 'partner_id invalid')));
                     }
                 }
                 else{
-                    $response->setStatusCode(Response::STATUS_CODE_404);
+                    $response->setStatusCode(Response::STATUS_CODE_200);
                     $response->setContent(json_encode(array('success' => false, 'message' => 'hash invalid')));
                 }
             }
