@@ -149,7 +149,7 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
 	                if(!empty($arrParam['order'])) {
                         $select->order($arrParam['order']);
 	                } else {
-//	                    $select->order(array('ordering' => 'ASC'));
+	                    $select->order(array('ordering' => 'ASC'));
 	                }
 	                if(!empty($arrParam['where'])) {
 	                    foreach ($arrParam['where'] AS $key => $value) {
