@@ -8,3 +8,8 @@ ALTER TABLE `x_contact`
 
 ALTER TABLE `x_contact`
     ADD COLUMN `care_date` DATETIME NULL DEFAULT NULL COMMENT 'Ngày nhận liên hệ chăm sóc' AFTER `care_id`;
+
+ALTER TABLE `x_document`
+    CHANGE COLUMN `key_ghtk_ids` `key_ghtk_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản ghtk' COLLATE 'utf8_general_ci' AFTER `note`,
+    CHANGE COLUMN `key_viettel_ids` `key_viettel_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản viettel' COLLATE 'utf8_general_ci' AFTER `key_ghtk_ids`,
+    ADD COLUMN `inventory_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách kho hàng' AFTER `key_viettel_ids`;

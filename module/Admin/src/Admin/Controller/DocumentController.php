@@ -144,6 +144,7 @@ class DocumentController extends ActionController {
             if(!empty($item)) {
                 $item['key_viettel_ids'] = explode(',', $item['key_viettel_ids']);
                 $item['key_ghtk_ids'] = explode(',', $item['key_ghtk_ids']);
+                $item['inventory_ids'] = explode(',', $item['inventory_ids']);
                 $myForm->setInputFilter(new \Admin\Filter\Document(array('id' => $this->_params['data']['id'], 'configs' => $this->_params['configs'])));
                 $myForm->bind($item);
                 $task = 'edit-item';
