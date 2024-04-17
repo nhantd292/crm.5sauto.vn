@@ -9,7 +9,8 @@ class Gid {
     }
     
     public function getId() {
-        return @time() . substr(str_shuffle($this->_string), 0, 12);
+//        return @time() . substr(str_shuffle($this->_string), 0, 12);
+        return @time() . str_shuffle(substr(str_shuffle($this->_string), 0, 12));
     }
     
     public function random($length = 10) {
