@@ -1865,6 +1865,80 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
+    public function importFeeAction()
+    {
+        $myForm = new \Admin\Form\Contract\Import($this->getServiceLocator(), $this->_params);
+        $myForm->setInputFilter(new \Admin\Filter\Contract\Import($this->_params));
+        $this->_viewModel['caption'] = 'Nhập phụ phí phát sinh';
+        $this->_viewModel['myForm']  = $myForm;
+        $viewModel                   = new ViewModel($this->_viewModel);
+        $date       = new \ZendX\Functions\Date();
+        $number     = new \ZendX\Functions\Number();
+
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($this->getRequest()->isPost()) {
+                if(!empty($this->_params['data']['ghtk_code'])){
+                    $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('ghtk_code' => $this->_params['data']['ghtk_code']), array('task' => 'ghtk-code'));
+                    if(empty($contract)){
+                        $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $this->_params['data']['code']), array('task' => 'by-code'));
+                    }
+                    if (empty($contract)) {
+                        echo 'Đơn hàng không tồn tại';
+                    } else {
+                        $check_date = $date->check_date_format_to_data($this->_params['data']['date']);
+                        if($check_date == true) {
+                            $date = $date->formatToData($this->_params['data']['date'], 'Y-m-d');
+                            $fee = $number->formatToData($this->_params['data']['fee']);
+                            $check_exist = $this->getServiceLocator()->get('Admin\Model\ContractFeeTable')->countItem(['ssFilter' => ['filter_date' => $date, 'filter_contract_id' => $contract['id']]], array('task' => 'list-item'));
+                            if ($check_exist == 0) {
+                                $params_data = array(
+                                    'contract_id' => $contract['id'],
+                                    'date' => $date,
+                                    'fee' => $fee,
+                                );
+                                $id = $this->getServiceLocator()->get('Admin\Model\ContractFeeTable')->saveItem(array('data' => $params_data), array('task' => 'add-item'));
+                                if($id){
+                                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item' => $contract, 'data' => array('id' => $contract['id'], 'fee' => $fee)), array('task' => 'update-ship-ext'));
+                                    echo 'Hoàn thành';
+                                }
+                            } else {
+                                echo 'Tồn tại';
+                            }
+                        }
+                        else{
+                            echo 'Sai định dạng ngày';
+                        }
+                    }
+                }
+                else{
+                    echo 'Nhập mã vận đơn';
+                }
+                return $this->response;
+            }
+        }
+        else {
+            if ($this->getRequest()->isPost()) {
+                $myForm->setData($this->_params['data']);
+                if ($myForm->isValid()) {
+                    if (!empty($this->_params['data']['file_import']['tmp_name'])) {
+                        $upload      = new \ZendX\File\Upload();
+                        $file_import = $upload->uploadFile('file_import', PATH_FILES . '/import/', array());
+                    }
+                    $viewModel->setVariable('file_import', $file_import);
+                    $viewModel->setVariable('import', true);
+
+                    require_once PATH_VENDOR . '/Excel/PHPExcel/IOFactory.php';
+                    $objPHPExcel = \PHPExcel_IOFactory::load(PATH_FILES . '/import/' . $file_import);
+
+                    $sheetData = $objPHPExcel->getActiveSheet(1)->toArray(null, true, true, true);
+                    $viewModel->setVariable('sheetData', $sheetData);
+                }
+            }
+        }
+
+        return $viewModel;
+    }
+
     // cập nhật công nợ khách hàng
     public function editPricePaidAction() {
         $myForm = new \Admin\Form\Contract\EditPricePaid($this->getServiceLocator(), $this->_params);

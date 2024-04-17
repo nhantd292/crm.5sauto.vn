@@ -1425,6 +1425,17 @@ class ContractTable extends DefaultTable {
 			return $id;
 		}
 
+		// cập nhật phụ phí vận chuyển
+		if ($options['task'] == 'update-ship-ext') {
+			$id = $arrData['id'];
+            $data = array();
+            $data['ship_ext'] = $arrItem['ship_ext'] + $number->formatToData($arrData['fee']);
+
+
+			$this->tableGateway->update($data, array('id' => $id));
+			return $id;
+		}
+
 		// cập nhật giảm trừ doanh thu
 		if ($options['task'] == 'update-shipping-fee') {
 			$id = $arrData['id'];

@@ -13,3 +13,6 @@ ALTER TABLE `x_document`
     CHANGE COLUMN `key_ghtk_ids` `key_ghtk_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản ghtk' COLLATE 'utf8_general_ci' AFTER `note`,
     CHANGE COLUMN `key_viettel_ids` `key_viettel_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản viettel' COLLATE 'utf8_general_ci' AFTER `key_ghtk_ids`,
     ADD COLUMN `inventory_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách kho hàng' AFTER `key_viettel_ids`;
+
+ALTER TABLE `x_contract`
+    ADD COLUMN `ship_ext` INT(11) NULL DEFAULT '0' COMMENT 'Tổng các loại phí khác lưu kho, hàng hoàn' AFTER `price_transport`;
