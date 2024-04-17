@@ -1616,8 +1616,8 @@ class SaleController extends ActionController {
             foreach ($contracts as $key => $value){
                 // Nếu người lên đơn nằm trong danh sách nhân viên sale.
                 if (array_key_exists($value['user_id'], $data_report)) {
-                    $data_report[$value['user_id']]['cod_total'] += $value['price_transport'];
-                    $data_report['total']['cod_total'] += $value['price_transport'];
+                    $data_report[$value['user_id']]['cod_total'] += $value['price_transport'] + $value['ship_ext'];
+                    $data_report['total']['cod_total'] += $value['price_transport'] + $value['ship_ext'];
 
 //                    $data_report[$value['user_id']]['cost_ads'] += $value['contact_cost_ads'];
 //                    $data_report['total']['cost_ads'] += $value['contact_cost_ads'];

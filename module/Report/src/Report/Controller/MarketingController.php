@@ -476,8 +476,8 @@ class MarketingController extends ActionController {
                             }
                         }
 
-                        $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'];
-                        $data_report['total']['cod_total'] += $value['price_transport'];
+                        $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'] + $value['ship_ext'];
+                        $data_report['total']['cod_total'] += $value['price_transport'] + $value['ship_ext'];
                     }
                 }
             }
@@ -740,8 +740,8 @@ class MarketingController extends ActionController {
                             }
                         }
 
-                        $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'];
-                        $data_report['total']['cod_total']               += $value['price_transport'];
+                        $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'] + $value['ship_ext'];
+                        $data_report['total']['cod_total']               += $value['price_transport'] + $value['ship_ext'];
                     }
                 }
             }

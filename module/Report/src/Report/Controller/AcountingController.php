@@ -1329,7 +1329,7 @@ class AcountingController extends ActionController {
                 $shipped_date   = $date->formatToView($item['shipped_date']);
                 $code           = $item['code'];
                 $user_name      = $item['user_id'] ? $user[$item['user_id']]['name'] : '';
-                $price_transport= $item['price_transport'];
+                $price_transport= $item['price_transport'] + $item['ship_ext'];
                 $price_total    = $item['price_total'];
                 $price_paid     = $item['price_paid'] - $item['price_deposits'];
 
