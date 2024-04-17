@@ -74,7 +74,7 @@ $xhtmlItems = '';
 if($this->items->count() > 0) {
     $stt = 0;
     $sum = 0;
-    $total_price = $total_cod = $total_discount = $total_price_owed = 0;
+    $total_price = $total_cod = $total_discount = $total_price_owed = $total_ship_ext = 0;
     $manager_edit = false;
     if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
         $manager_edit = true;
@@ -94,10 +94,12 @@ if($this->items->count() > 0) {
         $index_number           = $item->index_number;
         $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
         $fee_cod                = number_format($item->price_transport);
+        $ship_ext               = number_format($item->ship_ext);
         $price_promotion        = number_format($item->price_promotion);
         $price_total            = $item->price_total;
         $total_price           += $price_total;
         $total_cod             += $item->price_transport;
+        $total_ship_ext        += $item->ship_ext;
         $total_discount        += $item->price_reduce_sale;
         $price_paid             = $item->price_paid;
         $price_accrued          = $item->price_accrued;
@@ -245,6 +247,7 @@ if($this->items->count() > 0) {
         $xhtmlItems .= '
                             <td '.$rowSpan.' class="text-right">'. number_format($price_total) .'</td>
                             <td '.$rowSpan.' class="text-right">'. $fee_cod .'</td>
+                            <td '.$rowSpan.' class="text-right">'. $ship_ext .'</td>
                             <td '.$rowSpan.' class="text-right">'. number_format($item->price_reduce_sale) .'</td>
                             <td '.$rowSpan.' class="text-right">'. number_format($price_owed) .'</td>
                             <td '.$rowSpan.'>'. $contact_name .'</td>
@@ -274,6 +277,7 @@ if($this->items->count() > 0) {
 
 $text_total = '<br><span  class="text-red">' . number_format($total_price) . '</span>';
 $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
+$text_total_ship_ext = '<br><span  class="text-red">' . number_format($total_ship_ext) . '</span>';
 $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
 $text_total_price_owed = '<br><span  class="text-red">' . number_format($total_price_owed) . '</span>';
 
@@ -292,6 +296,7 @@ $xhtmlHead .= '<th width="120" class="text-center">Kg</th>';
 $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">COD'.$text_total_cod.'</th>';
+$xhtmlHead .= '<th width="80" class="text-right">Phụ phí'.$text_total_ship_ext.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Giảm trừ<br>doanh thu'.$text_total_discount.'</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Công nợ'.$text_total_price_owed.'</th>';
 $xhtmlHead .= '<th width="150">Tên khách hàng</th>';
