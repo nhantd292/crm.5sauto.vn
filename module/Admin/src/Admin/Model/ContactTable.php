@@ -330,7 +330,16 @@ class ContactTable extends DefaultTable {
 		
 		if($options['task'] == 'by-phone') {
 			$result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
-			    $select -> where -> equalTo('phone', $arrParam['phone']);
+			    if($arrParam['phone']){
+                    $select -> where -> equalTo('phone', $arrParam['phone']);
+			    }
+			    if($arrParam['user_id']){
+                    $select -> where -> equalTo('user_id', $arrParam['user_id']);
+			    }
+			    if($arrParam['sale_branch_id']){
+                    $select -> where -> equalTo('sale_branch_id', $arrParam['sale_branch_id']);
+			    }
+
     		})->toArray();
 		}
 

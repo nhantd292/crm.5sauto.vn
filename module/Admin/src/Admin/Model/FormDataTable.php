@@ -584,7 +584,13 @@ class FormDataTable extends DefaultTable {
 
         if($options['task'] == 'by-phone') {
             $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
-                $select -> where -> equalTo(TABLE_FORM_DATA.'.phone', $arrParam['phone']);
+                if(!empty($arrParam['phone'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.phone', $arrParam['phone']);
+                }
+                if(!empty($arrParam['branch_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.phone', $arrParam['phone']);
+                }
+
             })->current();
         }
 
@@ -610,6 +616,9 @@ class FormDataTable extends DefaultTable {
                 }
                 if(!empty($arrParam['product_group_id'])){
                     $select -> where -> equalTo(TABLE_FORM_DATA.'.product_group_id', $arrParam['product_group_id']);
+                }
+                if(!empty($arrParam['branch_id'])){
+                    $select -> where -> equalTo(TABLE_FORM_DATA.'.branch_id', $arrParam['branch_id']);
                 }
                 if(!empty($arrParam['date'])){
                     $select -> where -> like(TABLE_FORM_DATA.'.date', '%'.$arrParam['date'].'%');
@@ -814,10 +823,11 @@ class FormDataTable extends DefaultTable {
         // cập nhật lại data khi có data trùng
         if($options['task'] == 'update-contact-coin') {
             $phone = $arrParam['phone'];
+            $branch_id = $arrParam['branch_id'];
             $data	= array(
                 'contact_coin'    => $arrParam['contact_coin'],
             );
-            $result = $this->tableGateway->update($data, array('phone' => $phone));
+            $result = $this->tableGateway->update($data, array('phone' => $phone, 'branch_id' => $branch_id));
             return $result;
         }
 

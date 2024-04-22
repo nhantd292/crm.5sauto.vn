@@ -209,25 +209,16 @@ class FormDataController extends ActionController{
 
     public function addAction() {
         $myForm = new \Admin\Form\FormData($this, array('action' => 'add'));
-
         if($this->getRequest()->isPost()){
             $myForm->setInputFilter(new \Admin\Filter\FormData());
             $myForm->setData($this->_params['data']);
-            $curent_user_id  = $this->_userInfo->getUserInfo('id');
+            $sale_branch_id  = $this->_userInfo->getUserInfo('sale_branch_id');
             $controlAction = $this->_params['data']['control-action'];
 
             if($myForm->isValid()){
                 $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']), array('task' => 'by-phone'));
+                $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone'], 'sale_branch_id' => $sale_branch_id), array('task' => 'by-phone'));
                 if (!empty($contact)){
-//                    $arr_data = array(
-//                        'id'                => $contact['id'],
-//                        'marketer_id'       => $this->_userInfo->getUserInfo('id'),
-//                        'product_group_id'  => $this->_params['data']['product_group_id'],
-//                    );
-//                    $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem($arr_data, array('task' => 'update-new-data'));
-//                    $this->flashMessenger()->addMessage('Data đã tồn tại trong liên hệ');
-
                     // Thêm data trùng
                     $this->_params['data']['contact_coin'] = 1;
                     $this->_params['data']['contact_id']   = $contact['id'];
@@ -236,27 +227,12 @@ class FormDataController extends ActionController{
                 }
                 else{
                     // tồn tại data trong kho
-                    $item_coin_phone = $this->getTable()->getItem(array('phone' => $this->_params['data']['phone']), array('task' => 'by-phone'));
+                    $item_coin_phone = $this->getTable()->getItem(array('phone' => $this->_params['data']['phone'], 'branch_id'=> $sale_branch_id), array('task' => 'by-condition'));
                     if(!empty($item_coin_phone)){
-//                        // data marketer đó đã từng nhập
-//                        $item_coin_phone_mkt = $this->getTable()->getItem(array('phone' => $this->_params['data']['phone'], 'marketer_id' => $curent_user_id), array('task' => 'by-condition'));
-//                        // check data này có trùng với data của marketer khác và cùng ngày không
-//                        $param_date = date('Y-m-d');
-//                        $item_coin_other = $this->getTable()->countItem(array('phone' => $this->_params['data']['phone'], 'marketer_id' => $curent_user_id, 'date' => $param_date), array('task' => 'list-data-coin'));
-//
-//                        if (!empty($item_coin_phone_mkt)){
-//                            $this->flashMessenger()->addMessage('Data đã tồn tại trong kho data của bạn - không thể thêm mới vui lòng nhập data khác');
-//                        }
-//                        else if ($item_coin_other > 0){
-//                            $this->flashMessenger()->addMessage('Data trùng trong ngày với data của nhân viên khác - không thể thêm mới vui lòng nhập data khác');
-//                        }
-//                        else{
                             $this->_params['data']['contact_coin'] = 1;
                             $result = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem($this->_params, array('task' => 'add-item'));
-                            // Cập nhật lại trạng thái trùng của các data trùng.
-                            $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem(array('contact_coin' => 1, 'phone' => $this->_params['data']['phone']), array('task' => 'update-contact-coin'));
+                            $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem(array('contact_coin' => 1, 'phone' => $this->_params['data']['phone'], 'branch_id' => $sale_branch_id), array('task' => 'update-contact-coin'));
                             $this->flashMessenger()->addMessage('Thêm mới data thành công');
-//                        }
                     }
                     else{
                         $result = $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem($this->_params, array('task' => 'add-item'));
@@ -288,6 +264,7 @@ class FormDataController extends ActionController{
         $myForm = $this->getForm();
 
         $curent_user_id  = $this->_userInfo->getUserInfo('id');
+        $sale_branch_id  = $this->_userInfo->getUserInfo('sale_branch_id');
         $phone_code = true;
 
         $item = array();
@@ -312,14 +289,14 @@ class FormDataController extends ActionController{
 
             if ($myForm->isValid()) {
                 $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone']), array('task' => 'by-phone'));
+                $contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->getItem(array('phone' => $this->_params['data']['phone'], 'sale_branch_id' => $sale_branch_id), array('task' => 'by-phone'));
                 if (!empty($contact)){
                     $this->flashMessenger()->addMessage('Data đã tồn tại trong liên hệ - không thể cập nhật lại thông tin');
                     $this->goRoute(array('action' => 'edit', 'id' => $item_id));
                 }
                 else{
                     // tồn tại data trong kho
-                    $item_coin_phone = $this->getTable()->getItem(array('phone' => $this->_params['data']['phone']), array('task' => 'by-phone'));
+                    $item_coin_phone = $this->getTable()->getItem(array('phone' => $this->_params['data']['phone'], 'branch_id'=> $sale_branch_id), array('task' => 'by-condition'));
                     $this->_params['data']['phone'] = $phone_code ? $item->phone : $this->_params['data']['phone'];
                     if(!empty($item_coin_phone) && $item_coin_phone['phone'] != $this->_params['data']['phone']){
                         // data marketer đó đã từng nhập
@@ -338,7 +315,7 @@ class FormDataController extends ActionController{
                             $this->_params['data']['contact_coin'] = 1;
                             $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem($this->_params, array('task' => 'edit-item'));
                             // Cập nhật lại trạng thái trùng của các data trung.
-                            $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem(array('contact_coin' => 1, 'phone' => $this->_params['data']['phone']), array('task' => 'update-contact-coin'));
+                            $this->getServiceLocator()->get('Admin\Model\FormDataTable')->saveItem(array('contact_coin' => 1, 'phone' => $this->_params['data']['phone'], 'branch_id' => $sale_branch_id), array('task' => 'update-contact-coin'));
                             $this->flashMessenger()->addMessage('Data đã được cập nhật thành công');
                         }
                     }
