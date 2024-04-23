@@ -322,7 +322,6 @@ $menu_edit_shipped_date = $is_system ? array( 'name' => 'import-date-shiped', 'c
 
 // Control
 $arrControl = array(
-//        array( 'name' => 'add', 'caption' => 'Tạo đơn', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'add-kov')), 'icon' => 'fa-plus', 'attributes' => array( 'onclick' => '', 'class' => 'btn' ) ),
     array(
         'name' => 'tool', 'caption' => 'Đẩy đơn sang Viettel Post', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
         'children' => $sendViettelAccount,
@@ -340,20 +339,6 @@ $arrControl = array(
             array( 'name' => 'import', 'caption' => 'Đối soát ghtk', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import')), 'icon' => 'fa fa-upload' ),
             array( 'name' => 'import-fee', 'caption' => 'Nhập phụ phí giao vận', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import-fee')), 'icon' => 'fa fa-upload' ),
             array( 'name' => 'exportToVTP', 'caption' => 'Xuất dữ liệu đẩy sang Viettel port', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport(\'exportToVTP\');')) ,
-//                array( 'name' => 'export', 'caption' => 'Xuất bản excel', 'link' => 'javascript:;', 'icon' => 'fa-file-excel-o', 'attributes' => array('onclick'=>'javascript:contractExport();')) ,
-//                array( 'name' => 'hidden', 'caption' => 'Khóa đơn hàng', 'link' => 'javascript:;', 'icon' => 'fa fa-lock', 'attributes' => array('onclick'=>'javascript:contractLock(\'lock\');')),
-//                array( 'name' => 'return', 'caption' => 'Xác nhận hoàn', 'link' => 'javascript:;', 'icon' => 'fa fa-arrow-left', 'attributes' => array('onclick'=>'javascript:updateItem(\'returned\', \'Bạn có muốn xác nhận hoàn các đơn hàng đã chọn\');')),
-//                array(
-//                    'name' => 'sendGhtk',
-//                    'caption' => 'Đẩy đơn sang GHTK',
-//                    'link' => 'javascript:;',
-//                    'icon' => 'fa fa-paper-plane-o',
-//                    'attributes' => array(
-//                        'onclick' => 'javascript:updateItem(\'sendGhtk\', \'Mỗi một đơn chỉ được đẩy sang 1 lần! <br> Vui lòng kiểm tra và chắc chắn các đơn hàng đã chọn ?\');',
-//                        'title' => 'Tạo đơn từ CRM Sang giao hàng tiết kiệm',
-//                    ),
-//                ) ,
-
             array(
                 'name' => 'updateOrderKiotviet',
                 'caption' => 'Cập nhật số lượng sang Kiotviet',
@@ -365,14 +350,12 @@ $arrControl = array(
                 ),
             ) ,
             $menu_edit_shipped_date,
-
-//                array( 'name' => 'hidden', 'caption' => 'Mở khóa', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'unlock\');')),
         ), 'children-class' => 'dropdown-menu pull-right'
     ),
 );
-if(in_array(GDCN, $permission_ids)){
-    $arrControl = [];
-}
+//if(in_array(GDCN, $permission_ids)){
+//    $arrControl = [];
+//}
 ?>
 <form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
     <div class="page-control">
