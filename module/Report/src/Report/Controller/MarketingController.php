@@ -491,10 +491,21 @@ class MarketingController extends ActionController {
                 }
             }
 
+//            $product_group_condition = !empty($ssFilter->report['product_group_id']) ? " and product_group_id = '".$ssFilter->report['product_group_id']."' " : '';
+//            $marketer_id_condition = !empty($ssFilter->report['marketer_id']) ? " and marketer_id = '".$ssFilter->report['marketer_id']."' " : '';
+//            $sql_select = "SELECT marketer_id, sum(cost_ads) as cost_ads FROM ".TABLE_CONTACT." WHERE date >= '".$date_format->formatToData($ssFilter->report['date_begin'], 'Y-m-d')." 00:00:00'
+//            and date <= '".$date_format->formatToData($ssFilter->report['date_end'], 'Y-m-d')." 23:59:59' ".$product_group_condition . $marketer_id_condition . " GROUP BY marketer_id;";
+//            $contact_cost_ads = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report(array('sql' => $sql_select), array('task' => 'query'));
+//            foreach($contact_cost_ads as $key => $value){
+//                if (array_key_exists($value['marketer_id'], $data_report)) {
+//                    $data_report[$value['marketer_id']]['cost_ads'] += $value['cost_ads'];
+//                    $data_report['total']['cost_ads'] += $value['cost_ads'];
+//                }
+//            }
             $product_group_condition = !empty($ssFilter->report['product_group_id']) ? " and product_group_id = '".$ssFilter->report['product_group_id']."' " : '';
             $marketer_id_condition = !empty($ssFilter->report['marketer_id']) ? " and marketer_id = '".$ssFilter->report['marketer_id']."' " : '';
-            $sql_select = "SELECT marketer_id, sum(cost_ads) as cost_ads FROM ".TABLE_CONTACT." WHERE date >= '".$date_format->formatToData($ssFilter->report['date_begin'], 'Y-m-d')." 00:00:00'
-            and date <= '".$date_format->formatToData($ssFilter->report['date_end'], 'Y-m-d')." 23:59:59' ".$product_group_condition . $marketer_id_condition . " GROUP BY marketer_id;";
+            $sql_select = "SELECT marketer_id, sum(price) as cost_ads FROM ".TABLE_MARKETING_ADS." WHERE from_date >= '".$date_format->formatToData($ssFilter->report['date_begin'], 'Y-m-d')." 00:00:00'
+            and to_date <= '".$date_format->formatToData($ssFilter->report['date_end'], 'Y-m-d')." 23:59:59' ".$product_group_condition . $marketer_id_condition . " GROUP BY marketer_id;";
             $contact_cost_ads = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report(array('sql' => $sql_select), array('task' => 'query'));
             foreach($contact_cost_ads as $key => $value){
                 if (array_key_exists($value['marketer_id'], $data_report)) {
@@ -502,6 +513,11 @@ class MarketingController extends ActionController {
                     $data_report['total']['cost_ads'] += $value['cost_ads'];
                 }
             }
+
+
+
+
+
 
             // Người có quyền hiển thị chi phí giá vốn, doanh thu thực tế
             $show_cost_capital = false;
