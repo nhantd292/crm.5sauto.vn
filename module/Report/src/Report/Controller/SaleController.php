@@ -1653,14 +1653,31 @@ class SaleController extends ActionController {
 //                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
 
                         # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
+                        $price_paid = $value['price_paid'] < $value['price_total'] ? $value['price_paid'] : $value['price_total'];
                         if (in_array($value['ghtk_status'], $thanhcong_arr)) {
-                            if ($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])) {
-                                $data_report[$value['user_id']]['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
-                                $data_report['total']['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
+//                            if ($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])) {
+//                                $data_report[$value['user_id']]['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
+//                                $data_report['total']['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
+//                            } else {
+//                                $data_report[$value['user_id']]['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
+//                                $data_report['total']['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
+//                            }
+
+
+                            if (empty($value['marketer_id'])) {
+                                $data_report[$value['user_id']]['sales_new'] += $price_paid;
+                                $data_report['total']['sales_new'] += $price_paid;
                             } else {
-                                $data_report[$value['user_id']]['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
-                                $data_report['total']['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
+                                if ($date_format->diff($value['contact_contract_time_success'], $value['created'], 'hour') < 144) {
+                                    $data_report[$value['user_id']]['sales_new'] += $price_paid;
+                                    $data_report['total']['sales_new'] += $price_paid;
+                                } else {
+                                    $data_report[$value['user_id']]['sales_care'] += $price_paid;
+                                    $data_report['total']['sales_care'] += $price_paid;
+                                }
                             }
+
+
                         }
 //                    }
 
