@@ -126,7 +126,7 @@ class ContractTable extends DefaultTable {
                     foreach($ssFilter['filter_product'] as $key => $value){
                         $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$value.'%');
                     }
-                    $select -> where -> equalTo(TABLE_CONTRACT .'.total_product', count($ssFilter['filter_product']));
+//                    $select -> where -> equalTo(TABLE_CONTRACT .'.total_product', count($ssFilter['filter_product']));
                 }
 
                 if(!empty($ssFilter['filter_category'])) {
@@ -737,7 +737,7 @@ class ContractTable extends DefaultTable {
                     foreach($ssFilter['filter_product'] as $key => $value){
                         $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$value.'%');
                     }
-                    $select -> where -> equalTo(TABLE_CONTRACT .'.total_product', count($ssFilter['filter_product']));
+//                    $select -> where -> equalTo(TABLE_CONTRACT .'.total_product', count($ssFilter['filter_product']));
                 }
 
                 if (!empty($ssFilter['filter_send_ghtk'])) {
