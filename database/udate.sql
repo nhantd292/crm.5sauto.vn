@@ -16,3 +16,6 @@ ALTER TABLE `x_document`
 
 ALTER TABLE `x_contract`
     ADD COLUMN `ship_ext` INT(11) NULL DEFAULT '0' COMMENT 'Tổng các loại phí khác lưu kho, hàng hoàn' AFTER `price_transport`;
+
+ALTER TABLE `x_contract`
+    ADD COLUMN `date_success` DATETIME NULL DEFAULT NULL COMMENT 'Thời gian thành công' AFTER `shipped_date`;

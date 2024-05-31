@@ -210,6 +210,205 @@ class ContractTable extends DefaultTable {
                 }
             })->current();
 	    }
+	    if($options['task'] == 'list-all') {
+	        $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+                $ssFilter   = $arrParam['ssFilter'];
+                $date       = new \ZendX\Functions\Date();
+				$number     = new \ZendX\Functions\Number();
+				$userInfo = new \ZendX\System\UserInfo();
+				$permission = $userInfo->getPermissionOfUser();
+				$permissions = explode(',', $permission['permission_ids']);
+				$userInfo = $userInfo->getUserInfo();
+
+                $select -> columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(1)')));
+                $select -> join(TABLE_CONTACT, TABLE_CONTACT .'.id = '. TABLE_CONTRACT .'.contact_id',
+                    array(
+                        'contact_phone' => 'phone',
+                        'contact_name' => 'name',
+                        'contact_date' => 'date',
+                        'contact_email' => 'email',
+                        'contact_sex' => 'sex',
+                        'contact_contract_number' => 'contract_number',
+                        'contact_birthday' => 'birthday',
+                        'contact_birthday_year' => 'birthday_year',
+                        'contact_location_city_id' => 'location_city_id',
+                        'contact_location_district_id' => 'location_district_id',
+                        'contact_options' => 'options',
+                    ), 'inner');
+                $select -> order(array(TABLE_CONTRACT .'.date' => 'DESC'));
+
+                if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
+                    $filter_keyword = trim($ssFilter['filter_keyword']);
+                    $select -> where -> NEST
+                        -> like(TABLE_CONTRACT. '.name', '%'. $filter_keyword .'%')
+                        ->Or
+                        -> like(TABLE_CONTRACT. '.phone', '%'. $filter_keyword .'%')
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT. '.code', $filter_keyword) // mã đơn
+                        ->Or
+                        -> like(TABLE_CONTRACT. '.ghtk_code', '%'. $filter_keyword .'%') // mã đơn ghtk
+                        -> UNNEST;
+
+                }
+                $date_type = 'date';
+                if(!empty($ssFilter['filter_date_type'])) {
+                    $date_type = $ssFilter['filter_date_type'];
+                }
+                if($date_type == 'not_shipped'){
+                    $select -> where -> NEST
+                        -> isNull(TABLE_CONTRACT .'.shipped_date')
+                        ->OR
+                        -> equalTo(TABLE_CONTRACT .'.shipped_date', '')
+                        -> UNNEST;
+                }
+                else {
+                    if (!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                        $select->where->NEST
+                            ->greaterThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_begin']))
+                            ->AND
+                            ->lessThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'))
+                            ->UNNEST;
+                    } elseif (!empty($ssFilter['filter_date_begin'])) {
+                        $select->where->greaterThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_begin']));
+                    } elseif (!empty($ssFilter['filter_date_end'])) {
+                        $select->where->lessThanOrEqualTo(TABLE_CONTRACT . '.' . $date_type, $date->formatToData($ssFilter['filter_date_end'] . ' 23:59:59'));
+                    }
+                }
+
+                if(!empty($ssFilter['filter_sale_branch'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_branch_id', $ssFilter['filter_sale_branch']);
+                }
+
+
+                if(!empty($ssFilter['filter_sale_group'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_group_id', $ssFilter['filter_sale_group']);
+                }
+
+                if(!empty($ssFilter['filter_marketer_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
+                if(!empty($ssFilter['filter_user'])) {
+//                    $select -> where -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user']);
+                    $select -> where -> NEST
+                        -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT .'.created_by', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT .'.care_id', $ssFilter['filter_user'])
+                        -> UNNEST;
+                }
+
+                if(!empty($ssFilter['filter_delivery_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_delivery_id']);
+                }
+
+                if(!empty($ssFilter['filter_gd_ids'])) {
+                    $select -> where -> in(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_gd_ids']);
+                }
+
+                if(!empty($ssFilter['filter_status_type'])) {
+                    if(!empty($ssFilter['filter_status'])) {
+                        $select -> where -> equalTo(TABLE_CONTRACT .'.'.$ssFilter['filter_status_type'], $ssFilter['filter_status']);
+                    }
+                }
+
+                if(!empty($ssFilter['filter_unit_transport'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.unit_transport', $ssFilter['filter_unit_transport']);
+                    $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
+                }
+                if(!empty($ssFilter['filter_production_type_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.production_type_id', $ssFilter['filter_production_type_id']);
+                }
+
+                if(!empty($ssFilter['filter_product'])) {
+                    foreach($ssFilter['filter_product'] as $key => $value){
+                        $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$value.'%');
+                    }
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.total_product', count($ssFilter['filter_product']));
+                }
+
+                if(!empty($ssFilter['filter_category'])) {
+                    $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$ssFilter['filter_category'].'%');
+                }
+
+                if (!empty($ssFilter['filter_send_ghtk'])) {
+                    if($ssFilter['filter_send_ghtk'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.ghtk_code')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.ghtk_code', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_care_status'])) {
+                    if($ssFilter['filter_care_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.care_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.care_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.care_id');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_marketer_status'])) {
+                    if($ssFilter['filter_marketer_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.marketer_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.marketer_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.marketer_id');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_update_kov_false'])) {
+                    if($ssFilter['filter_update_kov_false'] == -1) {
+                        $select -> where -> NEST
+                            -> equalTo(TABLE_CONTRACT .'.shipped', 1)
+                            ->AND
+                            -> in(TABLE_CONTRACT .'.ghtk_status', [3,4,5,6,9,10,11,13,20,21,123,45,49,410])
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> NEST
+                            -> equalTo(TABLE_CONTRACT .'.shipped', 0)
+                            ->AND
+                            -> in(TABLE_CONTRACT .'.ghtk_status', [3,4,5,6,9,10,11,13,20,21,123,45,49,410])
+                            -> UNNEST;
+                    }
+                }
+
+                if (!empty($ssFilter['filter_coincider'])) {
+                    if($ssFilter['filter_coincider'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.coincider_code')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.coincider_code', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.coincider_code');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_returned'])) {
+                    if($ssFilter['filter_returned'] == -1) {
+                        $select -> where -> equalTo(TABLE_CONTRACT .'.returned', 0);
+                    } else {
+                        $select -> where -> equalTo(TABLE_CONTRACT .'.returned', 1);
+                    }
+                }
+
+                if(!empty($ssFilter['filter_shipper_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.ghtk_code', $ssFilter['filter_shipper_id']);
+                }
+            })->current();
+	    }
 
         if($options['task'] == 'list-production-item') {
             $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
@@ -942,6 +1141,213 @@ class ContractTable extends DefaultTable {
             });
         }
 
+        if($options['task'] == 'list-all') {
+            $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+                $paginator  = $arrParam['paginator'];
+                $ssFilter   = $arrParam['ssFilter'];
+                $date       = new \ZendX\Functions\Date();
+                $number     = new \ZendX\Functions\Number();
+                $userInfo = new \ZendX\System\UserInfo();
+                $permission = $userInfo->getPermissionOfUser();
+
+                if(!isset($options['paginator']) || $options['paginator'] == true) {
+                    $select -> limit($paginator['itemCountPerPage'])
+                        -> offset(($paginator['currentPageNumber'] - 1) * $paginator['itemCountPerPage']);
+                }
+
+                $select -> join(TABLE_CONTACT, TABLE_CONTACT .'.id = '. TABLE_CONTRACT .'.contact_id',
+                    array(
+                        'contact_phone' => 'phone',
+                        'contact_name' => 'name',
+                        'contact_date' => 'date',
+                        'contact_email' => 'email',
+                        'contact_contract_first_date' => 'contract_first_date',
+                        'contact_sex' => 'sex',
+                        'contact_contract_number' => 'contract_number',
+                        'contact_birthday' => 'birthday',
+                        'contact_birthday_year' => 'birthday_year',
+                        'contact_location_city_id' => 'location_city_id',
+                        'contact_location_district_id' => 'location_district_id',
+                        'contact_options' => 'options',
+                    ), 'inner');
+                $select -> order(array(TABLE_CONTRACT .'.index' => 'DESC'));
+
+                if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
+                    $filter_keyword = trim($ssFilter['filter_keyword']);
+                    $select -> where -> NEST
+                        -> like(TABLE_CONTRACT. '.name', '%'. $filter_keyword .'%')
+                        ->Or
+                        -> like(TABLE_CONTRACT. '.phone', '%'. $filter_keyword .'%')
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT. '.code', $filter_keyword) // mã đơn
+                        ->Or
+                        -> like(TABLE_CONTRACT. '.ghtk_code', '%'. $filter_keyword .'%') // mã đơn ghtk
+                        -> UNNEST;
+
+                }
+
+                $date_type = 'date';
+                if(!empty($ssFilter['filter_date_type'])) {
+                    $date_type = $ssFilter['filter_date_type'];
+                }
+                if($date_type == 'not_shipped'){
+                    $select -> where -> NEST
+                        -> isNull(TABLE_CONTRACT .'.shipped_date')
+                        ->OR
+                        -> equalTo(TABLE_CONTRACT .'.shipped_date', '')
+                        -> UNNEST;
+                }
+                else{
+                    if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                        $select -> where -> NEST
+                            -> greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']))
+                            ->AND
+                            -> lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']. ' 23:59:59') )
+                            -> UNNEST;
+                    } elseif (!empty($ssFilter['filter_date_begin'])) {
+                        $select->where->greaterThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_begin']));
+                    } elseif (!empty($ssFilter['filter_date_end'])) {
+                        $select->where->lessThanOrEqualTo(TABLE_CONTRACT .'.'.$date_type, $date->formatToData($ssFilter['filter_date_end']. ' 23:59:59') );
+                    }
+                }
+
+                if(!empty($ssFilter['filter_marketer_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.marketer_id', $ssFilter['filter_marketer_id']);
+                }
+
+                if(!empty($ssFilter['filter_sale_branch'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_branch_id', $ssFilter['filter_sale_branch']);
+                }
+
+                if(!empty($ssFilter['filter_sale_group'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.sale_group_id', $ssFilter['filter_sale_group']);
+                }
+                if(!empty($ssFilter['filter_production_type_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.production_type_id', $ssFilter['filter_production_type_id']);
+                }
+
+                if(!empty($ssFilter['filter_user'])) {
+//                    $select -> where -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user']);
+                    $select -> where -> NEST
+                        -> equalTo(TABLE_CONTRACT .'.user_id', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT .'.created_by', $ssFilter['filter_user'])
+                        ->Or
+                        -> equalTo(TABLE_CONTRACT .'.care_id', $ssFilter['filter_user'])
+                        -> UNNEST;
+                }
+
+                if(!empty($ssFilter['filter_delivery_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_delivery_id']);
+                }
+
+                if(!empty($ssFilter['filter_gd_ids'])) {
+                    $select -> where -> in(TABLE_CONTRACT .'.delivery_id', $ssFilter['filter_gd_ids']);
+                }
+
+                if(!empty($ssFilter['filter_status_type'])) {
+                    if(!empty($ssFilter['filter_status'])) {
+                        $select -> where -> equalTo(TABLE_CONTRACT .'.'.$ssFilter['filter_status_type'], $ssFilter['filter_status']);
+                    }
+                }
+
+                if(!empty($ssFilter['filter_unit_transport'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.unit_transport', $ssFilter['filter_unit_transport']);
+                    $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
+                }
+
+                if(!empty($ssFilter['filter_category'])) {
+                    $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$ssFilter['filter_category'].'%');
+                }
+
+                if(!empty($ssFilter['filter_product'])) {
+                    foreach($ssFilter['filter_product'] as $key => $value){
+                        $select -> where -> like(TABLE_CONTRACT .'.options', '%'.$value.'%');
+                    }
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.total_product', count($ssFilter['filter_product']));
+                }
+
+                if (!empty($ssFilter['filter_send_ghtk'])) {
+                    if($ssFilter['filter_send_ghtk'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.ghtk_code')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.ghtk_code', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_care_status'])) {
+                    if($ssFilter['filter_care_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.care_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.care_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.care_id');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_marketer_status'])) {
+                    if($ssFilter['filter_marketer_status'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.marketer_id')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.marketer_id', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.marketer_id');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_update_kov_false'])) {
+                    if($ssFilter['filter_update_kov_false'] == -1) {
+                        $select -> where -> NEST
+                            -> equalTo(TABLE_CONTRACT .'.shipped', 1)
+                            ->AND
+                            -> in(TABLE_CONTRACT .'.ghtk_status', [3,4,5,6,9,10,11,13,20,21,123,45,49,410])
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> NEST
+                            -> equalTo(TABLE_CONTRACT .'.shipped', 0)
+                            ->AND
+                            -> in(TABLE_CONTRACT .'.ghtk_status', [3,4,5,6,9,10,11,13,20,21,123,45,49,410])
+                            -> UNNEST;
+                    }
+                }
+
+                if (!empty($ssFilter['filter_coincider'])) {
+                    if($ssFilter['filter_coincider'] == -1) {
+                        $select -> where -> NEST
+                            -> isNull(TABLE_CONTRACT .'.coincider_code')
+                            ->OR
+                            -> equalTo(TABLE_CONTRACT .'.coincider_code', '')
+                            -> UNNEST;
+                    } else {
+                        $select -> where -> isNotNull(TABLE_CONTRACT .'.coincider_code');
+                    }
+                }
+
+                if (!empty($ssFilter['filter_returned'])) {
+                    if($ssFilter['filter_returned'] == -1) {
+                        $select -> where -> equalTo(TABLE_CONTRACT .'.returned', 0);
+                    } else {
+                        $select -> where -> equalTo(TABLE_CONTRACT .'.returned', 1);
+                    }
+                }
+
+                if(!empty($ssFilter['filter_shipper_id'])) {
+                    $select -> where -> equalTo(TABLE_CONTRACT .'.ghtk_code', $ssFilter['filter_shipper_id']);
+                }
+//                echo "<pre>";
+//                print_r($select->getSqlString());
+//                echo "</pre>";
+            });
+        }
+
         return $result;
 	}
 	
@@ -1114,16 +1520,10 @@ class ContractTable extends DefaultTable {
         // Cập nhật thông tin đơn hàng thành công
 		if ($options['task'] == 'update-contract-succes') {
             $id = $arrData;
-            $result = $this->getItem(array('id' => $id));
-            if($result['status_check_id'] == STATUS_CONTRACT_CHECK_SUCCESS)
-                $data['date_success'] = !empty($result['date_success']) ? $result['date_success'] : date('Y-m-d H:i:s');
-            else
-                $data['date_success'] = null;
+            $date_success = !empty($arrData['date_success']) ? $arrData['date_success'] : date('Y-m-d H:i:s');
+            $data['date_success'] = $date_success;
 
             $this->tableGateway->update($data, array('id' => $id));
-            // cập nhật lại ngày thành công của đơn hàng đầu tiên
-            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $result['contact_id']), array('task' => 'update-contract-time-success'));
-
             return true;
 		}
 
@@ -2748,9 +3148,6 @@ class ContractTable extends DefaultTable {
                 );
                 $this->getServiceLocator()->get('Admin\Model\LogsTable')->saveItem($arrParamLogs, array('task' => 'add-item'));
             }
-
-            // Cập nhật ngày thành công cho contact
-            $this->saveItem(array('data' => $id), array('task' => 'update-contract-succes'));
 		}
 
 		// cập nhật các tiền thanh toán khi thêm hóa đơn phụ phí
