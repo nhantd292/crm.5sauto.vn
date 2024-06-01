@@ -2978,13 +2978,16 @@ class ContractController extends ActionController {
             $date_success = null;
             if(!empty($contract['ghtk_status'])){
                 if ($contract['unit_transport'] == '5sauto'){ // Đơn hàng tự giao
-                    if($contract['ghtk_status'] == 5 || $contract['ghtk_status'] == 6){
+                    if($contract['ghtk_status'] == 5 || $contract['ghtk_status'] == 6  || $contract['ghtk_status'] == 501){
                         $date_success = $contract['created'];
                     }
                 }
                 else{
                     foreach($status_history as $status){
                         if($contract['unit_transport'] == 'viettel'){
+                            echo "<pre>";
+                            print_r($status['ORDER_STATUS']);
+                            echo "</pre>";
                             if($status['ORDER_STATUS'] == 501){
                                 $date_success = $status['created'];
                             }
