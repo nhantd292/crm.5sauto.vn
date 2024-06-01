@@ -1250,7 +1250,7 @@ class ContractController extends ActionController {
                 if($myForm->isValid()){
                     $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
 
-                    if($this->_params['data']['ghtk_status'] == 3 && $contract['ghtk_status'] != 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
+                    if(($this->_params['data']['ghtk_status'] == 3 && $contract['ghtk_status'] != 3) || $this->_params['data']['ghtk_status'] == 4 && $contract['ghtk_status'] != 4){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
                         $this->updateNumberKiotviet($contract);
                     }
                     if(($this->_params['data']['ghtk_status'] == 5 || $this->_params['data']['ghtk_status'] == 6) && empty($contract['date_success'])) {
@@ -1349,7 +1349,7 @@ class ContractController extends ActionController {
                 if($myForm->isValid()){
                     $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
 
-                    if($this->_params['data']['ghtk_status'] == 3 && $contract['ghtk_status'] != 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
+                    if(($this->_params['data']['ghtk_status'] == 3 && $contract['ghtk_status'] != 3) || $this->_params['data']['ghtk_status'] == 4 && $contract['ghtk_status'] != 4){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
                         $this->updateNumberKiotviet($contract);
                     }
                     if(($this->_params['data']['ghtk_status'] == 5 || $this->_params['data']['ghtk_status'] == 6) && empty($contract['date_success'])) {
@@ -3016,7 +3016,6 @@ class ContractController extends ActionController {
                 $this->getTable()->saveItem(array('data' => array('id' => $contract['id'], 'date_success' => $date_success)), array('task' => 'update-contract-succes'));
             }
         }
-//        exit;
 
         $ssFilter = new Container(__CLASS__.'update');
         $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
@@ -3041,6 +3040,35 @@ class ContractController extends ActionController {
         $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_sales']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['caption']                = 'Đơn hàng - Danh sách';
+
+        return new ViewModel($this->_viewModel);
+    }
+    // Cập nhật thông tin đơn hàng
+    public function delAction() {
+        $ssFilter = new Container(__CLASS__.'del');
+        $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
+        $myForm->setData($this->_params['ssFilter']);
+        $user_branch = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(['id' => $this->_params['ssFilter']['filter_sale_branch']]);
+        $this->_params['ssFilter']['filter_delete'] = 1;
+
+        $this->_viewModel['myForm']	                = $myForm;
+        $this->_viewModel['items']                  = $this->getTable()->listItem($this->_params, array('task' => 'list-all'));;
+        $this->_viewModel['count']                  = $this->getTable()->countItem($this->_params, array('task' => 'list-all'));
+        $this->_viewModel['user']                   = $this->getServiceLocator()->get('Admin\Model\UserTable')->listItem(null, array('task' => 'cache'));
+        $this->_viewModel['sale_group']             = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'lists-group')), array('task' => 'cache'));
+        $this->_viewModel['sale_branch']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-branch')), array('task' => 'cache'));
+        $this->_viewModel['location_city']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
+        $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
+        $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
+        $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
+        $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key', 'key_ghtk_ids' => explode(',', $user_branch['key_viettel_ids']))), array('task' => 'list-all'));
+        $this->_viewModel['ghtkKeyList']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-key', 'key_ghtk_ids' => explode(',', $user_branch['key_ghtk_ids']))), array('task' => 'list-all'));
+
+        $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['status_sales']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
+        $this->_viewModel['caption']                = 'Đơn hàng đã xóa - Danh sách';
 
         return new ViewModel($this->_viewModel);
     }
