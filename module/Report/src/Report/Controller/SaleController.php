@@ -1665,8 +1665,8 @@ class SaleController extends ActionController {
 
 
                             if (empty($value['marketer_id'])) {
-                                $data_report[$value['user_id']]['sales_new'] += $price_paid;
-                                $data_report['total']['sales_new'] += $price_paid;
+                                $data_report[$value['user_id']]['sales_care'] += $price_paid;
+                                $data_report['total']['sales_care'] += $price_paid;
                             } else {
                                 if ($date_format->diff($value['contact_contract_time_success'], $value['created'], 'hour') < 144) {
                                     $data_report[$value['user_id']]['sales_new'] += $price_paid;
