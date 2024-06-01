@@ -1649,37 +1649,33 @@ class SaleController extends ActionController {
                         $data_report['total']['hang-hoan'] += $value['price_total'] - $value['vat'];
                     }
 
-                    // Dục đơn - Thành công
-//                    if ($value['status_acounting_id'] == 'da-doi-soat' && $value['returned'] == 0) {
+                    # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
+                    $price_paid = $value['price_paid'] < $value['price_total'] ? $value['price_paid'] : $value['price_total'];
+                    if (in_array($value['ghtk_status'], $thanhcong_arr)) {
+//                        if ($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])) {
+//                            $data_report[$value['user_id']]['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
+//                            $data_report['total']['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
+//                        } else {
+//                            $data_report[$value['user_id']]['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
+//                            $data_report['total']['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
+//                        }
 
-                        # nhưng đơn lên trong vòng 144 giờ từ khi lên đơn đầu tiên thì tính doanh số mới sau thì tính doanh số chăm sóc
-                        $price_paid = $value['price_paid'] < $value['price_total'] ? $value['price_paid'] : $value['price_total'];
-                        if (in_array($value['ghtk_status'], $thanhcong_arr)) {
-//                            if ($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 144 && !empty($value['marketer_id'])) {
-//                                $data_report[$value['user_id']]['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
-//                                $data_report['total']['sales_new'] += $value['price_total'] - $value['price_reduce_sale'];
-//                            } else {
-//                                $data_report[$value['user_id']]['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
-//                                $data_report['total']['sales_care'] += $value['price_total'] - $value['price_reduce_sale'];
-//                            }
-
-
-                            if (empty($value['marketer_id'])) {
+                        # nhưng đơn lên trong vòng 48h giờ từ khi đơn đầu tiên thành công thì tính doanh số mới sau thì tính doanh số chăm sóc
+                        if (empty($value['marketer_id'])) {
+                            $data_report[$value['user_id']]['sales_care'] += $price_paid;
+                            $data_report['total']['sales_care'] += $price_paid;
+                        } else {
+                            $day_begin = strtotime($value['contact_contract_time_success']);
+                            $day = date('Y-m-d H:i:s', $day_begin + 48*3600);
+                            if ($day > $value['created']) {
+                                $data_report[$value['user_id']]['sales_new'] += $price_paid;
+                                $data_report['total']['sales_new'] += $price_paid;
+                            } else {
                                 $data_report[$value['user_id']]['sales_care'] += $price_paid;
                                 $data_report['total']['sales_care'] += $price_paid;
-                            } else {
-                                $day_begin = strtotime($value['contact_contract_time_success']);
-                                $day = date('Y-m-d H:i:s', $day_begin + 48*3600);
-                                if ($day > $value['created']) {
-                                    $data_report[$value['user_id']]['sales_new'] += $price_paid;
-                                    $data_report['total']['sales_new'] += $price_paid;
-                                } else {
-                                    $data_report[$value['user_id']]['sales_care'] += $price_paid;
-                                    $data_report['total']['sales_care'] += $price_paid;
-                                }
                             }
                         }
-//                    }
+                    }
 
                     // Thanh toán trước
                     $data_report[$value['user_id']]['deposit'] += $value['price_deposits'];

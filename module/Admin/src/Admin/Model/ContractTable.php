@@ -1519,7 +1519,7 @@ class ContractTable extends DefaultTable {
 
         // Cập nhật thông tin đơn hàng thành công
 		if ($options['task'] == 'update-contract-succes') {
-            $id = $arrData;
+            $id = $arrData['id'];
             $date_success = !empty($arrData['date_success']) ? $arrData['date_success'] : date('Y-m-d H:i:s');
             $data['date_success'] = $date_success;
 

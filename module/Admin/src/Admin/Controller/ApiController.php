@@ -751,6 +751,9 @@ class ApiController extends ActionController {
                         if($data['status_id'] == 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
                             $this->updateNumberKiotviet($contract_item);
                         }
+                        if(($data['status_id'] == 5 || $data['status_id'] == 6) && empty($contract_item['date_success'])) {
+                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract_item['id'])), array('task' => 'update-contract-succes'));
+                        }
 
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
@@ -832,6 +835,11 @@ class ApiController extends ActionController {
                         if($data['ORDER_STATUS'] == 105 || $data['ORDER_STATUS'] == 200){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
                             $this->updateNumberKiotviet($contract_item);
                         }
+                        if($data['ORDER_STATUS'] == 501 && empty($contract_item['date_success'])) {
+                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract_item['id'])), array('task' => 'update-contract-succes'));
+                        }
+
+
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'update status success')));
                     }
