@@ -1668,7 +1668,9 @@ class SaleController extends ActionController {
                                 $data_report[$value['user_id']]['sales_care'] += $price_paid;
                                 $data_report['total']['sales_care'] += $price_paid;
                             } else {
-                                if ($date_format->diff($value['contact_contract_time_success'], $value['created'], 'hour') < 144) {
+                                $day_begin = strtotime($value['contact_contract_time_success']);
+                                $day = date('Y-m-d H:i:s', $day_begin + 48*3600);
+                                if ($day > $value['created']) {
                                     $data_report[$value['user_id']]['sales_new'] += $price_paid;
                                     $data_report['total']['sales_new'] += $price_paid;
                                 } else {
@@ -1676,8 +1678,6 @@ class SaleController extends ActionController {
                                     $data_report['total']['sales_care'] += $price_paid;
                                 }
                             }
-
-
                         }
 //                    }
 
