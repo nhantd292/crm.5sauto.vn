@@ -2985,9 +2985,6 @@ class ContractController extends ActionController {
                 else{
                     foreach($status_history as $status){
                         if($contract['unit_transport'] == 'viettel'){
-                            echo "<pre>";
-                            print_r($status['ORDER_STATUS']);
-                            echo "</pre>";
                             if($status['ORDER_STATUS'] == 501){
                                 $date_success = $status['created'];
                             }
