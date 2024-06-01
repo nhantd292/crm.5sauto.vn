@@ -1249,7 +1249,15 @@ class ContractController extends ActionController {
 
                 if($myForm->isValid()){
                     $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                    if($contract['unit_transport'] != 'ghtk'){
+
+                    if($this->_params['data']['ghtk_status'] == 3 && $contract['ghtk_status'] != 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
+                        $this->updateNumberKiotviet($contract);
+                    }
+                    if(($this->_params['data']['ghtk_status'] == 5 || $this->_params['data']['ghtk_status'] == 6) && empty($contract['date_success'])) {
+                        $this->getTable()->saveItem(array('data' => array('id' => $contract['id'])), array('task' => 'update-contract-succes'));
+                    }
+
+                    if($contract['unit_transport'] == '5sauto'){
                         $this->getTable()->updateItem($this->_params, array('task' => 'update-ghtk'));
                         $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
                     }
@@ -1340,8 +1348,15 @@ class ContractController extends ActionController {
 
                 if($myForm->isValid()){
                     $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                    $this->_params['item'] = $contract;
 
+                    if($this->_params['data']['ghtk_status'] == 3 && $contract['ghtk_status'] != 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
+                        $this->updateNumberKiotviet($contract);
+                    }
+                    if(($this->_params['data']['ghtk_status'] == 5 || $this->_params['data']['ghtk_status'] == 6) && empty($contract['date_success'])) {
+                        $this->getTable()->saveItem(array('data' => array('id' => $contract['id'])), array('task' => 'update-contract-succes'));
+                    }
+
+                    $this->_params['item'] = $contract;
                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'convert-order'));
 
                     $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
@@ -1356,7 +1371,7 @@ class ContractController extends ActionController {
         $this->_viewModel['myForm']     = $myForm;
         $this->_viewModel['contract']   = $contract;
         $this->_viewModel['data']   = $this->_params['data'];
-        $this->_viewModel['caption']    = 'Sửa trạng thái';
+        $this->_viewModel['caption']    = 'Chuyển thành đơn lẻ tự giao';
 
         $viewModel = new ViewModel($this->_viewModel);
         $viewModel->setTerminal(true);

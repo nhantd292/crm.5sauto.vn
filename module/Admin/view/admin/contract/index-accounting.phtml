@@ -174,10 +174,8 @@ if($this->items->count() > 0) {
         $menuConver = '<li><a href="javascript:;" onclick="'. $linkConvertOrder .'"><i class="fa fa-file-text-o"></i>Chuyển thành đơn lẻ</a></li>';
         $menuCancel = empty($item->ghtk_code) ? '<li><a href="'. $linkCancel .'"><i class="fa fa-ban" aria-hidden="true"></i> Hủy sale</a></li>' : '';
 
-        if($item->unit_transport == 'ghtk' || $item->unit_transport == 'viettel'){
-            $menu_edit_status = '';
-        }
-        else{
+        $menu_edit_status = '';
+        if($item->unit_transport == '5sauto'){
             $menu_edit_status = '<li><a href="javascript:;" onclick="'. $linkEditStatus .'"><i class="fa fa-edit"></i> Sửa trạng thái giục đơn</a></li>';
         }
         if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
