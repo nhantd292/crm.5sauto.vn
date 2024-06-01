@@ -740,13 +740,6 @@ class ApiController extends ActionController {
                         $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
                     }
                     if(!empty($contract_item)){
-                        $arrParam['id']             = $contract_item['id'];
-                        $arrParam['ghtk_status']    = $data['status_id'];
-                        $arrParam['ghtk_code']      = $data['label_id'];
-                        $arrParam['price_transport']= $data['fee'];
-                        $arrParam['status_history'] = $data;
-                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
-
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
                         if($data['status_id'] == 3){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
                             $this->updateNumberKiotviet($contract_item);
@@ -754,6 +747,13 @@ class ApiController extends ActionController {
                         if(($data['status_id'] == 5 || $data['status_id'] == 6) && empty($contract_item['date_success'])) {
                             $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract_item['id'])), array('task' => 'update-contract-succes'));
                         }
+
+                        $arrParam['id']             = $contract_item['id'];
+                        $arrParam['ghtk_status']    = $data['status_id'];
+                        $arrParam['ghtk_code']      = $data['label_id'];
+                        $arrParam['price_transport']= $data['fee'];
+                        $arrParam['status_history'] = $data;
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
 
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
@@ -823,13 +823,6 @@ class ApiController extends ActionController {
                         $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
                     }
                     if(!empty($contract_item)){
-                        $arrParam['id']             = $contract_item['id'];
-                        $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
-                        $arrParam['ghtk_code']      = $data['ORDER_NUMBER'];
-                        $arrParam['price_transport']= $data['MONEY_TOTAL'];
-                        $arrParam['status_history'] = $data;
-                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
-
                         // Tạo hóa đơn kov trừ số lượng hàng trong kho
 //                        if($data['ORDER_STATUS'] == 105 || $data['ORDER_STATUS'] == 103){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
                         if($data['ORDER_STATUS'] == 105 || $data['ORDER_STATUS'] == 200){ // trạng thái Đã lấy hàng/Đã nhập kho trên viettel post
@@ -839,6 +832,12 @@ class ApiController extends ActionController {
                             $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract_item['id'])), array('task' => 'update-contract-succes'));
                         }
 
+                        $arrParam['id']             = $contract_item['id'];
+                        $arrParam['ghtk_status']    = $data['ORDER_STATUS'];
+                        $arrParam['ghtk_code']      = $data['ORDER_NUMBER'];
+                        $arrParam['price_transport']= $data['MONEY_TOTAL'];
+                        $arrParam['status_history'] = $data;
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
 
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('status' => '200', 'success' => true, 'message' => 'update status success')));
@@ -869,6 +868,7 @@ class ApiController extends ActionController {
             $response->setContent(json_encode(array('status' => '500', 'success' => false, 'message' => 'invalid')));
         }
 
+        header('Content-Type: application/json');
         return $response;
     }
 
