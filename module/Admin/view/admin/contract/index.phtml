@@ -104,13 +104,22 @@
             $fee_cod                = number_format($item->price_transport);
 //            $price_promotion        = number_format($item->price_promotion);
             $price_total            = $item->price_total;
-            $total_price           += $price_total;
-            $total_cod             += $item->price_transport;
-            $total_discount        += $item->price_reduce_sale;
-//            $price_paid             = $item->price_paid;
-//            $price_accrued          = $item->price_accrued;
             $price_owed             = $item->price_owed;
-            $total_price_owed      += $item->price_owed;
+            if($this->params['ssFilter']['filter_user']){
+                if ($item->user_id == $this->params['ssFilter']['filter_user']){
+                    $total_price           += $price_total;
+                    $total_cod             += $item->price_transport;
+                    $total_discount        += $item->price_reduce_sale;
+                    $total_price_owed      += $item->price_owed;
+                }
+            }
+            else{
+                $total_price           += $price_total;
+                $total_cod             += $item->price_transport;
+                $total_discount        += $item->price_reduce_sale;
+                $total_price_owed      += $item->price_owed;
+            }
+
             $user_name              = $item->user_id ? $this->user[$item->user_id]['name'] : '';
             $care_name              = $item->care_id ? $this->user[$item->care_id]['name'] : '';
             $user_gd_name           = $item->delivery_id ? $this->user[$item->delivery_id]['name'] : '';
