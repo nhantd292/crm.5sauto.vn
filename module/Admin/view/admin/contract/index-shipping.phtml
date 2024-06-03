@@ -266,7 +266,7 @@ if($this->items->count() > 0) {
                             <td '.$rowSpan.'>'. $contact_phone .'</td>
                             <td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
                             <td '.$rowSpan.'>'. $user_gd_name .'</td>
-                            <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
+                            <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'<br>Đơn thứ: '.$index_number.'</td>
                             <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'</td>
                             <td '.$rowSpan.'>'. $paid_cost .'</td>
                             <td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
