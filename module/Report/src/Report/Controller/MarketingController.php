@@ -420,25 +420,32 @@ class MarketingController extends ActionController {
             // Tạo mảng lưu báo cáo.
             $data_report = [];
             foreach ($marketers as $key => $value) {
-                $data_report[$value['id']]['name']           = $value['name'];
-                $data_report[$value['id']]['new_phone']      = 0;
-                $data_report[$value['id']]['new_contract']   = 0;
-                $data_report[$value['id']]['new_sales']      = 0;
-                $data_report[$value['id']]['old_contract']   = 0;
-                $data_report[$value['id']]['old_sales']      = 0;
-                $data_report[$value['id']]['cost_ads']       = 0;
-                $data_report[$value['id']]['cost_capital']   = 0;
-                $data_report[$value['id']]['cod_total']      = 0;
+                $data_report[$value['id']]['name']              = $value['name'];
+                $data_report[$value['id']]['new_phone']         = 0;
+                $data_report[$value['id']]['new_contract']      = 0;
+                $data_report[$value['id']]['giam-tru-doanh-thu']= 0;
+                $data_report[$value['id']]['hang-hoan']         = 0;
+                $data_report[$value['id']]['new_sales']         = 0;
+                $data_report[$value['id']]['old_contract']      = 0;
+                $data_report[$value['id']]['old_sales']         = 0;
+                $data_report[$value['id']]['cost_ads']          = 0;
+                $data_report[$value['id']]['cost_capital']      = 0;
+                $data_report[$value['id']]['cod_total']         = 0;
             }
-            $data_report['total']['name']           = "Tổng";
-            $data_report['total']['new_phone']      = 0;
-            $data_report['total']['new_contract']   = 0;
-            $data_report['total']['new_sales']      = 0;
-            $data_report['total']['old_contract']   = 0;
-            $data_report['total']['old_sales']      = 0;
-            $data_report['total']['cost_ads']       = 0;
-            $data_report['total']['cost_capital']   = 0;
-            $data_report['total']['cod_total']      = 0;
+            $data_report['total']['name']               = "Tổng";
+            $data_report['total']['new_phone']          = 0;
+            $data_report['total']['new_contract']       = 0;
+            $data_report['total']['giam-tru-doanh-thu'] = 0;
+            $data_report['total']['hang-hoan']          = 0;
+            $data_report['total']['new_sales']          = 0;
+            $data_report['total']['old_contract']       = 0;
+            $data_report['total']['old_sales']          = 0;
+            $data_report['total']['cost_ads']           = 0;
+            $data_report['total']['cost_capital']       = 0;
+            $data_report['total']['cod_total']          = 0;
+
+            $data_report[$value['user_id']]['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+            $data_report['total']['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
 
             // Lấy dữ liệu doanh số mới, cũ.
             $where_contract = array(
@@ -447,7 +454,6 @@ class MarketingController extends ActionController {
                 'filter_product_group_id'   => $ssFilter->report['product_group_id'],
                 'date_type'                 => 'shipped_date',
                 'filter_status'             => 'success',
-//                'filter_status_acounting_id'=> 'da-doi-soat',
             );
 
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
@@ -455,8 +461,12 @@ class MarketingController extends ActionController {
             $thanhcong_status       = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'thanh-cong',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
             $thanhcong_arr          = array_merge(explode(',', trim($thanhcong_status['content'])), explode(',', trim($thanhcong_status['note'])));
 
+            $hanghoan_status        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'hang-hoan',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
+            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
+
             foreach ($contracts as $key => $value){
                 if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
+
 
                     if($date_format->diff($value['contact_contract_first_date'], $value['created'], 'hour') < 48 && !empty($value['marketer_id'])) {
                         if (in_array($value['ghtk_status'], $thanhcong_arr)) {
@@ -478,6 +488,15 @@ class MarketingController extends ActionController {
 
                         $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'] + $value['ship_ext'];
                         $data_report['total']['cod_total'] += $value['price_transport'] + $value['ship_ext'];
+                    }
+
+                    // Giảm trừ doanh thu
+                    $data_report[$value['marketer_id']]['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+                    $data_report['total']['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+                    // Dục đơn - hoàn
+                    if (in_array($value['ghtk_status'], $hanghoan_arr)) {
+                        $data_report[$value['marketer_id']]['hang-hoan'] += $value['price_total'] - $value['vat'];
+                        $data_report['total']['hang-hoan'] += $value['price_total'] - $value['vat'];
                     }
                 }
             }
@@ -575,6 +594,8 @@ class MarketingController extends ActionController {
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_sales'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['contract_percent'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_sales'].'%</td>
@@ -594,6 +615,8 @@ class MarketingController extends ActionController {
                                     <td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_sales'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td>
                                     <td class="mask_currency text-right" data-field="contract_percent">'.$data_report['total']['contract_percent'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_sales'].'%</td>
@@ -615,7 +638,7 @@ class MarketingController extends ActionController {
             $result['reportTable'] = '<thead data-count_contracts="'.count($contracts).'">
                         				    <tr>
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
-                            					<th colspan="3" class="text-center">Doanh số</th>
+                            					<th colspan="5" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
                             					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
                             					<th rowspan="2" class="text-center">% Chi Phí QC</br>/ Doanh Số</th>
@@ -627,6 +650,8 @@ class MarketingController extends ActionController {
                             					<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>
                             					<th style="min-width: 80px;" class="text-center">Số Đơn</th>
                             					<th style="min-width: 80px;" class="text-center">Doanh Số</th>
+                            					<th style="min-width: 80px;" class="text-center">Giảm trừ doanh thu</th>
+                            					<th style="min-width: 80px;" class="text-center">Hàng hoàn</th>
                         					</tr>
                         				</thead>
                         				<tbody>
@@ -705,25 +730,29 @@ class MarketingController extends ActionController {
             // Tạo mảng lưu báo cáo.
             $data_report = [];
             foreach ($marketers as $key => $value) {
-                $data_report[$value['id']]['name']           = $value['name'];
-                $data_report[$value['id']]['new_phone']      = 0;
-                $data_report[$value['id']]['new_contract']   = 0;
-                $data_report[$value['id']]['new_sales']      = 0;
-                $data_report[$value['id']]['old_contract']   = 0;
-                $data_report[$value['id']]['old_sales']      = 0;
-                $data_report[$value['id']]['cost_ads']       = 0;
-                $data_report[$value['id']]['cost_capital']   = 0;
-                $data_report[$value['id']]['cod_total']      = 0;
+                $data_report[$value['id']]['name']                  = $value['name'];
+                $data_report[$value['id']]['new_phone']             = 0;
+                $data_report[$value['id']]['new_contract']          = 0;
+                $data_report[$value['id']]['new_sales']             = 0;
+                $data_report[$value['id']]['giam-tru-doanh-thu']    = 0;
+                $data_report[$value['id']]['hang-hoan']             = 0;
+                $data_report[$value['id']]['old_contract']          = 0;
+                $data_report[$value['id']]['old_sales']             = 0;
+                $data_report[$value['id']]['cost_ads']              = 0;
+                $data_report[$value['id']]['cost_capital']          = 0;
+                $data_report[$value['id']]['cod_total']             = 0;
             }
-            $data_report['total']['name']           = "Tổng";
-            $data_report['total']['new_phone']      = 0;
-            $data_report['total']['new_contract']   = 0;
-            $data_report['total']['new_sales']      = 0;
-            $data_report['total']['old_contract']   = 0;
-            $data_report['total']['old_sales']      = 0;
-            $data_report['total']['cost_ads']       = 0;
-            $data_report['total']['cost_capital']   = 0;
-            $data_report['total']['cod_total']      = 0;
+            $data_report['total']['name']               = "Tổng";
+            $data_report['total']['new_phone']          = 0;
+            $data_report['total']['new_contract']       = 0;
+            $data_report['total']['new_sales']          = 0;
+            $data_report['total']['giam-tru-doanh-thu'] = 0;
+            $data_report['total']['hang-hoan']          = 0;
+            $data_report['total']['old_contract']       = 0;
+            $data_report['total']['old_sales']          = 0;
+            $data_report['total']['cost_ads']           = 0;
+            $data_report['total']['cost_capital']       = 0;
+            $data_report['total']['cod_total']          = 0;
 
             // Lấy dữ liệu doanh số mới, cũ.
             $where_contract = array(
@@ -735,6 +764,9 @@ class MarketingController extends ActionController {
             );
 
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
+
+            $hanghoan_status        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'hang-hoan',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
+            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
 
             foreach ($contracts as $key => $value){
                 if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
@@ -758,6 +790,15 @@ class MarketingController extends ActionController {
 
                         $data_report[$value['marketer_id']]['cod_total'] += $value['price_transport'] + $value['ship_ext'];
                         $data_report['total']['cod_total']               += $value['price_transport'] + $value['ship_ext'];
+                    }
+
+                    // Giảm trừ doanh thu
+                    $data_report[$value['marketer_id']]['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+                    $data_report['total']['giam-tru-doanh-thu'] += $value['price_reduce_sale'];
+                    // Dục đơn - hoàn
+                    if (in_array($value['ghtk_status'], $hanghoan_arr)) {
+                        $data_report[$value['marketer_id']]['hang-hoan'] += $value['price_total'] - $value['vat'];
+                        $data_report['total']['hang-hoan'] += $value['price_total'] - $value['vat'];
                     }
                 }
             }
@@ -851,6 +892,8 @@ class MarketingController extends ActionController {
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['new_sales'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['giam-tru-doanh-thu'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report[$value['id']]['hang-hoan'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['contract_percent'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report[$value['id']]['cost_sales'].'%</td>
@@ -870,6 +913,8 @@ class MarketingController extends ActionController {
                                     <td class="mask_currency text-right">'.$data_report['total']['new_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_contract'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['new_sales'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report['total']['giam-tru-doanh-thu'].'</td>
+                                    <td class="mask_currency text-right">'.$data_report['total']['hang-hoan'].'</td>
                                     <td class="mask_currency text-right" data-field="contract_percent">'.$data_report['total']['contract_percent'].'%</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_phone'].'</td>
                                     <td class="mask_currency text-right">'.$data_report['total']['cost_sales'].'%</td>
@@ -891,7 +936,7 @@ class MarketingController extends ActionController {
             $result['reportTable'] = '<thead data-count_contracts="'.count($contracts).'">
                         				    <tr>
                             					<th class="fix-head" rowspan="2" class="text-center">Nhân viên</th>
-                            					<th colspan="3" class="text-center">Doanh số</th>
+                            					<th colspan="5" class="text-center">Doanh số</th>
                             					<th rowspan="2" class="text-center">% Tỉ lệ chốt</th>
                             					<th rowspan="2" class="text-center">% Chi phí QC</br>/ SĐT</th>
                             					<th rowspan="2" class="text-center">% Chi Phí QC</br>/ Doanh Số</th>
@@ -903,6 +948,8 @@ class MarketingController extends ActionController {
                             					<th style="min-width: 80px;" class="text-center">Tổng SĐT</th>
                             					<th style="min-width: 80px;" class="text-center">Số Đơn</th>
                             					<th style="min-width: 80px;" class="text-center">Doanh Số</th>
+                            					<th style="min-width: 80px;" class="text-center">Giảm trừ doanh thu</th>
+                            					<th style="min-width: 80px;" class="text-center">Hàng hoàn</th>
                         					</tr>
                         				</thead>
                         				<tbody>
