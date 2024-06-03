@@ -210,6 +210,7 @@ class ContractTable extends DefaultTable {
                 }
             })->current();
 	    }
+
 	    if($options['task'] == 'list-all') {
 	        $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
                 $ssFilter   = $arrParam['ssFilter'];
@@ -611,6 +612,14 @@ class ContractTable extends DefaultTable {
                 }
             })->current();
         }
+
+        if($options['task'] == 'count-contract-by-contact') {
+            $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+                $select -> columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(1)')));
+                $select -> where -> equalTo('contact_id', $arrParam['contact_id']);
+            })->current();
+        }
+
 	    return $result->count;
 	}
 	
@@ -1507,21 +1516,9 @@ class ContractTable extends DefaultTable {
             $id = $arrData;
             $result = $this->getItem(array('id' => $id));
             $contract_number = $this->countItem($result, array('task' => 'count-contract-by-contact'));
-
-            $sale_time = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-time')), array('task' => 'list-all')),array('key' => 'alias', 'value' => 'content'));
             $data['index_number'] = $contract_number;
-            $data['time_sales'] = $sale_time['sale-time-sales'];
-
-            if($result['status_check_id'] == STATUS_CONTRACT_CHECK_SUCCESS){
-                $data['date_success'] = $result['created'];
-            }
 
             $this->tableGateway->update($data, array('id' => $id));
-            if($result['status_check_id'] == STATUS_CONTRACT_CHECK_SUCCESS){
-                // cập nhật lại ngày thành công của đơn hàng đầu tiên
-                $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $result['contact_id']), array('task' => 'update-contract-time-success'));
-            }
-
             return true;
 		}
 
@@ -2457,6 +2454,8 @@ class ContractTable extends DefaultTable {
                 $this->saveItem(array('data' => $id), array('task' => 'update-code'));
                 // Cập nhật tổng số lượng sản phẩm trong đơn hàng
                 $this->saveItem(array('data' => $id), array('task' => 'update-number-product-total'));
+                // Lưu đơn thứ bao nhiêu của khách hàng
+                $this->saveItem(array('data' => $id), array('task' => 'update-index-number'));
                 // Cập nhật thông tin đơn hàng đầu tiên cho khách hàng
                 $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contract_id' => $id), array('task' => 'update-contract-first'));
                 // Thêm chi tiết sản phẩm đơn hàng

@@ -97,7 +97,7 @@
             $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
             $contact_name           = $item->contact_name;
 //            $contact_contract_number= $item->contact_contract_number;
-//            $index_number           = $item->index_number;
+            $index_number           = $item->index_number;
 //            $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
 
 //            $fee_cod                = !empty($item->ghtk_result) ? number_format(unserialize($item->ghtk_result)['fee']) : '';
@@ -273,7 +273,7 @@
                             <td class="" '.$rowSpan.' style="inline-size: 200px;overflow-wrap: break-word;">'. $address .$location_town.$location_district.$location_city.'</td>
                             <td class="av-read" '.$rowSpan.'>'. $item->sale_note .'</td>
                             <td '.$rowSpan.'>'. $user_gd_name .'</td>
-                            <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'</td>
+                            <td '.$rowSpan.'>'. $created_by . $sale_group_created_by . $sale_branch_created_by.'<br>'.$created .'<br>Đơn thứ: '.$index_number.'</td>
                             <td '.$rowSpan.'>'. $this->user[$item->marketer_id]['name'] .'<br>'.$this->sale_group[$this->user[$item->marketer_id]['sale_group_id']]['name'].'  '.$this->sale_branch[$this->user[$item->marketer_id]['sale_branch_id']]['name'].'<br>'.$contact_date.'<br>'.$contact_contract_first_date.'</td>
     						<td '.$rowSpan.'>'. $paid_cost .'</td>
     						<td '.$rowSpan.'>'. $item->kov_code.'<br>'.$item->id_kov .'</td>
