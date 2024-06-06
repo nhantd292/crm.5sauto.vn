@@ -1288,32 +1288,34 @@ class AcountingController extends ActionController {
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact'));
 
             $xhtmlItems = '';
-            $sum_cost_new = $sum_cost = $sum_price_total = $sum_price_paid = $sum_price_transport = $sum_number = 0;
+            $sum_cost_crm = $sum_cost_kov = $sum_price_total = $sum_price_paid = $sum_price_transport = $sum_number = 0;
             foreach ($contracts as $keys => $item){
                 $id = $item['id'];
                 $options = unserialize($item['options']);
                 $rowSpan = 'rowspan="'.count($options['product']).'"';
                 $product_row_1 = $product_row_2 = '';
-                $total_cost = $total_cost_new = 0;
+                $total_cost_kov = $total_cost_crm = 0;
                 foreach ($options['product'] as $key => $value){
-                    $cost = ($value['cost'] + $value['cost_new']) * $value['numbers'];
-                    $total_cost_new += $cost;
-                    $total_cost     += $value['cost'] * $value['numbers'];
+                    $cost_crm = $value['cost_new'] * $value['numbers'];
+                    $cost_kov = $value['cost'] * $value['numbers'];
 
-                    $sum_cost_new += $cost;
-                    $sum_cost += $total_cost;
+                    $total_cost_crm += $cost_crm;
+                    $total_cost_kov += $cost_kov;
+
+                    $sum_cost_crm += $cost_crm;
+                    $sum_cost_kov += $cost_kov;
                     $sum_number += $value['numbers'];
 
                     if($key == 0){
                         $product_row_1 .= '<td width="200">'.$value['full_name'].'</td>';
                         $product_row_1 .= '<td class="text-center">'.$value['numbers'].'</td>';
-                        $product_row_1 .= '<td class="mask_currency text-right">'.$cost.'</td>';
+                        $product_row_1 .= '<td class="mask_currency text-right">'.$cost_crm.'</td>';
                     }
                     else{
                         $product_row_2 .= '<tr>';
                         $product_row_2 .= '<td width="200">'.$value['full_name'].'</td>';
                         $product_row_2 .= '<td class="text-center">'.$value['numbers'].'</td>';
-                        $product_row_2 .= '<td class="mask_currency text-right">'.$cost.'</td>';
+                        $product_row_2 .= '<td class="mask_currency text-right">'.$cost_crm.'</td>';
                         $product_row_2 .= '</tr>';
                     }
                 }
@@ -1338,8 +1340,7 @@ class AcountingController extends ActionController {
                 $sum_price_transport    += $price_transport;
 
                 if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-                    $b1     =   '<td '.$rowSpan.' class="mask_currency text-right">'.($price_paid - $total_cost_new).'</td>
-                                <td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_new - $total_cost) .'</td>';
+                    $b1     =   '<td '.$rowSpan.' class="mask_currency text-right">'. ($total_cost_crm - $total_cost_kov) .'</td>';
                 }
 
 
@@ -1363,10 +1364,8 @@ class AcountingController extends ActionController {
                 $xhtmlItems .=  $product_row_2;
             }
             if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-                $h1 = '<th width="140" class="text-center">Cộng tác viên</th>
-                        <th width="140" class="text-center">Phí dịch vụ</th>';
-                $h2 = '<th width="140" class="mask_currency text-right text-red">'.($sum_price_paid - $sum_cost_new).'</th>
-                        <th width="140" class="mask_currency text-right text-red">'. abs($sum_cost_new - $sum_cost) .'</th>';
+                $h1 = '<th width="140" class="text-center">Phí dịch vụ</th>';
+                $h2 = '<th width="140" class="mask_currency text-right text-red">'. abs($sum_cost_crm - $sum_cost_kov) .'</th>';
             }
             $result['reportTable'] = '<thead>
                         				    <tr>
@@ -1397,7 +1396,7 @@ class AcountingController extends ActionController {
                             					<th width="200" class="text-center"></th>
                             					<th width="200" class="text-center"></th>
                             					<th width="140" class="mask_currency text-center text-red">'.$sum_number.'</th>
-                            					<th width="140" class="mask_currency text-right text-red">'.($sum_cost_new).'</th>
+                            					<th width="140" class="mask_currency text-right text-red">'.($sum_cost_crm).'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_transport.'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_total.'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_paid.'</th>
