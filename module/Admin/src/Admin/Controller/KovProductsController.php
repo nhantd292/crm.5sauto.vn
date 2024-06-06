@@ -252,7 +252,7 @@ class KovProductsController extends ActionController{
             array('field' =>'fullName','title' => 'TÊN SẢN PHẨM'),
             array('field' =>'branch_name','title' => 'KHO'),
             array('field' =>'branch_cost','title' => 'GIÁ VỐN KIOTVIET'),
-            array('field' =>'branch_cost_new','title' => 'TĂNG THÊM GIÁ VỐN TRÊN CRM'),
+            array('field' =>'branch_cost_new','title' => 'GIÁ VỐN TRÊN CRM'),
             array('field' =>'branch_fee','title' => 'PHỤ PHÍ'),
         );
 

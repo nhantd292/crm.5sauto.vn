@@ -31,9 +31,9 @@ $xhtmlHead .= '<th>Loại sản phẩm</th>';
 $xhtmlHead .= '<th class="text-center">Tồn kho</th>';
 $xhtmlHead .= '<th class="text-center">KH đặt</th>';
 $xhtmlHead .= '<th class="text-center">Giá vốn Kiotviet</th>';
-$xhtmlHead .= '<th class="text-center">Điều chỉnh</th>';
-$xhtmlHead .= '<th class="text-center">Phụ phí</th>';
-$xhtmlHead .= '<th class="text-center">Giá vốn CRM</th>';
+$xhtmlHead .= '<th class="text-center">Giá vốn CRM</th>'; // trước là phần điều chỉnh cộng thêm một giá trị cố định
+//$xhtmlHead .= '<th class="text-center">Phụ phí</th>';
+//$xhtmlHead .= '<th class="text-center">Giá vốn CRM</th>';
 $xhtmlHead .= '<th class="text-center">Giá bán</th>';
 $xhtmlHead .= '<th class="text-center" width="70">Trạng thái</th>';
 $xhtmlHead .= '</tr>';
@@ -52,9 +52,9 @@ if($this->items->count() > 0) {
         $basePrice      = $item->basePrice;
         $branch_cost        = $item->branch_cost;
         $branch_cost_new    = $item->branch_cost_new;
-        $branch_fee         = $item->branch_fee;
+//        $branch_fee         = $item->branch_fee;
         $product_type       = $item->product_type == 1 ? 'Hàng có sẵn' : 'Hàng sản xuất';
-        $branch_cost_crm    = $branch_cost + $item->branch_cost_new + $branch_fee;
+//        $branch_cost_crm    = $branch_cost + $item->branch_cost_new + $branch_fee;
         $branch_onHand      = $item->branch_onHand; // Tồn kho
         $branch_reserved    = $item->branch_reserved; // Khách đặt
         $branch           = $this->sale_branch[$item->branch_id]['name']; // Kho hàng
@@ -77,8 +77,6 @@ if($this->items->count() > 0) {
                                 <td class="text-center">'.$branch_reserved.'</td>
                                 <td class="text-right"><span class="mask_currency">'. $branch_cost .'</span></td>
                                 <td class="text-right"><span class="mask_currency">'. $branch_cost_new .'</span></td>
-                                <td class="text-right"><span class="mask_currency">'. $branch_fee .'</span></td>
-                                <td class="text-right"><span class="mask_currency">'. $branch_cost_crm .'</span></td>
                                 <td class="text-right"><span class="mask_currency">'. $basePrice .'</span></td>
     							<td class="text-center">'. $controls .'</td>
                            </tr>';
