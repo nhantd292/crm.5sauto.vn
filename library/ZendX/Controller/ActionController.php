@@ -354,6 +354,7 @@ class ActionController extends AbstractActionController {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, URLGHTK . $api_endpoint);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_ENCODING, '');
         curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
@@ -387,6 +388,7 @@ class ActionController extends AbstractActionController {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://partner.viettelpost.vn/v2" . $api_endpoint);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_ENCODING, '');
         curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);

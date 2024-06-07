@@ -7,6 +7,10 @@ use Zend\View\Model\ViewModel;
 use Zend\Session\Container;
 use Zend\Form\FormInterface;
 
+require_once PATH_VENDOR . '/Fpdi/fpdf/fpdf.php';
+require_once PATH_VENDOR . '/Fpdi/autoload.php';
+use setasign\Fpdi\Fpdi;
+
 class ContractController extends ActionController {
     public function init() {
         // Thiết lập options
@@ -1766,6 +1770,41 @@ class ContractController extends ActionController {
         $this->_viewModel['caption']     = $caption;
         return new ViewModel($this->_viewModel);
     }
+
+    public function printMultiOrderAction()
+    {
+//        $token = '07da21A79A4a2eC902F4DBcD6007f7443b9543B2';
+//        $idsArray=['S22620562.MB3-01-A7.1982417997','S22620562.BO.MN6-05-D1.1923217495','S22620562.BO.SGP23-E47.1981878263'];
+        $ids = $this->params()->fromQuery('ids', null);
+        $token = $this->params()->fromQuery('token', null);
+        $idsArray = explode(',', $ids);
+        $mergedPdf = new Fpdi();
+        foreach ($idsArray as $id) {
+            $pdfContent = $this->ghtk_call("/services/label/{$id}?original=portrait&page_size=A6", [], 'GET', $token);
+            if ($pdfContent === false || strpos($pdfContent, '%PDF') !== 0) {
+                continue;
+            }
+
+            $tempFile = tempnam(sys_get_temp_dir(), 'pdf');
+            file_put_contents($tempFile, $pdfContent);
+            $pageCount = $mergedPdf->setSourceFile($tempFile);
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                $templateId = $mergedPdf->importPage($pageNo);
+                $size = $mergedPdf->getTemplateSize($templateId);
+
+                $mergedPdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                $mergedPdf->useTemplate($templateId);
+            }
+            unlink($tempFile);
+        }
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="merged_don_hang.pdf"');
+        header('Content-Transfer-Encoding: binary');
+        header('Accept-Ranges: bytes');
+
+        $mergedPdf->Output('I', 'merged_don_hang.pdf');
+        exit;
+    }
     
     public function printMultiAction() {
         $ids        = !empty($this->_params['data']['cid']) ? $this->_params['data']['cid'] : [$this->params('id')];
@@ -2567,6 +2606,7 @@ class ContractController extends ActionController {
 
                                 if($res['success']){
                                     $contract_code_success[] = $key;
+                                    $ids[] = $res['order']['label'];
 
                                     $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
                                     $arrParam['id']             = $contract_item['id'];
@@ -2580,19 +2620,23 @@ class ContractController extends ActionController {
                                     $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
                                 }
                             }
-                            
-                            
-                            
-                            
 
                             if(!empty($contract_code_success)){
-                                $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang Viettel Post '.implode(', ', $contract_code_success) );
+                                $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang GHTK '.implode(', ', $contract_code_success) );
                             }
                             if(!empty($contract_code_error)){
                                 $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
                             }
 
-                            echo 'success';
+//                            $ids='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
+//                            $ghtk_key = '07da21A79A4a2eC902F4DBcD6007f7443b9543B2';
+                            $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+                            $res_data = array(
+                                'type' => 'print_contract_order',
+                                'token' => $ghtk_key,
+                                'ids' => $ids,
+                            );
+                            echo json_encode($res_data);
                             return $this->response;
                         }
                     }

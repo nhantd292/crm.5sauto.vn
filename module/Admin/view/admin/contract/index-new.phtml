@@ -324,7 +324,7 @@ foreach($this->viettelKeyList as $key => $value){
 }
 $sendGhtkAccount = [];
 foreach($this->ghtkKeyList as $key => $value){
-    $sendGhtkAccount[] = array( 'name' => 'share','link' => 'javascript:popupAction(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendGhtk', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
+    $sendGhtkAccount[] = array( 'name' => 'share','link' => 'javascript:popupActionNew(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendGhtk', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
 }
 $menu_edit_shipped_date = $is_system ? array( 'name' => 'import-date-shiped', 'caption' => 'Cập nhật ngày xuất kho Viettel', 'link' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'import-shiped')), 'icon' => 'fa fa-check-square-o' ) : [];
 

@@ -463,7 +463,10 @@ function popupAction(ajaxUrl, option) {
 				}
 				if(result == 'print') {
 					// var pri = jQuery(formAdmin).attr('action').replace('/filter', '/print-multi')+'id/'+option['id'];
-					window.location = '/xadmin/production/print-multi/id/'+option['id']
+					// window.location = '/xadmin/production/print-multi/id/'+option['id']
+					$modal.modal('hide');
+					window.open('/xadmin/production/print-multi/id/'+option['id'], '_blank');
+					location.reload();
 				}
 				else if(result == 'thank'){
 					$modal.modal('loading');
@@ -496,6 +499,52 @@ function popupAction(ajaxUrl, option) {
 		});
 	});
 	
+	$modal.on('shown.bs.modal', function (e) {
+		reloadScript();
+	});
+	$modal.on('hidden.bs.modal', function (e) {
+		$modal.html('');
+	});
+}
+
+function popupActionNew(ajaxUrl, option) {
+	Form.extendedModals('ajax');
+
+	var $modal 	= $('#ajax-modal');
+
+	$('body').modalmanager('loading');
+	$modal.load(ajaxUrl, option, function(){
+		$modal.modal();
+	});
+
+	$modal.on('click', '.save-close', function(){
+		$.ajax({
+			url: ajaxUrl,
+			type: 'POST',
+			data: $modal.find('form').serialize(),
+			beforeSend: function() {
+				$modal.modal('loading');
+				$modal.find('.btn').addClass('disabled');
+			},
+			success: function(result) {
+				if(result['type'] == 'print_contract_order') {
+					$modal.modal('hide');
+					window.open('/xadmin/contract/print-multi-order?token='+result.token+'&ids='+result.ids, '_blank');
+					location.reload();
+				}
+				else {
+					$modal.modal('loading');
+					$modal.find('.btn').removeClass('disabled');
+					$modal.find('.modal-body').html(result);
+					reloadScript();
+				}
+			},
+			error: function (request, status, error) {
+				console.log(error);
+			}
+		});
+	});
+
 	$modal.on('shown.bs.modal', function (e) {
 		reloadScript();
 	});
