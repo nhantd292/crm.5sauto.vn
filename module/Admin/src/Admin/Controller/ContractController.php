@@ -2606,7 +2606,7 @@ class ContractController extends ActionController {
 
                                 if($res['success']){
                                     $contract_code_success[] = $key;
-                                    $ids[] = $res['order']['label'];
+                                    $order_code_ghtk[] = $res['order']['label'];
 
                                     $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
                                     $arrParam['id']             = $contract_item['id'];
@@ -2628,14 +2628,14 @@ class ContractController extends ActionController {
                                 $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
                             }
 
-//                            $ids='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
+//                            $order_code_ghtk='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
 //                            $ghtk_key = '07da21A79A4a2eC902F4DBcD6007f7443b9543B2';
-                            $ids = implode(', ', $ids);
+                            $order_code_ghtk = implode(', ', $order_code_ghtk);
                             $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
                             $res_data = array(
                                 'type' => 'print_contract_order',
                                 'token' => $ghtk_key,
-                                'ids' => $ids,
+                                'ids' => $order_code_ghtk,
                             );
                             echo json_encode($res_data);
                             return $this->response;
