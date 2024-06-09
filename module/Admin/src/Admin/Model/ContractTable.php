@@ -3038,6 +3038,16 @@ class ContractTable extends DefaultTable {
 		}
 
 		// cập nhật giá vốn đơn hàng có sản phẩm có sẵn
+		if ($options['task'] == 'update-cost-new') {
+            $id         = $arrData['id'];
+            $options    = $arrData['options'];
+			$data = array();
+            $data['options'] = serialize($options);
+			// Cập nhật đơn hàng
+			$this->tableGateway->update($data, array('id' => $id));
+		}
+
+		// cập nhật giá vốn đơn hàng có sản phẩm có sẵn
 		if ($options['task'] == 'update-capital') {
             $id             = $arrData['id'];
             $options_update = $arrData['options_update'];

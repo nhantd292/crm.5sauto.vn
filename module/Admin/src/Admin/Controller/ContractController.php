@@ -3034,32 +3034,44 @@ class ContractController extends ActionController {
     public function updateAction() {
         $items = $this->getTable()->listItem($this->_params, array('task' => 'list-all'));
         foreach ($items as $contract){
-            $status_history = !empty($contract['status_history']) ? unserialize($contract['status_history']) : array();
-            $date_success = null;
-            if(!empty($contract['ghtk_status'])){
-                if ($contract['unit_transport'] == '5sauto'){ // Đơn hàng tự giao
-                    if($contract['ghtk_status'] == 5 || $contract['ghtk_status'] == 6  || $contract['ghtk_status'] == 501){
-                        $date_success = $contract['created'];
-                    }
-                }
-                else{
-                    foreach($status_history as $status){
-                        if($contract['unit_transport'] == 'viettel'){
-                            if($status['ORDER_STATUS'] == 501){
-                                $date_success = $status['created'];
-                            }
-                        }
-                        elseif ($contract['unit_transport'] == 'ghtk'){
-                            if($status['status_id'] == 5 || $status['status_id'] == 6){
-                                $date_success = $status['created'];
-                            }
-                        }
+//            // Cập nhật ngày hoàn thành cho đơn hàng
+//            $status_history = !empty($contract['status_history']) ? unserialize($contract['status_history']) : array();
+//            $date_success = null;
+//            if(!empty($contract['ghtk_status'])){
+//                if ($contract['unit_transport'] == '5sauto'){ // Đơn hàng tự giao
+//                    if($contract['ghtk_status'] == 5 || $contract['ghtk_status'] == 6  || $contract['ghtk_status'] == 501){
+//                        $date_success = $contract['created'];
+//                    }
+//                }
+//                else{
+//                    foreach($status_history as $status){
+//                        if($contract['unit_transport'] == 'viettel'){
+//                            if($status['ORDER_STATUS'] == 501){
+//                                $date_success = $status['created'];
+//                            }
+//                        }
+//                        elseif ($contract['unit_transport'] == 'ghtk'){
+//                            if($status['status_id'] == 5 || $status['status_id'] == 6){
+//                                $date_success = $status['created'];
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if($date_success){
+//                $this->getTable()->saveItem(array('data' => array('id' => $contract['id'], 'date_success' => $date_success)), array('task' => 'update-contract-succes'));
+//            }
+
+            $options = !empty($contract['options']) ? unserialize($contract['options']) : array();
+            if(count($options['product'])){
+                foreach ($options['product'] as $key_p => $product){
+                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $product['product_id'], 'branchId' => $contract['sale_branch_id']));
+                    if($item_inven){
+                        $options['product'][$key_p]['cost_new']        = $item_inven['cost_new'];
                     }
                 }
             }
-            if($date_success){
-                $this->getTable()->saveItem(array('data' => array('id' => $contract['id'], 'date_success' => $date_success)), array('task' => 'update-contract-succes'));
-            }
+            $this->getTable()->saveItem(array('data' => array('id' => $contract['id'], 'options' => $options)), array('task' => 'update-cost-new'));
         }
 
         $ssFilter = new Container(__CLASS__.'update');
