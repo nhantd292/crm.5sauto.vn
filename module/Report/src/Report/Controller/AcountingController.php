@@ -1373,8 +1373,8 @@ class AcountingController extends ActionController {
                 $h1 = '<th width="140" class="text-center">Phí dịch vụ</th>';
                 $h2 = '<th width="140" class="mask_currency text-right text-red">'. abs($sum_cost_crm - $sum_cost_kov) .'</th>';
 
-                $kov1 = '<th width="140" class="text-center">Giá vốn crm</th>';
-                $kov2 = '<th width="140" class="mask_currency text-right text-red">'.$sum_cost_crm.'</th>';
+                $kov1 = '<th width="140" class="text-center">Giá vốn kov</th>';
+                $kov2 = '<th width="140" class="mask_currency text-right text-red">'.$sum_cost_kov.'</th>';
             }
             $result['reportTable'] = '<thead>
                         				    <tr>
@@ -1388,8 +1388,8 @@ class AcountingController extends ActionController {
                             					<th width="140" class="text-center">Nhân viên</th>
                             					<th width="200" class="text-center">Sản phẩm</th>
                             					<th width="140" class="text-center">Số lượng</th>
-                            					<th width="140" class="text-center">Giá vốn kov</th>
                             					'.$kov1.'
+                            					<th width="140" class="text-center">Giá vốn crm</th>
                             					<th width="140" class="text-center">Phí ship</th>
                             					<th width="140" class="text-center">Giá bán</th>
                             					<th width="140" class="text-center">Đã thanh toán</th>
@@ -1406,8 +1406,8 @@ class AcountingController extends ActionController {
                             					<th width="200" class="text-center"></th>
                             					<th width="200" class="text-center"></th>
                             					<th width="140" class="mask_currency text-center text-red">'.$sum_number.'</th>
-                            					<th width="140" class="mask_currency text-right text-red">'.$sum_cost_kov.'</th>
                             					'.$kov2.'
+                            					<th width="140" class="mask_currency text-right text-red">'.$sum_cost_crm.'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_transport.'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_total.'</th>
                             					<th width="140" class="mask_currency text-right text-red">'.$sum_price_paid.'</th>
