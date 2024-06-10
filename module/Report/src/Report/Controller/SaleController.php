@@ -1689,8 +1689,8 @@ class SaleController extends ActionController {
                         $options = unserialize($value['options']);
                         if (count($options['product'])) {
                             foreach ($options['product'] as $k => $v) {
-                                $data_report[$value['user_id']]['cost_capital'] += ($v['cost_new'] + $v['cost']) * $v['numbers'];
-                                $data_report['total']['cost_capital'] += ($v['cost_new'] + $v['cost']) * $v['numbers'];
+                                $data_report[$value['user_id']]['cost_capital'] += $v['cost_new'] * $v['numbers'];
+                                $data_report['total']['cost_capital'] += $v['cost_new'] * $v['numbers'];
                             }
                         }
                     }
