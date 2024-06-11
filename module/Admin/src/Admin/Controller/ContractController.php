@@ -2630,7 +2630,7 @@ class ContractController extends ActionController {
 
 //                            $order_code_ghtk='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
 //                            $ghtk_key = '07da21A79A4a2eC902F4DBcD6007f7443b9543B2';
-                            $order_code_ghtk = implode(', ', $order_code_ghtk);
+                            $order_code_ghtk = implode(',', $order_code_ghtk);
                             $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
                             $res_data = array(
                                 'type' => 'print_contract_order',
