@@ -782,31 +782,17 @@ class ContactTable extends DefaultTable {
             }
         }
 
-		// Cập nhật thông tin thời gian thành công của đơn hàng
+		// Cập nhật thông tin thời gian thành công của đơn hàng đầu tiên
         if($options['task'] == 'update-contract-time-success') {
-            $contact_id = $arrParam['contact_id'];
-            $contracts  = $this->getServiceLocator()->get('Admin\Model\ContractTable')->ListItem(array('data' => array('contact_id' => $contact_id, 'contrach_success' => true)), array('task' => 'list-ajax'));
-            foreach($contracts as $key => $contract){
-                if($contract['production_department_type'] != STATUS_CONTRACT_PRODUCT_CANCEL
-                    && $contract['status_id'] != HUY_SALES
-                    && $contract['delete'] != 1
-                    && $contract['status_check_id'] != STATUS_CONTRACT_CHECK_RETURN)
-                {
-                    if($contract['status_check_id'] == STATUS_CONTRACT_CHECK_SUCCESS){
-                        $data['contract_time_success'] = $contract['date_success'];
-                        $this->tableGateway->update($data, array('id' => $contact_id));
-                        break;
-                    }
-                    else{
-                        $data['contract_time_success'] = null;
-                        $this->tableGateway->update($data, array('id' => $contact_id));
-                        break;
-                    }
-                }
-                else{
-                    $data['contract_time_success'] = null;
-                    $this->tableGateway->update($data, array('id' => $contact_id));
-                }
+            $contact_id     = $arrParam['contact_id'];
+            $contact  = $this->getItem(array('id' => $contact_id));
+            if(empty($contact['contract_time_success'])){
+                $data['contract_time_success'] = $arrParam['date_success'];
+                $this->tableGateway->update($data, array('id' => $contact_id));
+            }
+            else if($arrParam['date_success'] < $contact['contract_time_success']) {
+                $data['contract_time_success'] = $arrParam['date_success'];
+                $this->tableGateway->update($data, array('id' => $contact_id));
             }
         }
 

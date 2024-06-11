@@ -3062,6 +3062,7 @@ class ContractController extends ActionController {
 //                $this->getTable()->saveItem(array('data' => array('id' => $contract['id'], 'date_success' => $date_success)), array('task' => 'update-contract-succes'));
 //            }
 
+            // Cập nhật giá vốn crm cho đơn hàng
             $options = !empty($contract['options']) ? unserialize($contract['options']) : array();
             if(count($options['product'])){
                 foreach ($options['product'] as $key_p => $product){

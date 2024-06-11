@@ -1527,8 +1527,10 @@ class ContractTable extends DefaultTable {
             $id = $arrData['id'];
             $date_success = !empty($arrData['date_success']) ? $arrData['date_success'] : date('Y-m-d H:i:s');
             $data['date_success'] = $date_success;
-
             $this->tableGateway->update($data, array('id' => $id));
+
+            $contract = $this->getItem(array('id' => $id));
+            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $contract['contact_id'],'date_success' => $date_success), array('task' => 'update-contract-time-success'));
             return true;
 		}
 
@@ -1667,7 +1669,7 @@ class ContractTable extends DefaultTable {
 
             $this->tableGateway->update($data_old, array('id' => $id));
             // cập nhật lại ngày thành công của đơn hàng đầu tiên
-            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $arrItem['contact_id']), array('task' => 'update-contract-time-success'));
+//            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $arrItem['contact_id']), array('task' => 'update-contract-time-success'));
 
             $dataNew = $this->getItem(['id'=>$id]);
             $dataNew['created'] = date('Y-m-d H:i:s');
@@ -3453,7 +3455,7 @@ class ContractTable extends DefaultTable {
             $this->tableGateway->update($data, $where);
 
             // cập nhật lại ngày thành công của đơn hàng đầu tiên
-            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $arrItem['contact_id']), array('task' => 'update-contract-time-success'));
+//            $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contact_id' => $arrItem['contact_id']), array('task' => 'update-contract-time-success'));
 
             return $arrData['id'];
         }
