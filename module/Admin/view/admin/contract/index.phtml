@@ -334,6 +334,10 @@
     foreach($this->ghtkKeyList as $key => $value){
         $sendGhtkAccount[] = array( 'name' => 'share','link' => 'javascript:popupActionNew(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendGhtk', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
     }
+    $sendGhnAccount = [];
+    foreach($this->ghnKeyList as $key => $value){
+        $sendGhnAccount[] = array( 'name' => 'share','link' => 'javascript:popupActionNew(\''. $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'sendGhn', 'id' => "{$value->id}")) .'\');', 'caption' => "Với tài khoản: {$value->name}", 'icon' => 'fa fa fa-paper-plane-o', 'attributes' => array( 'onclick' => '', 'class' => 'btn text-left',));
+    }
     
     // Control
     $arrControl = array(
@@ -346,6 +350,11 @@
         array(
             'name' => 'tool', 'caption' => 'Đẩy đơn sang GHTK', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
             'children' => $sendGhtkAccount,
+            'children-class' => 'dropdown-menu pull-right'
+        ),
+        array(
+            'name' => 'tool', 'caption' => 'Đẩy đơn sang GH Nhanh', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown' ),
+            'children' => $sendGhnAccount,
             'children-class' => 'dropdown-menu pull-right'
         ),
         array(

@@ -211,6 +211,7 @@ class ContractController extends ActionController {
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
         $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key', 'key_ghtk_ids' => explode(',', $user_branch['key_viettel_ids']))), array('task' => 'list-all'));
         $this->_viewModel['ghtkKeyList']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-key', 'key_ghtk_ids' => explode(',', $user_branch['key_ghtk_ids']))), array('task' => 'list-all'));
+        $this->_viewModel['ghnKeyList']             = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghn-key', 'key_ghn_ids' => explode(',', $user_branch['key_ghn_ids']))), array('task' => 'list-all'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
@@ -318,6 +319,7 @@ class ContractController extends ActionController {
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
         $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key', 'key_ghtk_ids' => explode(',', $user_branch['key_viettel_ids']))), array('task' => 'list-all'));
         $this->_viewModel['ghtkKeyList']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-key', 'key_ghtk_ids' => explode(',', $user_branch['key_ghtk_ids']))), array('task' => 'list-all'));
+        $this->_viewModel['ghnKeyList']             = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghn-key', 'key_ghn_ids' => explode(',', $user_branch['key_ghn_ids']))), array('task' => 'list-all'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
@@ -381,6 +383,7 @@ class ContractController extends ActionController {
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
         $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key', 'key_ghtk_ids' => explode(',', $user_branch['key_viettel_ids']))), array('task' => 'list-all'));
         $this->_viewModel['ghtkKeyList']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-key', 'key_ghtk_ids' => explode(',', $user_branch['key_ghtk_ids']))), array('task' => 'list-all'));
+        $this->_viewModel['ghnKeyList']             = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghn-key', 'key_ghn_ids' => explode(',', $user_branch['key_ghn_ids']))), array('task' => 'list-all'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
@@ -2482,6 +2485,7 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
+    // Đẩy đơn hàng sang giao hàng tiết kiệm
     public function sendGhtkAction() {
         $id_viettel_key = $this->params('id');
         if(!empty($id_viettel_key)){
@@ -2649,7 +2653,8 @@ class ContractController extends ActionController {
 
         return $viewModel;
     }
-    
+
+    // Đẩy đơn hàng sang viettel post
     public function sendViettelPostAction() {
         $id_viettel_key = $this->params('id');
         if(!empty($id_viettel_key)){
@@ -2783,6 +2788,175 @@ class ContractController extends ActionController {
                             }
 
                             echo 'success';
+                            return $this->response;
+                        }
+                    }
+                }
+            }
+        }
+        $viewModel =  new ViewModel($this->_viewModel);
+        $viewModel->setTerminal(true);
+
+        return $viewModel;
+    }
+
+    // Đẩy đơn hàng sang giao hàng nhanh
+    public function sendGhnAction() {
+        $id_ghn_key = $this->params('id');
+        if(!empty($id_ghn_key)){
+            $ditem = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $id_ghn_key));
+            $ghn_token = $ditem->alias;
+            if(!empty($ghn_token)){
+                $myForm   = new \Admin\Form\Contract\SendGhn($this);
+
+                $this->_viewModel['myForm']         = $myForm;
+                $this->_viewModel['caption']        = 'Đẩy đơn hàng sang GIAO HÀNG NHANH bằng tài khoản: '.$ditem->name;
+
+                if($this->getRequest()->isPost()){
+                    if($this->_params['data']['modal'] == 'success') {
+                        $myForm->setInputFilter(new \Admin\Filter\Contract\SendGhtk(array('data' => $this->_params['data'],)));
+                        $myForm->setData($this->_params['data']);
+                        if($myForm->isValid()) {
+                            $locations = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
+                            $contracts_type	= \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'alias'));
+
+                            $ids = json_decode($this->_params['data']['list_data_id'], true);
+                            $listData_ghtk = [];
+                            foreach($ids as $id){
+                                $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
+                                if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
+                                    $contract['options'] = unserialize($contract['options'])['product'];
+                                    $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
+                                    if(!empty($warehouse)){
+                                        $address = explode(',', $warehouse['address']);
+                                        $order_item['pick_name']        = $warehouse['name'];
+                                        $order_item['pick_province']    = $address[sizeof($address)-1];
+                                        $order_item['pick_district']    = $address[sizeof($address)-2];
+                                        $order_item['pick_ward']        = $address[sizeof($address)-3];
+                                        $order_item['pick_address']     = $address[sizeof($address)-4];
+                                        $order_item['pick_tel']         = $warehouse['phone'];
+                                    }
+
+                                    $products = [];
+                                    $total_weight = 0;
+                                    $bbs_type = '';
+                                    $list_name = '';
+                                    foreach($contract['options'] as $key => $value){
+                                        if($value['weight'] >=  20){
+                                            $bbs_type = 'b1';
+                                        }
+                                        $total_weight += $value['weight'];
+                                        $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
+                                        $list_name .= $pname.', ';
+                                    }
+                                    foreach($contract['options'] as $key => $value){
+                                        if($total_weight >= 20) {
+                                            if($bbs_type == 'b1'){
+                                                if ($value['weight'] >= 20) {
+                                                    $pro['name'] = $pname;
+                                                    $pro['weight'] = $value['weight'];
+                                                    $pro['quantity'] = $value['numbers'];
+                                                    $pro['product_code'] = $value['code'];
+                                                    $pro['length'] = $value['length'];
+                                                    $pro['width'] = $value['width'];
+                                                    $pro['height'] = $value['height'];
+
+                                                    $products[] = $pro;
+                                                }
+                                            }
+                                            else{
+                                                $pro['name'] = $pname;
+                                                $pro['weight'] = $total_weight;
+                                                $pro['quantity'] = $value['numbers'];
+                                                $pro['product_code'] = $value['code'];
+                                                $pro['length'] = $value['length'];
+                                                $pro['width'] = $value['width'];
+                                                $pro['height'] = $value['height'];
+
+                                                $products[] = $pro;
+                                                break;
+                                            }
+                                        }
+                                        else{
+                                            $pro['name'] = $pname;
+                                            $pro['weight'] = $total_weight;
+                                            $pro['quantity'] = $value['numbers'];
+                                            $pro['product_code'] = $value['code'];
+                                            $pro['length'] = $value['length'];
+                                            $pro['width'] = $value['width'];
+                                            $pro['height'] = $value['height'];
+
+                                            $products[] = $pro;
+                                            break;
+                                        }
+                                    }
+                                    $products[0]['name'] = $list_name;
+                                    $listData_ghtk[$contract['code']]['products'] = $products;
+
+                                    $order_item['id'] = $contract['code'];
+
+                                    // Thông tin khách hàng ships giao hàng
+                                    $order_item['tel']       = $contract['phone'];
+                                    $order_item['name']      = $contract['name'];
+                                    $order_item['province']  = $locations[$contract['location_city_id']]->name;
+                                    $order_item['district']  = $locations[$contract['location_district_id']]->fullname;
+                                    $order_item['ward']      = $locations[$contract['location_town_id']]->fullname;
+                                    $order_item['street']    = $contract['address'];
+                                    $order_item['address']   = $contract['address'];
+                                    $order_item['hamlet']    = "Khác";
+
+                                    $order_item['is_freeship'] = "1";
+                                    $order_item['pick_money'] = $contract['price_owed']; // Tiền hàng ship phải thu
+                                    $order_item['note'] = $contract['ghtk_note'];
+                                    $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
+                                    $order_item['transport'] = "road"; // road đường bộ, fly đường bay
+                                    $order_item['deliver_work_shift'] = $contract['deliver_work_shift']; // Thời gian giao hàng
+                                    if($total_weight >= 20){
+                                        $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
+                                    }
+
+                                    $listData_ghtk[$contract['code']]['order'] = $order_item;
+                                }
+                            }
+
+                            foreach ($listData_ghtk as $key => $value){
+                                $result = $this->ghn_call('/shipping-order/create', $value, 'POST', $ghn_token);
+                                $res = json_decode($result, true);
+
+                                if($res['success']){
+                                    $contract_code_success[] = $key;
+                                    $order_code_ghtk[] = $res['order']['label'];
+
+                                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
+                                    $arrParam['id']             = $contract_item['id'];
+                                    $arrParam['ghtk_code']      = $res['order']['label'];
+                                    $arrParam['ghtk_result']    = $res['order'];
+                                    $arrParam['ghtk_status']    = $res['order']['status_id'];
+                                    $arrParam['price_transport']= $res['order']['fee'];
+                                    $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
+                                }
+                                else{
+                                    $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
+                                }
+                            }
+
+                            if(!empty($contract_code_success)){
+                                $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang GHTK '.implode(', ', $contract_code_success) );
+                            }
+                            if(!empty($contract_code_error)){
+                                $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
+                            }
+
+//                            $order_code_ghtk='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
+//                            $ghtk_key = '07da21A79A4a2eC902F4DBcD6007f7443b9543B2';
+                            $order_code_ghtk = implode(',', $order_code_ghtk);
+                            $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+                            $res_data = array(
+                                'type' => 'print_contract_order',
+                                'token' => $ghtk_key,
+                                'ids' => $order_code_ghtk,
+                            );
+                            echo json_encode($res_data);
                             return $this->response;
                         }
                     }
@@ -3090,8 +3264,6 @@ class ContractController extends ActionController {
         $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
         $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
-        $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key', 'key_ghtk_ids' => explode(',', $user_branch['key_viettel_ids']))), array('task' => 'list-all'));
-        $this->_viewModel['ghtkKeyList']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-key', 'key_ghtk_ids' => explode(',', $user_branch['key_ghtk_ids']))), array('task' => 'list-all'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
@@ -3119,8 +3291,6 @@ class ContractController extends ActionController {
         $this->_viewModel['location_district']      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
         $this->_viewModel['location_town']          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
         $this->_viewModel['shippers']               = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'shipper')), array('task' => 'cache'));
-        $this->_viewModel['viettelKeyList']         = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-key', 'key_ghtk_ids' => explode(',', $user_branch['key_viettel_ids']))), array('task' => 'list-all'));
-        $this->_viewModel['ghtkKeyList']            = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-key', 'key_ghtk_ids' => explode(',', $user_branch['key_ghtk_ids']))), array('task' => 'list-all'));
 
         $this->_viewModel['status_check']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_check_vtp']       = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'viettel-status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));

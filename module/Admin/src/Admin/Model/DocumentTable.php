@@ -90,7 +90,7 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
                 if(!empty($arrParam['where'])) {
                     foreach ($arrParam['where'] AS $key => $value) {
                         if(!empty($value)) {
-                            if(in_array($key, ['key_ghtk_ids', 'key_ghtk_ids'])){
+                            if(in_array($key, ['key_ghtk_ids', 'key_ghtk_ids', 'key_ghn_ids'])){
                                 $select -> where -> in('id', $value);
                             }
                             else{

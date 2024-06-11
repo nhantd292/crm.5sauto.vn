@@ -153,6 +153,7 @@ class ActionController extends AbstractActionController {
         // Gọi đến function chạy đầu tiên
         $this->init();
     }
+
     public function updateToken($codeSecret){
         setcookie('viettelPost_token', '', time() - 1000);
         $result_token = json_decode($this->viettelpost("/user/LoginVTP", ["token"=>$codeSecret],"POST"), true);
@@ -417,6 +418,40 @@ class ActionController extends AbstractActionController {
         }
     }
 
+    public function ghn_call($api_endpoint, $query = array(), $method = 'GET', $token = '', $shop_id = '')
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, URL_GHN . $api_endpoint);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        if ($method != 'GET' && in_array($method, array('POST', 'PUT'))) {
+            if (is_array($query)) {
+                $query = json_encode($query);
+            }
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+        }
+        $header = array(
+            "Content-type: application/json",
+            "Cache-control: no-cache",
+            "Token: " .$token,
+            "ShopId: " .$shop_id,
+        );
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return false;
+        } else {
+            return $response;
+        }
+    }
+
     public function postJson($json)
     {
         $curl = curl_init();
@@ -539,6 +574,14 @@ class ActionController extends AbstractActionController {
                         "name" => "alias",
                     ),
                     array(
+                        "caption" => "Kho hàng",
+                        "name" => "document_id",
+                        "data_source" => array(
+                            "table" => "document",
+                            "where" => array("code" => "warehouses")
+                        )
+                    ),
+                    array(
                         "caption" => "Thứ tự",
                         "name" => "ordering",
                         "type" => "text",
@@ -613,12 +656,14 @@ class ActionController extends AbstractActionController {
                     ),
                     array(
                         "caption" => "Tài khoản Viettel Post",
+                        "boxClass" => "col-md-12",
                         'name' => 'key_viettel_ids',
                         'type' => 'MultiCheckbox',
                         'attributes' => array(
                             'class' => '',
                         ),
                         "options" => array(
+                            "to_data" => "implode",
                             "empty_option" => "- Chọn -",
                             "value_options" => array(),
                             "data_source" => array(
@@ -626,24 +671,26 @@ class ActionController extends AbstractActionController {
                                 "where" => array("code" => "viettel-key"),
                                 "order" => array("ordering" => "ASC", "name" => "ASC"),
                                 "view" => array(
-                                    "key" => "alias",
+                                    "key" => "id",
                                     "value" => "name",
                                     "sprintf" => "%s"
                                 )
                             )
                         ),
                         "validators" => array(
-                            "require" => 1
+                            "require" => 0
                         )
                     ),
                     array(
                         "caption" => "Tài khoản GHTK",
+                        "boxClass" => "col-md-12",
                         'name' => 'key_ghtk_ids',
                         'type' => 'MultiCheckbox',
                         'attributes' => array(
                             'class' => '',
                         ),
                         "options" => array(
+                            "to_data" => "implode",
                             "empty_option" => "- Chọn -",
                             "value_options" => array(),
                             "data_source" => array(
@@ -651,14 +698,68 @@ class ActionController extends AbstractActionController {
                                 "where" => array("code" => "ghtk-key"),
                                 "order" => array("ordering" => "ASC", "name" => "ASC"),
                                 "view" => array(
-                                    "key" => "alias",
+                                    "key" => "id",
                                     "value" => "name",
                                     "sprintf" => "%s"
                                 )
                             )
                         ),
                         "validators" => array(
-                            "require" => 1
+                            "require" => 0
+                        )
+                    ),
+                    array(
+                        "caption" => "Tài khoản GHN",
+                        "boxClass" => "col-md-12",
+                        'name' => 'key_ghn_ids',
+                        'type' => 'MultiCheckbox',
+                        'attributes' => array(
+                            'class' => '',
+                        ),
+                        "options" => array(
+                            "to_data" => "implode",
+                            "empty_option" => "- Chọn -",
+                            "value_options" => array(),
+                            "data_source" => array(
+                                "table" => "document",
+                                "where" => array("code" => "ghn-key"),
+                                "order" => array("ordering" => "ASC", "name" => "ASC"),
+                                "view" => array(
+                                    "key" => "id",
+                                    "value" => "name",
+                                    "sprintf" => "%s"
+                                )
+                            )
+                        ),
+                        "validators" => array(
+                            "require" => 0
+                        )
+                    ),
+                    array(
+                        "caption"       => "Kho hàng",
+                        "boxClass" => "col-md-12",
+                        "name"          => "inventory_ids",
+                        "type"          => "MultiCheckbox",
+                        "attributes"	=> array(
+                            "class"		=> "",
+                        ),
+                        "options"		=> array(
+                            "to_data" => "implode",
+                            "empty_option"	=> "- Chọn -",
+                            "value_options"	=> array(),
+                            "data_source" => array(
+                                "table" => "document",
+                                "where" => array("code" => "warehouses"),
+                                "order" => array("ordering" => "ASC", "name" => "ASC"),
+                                "view"  => array(
+                                    "key" => "id",
+                                    "value" => "name",
+                                    "sprintf" => "%s"
+                                )
+                            )
+                        ),
+                        "validators"      => array(
+                            "require"       => 1
                         )
                     ),
                 ),

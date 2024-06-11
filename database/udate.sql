@@ -22,3 +22,8 @@
 
 -- ALTER TABLE `x_contract`
 --     ADD COLUMN `index_number` INT(5) NOT NULL DEFAULT 0 COMMENT 'Thứ tự đơn của khách hàng' AFTER `index`;
+
+-- Tạo document danh sách tài khoản giao hàng nhanh
+-- thêm cấu hình tài khoản giao hàng nhanh vào chi nhánh
+ALTER TABLE `x_document`
+    ADD COLUMN `key_ghn_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản giao hàng nhanh' AFTER `key_viettel_ids`;
