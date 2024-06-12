@@ -2930,7 +2930,7 @@ class ContractController extends ActionController {
                                 $print = json_decode($print, true);
                                 $res_data = array(
                                     'type' => 'print_contract_order_ghn',
-                                    'link_in' => "https://dev-online-gateway.ghn.vn/a5/public-api/print80x80?token=".$print['data']['token'],
+                                    'link_in' => URL_GHN_PRINT."?token=".$print['data']['token'],
                                 );
                             }
 
