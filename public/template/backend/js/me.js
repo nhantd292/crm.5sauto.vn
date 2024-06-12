@@ -527,12 +527,16 @@ function popupActionNew(ajaxUrl, option) {
 				$modal.find('.btn').addClass('disabled');
 			},
 			success: function(result) {
+				if(result['type'] == 'success') {
+					$modal.modal('hide');
+					location.reload();
+				}
 				if(result['type'] == 'print_contract_order_ghtk') {
 					$modal.modal('hide');
 					window.open('/xadmin/contract/print-multi-order?token='+result.token+'&ids='+result.ids, '_blank');
 					location.reload();
 				}
-				else if(result['type'] == 'print_contract_order_ghn') {
+				if(result['type'] == 'print_contract_order_ghn') {
 					$modal.modal('hide');
 					window.open(result.link_in, '_blank');
 					location.reload();
