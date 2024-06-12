@@ -102,7 +102,6 @@ class DocumentController extends ActionController {
         $myForm->setData($this->_params['ssFilter']);
         
         $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
-        
         foreach ($configs['list']['fields'] AS $field) {
             if(!empty($field['data_source'])) {
 		        $tableGateway = new TableGateway(TABLE_PREFIX . $field['data_source']['table'], $adapter, null);

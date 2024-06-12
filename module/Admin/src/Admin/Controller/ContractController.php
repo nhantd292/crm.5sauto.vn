@@ -145,58 +145,14 @@ class ContractController extends ActionController {
             }
         }
 
-        // Cập nhật giá vốn mới cho đơn hàng
-//        if($this->_userInfo->getUserInfo('id') == '1111111111111111111111'){
-//            $items = $this->getTable()->listItem($this->_params, array('task' => 'list-item'));
-//            foreach($items as $contract){
-//                $options = unserialize($contract->options);
-//                $products = $options['product'];
-//                foreach($products as $key => $pro){
-//                    $item_inven = $this->getServiceLocator()->get('Admin\Model\KovProductBranchTable')->getItem(array('productId' => $pro['product_id'], 'branchId' => $contract->sale_branch_id));
-//
-//                    $capital_default = (int)($item_inven['cost'] + $item_inven['cost_new']) * $pro['numbers'];
-//                    $options['product'][$key]['cost'] = (int)$item_inven['cost'];
-//                    $options['product'][$key]['capital_default'] = (int)$capital_default;
-//                    $options['product'][$key]['cost_new'] = $item_inven['cost_new'];
-//                    $options['product'][$key]['fee'] = $item_inven['fee'];
-//                }
-//                $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('options' => $options, 'id' => $contract->id)), array('task' => 'update-product-cost-auto'));
-//            }
-//        }
-        
-
-
         // Lấy danh mục sản phẩm cho vào bộ lọc
         $categories = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/categories?pageSize=100&hierachicalData=true');
         $categories = json_decode($categories, true)['data'];
         $categories = $this->getNameCat($this->addNew($categories), $result);
         $this->_params['categories'] = $categories;
 
-        // Lấy danh sách sản phẩm đưa vào bộ lọc
-//        $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100');
-//        $products = json_decode($products, true);
-//        if($products['total'] < $products['pageSize']){
-//            $product_data = \ZendX\Functions\CreateArray::create($products['data'], array('key' => 'id', 'value' => 'fullName'));
-//        }
-//        else{
-//            $total = $products['total'];
-//            $pageSize = $products['pageSize'];
-//            $pageTotal = (int)($total / $pageSize) + 1;
-//            $product_data = [];
-//            for ($index = 0; $index < $pageTotal; $index++) {
-//                $currentItem = $index * $pageSize;
-//                $products = $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/products?pageSize=100&currentItem=' . $currentItem);
-//                $products = json_decode($products, true);
-//                $product_data = array_merge($product_data, $products['data']);
-//            }
-//            $product_data = \ZendX\Functions\CreateArray::create($product_data, array('key' => 'code', 'value' => 'fullName'));
-//        }
-//        $this->_params['products'] = $product_data;
-
         $myForm	= new \Admin\Form\Search\Contract($this, $this->_params);
         $myForm->setData($this->_params['ssFilter']);
-//        $user_obj = $this->getServiceLocator()->get('Admin\Model\UserTable')->getItem(['id' => $curent_user['id']]);
-//        $user_branch = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(['id' => $user_obj['sale_branch_id']]);
         $user_branch = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(['id' => $this->_params['ssFilter']['filter_sale_branch']]);
 
         $this->_viewModel['myForm']	                = $myForm;
@@ -218,7 +174,7 @@ class ContractController extends ActionController {
         $this->_viewModel['status_accounting']      = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status-acounting')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['status_sales']           = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'status')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'object'));
         $this->_viewModel['caption']                = 'Đơn hàng - Danh sách';
-        
+
         return new ViewModel($this->_viewModel);
     }
 
@@ -2637,7 +2593,7 @@ class ContractController extends ActionController {
                             $order_code_ghtk = implode(',', $order_code_ghtk);
                             $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
                             $res_data = array(
-                                'type' => 'print_contract_order',
+                                'type' => 'print_contract_order_ghtk',
                                 'token' => $ghtk_key,
                                 'ids' => $order_code_ghtk,
                             );
@@ -2807,45 +2763,54 @@ class ContractController extends ActionController {
             $ditem = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $id_ghn_key));
             $ghn_token = $ditem->alias;
             if(!empty($ghn_token)){
-                $myForm   = new \Admin\Form\Contract\SendGhn($this);
+                $myForm   = new \Admin\Form\Contract\SendGhn($this, array('token' => $ghn_token));
 
                 $this->_viewModel['myForm']         = $myForm;
                 $this->_viewModel['caption']        = 'Đẩy đơn hàng sang GIAO HÀNG NHANH bằng tài khoản: '.$ditem->name;
 
                 if($this->getRequest()->isPost()){
                     if($this->_params['data']['modal'] == 'success') {
-                        $myForm->setInputFilter(new \Admin\Filter\Contract\SendGhtk(array('data' => $this->_params['data'],)));
+                        $myForm->setInputFilter(new \Admin\Filter\Contract\SendGhn(array('data' => $this->_params['data'],)));
                         $myForm->setData($this->_params['data']);
                         if($myForm->isValid()) {
                             $locations = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
                             $contracts_type	= \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'alias'));
 
                             $ids = json_decode($this->_params['data']['list_data_id'], true);
+
+                            $pick_shift = $this->_params['data']['pick_shift'];
+                            $required_note = $this->_params['data']['required_note'];
+                            $shopid = $this->_params['data']['shopid'];
+
                             $listData_ghtk = [];
                             foreach($ids as $id){
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
-                                if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
+                                if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && empty($contract['ghtk_code']) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
                                     $contract['options'] = unserialize($contract['options'])['product'];
                                     $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
                                     if(!empty($warehouse)){
                                         $address = explode(',', $warehouse['address']);
-                                        $order_item['pick_name']        = $warehouse['name'];
-                                        $order_item['pick_province']    = $address[sizeof($address)-1];
-                                        $order_item['pick_district']    = $address[sizeof($address)-2];
-                                        $order_item['pick_ward']        = $address[sizeof($address)-3];
-                                        $order_item['pick_address']     = $address[sizeof($address)-4];
-                                        $order_item['pick_tel']         = $warehouse['phone'];
+
+                                        $order_item["return_phone"] = $warehouse['phone']; // Số điện thoại trả hàng
+                                        $order_item["return_address"] = $warehouse['address']; // Địa chỉ trả hàng
+                                        $order_item["from_name"] = $warehouse['name']; // Người gửi
+                                        $order_item["from_phone"] = $warehouse['phone']; // ĐT gửi
+                                        $order_item["from_address"] = $warehouse['address']; // Địa chỉ gửi
+                                        $order_item["from_ward_name"] = $address[sizeof($address)-3]; // Phường xã gửi
+                                        $order_item["from_district_name"] = $address[sizeof($address)-2]; // Quận/Huyện gửi
+                                        $order_item["from_province_name"] = $address[sizeof($address)-1]; // Tỉnh/Thành gửi
                                     }
+
 
                                     $products = [];
                                     $total_weight = 0;
-                                    $bbs_type = '';
+                                    $bbs_type = ''; // b1: có sp trong đơn hàng có khối lượng >= 20, b2 k có sp >= 20kg nhưng tổng lớn hơn 20kg
                                     $list_name = '';
                                     foreach($contract['options'] as $key => $value){
                                         if($value['weight'] >=  20){
                                             $bbs_type = 'b1';
                                         }
-                                        $total_weight += $value['weight'];
+                                        $total_weight += $value['weight'] * 1000;
                                         $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
                                         $list_name .= $pname.', ';
                                     }
@@ -2853,109 +2818,122 @@ class ContractController extends ActionController {
                                         if($total_weight >= 20) {
                                             if($bbs_type == 'b1'){
                                                 if ($value['weight'] >= 20) {
-                                                    $pro['name'] = $pname;
-                                                    $pro['weight'] = $value['weight'];
-                                                    $pro['quantity'] = $value['numbers'];
-                                                    $pro['product_code'] = $value['code'];
-                                                    $pro['length'] = $value['length'];
-                                                    $pro['width'] = $value['width'];
-                                                    $pro['height'] = $value['height'];
+                                                    $pro['name']        = $value['full_name'].' - '.$value['car_year'];;
+                                                    $pro['code']        = $value['code'];
+                                                    $pro['quantity']    = $value['numbers'];
 
                                                     $products[] = $pro;
                                                 }
                                             }
                                             else{
-                                                $pro['name'] = $pname;
-                                                $pro['weight'] = $total_weight;
-                                                $pro['quantity'] = $value['numbers'];
-                                                $pro['product_code'] = $value['code'];
-                                                $pro['length'] = $value['length'];
-                                                $pro['width'] = $value['width'];
-                                                $pro['height'] = $value['height'];
+                                                $pro['name']        = $value['full_name'].' - '.$value['car_year'];;
+                                                $pro['code']        = $value['code'];
+                                                $pro['quantity']    = $value['numbers'];
 
                                                 $products[] = $pro;
                                                 break;
                                             }
                                         }
                                         else{
-                                            $pro['name'] = $pname;
-                                            $pro['weight'] = $total_weight;
-                                            $pro['quantity'] = $value['numbers'];
-                                            $pro['product_code'] = $value['code'];
-                                            $pro['length'] = $value['length'];
-                                            $pro['width'] = $value['width'];
-                                            $pro['height'] = $value['height'];
+                                            $pro['name']        = $value['full_name'].' - '.$value['car_year'];;
+                                            $pro['code']        = $value['code'];
+                                            $pro['quantity']    = $value['numbers'];
 
                                             $products[] = $pro;
                                             break;
                                         }
                                     }
-                                    $products[0]['name'] = $list_name;
-                                    $listData_ghtk[$contract['code']]['products'] = $products;
+                                    
+                                    
+                                    
 
-                                    $order_item['id'] = $contract['code'];
+//                                    $products = [];
+//                                    $total_weight = 0;
+//                                    $list_name = '';
+//                                    foreach($contract['options'] as $key => $value){
+//                                        $total_weight += $value['weight'];
+//                                        $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
+//                                        $list_name .= $pname.', ';
+//
+//                                        $pro['name']        = $value['full_name'].' - '.$value['car_year'];;
+//                                        $pro['code']        = $value['code'];
+//                                        $pro['quantity']    = $value['numbers'];
+//                                        $pro['weight']      = $value['weight'] * 1000;
+//                                        $pro['length']      = $value['length'];
+//                                        $pro['width']       = $value['width'];
+//                                        $pro['height']      = $value['height'];
+//
+//                                        $products[] = $pro;
+//                                    }
 
-                                    // Thông tin khách hàng ships giao hàng
-                                    $order_item['tel']       = $contract['phone'];
-                                    $order_item['name']      = $contract['name'];
-                                    $order_item['province']  = $locations[$contract['location_city_id']]->name;
-                                    $order_item['district']  = $locations[$contract['location_district_id']]->fullname;
-                                    $order_item['ward']      = $locations[$contract['location_town_id']]->fullname;
-                                    $order_item['street']    = $contract['address'];
-                                    $order_item['address']   = $contract['address'];
-                                    $order_item['hamlet']    = "Khác";
-
-                                    $order_item['is_freeship'] = "1";
-                                    $order_item['pick_money'] = $contract['price_owed']; // Tiền hàng ship phải thu
-                                    $order_item['note'] = $contract['ghtk_note'];
-                                    $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
-                                    $order_item['transport'] = "road"; // road đường bộ, fly đường bay
-                                    $order_item['deliver_work_shift'] = $contract['deliver_work_shift']; // Thời gian giao hàng
-                                    if($total_weight >= 20){
-                                        $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
+                                    $order_item["payment_type_id"] = 1;// 1 người bán trả phí, 2 người mua trả phí
+                                    $order_item["note"] = $contract['ghtk_note']; // Người gửi ghi chú cho tài xế
+                                    $order_item["required_note"] = $required_note; // Ghi chú cho khách hàng
+                                    $order_item["client_order_code"] = $contract['code']; // Mã đơn hàng crm
+                                    $order_item["to_name"] = $contract['name']; // Người nhận
+                                    $order_item["to_phone"] = $contract['phone']; // Điện thoại nhận
+                                    $order_item["to_address"] = $locations[$contract['location_city_id']]->name; // Địa chỉ nhận
+                                    $order_item["to_ward_name"] = $locations[$contract['location_town_id']]->fullname; // Phường/xã nhận
+                                    $order_item["to_district_name"] = $locations[$contract['location_district_id']]->fullname; // Quận/huyện nhận
+                                    $order_item["to_province_name"] = $locations[$contract['location_city_id']]->name; // Tỉnh/Thành nhận
+                                    $order_item["cod_amount"] = $contract['price_total'] - $contract['price_deposits'];; // giá trị tiền thu hộ Tối đa 10.000.000
+                                    $order_item["content"] = $list_name;
+                                    $order_item["weight"] = $total_weight;
+                                    $order_item["length"] = 0;
+                                    $order_item["width"] = 0;
+                                    $order_item["height"] = 0;
+                                    $order_item["insurance_value"] = (int)$contract['price_total'] <= 5000000 ? (int)$contract['price_total'] : 5000000;// Giá trị bảo hiểm đơn hàng tối đa 5tr
+                                    $order_item["service_type_id"] = 2; // Dịch vụ
+                                    if(!empty($pick_shift)){
+                                        $order_item["pick_shift"] = [(int)$pick_shift]; // Ca lấy hàng
                                     }
+                                    $order_item["items"] = $products; // Danh sách sản phẩm
 
-                                    $listData_ghtk[$contract['code']]['order'] = $order_item;
+                                    $listData_ghtk[$contract['id']] = $order_item;
                                 }
                             }
 
                             foreach ($listData_ghtk as $key => $value){
-                                $result = $this->ghn_call('/shipping-order/create', $value, 'POST', $ghn_token);
+                                $result = $this->ghn_call('/shipping-order/create', $value, 'POST', $ghn_token, $shopid);
                                 $res = json_decode($result, true);
+                                if($res['code'] == 200){
+                                    $contract_code_success[] = $value['client_order_code'];
+                                    $order_code_ghn[] = $res['data']['order_code'];
 
-                                if($res['success']){
-                                    $contract_code_success[] = $key;
-                                    $order_code_ghtk[] = $res['order']['label'];
-
-                                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
-                                    $arrParam['id']             = $contract_item['id'];
-                                    $arrParam['ghtk_code']      = $res['order']['label'];
-                                    $arrParam['ghtk_result']    = $res['order'];
-                                    $arrParam['ghtk_status']    = $res['order']['status_id'];
-                                    $arrParam['price_transport']= $res['order']['fee'];
+                                    $arrParam['id']             = $key;
+                                    $arrParam['ghtk_code']      = $res['data']['order_code'];
+                                    $arrParam['ghtk_result']    = $res['data'];
+                                    $arrParam['ghtk_status']    = 'ready_to_pick'; // Trạng thái - Mới tạo đơn hàng
+                                    $arrParam['price_transport']= $res['data']['total_fee'];
+                                    $arrParam['unit_transport'] = 'ghn';
                                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
                                 }
                                 else{
-                                    $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
+                                    $contract_code_error[] = 'Đơn số : '. $value['client_order_code'] .' gặp lỗi do '.$res['message'];
                                 }
                             }
 
                             if(!empty($contract_code_success)){
-                                $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang GHTK '.implode(', ', $contract_code_success) );
+                                $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang GIAO HÀNG NHANH '.implode(', ', $contract_code_success) );
                             }
                             if(!empty($contract_code_error)){
                                 $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
                             }
 
-//                            $order_code_ghtk='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
-//                            $ghtk_key = '07da21A79A4a2eC902F4DBcD6007f7443b9543B2';
-                            $order_code_ghtk = implode(',', $order_code_ghtk);
                             $this->getResponse()->getHeaders()->addHeaderLine('Content-Type', 'application/json');
+                            // lấy link in đơn hàng
                             $res_data = array(
-                                'type' => 'print_contract_order',
-                                'token' => $ghtk_key,
-                                'ids' => $order_code_ghtk,
+                                'type' => 'success',
                             );
+                            if(!empty($order_code_ghn)){
+                                $print = $this->ghn_call('/a5/gen-token', array("order_codes" => $order_code_ghn), 'POST', $ghn_token, $shopid);
+                                $print = json_decode($print, true);
+                                $res_data = array(
+                                    'type' => 'print_contract_order_ghn',
+                                    'link_in' => "https://dev-online-gateway.ghn.vn/a5/public-api/print80x80?token=".$print['data']['token'],
+                                );
+                            }
+
                             echo json_encode($res_data);
                             return $this->response;
                         }

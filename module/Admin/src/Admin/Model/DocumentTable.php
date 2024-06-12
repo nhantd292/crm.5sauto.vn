@@ -164,6 +164,7 @@ class DocumentTable extends AbstractTableGateway implements ServiceLocatorAwareI
 	                    }
 					}
 					$select -> where -> equalTo('status', 1);
+
 	            });
                 $result = \ZendX\Functions\CreateArray::create($items, array('key' => 'id', 'value' => 'object'));
                  

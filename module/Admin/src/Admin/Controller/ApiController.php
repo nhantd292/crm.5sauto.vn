@@ -780,6 +780,63 @@ class ApiController extends ActionController {
         return $response;
     }
 
+    // webhook cập nhật trạng thái từ giao hành nhanh đẩy về crm
+    public function updateOrderStatusGHNAction(){
+        $response = new Response();
+        $response->setStatusCode(Response::STATUS_CODE_500);
+        try {
+            if($this->getRequest()->isPost()){
+                $hass = $this->getRequest()->getQuery('hash');
+                if($hass == HASS){
+                    $this->postJson(file_get_contents('php://input'));
+                    $data = json_decode(file_get_contents('php://input'), true);
+                    $code = $data['ClientOrderCode'];
+                    $ghtk_code = $data['OrderCode'];
+
+                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('ghtk_code' => $ghtk_code),  array('task' => 'ghtk-code'));
+                    if(empty($contract_item)){
+                        $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $code),  array('task' => 'by-code'));
+                    }
+                    if(!empty($contract_item)){
+                        // Tạo hóa đơn kov trừ số lượng hàng trong kho
+                        if($data['Status'] == 'picked'){ // trạng thái Đã lấy hàng/Đã nhập kho trên ghtk
+                            $this->updateNumberKiotviet($contract_item);
+                        }
+                        if($data['Status'] == 'delivered' && empty($contract_item['date_success'])) {
+                            $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('data' => array('id' => $contract_item['id'])), array('task' => 'update-contract-succes'));
+                        }
+
+                        $arrParam['id']             = $contract_item['id'];
+                        $arrParam['ghtk_status']    = $data['Status'];
+                        $arrParam['price_transport']= $data['TotalFee'];
+                        $arrParam['status_history'] = $data;
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
+
+                        $response->setStatusCode(Response::STATUS_CODE_200);
+                        $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
+                    }
+                    else{
+                        $response->setStatusCode(Response::STATUS_CODE_200);
+                        $response->setContent(json_encode(array('success' => false, 'message' => 'OrderCode invalid')));
+                    }
+                }
+                else{
+                    $response->setStatusCode(Response::STATUS_CODE_200);
+                    $response->setContent(json_encode(array('success' => false, 'message' => 'hash invalid')));
+                }
+            }
+            else{
+                $response->setStatusCode(Response::STATUS_CODE_401);
+                $response->setContent(json_encode(array('success' => false, 'message' => 'method invalid')));
+            }
+        } catch (Exception $e) {
+            $response->setStatusCode(Response::STATUS_CODE_500);
+            $response->setContent(json_encode(array('success' => false, 'message' => 'invalid')));
+        }
+        header('Content-Type: application/json');
+        return $response;
+    }
+
     // Hàm để log thông tin request
     function logRequest($data) {
         // Lấy thông tin về request

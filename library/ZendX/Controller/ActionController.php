@@ -418,7 +418,7 @@ class ActionController extends AbstractActionController {
         }
     }
 
-    public function ghn_call($api_endpoint, $query = array(), $method = 'GET', $token = '', $shop_id = '')
+    public function ghn_call($api_endpoint, $query = array(), $method = 'GET', $token, $shop_id = '')
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, URL_GHN . $api_endpoint);
@@ -446,7 +446,7 @@ class ActionController extends AbstractActionController {
         $err = curl_error($curl);
         curl_close($curl);
         if ($err) {
-            return false;
+            return $err;
         } else {
             return $response;
         }
@@ -455,7 +455,7 @@ class ActionController extends AbstractActionController {
     public function postJson($json)
     {
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, URLWEBHOOK);
+        curl_setopt($curl, CURLOPT_URL, 'https://webhook.site/7421599b-15ee-4810-868a-f3b26fbb9b4f');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_ENCODING, '');
         curl_setopt($curl, CURLOPT_MAXREDIRS, 10);

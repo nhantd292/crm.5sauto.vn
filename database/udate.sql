@@ -25,5 +25,5 @@
 
 -- Tạo document danh sách tài khoản giao hàng nhanh
 -- thêm cấu hình tài khoản giao hàng nhanh vào chi nhánh
-ALTER TABLE `x_document`
-    ADD COLUMN `key_ghn_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản giao hàng nhanh' AFTER `key_viettel_ids`;
+-- ALTER TABLE `x_document`
+--     ADD COLUMN `key_ghn_ids` TEXT NULL DEFAULT NULL COMMENT 'Danh sách tài khoản giao hàng nhanh' AFTER `key_viettel_ids`;
