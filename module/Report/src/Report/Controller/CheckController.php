@@ -1291,10 +1291,10 @@ class CheckController extends ActionController {
             $danggiaohang_status    = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'dang-giao-hang',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
             $thanhcong_status       = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'thanh-cong',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
 
-            $dalayhang_arr          = array_merge(explode(',', trim($dalayhang_status['content'])), explode(',', trim($dalayhang_status['note'])));
-            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
-            $danggiaohang_arr       = array_merge(explode(',', trim($danggiaohang_status['content'])), explode(',', trim($danggiaohang_status['note'])));
-            $thanhcong_arr          = array_merge(explode(',', trim($thanhcong_status['content'])), explode(',', trim($thanhcong_status['note'])));
+            $dalayhang_arr          = array_merge(explode(',', trim($dalayhang_status['content'])), explode(',', trim($dalayhang_status['note'])), explode(',', trim($dalayhang_status['description'])));
+            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])), explode(',', trim($hanghoan_status['description'])));
+            $danggiaohang_arr       = array_merge(explode(',', trim($danggiaohang_status['content'])), explode(',', trim($danggiaohang_status['note'])), explode(',', trim($danggiaohang_status['description'])));
+            $thanhcong_arr          = array_merge(explode(',', trim($thanhcong_status['content'])), explode(',', trim($thanhcong_status['note'])), explode(',', trim($thanhcong_status['description'])));
 
             foreach ($contracts as $key => $value){
                 // Nếu người lên đơn nằm trong danh sách nhân viên sale.

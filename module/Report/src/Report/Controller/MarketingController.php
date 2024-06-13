@@ -459,10 +459,10 @@ class MarketingController extends ActionController {
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
 
             $thanhcong_status       = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'thanh-cong',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
-            $thanhcong_arr          = array_merge(explode(',', trim($thanhcong_status['content'])), explode(',', trim($thanhcong_status['note'])));
+            $thanhcong_arr          = array_merge(explode(',', trim($thanhcong_status['content'])), explode(',', trim($thanhcong_status['note'])), explode(',', trim($thanhcong_status['description'])));
 
             $hanghoan_status        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'hang-hoan',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
-            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
+            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])), explode(',', trim($hanghoan_status['description'])));
 
             foreach ($contracts as $key => $value){
                 if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
@@ -766,7 +766,7 @@ class MarketingController extends ActionController {
             $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->report(array('ssFilter' => $where_contract), array('task' => 'join-contact-producted'));
 
             $hanghoan_status        = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('alias' => 'hang-hoan',  'code' => 'status-merge'), array('task' => 'by-custom-alias'));
-            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])));
+            $hanghoan_arr           = array_merge(explode(',', trim($hanghoan_status['content'])), explode(',', trim($hanghoan_status['note'])), explode(',', trim($hanghoan_status['description'])));
 
             foreach ($contracts as $key => $value){
                 if(!empty($value['marketer_id']) && array_key_exists($value['marketer_id'], $data_report) && $value['status_id'] != HUY_SALES){
