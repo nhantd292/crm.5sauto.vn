@@ -2461,9 +2461,9 @@ class ContractTable extends DefaultTable {
                 // Cập nhật thông tin đơn hàng đầu tiên cho khách hàng
                 $this->getServiceLocator()->get('Admin\Model\ContactTable')->saveItem(array('contract_id' => $id), array('task' => 'update-contract-first'));
                 // Thêm chi tiết sản phẩm đơn hàng
-                foreach($contract_options['product'] as $arraydata){
-                    $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
-                }
+//                foreach($contract_options['product'] as $arraydata){
+//                    $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
+//                }
 
                 // Thêm lịch sử hệ thống
                 $locations     = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
@@ -2591,11 +2591,11 @@ class ContractTable extends DefaultTable {
             // Cập nhật tổng số lượng sản phẩm trong đơn hàng
             $this->saveItem(array('data' => $id), array('task' => 'update-number-product-total'));
             // Xóa sản phẩm cũ của đơn hàng
-            $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('contract_id' => $id), array('task' => 'delete_product_by_contract_id'));
-            // Thêm chi tiết sản phẩm đơn hàng
-            foreach($contract_options['product'] as $arraydata){
-                $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
-            }
+//            $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('contract_id' => $id), array('task' => 'delete_product_by_contract_id'));
+//            // Thêm chi tiết sản phẩm đơn hàng
+//            foreach($contract_options['product'] as $arraydata){
+//                $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
+//            }
 
 			// Thêm lịch sử hệ thống
 			if(!empty($id)) {
@@ -2686,12 +2686,12 @@ class ContractTable extends DefaultTable {
             $this->tableGateway->update($data, array('id' => $id));
             // Cập nhật tổng số lượng sản phẩm trong đơn hàng
             $this->saveItem(array('data' => $id), array('task' => 'update-number-product-total'));
-            // Xóa sản phẩm cũ của đơn hàng
-            $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('contract_id' => $id), array('task' => 'delete_product_by_contract_id'));
-            // Thêm chi tiết sản phẩm đơn hàng
-            foreach($contract_options['product'] as $arraydata){
-                $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
-            }
+//            // Xóa sản phẩm cũ của đơn hàng
+//            $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('contract_id' => $id), array('task' => 'delete_product_by_contract_id'));
+//            // Thêm chi tiết sản phẩm đơn hàng
+//            foreach($contract_options['product'] as $arraydata){
+//                $this->getServiceLocator()->get('Admin\Model\ContractDetailTable')->saveItem(array('data' => $arraydata, 'contract_id' => $id), array('task' => 'add-item'));
+//            }
 
             // Thêm lịch sử hệ thống
             if(!empty($id)) {

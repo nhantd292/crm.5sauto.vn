@@ -788,7 +788,7 @@ class ApiController extends ActionController {
             if($this->getRequest()->isPost()){
                 $hass = $this->getRequest()->getQuery('hash');
                 if($hass == HASS){
-                    $this->postJson(file_get_contents('php://input'));
+//                    $this->postJson(file_get_contents('php://input'));
                     $data = json_decode(file_get_contents('php://input'), true);
                     $code = $data['ClientOrderCode'];
                     $ghtk_code = $data['OrderCode'];
@@ -1050,7 +1050,7 @@ class ApiController extends ActionController {
 //        $post_data_test = '{"Id":"d42dcce1-3919-4303-b829-d473a163845f","Attempt":1,"Notifications":[{"Action":"product.update.500400541","Data":[{"__type":"KiotViet.OmniChannelCore.Api.Shared.Model.WebhookProductUpdateRes, KiotViet.OmniChannelCore.Api.Shared","Id":26254255,"RetailerId":500400541,"Code":"SP000150","Name":"Sản phẩm test không bán","FullName":"Sản phẩm test không bán","CategoryId":438730,"CategoryName":"Thảm Sàn Nhựa Đúc Ôtô","AllowsSale":true,"Type":2,"HasVariants":false,"BasePrice":1500000,"ConversionValue":1,"Description":"","ModifiedDate":"2024-03-04T23:39:24.1470000+07:00","isActive":true,"IsRewardPoint":false,"OrderTemplate":"","TradeMarkId":166913,"TradeMarkName":"Ford","Attributes":[],"Units":[],"Inventories":[{"ProductId":26254255,"ProductCode":"SP000150","ProductName":"Sản phẩm test không bán","BranchId":45341,"BranchName":"CÔNG TY NỘI THẤT Ô TÔ FOREWIN","Cost":800000,"OnHand":15,"Reserved":1,"MinQuantity":0,"MaxQuantity":999999999,"isActive":true}],"PriceBooks":[],"Serials":[],"Images":[]}]}]}';
 //        $data_post =  json_decode($post_data_test, true);
 
-        $this->postJson(file_get_contents('php://input'));// Đẩy dữ liệu sang webhook.site để kiểm tra
+//        $this->postJson(file_get_contents('php://input'));// Đẩy dữ liệu sang webhook.site để kiểm tra
         $data_post =  json_decode(file_get_contents('php://input'), true);
 
         $notifications = $data_post['Notifications'];
@@ -1129,7 +1129,7 @@ class ApiController extends ActionController {
         // $post_data_test = '{"Id":"71676945-a9ef-4ca0-aff6-856731f30a49","Attempt":1,"Notifications":[{"Action":"stock.update.925719","Data":[{"__type":"KiotViet.OmniChannelCore.Api.Shared.Model.WebhookProductStockRes, KiotViet.OmniChannelCore.Api.Shared","ProductId":8352705,"ProductCode":"SP001591","ProductName":"SP_Test nhập kho","BranchId":13083,"BranchName":"Tân Triều","Cost":200000,"OnHand":10,"Reserved":0,"MinQuantity":0,"MaxQuantity":0,"isActive":true}]}]}';
         // $data_post =  json_decode($post_data_test, true);
 
-        $this->postJson(file_get_contents('php://input'));// Đẩy dữ liệu sang webhook.site để kiểm tra
+//        $this->postJson(file_get_contents('php://input'));// Đẩy dữ liệu sang webhook.site để kiểm tra
         $data_post =  json_decode(file_get_contents('php://input'), true);
         $notifications = $data_post['Notifications'];
 

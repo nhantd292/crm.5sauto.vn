@@ -129,6 +129,8 @@ if($this->items->count() > 0) {
         $status_sales           = $item->status_id ? $this->status_sales[$item->status_id]['name'] : '';
         if($item->unit_transport == 'viettel')
             $status_check           = $item->ghtk_status ? $this->status_check_vtp[$item->ghtk_status]['name'] : '';
+        elseif ($item->unit_transport == 'ghn')
+            $status_check           = $item->ghtk_status ? $this->status_check_ghn[$item->ghtk_status]['name'] : '';
         else
             $status_check           = $item->ghtk_status ? $this->status_check[$item->ghtk_status]['name'] : '';
         $status_acccounting     = $item->status_acounting_id ? $this->status_accounting[$item->status_acounting_id]['name'] : '';
