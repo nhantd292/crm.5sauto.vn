@@ -2474,9 +2474,9 @@ class ContractController extends ActionController {
                                     $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
                                     if(!empty($warehouse)){
                                         $address = explode(',', $warehouse['address']);
-                                        if(!empty($warehouse['content'])){ // nếu có thiết lập id kho hàng được cấu hình vị trí google máp trên app ghtk thì lấy thêm pick_address_id
-                                            $order_item['pick_address_id'] = $warehouse['content'];
-                                        }
+//                                        if(!empty($warehouse['content'])){ // nếu có thiết lập id kho hàng được cấu hình vị trí google máp trên app ghtk thì lấy thêm pick_address_id
+//                                            $order_item['pick_address_id'] = $warehouse['content'];
+//                                        }
                                         $order_item['pick_name']        = $warehouse['name'];
                                         $order_item['pick_province']    = $address[sizeof($address)-1];
                                         $order_item['pick_district']    = $address[sizeof($address)-2];
