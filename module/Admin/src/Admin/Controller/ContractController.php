@@ -2474,6 +2474,9 @@ class ContractController extends ActionController {
                                     $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
                                     if(!empty($warehouse)){
                                         $address = explode(',', $warehouse['address']);
+                                        if(!empty($warehouse['content'])){ // nếu có thiết lập id kho hàng được cấu hình vị trí google máp trên app ghtk thì lấy thêm pick_address_id
+                                            $order_item['pick_address_id'] = $warehouse['content'];
+                                        }
                                         $order_item['pick_name']        = $warehouse['name'];
                                         $order_item['pick_province']    = $address[sizeof($address)-1];
                                         $order_item['pick_district']    = $address[sizeof($address)-2];
@@ -2563,6 +2566,10 @@ class ContractController extends ActionController {
                                     $listData_ghtk[$contract['code']]['order'] = $order_item;
                                 }
                             }
+                            echo "<pre>";
+                            print_r($listData_ghtk);
+                            echo "</pre>";
+                            exit;
 
                             foreach ($listData_ghtk as $key => $value){
                                 $result = $this->ghtk_call('/services/shipment/order/?ver=1.5', $value, 'POST', $ghtk_key);
