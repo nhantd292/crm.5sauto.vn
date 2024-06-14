@@ -2566,10 +2566,6 @@ class ContractController extends ActionController {
                                     $listData_ghtk[$contract['code']]['order'] = $order_item;
                                 }
                             }
-                            echo "<pre>";
-                            print_r($listData_ghtk);
-                            echo "</pre>";
-                            exit;
 
                             foreach ($listData_ghtk as $key => $value){
                                 $result = $this->ghtk_call('/services/shipment/order/?ver=1.5', $value, 'POST', $ghtk_key);
