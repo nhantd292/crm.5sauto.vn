@@ -3763,6 +3763,9 @@ class ContractTable extends DefaultTable {
             if(!empty($arrData['unit_transport'])){
                 $data['unit_transport'] = $arrData['unit_transport'];
             }
+            if(!empty($arrData['unit_transport'])){
+                $data['token'] = $arrData['token'];
+            }
 
             // Cập nhật đơn hàng
             $this->tableGateway->update($data, array('id' => $id));

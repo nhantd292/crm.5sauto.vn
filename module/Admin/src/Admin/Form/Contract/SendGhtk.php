@@ -4,7 +4,7 @@ use \Zend\Form\Form as Form;
 
 class SendGhtk extends Form {
 	
-	public function __construct($sm){
+	public function __construct($sm, $options){
 		parent::__construct();
 		
 		// FORM Attribute
@@ -50,6 +50,23 @@ class SendGhtk extends Form {
 			'type'			=> 'Hidden',
 			'required'		=> false,
 		));
+
+        // Cửa hàng
+        $shops = json_decode($sm->ghtk_call("/services/shipment/list_pick_add", [], 'GET', $options['token']), true);
+        $shops_array = \ZendX\Functions\CreateArray::create($shops['data'], array('key' => 'pick_address_id', 'value' => 'address'));
+
+        $this->add(array(
+            'name'			=> 'pick_address_id',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Kho gửi hàng -',
+                'disable_inarray_validator' => true,
+                'value_options'	=> $shops_array,
+            )
+        ));
 
         // Kho gửi hàng
 //        $groupaddress = json_decode($sm->viettelpost("/user/listInventory"), true);

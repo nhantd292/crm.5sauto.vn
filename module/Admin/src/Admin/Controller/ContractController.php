@@ -2452,7 +2452,7 @@ class ContractController extends ActionController {
             $ditem = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $id_viettel_key));
             $ghtk_key = $ditem->alias;
             if(!empty($ghtk_key)){
-                $myForm   = new \Admin\Form\Contract\SendGhtk($this);
+                $myForm   = new \Admin\Form\Contract\SendGhtk($this, array('token' => $ghtk_key));
 
                 $this->_viewModel['myForm']         = $myForm;
                 $this->_viewModel['caption']        = 'Đẩy đơn hàng sang GHTK bằng tài khoản: '.$ditem->name;
@@ -2466,23 +2466,48 @@ class ContractController extends ActionController {
                             $contracts_type	= \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array( "where" => array( "code" => "production-type" )), array('task' => 'cache')), array('key' => 'id', 'value' => 'alias'));
                             
                             $ids = json_decode($this->_params['data']['list_data_id'], true);
+                            $pick_address_id = $this->_params['data']['pick_address_id'];
+                            $shops = json_decode($this->ghtk_call("/services/shipment/list_pick_add", [], 'GET', $ghtk_key), true)['data'];
+                            foreach($shops as $shop){
+                                if($pick_address_id == $shop['pick_address_id']){
+                                    $address = explode(',', $shop['address']);
+                                    $pick_item['pick_address_id']  =$pick_address_id;
+                                    $pick_item['pick_name']        = $shop['pick_name'];
+                                    $pick_item['pick_tel']         = $shop['pick_tel'];
+                                    $pick_item['pick_province']    = $address[sizeof($address)-1];
+                                    $pick_item['pick_district']    = $address[sizeof($address)-2];
+                                    $pick_item['pick_ward']        = $address[sizeof($address)-3];
+                                    $pick_item['pick_address']     = $address[sizeof($address)-4];
+                                    break;
+                                }
+                            }
+                            
                             $listData_ghtk = [];
                             foreach($ids as $id){
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
                                 if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
                                     $contract['options'] = unserialize($contract['options'])['product'];
-                                    $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
-                                    if(!empty($warehouse)){
-                                        $address = explode(',', $warehouse['address']);
-//                                        if(!empty($warehouse['content'])){ // nếu có thiết lập id kho hàng được cấu hình vị trí google máp trên app ghtk thì lấy thêm pick_address_id
-//                                            $order_item['pick_address_id'] = $warehouse['content'];
-//                                        }
-                                        $order_item['pick_name']        = $warehouse['name'];
-                                        $order_item['pick_province']    = $address[sizeof($address)-1];
-                                        $order_item['pick_district']    = $address[sizeof($address)-2];
-                                        $order_item['pick_ward']        = $address[sizeof($address)-3];
-                                        $order_item['pick_address']     = $address[sizeof($address)-4];
-                                        $order_item['pick_tel']         = $warehouse['phone'];
+
+                                    if(!empty($pick_address_id)){
+                                        $order_item['pick_address_id']  = $pick_item['pick_address_id'];
+                                        $order_item['pick_name']        = $pick_item['pick_name'];
+                                        $order_item['pick_province']    = $pick_item['pick_province'];
+                                        $order_item['pick_district']    = $pick_item['pick_district'];
+                                        $order_item['pick_ward']        = $pick_item['pick_ward'];
+                                        $order_item['pick_address']     = $pick_item['pick_address'];
+                                        $order_item['pick_tel']         = $pick_item['pick_tel'];
+                                    }
+                                    else{
+                                        $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
+                                        if(!empty($warehouse)){
+                                            $address = explode(',', $warehouse['address']);
+                                            $order_item['pick_name']        = $warehouse['name'];
+                                            $order_item['pick_province']    = $address[sizeof($address)-1];
+                                            $order_item['pick_district']    = $address[sizeof($address)-2];
+                                            $order_item['pick_ward']        = $address[sizeof($address)-3];
+                                            $order_item['pick_address']     = $address[sizeof($address)-4];
+                                            $order_item['pick_tel']         = $warehouse['phone'];
+                                        }
                                     }
 
                                     $products = [];
@@ -2539,7 +2564,7 @@ class ContractController extends ActionController {
                                         }
                                     }
                                     $products[0]['name'] = $list_name;
-                                    $listData_ghtk[$contract['code']]['products'] = $products;
+                                    $listData_ghtk[$contract['id']]['products'] = $products;
 
                                     $order_item['id'] = $contract['code'];
 
@@ -2563,7 +2588,7 @@ class ContractController extends ActionController {
                                         $order_item['3pl'] = 1; // Hàng theo kích thước khối lượng lớn BBS
                                     }
 
-                                    $listData_ghtk[$contract['code']]['order'] = $order_item;
+                                    $listData_ghtk[$contract['id']]['order'] = $order_item;
                                 }
                             }
 
@@ -2572,19 +2597,20 @@ class ContractController extends ActionController {
                                 $res = json_decode($result, true);
 
                                 if($res['success']){
-                                    $contract_code_success[] = $key;
+                                    $contract_code_success[] = $value['order']['id'];
                                     $order_code_ghtk[] = $res['order']['label'];
 
-                                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
-                                    $arrParam['id']             = $contract_item['id'];
+                                    $arrParam['id']             = $key;
                                     $arrParam['ghtk_code']      = $res['order']['label'];
                                     $arrParam['ghtk_result']    = $res['order'];
                                     $arrParam['ghtk_status']    = $res['order']['status_id'];
                                     $arrParam['price_transport']= $res['order']['fee'];
+                                    $arrParam['unit_transport'] = 'ghtk';
+                                    $arrParam['token']          = $ghtk_key;
                                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
                                 }
                                 else{
-                                    $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
+                                    $contract_code_error[] = 'Đơn số : '. $value['order']['id'] .' gặp lỗi do '.$res['message'];
                                 }
                             }
 
@@ -2913,6 +2939,7 @@ class ContractController extends ActionController {
                                     $arrParam['ghtk_status']    = 'ready_to_pick'; // Trạng thái - Mới tạo đơn hàng
                                     $arrParam['price_transport']= $res['data']['total_fee'];
                                     $arrParam['unit_transport'] = 'ghn';
+                                    $arrParam['token']          = $ghn_token;
                                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
                                 }
                                 else{
