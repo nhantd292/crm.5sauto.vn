@@ -73,7 +73,7 @@ $xhtmlItems = '';
 if($this->items->count() > 0) {
     $stt = 0;
     $sum = 0;
-    $total_price = $total_cod = $total_discount = $total_price_owed = 0;
+    $total_number = $total_price = $total_cod = $total_discount = $total_price_owed = 0;
     $manager_edit = false;
     if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
         $manager_edit = true;
@@ -219,6 +219,10 @@ if($this->items->count() > 0) {
         $total_kg = 0;
         if ($countProduct > 0) {
             foreach ($options['product'] as $keyp => $valuep){
+                if($this->params['ssFilter']['filter_product'] && in_array($valuep['product_id'], $this->params['ssFilter']['filter_product'])){
+                    $total_number += $valuep['numbers'];
+                }
+
                 $total_kg += $valuep['weight'];
                 if(!empty($valuep['product_id'])){
                     $number_row++;
@@ -292,6 +296,7 @@ $text_total = '<br><span  class="text-red">' . number_format($total_price) . '</
 $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
 $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
 $text_total_price_owed = '<br><span  class="text-red">' . number_format($total_price_owed) . '</span>';
+$text_total_number = $total_number > 0 ? '<br><span class="text-red">' . number_format($total_number) . '</span>' : '';
 
 // Head
 $xhtmlHead  = '<tr>';
@@ -303,7 +308,7 @@ $xhtmlHead .= '<th width="90">Mã số đơn</th>';
 $xhtmlHead .= '<th width="80">Ngày</th>';
 $xhtmlHead .= '<th width="150">Nhân viên</th>';
 $xhtmlHead .= '<th width="200">Sản phẩm</th>';
-$xhtmlHead .= '<th width="120">Số lượng</th>';
+$xhtmlHead .= '<th width="120" class="text-center">Số lượng'.$text_total_number.'</th>';
 $xhtmlHead .= '<th width="120" class="text-center">Kg</th>';
 $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
 $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';

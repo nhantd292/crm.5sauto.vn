@@ -288,7 +288,7 @@
     $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
     $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
     $text_total_price_owed = '<br><span  class="text-red">' . number_format($total_price_owed) . '</span>';
-    $text_total_number = '<br><span class="text-red">' . number_format($total_number) . '</span>';
+    $text_total_number = $total_number > 0 ? '<br><span class="text-red">' . number_format($total_number) . '</span>' : '';
 
     // Head
     $xhtmlHead  = '<tr>';
@@ -300,7 +300,7 @@
     $xhtmlHead .= '<th width="80">Ngày</th>';
     $xhtmlHead .= '<th width="150">Nhân viên</th>';
     $xhtmlHead .= '<th width="200">Sản phẩm</th>';
-    $xhtmlHead .= '<th width="120" class="text-red text-center">Số lượng'.$text_total_number.'</th>';
+    $xhtmlHead .= '<th width="120" class="text-center">Số lượng'.$text_total_number.'</th>';
     $xhtmlHead .= '<th width="120" class="text-center">Kg</th>';
     $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
     $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
