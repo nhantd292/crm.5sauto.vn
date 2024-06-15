@@ -47,17 +47,9 @@ class ActionController extends AbstractActionController {
         }
 //        echo $this->kiotviet_token;
 
-//        setcookie('viettelPost_token', '', time() - 1000);
-        if(isset($_COOKIE['viettelPost_token'])){
-            $this->viettelPost_token = $_COOKIE['viettelPost_token'];
-        }
-//          else {
-//            $result_token = json_decode($this->viettelpost("/user/LoginVTP", ["token"=>VIETTELPOST_CODE_SECRET],"POST"), true);
-//            $token = $result_token['data']['token'];
-//            setcookie('viettelPost_token', $token,time()+86400*30);
+//        if(isset($_COOKIE['viettelPost_token'])){
 //            $this->viettelPost_token = $_COOKIE['viettelPost_token'];
 //        }
-//        echo $_COOKIE['viettelPost_token'];
 
         // Lấy thông tin setting
         $this->_settings = $this->getServiceLocator()->get('Admin\Model\SettingTable')->listItem(array('code' => 'General'), array('task' => 'cache-by-code'));
@@ -154,13 +146,13 @@ class ActionController extends AbstractActionController {
         $this->init();
     }
 
-    public function updateToken($codeSecret){
-        setcookie('viettelPost_token', '', time() - 1000);
-        $result_token = json_decode($this->viettelpost("/user/LoginVTP", ["token"=>$codeSecret],"POST"), true);
-        $token = $result_token['data']['token'];
-        setcookie('viettelPost_token', $token,time()+86400*30);
-        return $_COOKIE['viettelPost_token'];
-    }
+//    public function updateToken($codeSecret){
+//        setcookie('viettelPost_token', '', time() - 1000);
+//        $result_token = json_decode($this->viettelpost("/user/LoginVTP", ["token"=>$codeSecret],"POST"), true);
+//        $token = $result_token['data']['token'];
+//        setcookie('viettelPost_token', $token,time()+86400*30);
+//        return $_COOKIE['viettelPost_token'];
+//    }
     
     public function onDispath(MvcEvent $e) {
         // Truyền tất cả params ra ngoài layout
@@ -401,7 +393,6 @@ class ActionController extends AbstractActionController {
             }
             curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
         }
-        $token = !empty($token) ? $token : $this->viettelPost_token;
         $header = array(
             "Token: " .$token,
             "Cache-control: no-cache",

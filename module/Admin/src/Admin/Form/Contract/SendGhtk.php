@@ -68,22 +68,5 @@ class SendGhtk extends Form {
             )
         ));
 
-        // Kho gửi hàng
-//        $groupaddress = json_decode($sm->viettelpost("/user/listInventory"), true);
-//        $inventorys = \ZendX\Functions\CreateArray::create($groupaddress['data'], array('key' => 'groupaddressId', 'value' => 'name,address', 'sprintf' =>'%s - %s'));
-//
-//        $this->add(array(
-//            'name'			=> 'groupaddressId',
-//            'type'			=> 'Select',
-//            'attributes'	=> array(
-//                'class'		=> 'form-control select2 select2_basic',
-//            ),
-//            'options'		=> array(
-//                'empty_option'	=> '- Kho gửi hàng -',
-//                'disable_inarray_validator' => true,
-//                'value_options'	=> $inventorys,
-//            )
-//        ));
-
 	}
 }

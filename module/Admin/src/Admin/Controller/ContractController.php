@@ -2485,30 +2485,31 @@ class ContractController extends ActionController {
                             $listData_ghtk = [];
                             foreach($ids as $id){
                                 $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id['id']));
-                                if(($contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
+                                if((1 || $contract['status_id'] == DA_CHOT || $contract['status_id'] == DANG_DONG_GOI) && $contract['delete'] == 0 && $contracts_type[$contract['production_type_id']] == DON_TINH){
                                     $contract['options'] = unserialize($contract['options'])['product'];
+                                    $order_item = [];
 
-                                    if(!empty($pick_address_id)){
-                                        $order_item['pick_address_id']  = $pick_item['pick_address_id'];
-                                        $order_item['pick_name']        = $pick_item['pick_name'];
-                                        $order_item['pick_province']    = $pick_item['pick_province'];
-                                        $order_item['pick_district']    = $pick_item['pick_district'];
-                                        $order_item['pick_ward']        = $pick_item['pick_ward'];
-                                        $order_item['pick_address']     = $pick_item['pick_address'];
-                                        $order_item['pick_tel']         = $pick_item['pick_tel'];
-                                    }
-                                    else{
-                                        $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
-                                        if(!empty($warehouse)){
-                                            $address = explode(',', $warehouse['address']);
-                                            $order_item['pick_name']        = $warehouse['name'];
-                                            $order_item['pick_province']    = $address[sizeof($address)-1];
-                                            $order_item['pick_district']    = $address[sizeof($address)-2];
-                                            $order_item['pick_ward']        = $address[sizeof($address)-3];
-                                            $order_item['pick_address']     = $address[sizeof($address)-4];
-                                            $order_item['pick_tel']         = $warehouse['phone'];
-                                        }
-                                    }
+//                                    if(!empty($pick_address_id)){
+                                    $order_item['pick_address_id']  = $pick_item['pick_address_id'];
+                                    $order_item['pick_name']        = $pick_item['pick_name'];
+                                    $order_item['pick_province']    = $pick_item['pick_province'];
+                                    $order_item['pick_district']    = $pick_item['pick_district'];
+                                    $order_item['pick_ward']        = $pick_item['pick_ward'];
+                                    $order_item['pick_address']     = $pick_item['pick_address'];
+                                    $order_item['pick_tel']         = $pick_item['pick_tel'];
+//                                    }
+//                                    else{
+//                                        $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
+//                                        if(!empty($warehouse)){
+//                                            $address = explode(',', $warehouse['address']);
+//                                            $order_item['pick_name']        = $warehouse['name'];
+//                                            $order_item['pick_province']    = $address[sizeof($address)-1];
+//                                            $order_item['pick_district']    = $address[sizeof($address)-2];
+//                                            $order_item['pick_ward']        = $address[sizeof($address)-3];
+//                                            $order_item['pick_address']     = $address[sizeof($address)-4];
+//                                            $order_item['pick_tel']         = $warehouse['phone'];
+//                                        }
+//                                    }
 
                                     $products = [];
                                     $total_weight = 0;
@@ -2618,7 +2619,7 @@ class ContractController extends ActionController {
                                 $this->flashMessenger()->addMessage('Các đơn đã đẩy thành công sang GHTK '.implode(', ', $contract_code_success) );
                             }
                             if(!empty($contract_code_error)){
-                                $this->flashMessenger()->addMessage('Chưa đẩy thành công '.implode(', ', $contract_code_error) );
+                                $this->flashMessenger()->addMessage(', Chưa đẩy thành công '.implode(', ', $contract_code_error) );
                             }
 
 //                            $order_code_ghtk='S22620562.MB3-01-A7.1982417997,S22620562.BO.MN6-05-D1.1923217495,S22620562.BO.SGP23-E47.1981878263';
@@ -2651,7 +2652,7 @@ class ContractController extends ActionController {
             $viettel_key = $ditem->alias;
             if(!empty($viettel_key)){
                 $this->updateToken($viettel_key);
-                $myForm   = new \Admin\Form\Contract\SendViettelPost($this);
+                $myForm   = new \Admin\Form\Contract\SendViettelPost($this, array('token' => $viettel_key));
 
                 $this->_viewModel['myForm']         = $myForm;
                 $this->_viewModel['caption']        = 'Đẩy đơn hàng sang Viettel Post bằng tài khoản: '.$ditem->name;
@@ -2664,17 +2665,17 @@ class ContractController extends ActionController {
                             $locations = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(null, array('task' => 'cache'));
 
                             $list_data_id   = json_decode($this->_params['data']['list_data_id'], true);
-//                            $groupaddressId = $this->_params['data']['groupaddressId'];
-//                            $inventorys = json_decode($this->viettelpost('/user/listInventory'), true);
-//                            $inventory_item = [];
-//                            if (isset($inventorys['data'])) {
-//                                foreach ($inventorys['data'] as $ki => $vi) {
-//                                    if ($vi['groupaddressId'] == $groupaddressId) {
-//                                        $inventory_item = $vi;
-//                                        break;
-//                                    }
-//                                }
-//                            }
+                            $groupaddressId = $this->_params['data']['groupaddressId'];
+                            $inventorys = json_decode($this->viettelpost('/user/listInventory', [], 'GET', $viettel_key), true);
+                            $inventory_item = [];
+                            if (isset($inventorys['data'])) {
+                                foreach ($inventorys['data'] as $ki => $vi) {
+                                    if ($vi['groupaddressId'] == $groupaddressId) {
+                                        $inventory_item = $vi;
+                                        break;
+                                    }
+                                }
+                            }
 
                             $listData_ghtk = [];
                             foreach($list_data_id as $id) {
@@ -2697,12 +2698,10 @@ class ContractController extends ActionController {
                                         }
                                     }
                                     $order_item['ORDER_NUMBER'] =$contract['code'];
-                                    $warehouse = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $contract['groupaddressId']));
-                                    if(!empty($warehouse)){
-                                        $order_item['SENDER_FULLNAME']  = $warehouse['name'];
-                                        $order_item['SENDER_ADDRESS']   = $warehouse['address'];
-                                        $order_item['SENDER_PHONE']     = $warehouse['phone'];
-                                    }
+                                    $order_item['GROUPADDRESS_ID']  = $inventory_item['groupaddressId'];
+                                    $order_item['SENDER_FULLNAME']  = $inventory_item['name'];
+                                    $order_item['SENDER_ADDRESS']   = $inventory_item['address'];
+                                    $order_item['SENDER_PHONE']     = $inventory_item['phone'];
 
                                     $order_item['RECEIVER_FULLNAME'] = $contract['name'];
                                     $order_item['RECEIVER_ADDRESS'] = $contract['address'].', '.$locations[$contract['location_town_id']]->fullname.', '.$locations[$contract['location_district_id']]->fullname.', '.$locations[$contract['location_city_id']]->fullname;
@@ -2718,7 +2717,7 @@ class ContractController extends ActionController {
                                         "MONEY_COLLECTION" => $contract['price_total'] - $contract['price_deposits'],
                                         "TYPE" => 1
                                     );
-                                    $services = json_decode($this->viettelpost('/order/getPriceAllNlp', $s_data, 'POST'), true)['RESULT'];
+                                    $services = json_decode($this->viettelpost('/order/getPriceAllNlp', $s_data, 'POST', $viettel_key), true)['RESULT'];
                                     $order_service = '';
                                     $gia_cuoc = 1000000000;
                                     foreach($services as $ser){
@@ -2746,26 +2745,25 @@ class ContractController extends ActionController {
                                     $order_item["CHECK_UNIQUE"] = true;
                                     $order_item["PRODUCT_DETAIL"] = $products;
 
-                                    $listData_ghtk[$contract['code']] = $order_item;
+                                    $listData_ghtk[$contract['id']] = $order_item;
                                 }
                             }
                             # thực hiện đẩy đơn sang vtp
                             foreach ($listData_ghtk as $key => $value){
-                                $result = $this->viettelpost('/order/createOrderNlp', $value, 'POST');
+                                $result = $this->viettelpost('/order/createOrderNlp', $value, 'POST', $viettel_key);
                                 $res = json_decode($result, true);
 
                                 if($res['status'] == 200 and $res['error'] == false){
-                                    $contract_code_success[] = $key;
-
-                                    $contract_item = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('code' => $key),  array('task' => 'by-code'));
-                                    $arrParam['id']             = $contract_item['id'];
+                                    $contract_code_success[] = $value['ORDER_NUMBER'];
+                                    $arrParam['id']             = $key;
                                     $arrParam['ghtk_code']      = $res['data']['ORDER_NUMBER'];
                                     $arrParam['ghtk_result']    = $res['data'];
                                     $arrParam['unit_transport'] = 'viettel';
+                                    $arrParam['token']          = $viettel_key;
                                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-ghtk'));
                                 }
                                 else{
-                                    $contract_code_error[] = 'Đơn số : '. $key .' gặp lỗi do '.$res['message'];
+                                    $contract_code_error[] = 'Đơn số : '. $value['ORDER_NUMBER'] .' gặp lỗi do '.$res['message'];
                                 }
                             }
 
