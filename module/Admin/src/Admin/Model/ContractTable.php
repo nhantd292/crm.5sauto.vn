@@ -140,6 +140,7 @@ class ContractTable extends DefaultTable {
                             ->OR
                             -> equalTo(TABLE_CONTRACT .'.ghtk_code', '')
                             -> UNNEST;
+                        $select -> where -> notEqualTo(TABLE_CONTRACT .'.status_id', HUY_SALES);
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
                     }
@@ -344,6 +345,7 @@ class ContractTable extends DefaultTable {
                             ->OR
                             -> equalTo(TABLE_CONTRACT .'.ghtk_code', '')
                             -> UNNEST;
+                        $select -> where -> notEqualTo(TABLE_CONTRACT .'.status_id', HUY_SALES);
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
                     }
@@ -760,6 +762,7 @@ class ContractTable extends DefaultTable {
                         ->OR
                             -> equalTo(TABLE_CONTRACT .'.ghtk_code', '')
                         -> UNNEST;
+                        $select -> where -> notEqualTo(TABLE_CONTRACT .'.status_id', HUY_SALES);
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
                     }
@@ -1291,6 +1294,7 @@ class ContractTable extends DefaultTable {
                             ->OR
                             -> equalTo(TABLE_CONTRACT .'.ghtk_code', '')
                             -> UNNEST;
+                        $select -> where -> notEqualTo(TABLE_CONTRACT .'.status_id', HUY_SALES);
                     } else {
                         $select -> where -> isNotNull(TABLE_CONTRACT .'.ghtk_code');
                     }

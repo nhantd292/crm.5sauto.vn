@@ -79,11 +79,7 @@
     if($this->items->count() > 0) {
         $stt = 0;
         $sum = 0;
-        $total_price = $total_cod = $total_discount =  $total_price_owed = 0;
-//        $manager_edit = false;
-//        if(in_array(SYSTEM, $permission_ids) || in_array(ADMIN, $permission_ids)){
-//            $manager_edit = true;
-//        }
+        $total_number = $total_price = $total_cod = $total_discount =  $total_price_owed = 0;
         foreach ($this->items AS $key => $item) {
         	$stt++;
         	$cid                    = @$this->xFormInput('cid[]', $item->id, array('type' => 'checkbox', 'class' => 'checkboxes'));
@@ -96,15 +92,11 @@
             $contact_contract_first_date = $dateFormat->formatToView($item->contact_contract_first_date, 'd/m/Y H:i');
             $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
             $contact_name           = $item->contact_name;
-//            $contact_contract_number= $item->contact_contract_number;
             $index_number           = $item->index_number;
-//            $lock                   = $item->lock ? '<i class="fa fa-lock" aria-hidden="true" style="color: #bbb; padding-top: 3px;"></i>' : '';
-
-//            $fee_cod                = !empty($item->ghtk_result) ? number_format(unserialize($item->ghtk_result)['fee']) : '';
             $fee_cod                = number_format($item->price_transport);
-//            $price_promotion        = number_format($item->price_promotion);
             $price_total            = $item->price_total;
             $price_owed             = $item->price_owed;
+            
             if($this->params['ssFilter']['filter_user']){
                 if ($item->user_id == $this->params['ssFilter']['filter_user']){
                     $total_price           += $price_total;
@@ -124,12 +116,6 @@
             $care_name              = $item->care_id ? $this->user[$item->care_id]['name'] : '';
             $user_gd_name           = $item->delivery_id ? $this->user[$item->delivery_id]['name'] : '';
             $paid_cost              = $item->paid_cost == 't' ? "Đã thanh toán" : 'Chưa thanh toán';
-//            $transport              = $item->transport_id ? $this->transport[$item->transport_id]['name'] : '';
-//            $type_of_carpet         = $item->type_of_carpet_id ? $this->type_of_carpet[$item->type_of_carpet_id]['name'] : '';
-//            $production_department  = $item->production_department_type ? $this->production_department[$item->production_department_type]['name'] : '';
-//            $bill_code              = $item->bill_code;
-//            $product_return         = $item->product_return;
-//            $shipper_id             = $this->user[$item->shipper_id]['name'];
 
             $status_sales           = $item->status_id ? $this->status_sales[$item->status_id]['name'] : '';
             if($item->unit_transport == 'viettel')
@@ -146,7 +132,6 @@
             $sale_branch_id         = $item->sale_branch_id ? ' - '. $this->sale_branch[$item->sale_branch_id]['name'] : '';
             $created                = $dateFormat->formatToView($item->created, 'd/m/Y H:i:s');
 
-//            $user                   = $this->user[$item->user_id]['name'];
             $sale_group_user        = $this->user[$item->user_id]['sale_group_id'] ? '<br>'.  $this->sale_group[$this->user[$item->user_id]['sale_group_id']]['name'] : '';
             $sale_branch_user       = $this->user[$item->user_id]['sale_branch_id'] ? ' - '.  $this->sale_branch[$this->user[$item->user_id]['sale_branch_id']]['name'] : '';
 
@@ -227,6 +212,10 @@
             $total_kg = 0;
             if ($countProduct > 0) {
                 foreach ($options['product'] as $keyp => $valuep){
+                    if($this->params['ssFilter']['filter_product'] && in_array($valuep['product_id'], $this->params['ssFilter']['filter_product'])){
+                        $total_number += $valuep['numbers'];
+                    }
+                    
                     $total_kg += $valuep['weight'];
                     if(!empty($valuep['product_id'])){
                         $number_row++;
@@ -299,6 +288,7 @@
     $text_total_cod = '<br><span  class="text-red">' . number_format($total_cod) . '</span>';
     $text_total_discount = '<br><span  class="text-red">' . number_format($total_discount) . '</span>';
     $text_total_price_owed = '<br><span  class="text-red">' . number_format($total_price_owed) . '</span>';
+    $text_total_number = '<br><span class="text-red">' . number_format($total_number) . '</span>';
 
     // Head
     $xhtmlHead  = '<tr>';
@@ -310,7 +300,7 @@
     $xhtmlHead .= '<th width="80">Ngày</th>';
     $xhtmlHead .= '<th width="150">Nhân viên</th>';
     $xhtmlHead .= '<th width="200">Sản phẩm</th>';
-    $xhtmlHead .= '<th width="120">Số lượng</th>';
+    $xhtmlHead .= '<th width="120" class="text-red text-center">Số lượng'.$text_total_number.'</th>';
     $xhtmlHead .= '<th width="120" class="text-center">Kg</th>';
     $xhtmlHead .= '<th width="150">Tên xe - năm sx</th>';
     $xhtmlHead .= '<th width="80" class="text-right">Tổng tiền'.$text_total.'</th>';
