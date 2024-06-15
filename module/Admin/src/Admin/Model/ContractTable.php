@@ -3763,7 +3763,7 @@ class ContractTable extends DefaultTable {
             if(!empty($arrData['unit_transport'])){
                 $data['unit_transport'] = $arrData['unit_transport'];
             }
-            if(!empty($arrData['unit_transport'])){
+            if(!empty($arrData['token'])){
                 $data['token'] = $arrData['token'];
             }
 
