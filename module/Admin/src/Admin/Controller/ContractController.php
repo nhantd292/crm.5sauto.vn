@@ -2529,19 +2529,22 @@ class ContractController extends ActionController {
                                                 if ($value['weight'] >= 20) {
                                                     $pro['name'] = $pname;
                                                     $pro['weight'] = $value['weight'];
-                                                    $pro['quantity'] = $value['numbers'];
+//                                                    $pro['quantity'] = $value['numbers'];
+                                                    $pro['quantity'] = 1;
                                                     $pro['product_code'] = $value['code'];
                                                     $pro['length'] = $value['length'];
                                                     $pro['width'] = $value['width'];
                                                     $pro['height'] = $value['height'];
 
                                                     $products[] = $pro;
+                                                    break;
                                                 }
                                             }
                                             else{
                                                 $pro['name'] = $pname;
                                                 $pro['weight'] = $total_weight;
-                                                $pro['quantity'] = $value['numbers'];
+//                                                $pro['quantity'] = $value['numbers'];
+                                                $pro['quantity'] = 1;
                                                 $pro['product_code'] = $value['code'];
                                                 $pro['length'] = $value['length'];
                                                 $pro['width'] = $value['width'];
@@ -2554,7 +2557,8 @@ class ContractController extends ActionController {
                                         else{
                                             $pro['name'] = $pname;
                                             $pro['weight'] = $total_weight;
-                                            $pro['quantity'] = $value['numbers'];
+//                                            $pro['quantity'] = $value['numbers'];
+                                            $pro['quantity'] = 1;
                                             $pro['product_code'] = $value['code'];
                                             $pro['length'] = $value['length'];
                                             $pro['width'] = $value['width'];
