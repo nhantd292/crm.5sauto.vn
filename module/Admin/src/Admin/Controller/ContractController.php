@@ -2512,7 +2512,7 @@ class ContractController extends ActionController {
 //                                    }
 
                                     $products = [];
-                                    $total_weight = 0;
+                                    $total_weight = $total_cost = 0;
                                     $bbs_type = ''; // b1: có sp trong đơn hàng có khối lượng >= 20, b2 k có sp >= 20kg nhưng tổng lớn hơn 20kg
                                     $list_name = '';
                                     foreach($contract['options'] as $key => $value){
@@ -2522,7 +2522,9 @@ class ContractController extends ActionController {
                                         $total_weight += $value['weight'];
                                         $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
                                         $list_name .= $pname.', ';
+                                        $total_cost += $value['numbers'] * $value['cost_new'];
                                     }
+                                    $total_cost_order = $total_cost * 1.5;
                                     foreach($contract['options'] as $key => $value){
                                         if($total_weight >= 20) {
                                             if($bbs_type == 'b1'){
@@ -2586,7 +2588,7 @@ class ContractController extends ActionController {
                                     $order_item['is_freeship'] = "1";
                                     $order_item['pick_money'] = $contract['price_owed']; // Tiền hàng ship phải thu
                                     $order_item['note'] = $contract['ghtk_note'];
-                                    $order_item['value'] = $contract['price_total']; // giá trị đóng bảo hiểm
+                                    $order_item['value'] = $contract['price_total'] == 0 ? $contract['price_total'] : $total_cost_order; // giá trị đóng bảo hiểm
                                     $order_item['transport'] = "road"; // road đường bộ, fly đường bay
                                     $order_item['deliver_work_shift'] = $contract['deliver_work_shift']; // Thời gian giao hàng
                                     if($total_weight >= 20){
