@@ -2587,7 +2587,7 @@ class ContractController extends ActionController {
                                     $order_item['is_freeship'] = "1";
                                     $order_item['pick_money'] = $contract['price_owed']; // Tiền hàng ship phải thu
                                     $order_item['note'] = $contract['ghtk_note'];
-                                    $order_item['value'] = $contract['price_total'] == 0 ? $contract['price_total'] : $total_cost * 2; // giá trị đóng bảo hiểm
+                                    $order_item['value'] = $contract['price_total'] > 0 ? $contract['price_total'] : $total_cost * 2; // giá trị đóng bảo hiểm
                                     $order_item['transport'] = "road"; // road đường bộ, fly đường bay
                                     $order_item['deliver_work_shift'] = $contract['deliver_work_shift']; // Thời gian giao hàng
                                     if($total_weight >= 20){
