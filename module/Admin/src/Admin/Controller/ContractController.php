@@ -2656,7 +2656,7 @@ class ContractController extends ActionController {
             $ditem = $this->getServiceLocator()->get('Admin\Model\DocumentTable')->getItem(array('id' => $id_viettel_key));
             $viettel_key = $ditem->alias;
             if(!empty($viettel_key)){
-                $this->updateToken($viettel_key);
+//                $this->updateToken($viettel_key);
                 $myForm   = new \Admin\Form\Contract\SendViettelPost($this, array('token' => $viettel_key));
 
                 $this->_viewModel['myForm']         = $myForm;
