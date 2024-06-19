@@ -2850,8 +2850,10 @@ class ContractController extends ActionController {
                                         $pname = $value['full_name'].' - sl('.$value['numbers'].') - '.$value['car_year'];
                                         $list_name .= $pname.', ';
                                     }
+                                    $service_type_id = 2;
                                     foreach($contract['options'] as $key => $value){
-                                        if($total_weight >= 20) {
+                                        if($total_weight >= 20000) {
+                                            $service_type_id = 5;
                                             if($bbs_type == 'b1'){
                                                 if ($value['weight'] >= 20) {
                                                     $pro['name']        = $value['full_name'].' - '.$value['car_year'];;
@@ -2914,12 +2916,12 @@ class ContractController extends ActionController {
                                     $order_item["to_province_name"] = $locations[$contract['location_city_id']]->name; // Tỉnh/Thành nhận
                                     $order_item["cod_amount"] = $contract['price_total'] - $contract['price_deposits'];; // giá trị tiền thu hộ Tối đa 10.000.000
                                     $order_item["content"] = $list_name;
-                                    $order_item["weight"] = $total_weight;
+                                    $order_item["weight"] = $total_weight > 30000 ? 30000 : $total_weight;
                                     $order_item["length"] = 0;
                                     $order_item["width"] = 0;
                                     $order_item["height"] = 0;
                                     $order_item["insurance_value"] = (int)$contract['price_total'] <= 5000000 ? (int)$contract['price_total'] : 5000000;// Giá trị bảo hiểm đơn hàng tối đa 5tr
-                                    $order_item["service_type_id"] = 2; // Dịch vụ
+                                    $order_item["service_type_id"] = $service_type_id; // Dịch vụ
                                     if(!empty($pick_shift)){
                                         $order_item["pick_shift"] = [(int)$pick_shift]; // Ca lấy hàng
                                     }
