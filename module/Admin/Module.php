@@ -327,6 +327,11 @@ class Module {
                     $tableGateway = new TableGateway(TABLE_PRODUCT_RETURN_KOV, $adapter, null);
                     return new \Admin\Model\ProductReturnKovTable($tableGateway);
                 },
+                'Admin\Model\ZaloNotifyConfigTable'	=> function ($sm) {
+                    $adapter = $sm->get('dbConfig');
+                    $tableGateway = new TableGateway(TABLE_ZALO_NOTIFY_CONFIG, $adapter, null);
+                    return new \Admin\Model\ZaloNotifyConfigTable($tableGateway);
+                },
                 
                 // Khai báo xác thực đăng nhập
                 'AuthenticateService'	=> function ($sm) {
@@ -587,6 +592,11 @@ class Module {
                 'formAdminProductReturn' => function($sm) {
                     $myForm	= new \Admin\Form\ProductReturn($sm);
                     $myForm->setInputFilter(new \Admin\Filter\ProductReturn());
+                    return $myForm;
+                },
+                'formAdminZaloNotifyConfig' => function($sm) {
+                    $myForm	= new \Admin\Form\ZaloNotifyConfig($sm);
+                    $myForm->setInputFilter(new \Admin\Filter\ZaloNotifyConfig());
                     return $myForm;
                 },
             )

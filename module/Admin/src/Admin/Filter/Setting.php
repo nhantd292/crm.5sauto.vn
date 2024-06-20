@@ -41,9 +41,9 @@ class Setting extends InputFilter {
 		        array(
 					'name'		=> 'Regex',
 					'options'	=> array(
-					    'pattern'   => '#^[a-zA-Z.]*$#',
+					    'pattern'   => '#^[a-zA-Z._]*$#',
 				        'messages'	=> array(
-				            \Zend\Validator\Regex::NOT_MATCH => 'Chỉ cấp nhận các chữ không dấu và dấu . để phân cách các từ'
+				            \Zend\Validator\Regex::NOT_MATCH => 'Chỉ cấp nhận các chữ không dấu và dấu . _ để phân cách các từ'
 				        )
 				    ),
 					'break_chain_on_failure'	=> true

@@ -443,6 +443,39 @@ class ActionController extends AbstractActionController {
         }
     }
 
+    public function zalo_call($api_endpoint, $query = array(), $method = 'GET')
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, "https://business.openapi.zalo.me" . $api_endpoint);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        if ($method != 'GET' && in_array($method, array('POST', 'PUT'))) {
+            if (is_array($query)) {
+                $query = json_encode($query);
+            }
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
+        }
+        $header = array(
+            "Content-type: application/json",
+            "Cache-control: no-cache",
+            "Access_token: " .$this->_settings['General.zalo.access_token']['value'],
+        );
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return $err;
+        } else {
+            return $response;
+        }
+    }
+
     public function postJson($json)
     {
         $curl = curl_init();
