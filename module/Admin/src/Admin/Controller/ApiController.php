@@ -763,9 +763,11 @@ class ApiController extends ActionController {
         );
         $result = json_decode($this->zalo_update_token($data), true);
         if(isset($result['access_token'])){
+            $description = date('Y-m-d H:i:s', time() + $result['expires_in']);
             $access_token_update = array(
                 'code'  => 'General.zalo.access_token',
-                'value' => $result['access_token']
+                'value' => $result['access_token'],
+                'description' => 'Có thời gian sử dụng tới: '.$description
             );
             $refresh_token_update = array(
                 'code'  => 'General.zalo.refresh_token',
