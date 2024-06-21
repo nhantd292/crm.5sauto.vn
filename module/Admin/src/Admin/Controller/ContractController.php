@@ -417,7 +417,10 @@ class ContractController extends ActionController {
                         $contract_new = $this->getTable()->getItem(array('id' => $result));
                         $order_data['description'] = $this->_params['data']['sale_note'].'(Đơn hàng đẩy từ CRM '.$contract_new['code'].')';
                         $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/'.$contract_new['id_kov'], $order_data, 'PUT');
-                        
+
+                        // Gửi thông báo zalo tới khách hàng
+                        $this->zalo_send_notify('dat-hang', $numberFormat->convertToInternational($contract_new['phone']), $contract_new);
+
                         if($controlAction == 'save-new') {
                             $this->goRoute(array('action' => 'add-kov'));
                         } else if($controlAction == 'save') {
@@ -462,12 +465,12 @@ class ContractController extends ActionController {
     public function editKovAction() {
         $dateFormat = new \ZendX\Functions\Date();
         $numberFormat = new \ZendX\Functions\Number();
-
 //        $myForm = new \Admin\Form\Contract\ContractEditKov($this->getServiceLocator(), $this->_params);
         $myForm = new \Admin\Form\Contract($this, $this->_params);
         if(!empty($this->params('id'))) {
             $id = $this->params('id');
             $contract = $this->getServiceLocator()->get('Admin\Model\ContractTable')->getItem(array('id' => $id));
+
             $contract_options = !empty($contract['options']) ? unserialize($contract['options']) : array();
             $contract['date'] = $dateFormat->formatToView($contract['date']);
             $contract = array_merge($contract, $contract_options);
@@ -762,7 +765,6 @@ class ContractController extends ActionController {
                 $product_add[$i]['productName'] = $contract_product['full_name'][$i];
                 $product_add[$i]['quantity'] = (int)$contract_product['numbers'][$i];
                 $product_add[$i]['price'] = $numberFormat->formatToData($contract_product['price'][$i]);
-//                $product_add[$i]['price'] = 0;
                 $product_add[$i]['note'] = '';
             }
         }

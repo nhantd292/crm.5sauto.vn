@@ -82,6 +82,12 @@ class ZaloNotifyConfigTable extends DefaultTable {
 			    $select -> where -> equalTo('id', $arrParam['id']);
     		})->current();
 		}
+
+        if($options['task'] == 'code') {
+			$result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+			    $select -> where -> equalTo('code', $arrParam['code']);
+    		})->current();
+		}
 		
 		return $result;
 	}

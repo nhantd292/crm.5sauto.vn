@@ -34,8 +34,8 @@
             $id                     = $item['id'];
             $cid                    = $this->xFormInput('cid[]', $item['id'], array('type' => 'checkbox', 'class' => 'checkboxes'));
             $created                = $dateFormat->formatToView($item['created'], 'd/m/Y H:i:s');
-            $branch                 = $this->branch[$item['sale_branch_id']]['name'];
-            $branchs = explode(',', $item['sale_branch_ids']);
+            $branchs                = explode(',', $item['sale_branch_ids']);
+            $list_branch = [];
             foreach($branchs as $branch){
                 $list_branch[] = $this->branch[$branch]['name'];
             }

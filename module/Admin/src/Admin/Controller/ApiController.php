@@ -757,8 +757,8 @@ class ApiController extends ActionController {
         $app_id = $this->getServiceLocator()->get('Admin\Model\SettingTable')->getItem(array('code' => 'General.zalo.app_id'), array('task' => 'code'));
         $refresh_token = $this->getServiceLocator()->get('Admin\Model\SettingTable')->getItem(array('code' => 'General.zalo.refresh_token'), array('task' => 'code'));
         $data = array(
-            'app_id' => $app_id,
-            'refresh_token' => $refresh_token,
+            'app_id' => $app_id['value'],
+            'refresh_token' => $refresh_token['value'],
             'grant_type' => 'refresh_token'
         );
         $result = json_decode($this->zalo_update_token($data), true);
@@ -787,6 +787,29 @@ class ApiController extends ActionController {
     public function updateTokenViettelAction() {
         $viettel_key = $this->_params['data']['viettel_key'];
         return $this->updateToken($viettel_key);
+    }
+
+    // Hàm để log thông tin request
+    function logRequest($data) {
+        // Lấy thông tin về request
+        $ipAddress = $_SERVER['REMOTE_ADDR'];
+        $requestMethod = $_SERVER['REQUEST_METHOD'];
+        $requestUri = $_SERVER['REQUEST_URI'];
+        $timestamp = date('Y-m-d H:i:s');
+
+        // Tạo nội dung log
+        $logContent = "$timestamp - IP: $ipAddress - Method: $requestMethod - URI: $requestUri - data: ".json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        // Tạo một instance của Zend\Log\Logger
+        $logger = new Logger();
+
+        // Thêm một writer để ghi log vào file
+        $logFilePath = PATH_APPLICATION . '/public/log/file.log';
+        $writer = new Stream($logFilePath);
+        $logger->addWriter($writer);
+
+        // Ghi nội dung vào file log
+        $logger->info($logContent);
     }
 
     // webhook cập nhật trạng thái từ ghtk đẩy về crm
@@ -820,7 +843,7 @@ class ApiController extends ActionController {
                         $arrParam['ghtk_code']      = $data['label_id'];
                         $arrParam['price_transport']= $data['fee'];
                         $arrParam['status_history'] = $data;
-                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
 
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
@@ -877,7 +900,7 @@ class ApiController extends ActionController {
                         $arrParam['ghtk_status']    = $data['Status'];
                         $arrParam['price_transport']= $data['TotalFee'];
                         $arrParam['status_history'] = $data;
-                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam),  array('task' => 'update-webhook-status'));
+                        $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
 
                         $response->setStatusCode(Response::STATUS_CODE_200);
                         $response->setContent(json_encode(array('success' => true, 'message' => 'update status success')));
@@ -903,30 +926,6 @@ class ApiController extends ActionController {
         header('Content-Type: application/json');
         return $response;
     }
-
-    // Hàm để log thông tin request
-    function logRequest($data) {
-        // Lấy thông tin về request
-        $ipAddress = $_SERVER['REMOTE_ADDR'];
-        $requestMethod = $_SERVER['REQUEST_METHOD'];
-        $requestUri = $_SERVER['REQUEST_URI'];
-        $timestamp = date('Y-m-d H:i:s');
-
-        // Tạo nội dung log
-        $logContent = "$timestamp - IP: $ipAddress - Method: $requestMethod - URI: $requestUri - data: ".json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        // Tạo một instance của Zend\Log\Logger
-        $logger = new Logger();
-
-        // Thêm một writer để ghi log vào file
-        $logFilePath = PATH_APPLICATION . '/public/log/file.log';
-        $writer = new Stream($logFilePath);
-        $logger->addWriter($writer);
-
-        // Ghi nội dung vào file log
-        $logger->info($logContent);
-    }
-
 
     // webhook cập nhật trạng thái từ viettel post đẩy về crm
     public function updateOrderStatusViettelPostAction(){

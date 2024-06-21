@@ -218,4 +218,11 @@ class Number {
 	    
 	    return $string;
 	}
+
+    function convertToInternational($phone_number) {
+        $phone_number = preg_replace('/\D/', '', $phone_number);
+        $last_nine_digits = substr($phone_number, -9);
+        $international_phone_number = '84' . $last_nine_digits;
+        return $international_phone_number;
+    }
 }

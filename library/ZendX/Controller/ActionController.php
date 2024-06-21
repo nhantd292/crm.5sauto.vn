@@ -459,13 +459,12 @@ class ActionController extends AbstractActionController {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         if ($method != 'GET' && in_array($method, array('POST', 'PUT'))) {
             if (is_array($query)) {
-                $query = json_encode($query);
+                $query = http_build_query($query);
             }
             curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
         }
         $header = array(
-            "Content-type: application/json",
-            "Cache-control: no-cache",
+            "Content-type: application/x-www-form-urlencoded",
             "Secret_key: " .$secret_key['value'],
         );
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
@@ -510,6 +509,41 @@ class ActionController extends AbstractActionController {
             return $err;
         } else {
             return $response;
+        }
+    }
+
+    public function zalo_send_notify($code_template, $phone, $data){
+        $template = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyConfigTable')->getItem(array('code' => $code_template), array('task' => 'code'));
+        $branchs = explode(',', $template['sale_branch_ids']);
+        if(in_array($data['sale_branch_id'], $branchs)){
+            $dateFormat = new \ZendX\Functions\Date();
+            $unit_arr = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'transport-unit')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
+
+            if($data['name']){
+                $template_data['name'] = $data['name'];
+            }
+            if($data['code']){
+                $template_data['order_code'] = $data['code'];
+            }
+            if($data['phone']){
+                $template_data['phone_number'] = $data['phone'];
+            }
+            if($data['date']){
+                $template_data['date'] = $dateFormat->formatToView($data['date']);
+            }
+            $template_data['status'] = $template['note'];
+            if($data['price_total']){
+                $template_data['price'] = $data['price_total'];
+            }
+            if($data['unit_transport']){
+                $template_data['unit_transport'] = $unit_arr[$data['unit_transport']];
+            }
+
+            $data_send['phone']         = $phone;
+            $data_send['template_id']   = $template['template_id'];
+            $data_send['template_data'] = $template_data;
+            
+            $this->zalo_call('/message/template', $data_send, 'POST');
         }
     }
     // END ZALO
@@ -605,227 +639,5 @@ class ActionController extends AbstractActionController {
             }
         }
         return $result;
-    }
-    public function d(){
-        array(
-            "code" => "sale-branch",
-            "general" => array(
-                "title" => array(
-                    "value" => "Cơ sở kinh doanh",
-                )
-            ),
-            "list" => array(
-                "general" => array(
-                    "showIndex" => array(
-                        "value" => true,
-                    ),
-                    "showCheckbox" => array(
-                        "value" => true,
-                    ),
-                    "showControl" => array(
-                        "value" => true,
-                    ),
-                ),
-                "fields" => array(
-                    array(
-                        "caption" => "Tên",
-                        "name" => "name",
-                    ),
-                    array(
-                        "caption" => "Mã",
-                        "name" => "alias",
-                    ),
-                    array(
-                        "caption" => "Kho hàng",
-                        "name" => "document_id",
-                        "data_source" => array(
-                            "table" => "document",
-                            "where" => array("code" => "warehouses")
-                        )
-                    ),
-                    array(
-                        "caption" => "Thứ tự",
-                        "name" => "ordering",
-                        "type" => "text",
-                        "attributes" => array(
-                            "class" => "col-80"
-                        )
-                    ),
-                ),
-            ),
-            "form" => array(
-                "general" => array(),
-                "fields" => array(
-                    array(
-                        "caption" => "Tên",
-                        "name" => "name",
-                        "type" => "text",
-                        "attributes" => array(
-                            "class" => "form-control",
-                            "id" => "name",
-                            "placeholder" => "Nhập tên",
-                            "onchange" => "createAlias(this, 'input[name=\"alias\"]')"
-                        ),
-                        "validators" => array(
-                            "require" => 1
-                        )
-                    ),
-                    array(
-                        "caption" => "Mã",
-                        "name" => "alias",
-                        "type" => "text",
-                        "attributes" => array(
-                            "class" => "form-control",
-                            "id" => "alias",
-                        ),
-                        "validators" => array(
-                            "require" => 1
-                        )
-                    ),
-                    array(
-                        "caption" => "Thứ tự",
-                        "boxClass" => "col-md-1",
-                        "name" => "ordering",
-                        "type" => "text",
-                        "attributes" => array(
-                            "value" => 255,
-                            "class" => "form-control",
-                            "id" => "ordering",
-                            "placeholder" => "Thứ tự"
-                        )
-                    ),
-                    array(
-                        "caption" => "Trạng thái",
-                        "boxClass" => "col-md-2",
-                        "name" => "status",
-                        "type" => "select",
-                        "attributes" => array(
-                            "class" => "form-control select2 select2_basic",
-                        ),
-                        "options" => array(
-                            "value_options" => array(1 => "Hiển thị", 0 => "Không hiển thị"),
-                        )
-                    ),
-                    array(
-                        "caption" => "Địa chỉ IP",
-                        "name" => "ip_address",
-                        "type" => "text",
-                        "attributes" => array(
-                            "class" => "form-control",
-                            "id" => "ip_address",
-                            "placeholder" => "Nhập địa chỉ IP của cơ sở",
-                        )
-                    ),
-                    array(
-                        "caption" => "Tài khoản Viettel Post",
-                        "boxClass" => "col-md-12",
-                        'name' => 'key_viettel_ids',
-                        'type' => 'MultiCheckbox',
-                        'attributes' => array(
-                            'class' => '',
-                        ),
-                        "options" => array(
-                            "to_data" => "implode",
-                            "empty_option" => "- Chọn -",
-                            "value_options" => array(),
-                            "data_source" => array(
-                                "table" => "document",
-                                "where" => array("code" => "viettel-key"),
-                                "order" => array("ordering" => "ASC", "name" => "ASC"),
-                                "view" => array(
-                                    "key" => "id",
-                                    "value" => "name",
-                                    "sprintf" => "%s"
-                                )
-                            )
-                        ),
-                        "validators" => array(
-                            "require" => 0
-                        )
-                    ),
-                    array(
-                        "caption" => "Tài khoản GHTK",
-                        "boxClass" => "col-md-12",
-                        'name' => 'key_ghtk_ids',
-                        'type' => 'MultiCheckbox',
-                        'attributes' => array(
-                            'class' => '',
-                        ),
-                        "options" => array(
-                            "to_data" => "implode",
-                            "empty_option" => "- Chọn -",
-                            "value_options" => array(),
-                            "data_source" => array(
-                                "table" => "document",
-                                "where" => array("code" => "ghtk-key"),
-                                "order" => array("ordering" => "ASC", "name" => "ASC"),
-                                "view" => array(
-                                    "key" => "id",
-                                    "value" => "name",
-                                    "sprintf" => "%s"
-                                )
-                            )
-                        ),
-                        "validators" => array(
-                            "require" => 0
-                        )
-                    ),
-                    array(
-                        "caption" => "Tài khoản GHN",
-                        "boxClass" => "col-md-12",
-                        'name' => 'key_ghn_ids',
-                        'type' => 'MultiCheckbox',
-                        'attributes' => array(
-                            'class' => '',
-                        ),
-                        "options" => array(
-                            "to_data" => "implode",
-                            "empty_option" => "- Chọn -",
-                            "value_options" => array(),
-                            "data_source" => array(
-                                "table" => "document",
-                                "where" => array("code" => "ghn-key"),
-                                "order" => array("ordering" => "ASC", "name" => "ASC"),
-                                "view" => array(
-                                    "key" => "id",
-                                    "value" => "name",
-                                    "sprintf" => "%s"
-                                )
-                            )
-                        ),
-                        "validators" => array(
-                            "require" => 0
-                        )
-                    ),
-                    array(
-                        "caption"       => "Kho hàng",
-                        "boxClass" => "col-md-12",
-                        "name"          => "inventory_ids",
-                        "type"          => "MultiCheckbox",
-                        "attributes"	=> array(
-                            "class"		=> "",
-                        ),
-                        "options"		=> array(
-                            "to_data" => "implode",
-                            "empty_option"	=> "- Chọn -",
-                            "value_options"	=> array(),
-                            "data_source" => array(
-                                "table" => "document",
-                                "where" => array("code" => "warehouses"),
-                                "order" => array("ordering" => "ASC", "name" => "ASC"),
-                                "view"  => array(
-                                    "key" => "id",
-                                    "value" => "name",
-                                    "sprintf" => "%s"
-                                )
-                            )
-                        ),
-                        "validators"      => array(
-                            "require"       => 1
-                        )
-                    ),
-                ),
-            )
-        );
     }
 }

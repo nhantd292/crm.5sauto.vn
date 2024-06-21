@@ -3797,9 +3797,9 @@ class ContractTable extends DefaultTable {
                 $status_history[] = $arrData['status_history'];
                 $data['status_history'] = serialize($status_history);
             }
-
             // Cập nhật đơn hàng
             $this->tableGateway->update($data, array('id' => $id));
+
             return $id;
         }
     }
