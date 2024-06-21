@@ -130,11 +130,19 @@
                     <i class="fa fa-folder-o"></i> <span class="title">Cấu hình chuyên mục</span><span class="arrow"></span>
                 </a>
             </li>
-<!--            <li>-->
-<!--                <a href="--><?php //echo $this->url('routeAdminNested/default', array('controller' => 'setting', 'action' => 'index', 'code' => 'System'));?><!--" target="_self">-->
-<!--                    <i class="fa fa-cog"></i> <span class="title">Cấu hình hệ thống</span><span class="arrow"></span>-->
-<!--                </a>-->
-<!--            </li>-->
+
+            <li>
+                <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'zalo-notify-config', 'action' => 'index'));?>" target="_self">
+                    <i class="fa fa-cog"></i> <span class="title">Cấu hình zalo</span><span class="arrow"></span>
+                </a>
+            </li>
+            <?php if($curent_user['id'] = '1111111111111111111111'){?>
+            <li>
+                <a href="<?php echo $this->url('routeAdminNested/default', array('controller' => 'setting', 'action' => 'index', 'code' => 'System'));?>" target="_self">
+                    <i class="fa fa-cog"></i> <span class="title">Cấu hình hệ thống</span><span class="arrow"></span>
+                </a>
+            </li>
+            <?php }?>
             <li>
                 <a href="<?php echo $this->url('routeAdmin/default', array('controller' => 'permission', 'action' => 'index'));?>" target="_self">
                     <i class="fa fa-users"></i> <span class="title">Nhóm quyền truy cập</span><span class="arrow"></span>
