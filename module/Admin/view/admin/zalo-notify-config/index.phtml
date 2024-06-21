@@ -34,12 +34,18 @@
             $id                     = $item['id'];
             $cid                    = $this->xFormInput('cid[]', $item['id'], array('type' => 'checkbox', 'class' => 'checkboxes'));
             $created                = $dateFormat->formatToView($item['created'], 'd/m/Y H:i:s');
-            $branch                 = $item['sale_branch_id'] ? '<br>'.$this->branch[$item['sale_branch_id']]['name'] : '';
+            $branch                 = $this->branch[$item['sale_branch_id']]['name'];
+            $branchs = explode(',', $item['sale_branch_ids']);
+            foreach($branchs as $branch){
+                $list_branch[] = $this->branch[$branch]['name'];
+            }
             $template               = $this->template[$item['template_id']];
             $cid                    = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
             
             // Link Action
             $linkEdit       = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            $controlStatus  = $this->linkAdminStatus($id, $item->status);
+            $controls       = $controlStatus;
             
             $xhtmlItems .= '<tr id="tr_'. $id .'" data-contact="'.$item['contact_id'].'">
     							<td>'. $cid .'</td>
@@ -48,9 +54,9 @@
     							<td>'. $item['code'] .'</td>
     							<td>'. $template .'</td>
     							<td>'. $item['order_status'] .'</td>
-    							<td>'. $item['sale_branch_ids'] .'</td>
     							<td>'. $item['note'] .'</td>
-    							<td>'. $created .'</td>
+    							<td>'. implode(', ', $list_branch) .'</td>
+    							<td>'. $controls .'</td>
     						</tr>';
         }
     }
@@ -58,14 +64,14 @@
     // Head
     $xhtmlHead  = '<tr>';
     $xhtmlHead .= '<th width="30" class="table-checkbox"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';;
-    $xhtmlHead .= '<th width="50">STT</th>';
-    $xhtmlHead .= '<th width="160">Tên</th>';
+    $xhtmlHead .= '<th width="30">STT</th>';
+    $xhtmlHead .= '<th width="160">Mô tả</th>';
     $xhtmlHead .= '<th width="150">Mã</th>';
     $xhtmlHead .= '<th width="150">Mẫu template</th>';
-    $xhtmlHead .= '<th width="150">Trạng thái đơn hàng</th>';
-    $xhtmlHead .= '<th width="150">Chi nhánh</th>';
-    $xhtmlHead .= '<th width="130">Ghi chú</th>';
-    $xhtmlHead .= '<th width="130">Ngày tạo</th>';
+    $xhtmlHead .= '<th width="150">Mã trạng thái đơn hàng</th>';
+    $xhtmlHead .= '<th width="130">Tên trạng thái chung</th>';
+    $xhtmlHead .= '<th width="150">Bật cho chi nhánh</th>';
+    $xhtmlHead .= '<th width="15"></th>';
     $xhtmlHead .= '</tr>';
     
     // Control

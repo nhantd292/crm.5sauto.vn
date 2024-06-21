@@ -2524,12 +2524,15 @@ class ContractController extends ActionController {
                                         $list_name .= $pname.', ';
                                         $total_cost += $value['numbers'] * $value['cost_new'];
                                     }
+                                    if($total_weight > 30){
+                                        $total_weight = 30;
+                                    }
                                     foreach($contract['options'] as $key => $value){
                                         if($total_weight >= 20) {
                                             if($bbs_type == 'b1'){
                                                 if ($value['weight'] >= 20) {
                                                     $pro['name'] = $pname;
-                                                    $pro['weight'] = $value['weight'];
+                                                    $pro['weight'] = $value['weight'] > 30 ? 30 : $value['weight'];
 //                                                    $pro['quantity'] = $value['numbers'];
                                                     $pro['quantity'] = 1;
                                                     $pro['product_code'] = $value['code'];

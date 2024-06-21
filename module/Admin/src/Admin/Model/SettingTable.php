@@ -299,6 +299,19 @@ class SettingTable extends NestedTable implements ServiceLocatorAwareInterface {
 		    $this->updateNode($data, $arrParam['id'], $arrParam['parent']);
 		    return $arrParam['id'];
 		}
+
+        if($options['task'] == 'update-by-code') {
+            $code = $arrData['code'];
+            if($arrData['value']){
+                $data['value'] = $arrData['value'];
+            }
+            if($arrData['description']){
+                $data['description'] = $arrData['description'];
+            }
+
+            $this->tableGateway->update($data, array('code' => $code));
+            return $code;
+        }
 	}
 	
 	public function deleteItem($arrParam = null, $options = null){

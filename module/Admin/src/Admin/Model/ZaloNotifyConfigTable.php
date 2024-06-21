@@ -153,7 +153,6 @@ class ZaloNotifyConfigTable extends DefaultTable {
 
             $where = new Where();
             $where->in('id', $arrData['cid']);
-            $where->equalTo('price', 0);
             $result = $this->tableGateway->delete($where);
         }
         return $result;

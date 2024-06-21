@@ -717,6 +717,73 @@ class ApiController extends ActionController {
         return $viewModel;
     }
 
+    // Tạo zalo token từ code
+    public function createTokenZaloAction() {
+        $response = new Response();
+        $app_id = $this->getServiceLocator()->get('Admin\Model\SettingTable')->getItem(array('code' => 'General.zalo.app_id'), array('task' => 'code'));
+        $data = array(
+            'app_id'        => $app_id['value'],
+            'code'          => $this->getRequest()->getQuery('code'),
+            'grant_type'    => 'authorization_code',
+        );
+        $result = json_decode($this->zalo_update_token($data), true);
+        if(isset($result['access_token'])){
+            $description = date('Y-m-d H:i:s', time() + $result['expires_in']);
+            $access_token_update = array(
+                'code'  => 'General.zalo.access_token',
+                'value' => $result['access_token'],
+                'description' => 'Có thời gian sử dụng tới: '.$description
+            );
+            $refresh_token_update = array(
+                'code'  => 'General.zalo.refresh_token',
+                'value' => $result['refresh_token']
+            );
+            $access_token_code  = $this->getServiceLocator()->get('Admin\Model\SettingTable')->saveItem(array('data' => $access_token_update), array('task' => 'update-by-code'));
+            $refresh_token_code = $this->getServiceLocator()->get('Admin\Model\SettingTable')->saveItem(array('data' => $refresh_token_update), array('task' => 'update-by-code'));
+            $response->setStatusCode(Response::STATUS_CODE_200);
+            $response->setContent(json_encode(array('success' => true, 'message' => 'update token success', 'data' => array('access_token_code' => $access_token_code, 'refresh_token_code' => $refresh_token_code))));
+        }
+        else{
+            $response->setStatusCode(Response::STATUS_CODE_200);
+            $response->setContent(json_encode($result));
+        }
+        header('Content-Type: application/json');
+        return $response;
+    }
+
+    // Cập nhật zalo token từ refresh token
+    public function updateTokenZaloAction() {
+        $response = new Response();
+        $app_id = $this->getServiceLocator()->get('Admin\Model\SettingTable')->getItem(array('code' => 'General.zalo.app_id'), array('task' => 'code'));
+        $refresh_token = $this->getServiceLocator()->get('Admin\Model\SettingTable')->getItem(array('code' => 'General.zalo.refresh_token'), array('task' => 'code'));
+        $data = array(
+            'app_id' => $app_id,
+            'refresh_token' => $refresh_token,
+            'grant_type' => 'refresh_token'
+        );
+        $result = json_decode($this->zalo_update_token($data), true);
+        if(isset($result['access_token'])){
+            $access_token_update = array(
+                'code'  => 'General.zalo.access_token',
+                'value' => $result['access_token']
+            );
+            $refresh_token_update = array(
+                'code'  => 'General.zalo.refresh_token',
+                'value' => $result['refresh_token']
+            );
+            $access_token_code  = $this->getServiceLocator()->get('Admin\Model\SettingTable')->saveItem(array('data' => $access_token_update), array('task' => 'update-by-code'));
+            $refresh_token_code = $this->getServiceLocator()->get('Admin\Model\SettingTable')->saveItem(array('data' => $refresh_token_update), array('task' => 'update-by-code'));
+            $response->setStatusCode(Response::STATUS_CODE_200);
+            $response->setContent(json_encode(array('success' => true, 'message' => 'update token success', 'data' => array('access_token_code' => $access_token_code, 'refresh_token_code' => $refresh_token_code))));
+        }
+        else{
+            $response->setStatusCode(Response::STATUS_CODE_200);
+            $response->setContent(json_encode($result));
+        }
+        header('Content-Type: application/json');
+        return $response;
+    }
+
     public function updateTokenViettelAction() {
         $viettel_key = $this->_params['data']['viettel_key'];
         return $this->updateToken($viettel_key);

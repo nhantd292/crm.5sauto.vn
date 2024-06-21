@@ -11,11 +11,11 @@
     
     $elements = array(
         array('div' => '', 'boxClass' => 'col-md-12', 'id' => 'form_section', 'boxId' => 'result_check_contact'),
-        array('element' => $myForm->get('name'), 'label' => 'Tên', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
+        array('element' => $myForm->get('name'), 'label' => 'Mô tả', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
         array('element' => $myForm->get('code'), 'label' => 'Mã', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
         array('element' => $myForm->get('template_id'), 'label' => 'Mẫu template', 'validate' => array('require' => true), 'boxClass' => 'col-md-4'),
         array('element' => $myForm->get('order_status'), 'label' => 'Trạng thái đơn hàng', 'validate' => array('require' => true), 'boxClass' => 'col-md-6'),
-        array('element' => $myForm->get('note'), 'label' => 'Ghi chú', 'boxClass' => 'col-md-6'),
+        array('element' => $myForm->get('note'), 'label' => 'Tên trạng thái sử dụng để thông báo', 'validate' => array('require' => true), 'boxClass' => 'col-md-6'),
         array('element' => $myForm->get('sale_branch_ids'), 'label' => 'Bật thông báo với các chi nhánh được chọn', 'validate' => array('require' => true), 'boxClass' => 'col-md-12'),
     );
     

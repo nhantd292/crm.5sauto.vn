@@ -87,6 +87,7 @@ class ZaloNotifyConfig extends Form
             'type'			=> 'Text',
             'attributes'	=> array(
                 'class'		     => 'form-control',
+                'placeholder'	=> 'đang giao hàng',
             ),
         ));
     }
