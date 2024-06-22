@@ -515,7 +515,7 @@ class ActionController extends AbstractActionController {
     public function zalo_send_notify($code_template, $phone, $data){
         $template = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyConfigTable')->getItem(array('code' => $code_template), array('task' => 'code'));
         $branchs = explode(',', $template['sale_branch_ids']);
-        if(in_array($data['sale_branch_id'], $branchs)){
+        if(in_array($data['sale_branch_id'], $branchs) and $template['status'] == 1){
             $dateFormat = new \ZendX\Functions\Date();
             $unit_arr = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'transport-unit')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
 

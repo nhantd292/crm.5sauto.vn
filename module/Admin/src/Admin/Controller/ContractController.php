@@ -419,7 +419,7 @@ class ContractController extends ActionController {
                         $this->kiotviet_call(RETAILER, $this->kiotviet_token, '/orders/'.$contract_new['id_kov'], $order_data, 'PUT');
 
                         // Gửi thông báo zalo tới khách hàng
-                        $this->zalo_send_notify('dat-hang', $numberFormat->convertToInternational($contract_new['phone']), $contract_new);
+                        $this->zalo_send_notify(ZALO_NOTIFY_CONFIG_DATHANG, $numberFormat->convertToInternational($contract_new['phone']), $contract_new);
 
                         if($controlAction == 'save-new') {
                             $this->goRoute(array('action' => 'add-kov'));

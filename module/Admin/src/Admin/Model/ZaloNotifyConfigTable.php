@@ -86,6 +86,13 @@ class ZaloNotifyConfigTable extends DefaultTable {
         if($options['task'] == 'code') {
 			$result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
 			    $select -> where -> equalTo('code', $arrParam['code']);
+                if(!empty($arrParam['status'])) {
+                    $select -> where -> equalTo('status', $arrParam['status']);
+                }
+                if(!empty($arrParam['sale_branch_id'])) {
+                    $select -> where -> like('sale_branch_ids', '%'.$arrParam['sale_branch_id'].'%');
+                }
+
     		})->current();
 		}
 		
