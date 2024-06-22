@@ -547,6 +547,9 @@ class ActionController extends AbstractActionController {
         }
     }
     public function check_send_zalo_notify($arrParam, $contract_item){
+        if($arrParam['unit_transport'] != $contract_item['unit_transport']){
+            $contract_item['unit_transport'] = $arrParam['unit_transport'];
+        }
         $numberFormat = new \ZendX\Functions\Number();
         $template_xuat_kho = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyConfigTable')->getItem(array('code' => ZALO_NOTIFY_CONFIG_XUATKHO, 'status' => 1, 'sale_branch_id' => $contract_item['sale_branch_id']), array('task' => 'code'));
         if(!empty($template_xuat_kho)){
