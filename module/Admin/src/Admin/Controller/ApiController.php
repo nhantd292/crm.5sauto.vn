@@ -817,34 +817,7 @@ class ApiController extends ActionController {
     function updateWebhookStatus($arrParam, $contract_item){
         // Cập nhật trạng thái cho đơn hàng
         $this->getServiceLocator()->get('Admin\Model\ContractTable')->updateItem(array('data' => $arrParam, 'item' => $contract_item),  array('task' => 'update-webhook-status'));
-
-        $numberFormat = new \ZendX\Functions\Number();
-        $template_xuat_kho = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyConfigTable')->getItem(array('code' => ZALO_NOTIFY_CONFIG_XUATKHO, 'status' => 1, 'sale_branch_id' => $contract_item['sale_branch_id']), array('task' => 'code'));
-        if(!empty($template_xuat_kho)){
-            $xuat_kho_order_status = explode(',', str_replace(' ', '', $template_xuat_kho['order_status']));
-            // trạng thái trước của đơn hàng k thuộc trạng thái xuất kho trạng thái sau khi cập nhật thuộc trạng thái xuất kho thì thông báo xuất kho
-            if(!in_array($contract_item['ghtk_status'], $xuat_kho_order_status) && in_array($arrParam['ghtk_status'], $xuat_kho_order_status)){
-                $this->zalo_send_notify(ZALO_NOTIFY_CONFIG_XUATKHO, $numberFormat->convertToInternational($contract_item['phone']), $contract_item);
-            }
-        }
-
-        $template_giao_hang = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyConfigTable')->getItem(array('code' => ZALO_NOTIFY_CONFIG_GIAOHANG, 'status' => 1, 'sale_branch_id' => $contract_item['sale_branch_id']), array('task' => 'code'));
-        if(!empty($template_giao_hang)){
-            $giao_hang_order_status = explode(',', str_replace(' ', '', $template_giao_hang['order_status']));
-            // trạng thái trước của đơn hàng k thuộc trạng thái giao hàng trạng thái sau khi cập nhật thuộc trạng thái giao hàng thì thông báo giao hàng
-            if(!in_array($contract_item['ghtk_status'], $giao_hang_order_status) && in_array($arrParam['ghtk_status'], $giao_hang_order_status)){
-                $this->zalo_send_notify(ZALO_NOTIFY_CONFIG_GIAOHANG, $numberFormat->convertToInternational($contract_item['phone']), $contract_item);
-            }
-        }
-
-        $template_thanh_toan = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyConfigTable')->getItem(array('code' => ZALO_NOTIFY_CONFIG_THANHTOAN, 'status' => 1, 'sale_branch_id' => $contract_item['sale_branch_id']), array('task' => 'code'));
-        if(!empty($template_thanh_toan)){
-            $thanh_toan_order_status = explode(',', str_replace(' ', '', $template_thanh_toan['order_status']));
-            // trạng thái trước của đơn hàng k thuộc trạng thái thanh toán trạng thái sau khi cập nhật thuộc trạng thái thanh toán thì thông báo thanh toán
-            if(!in_array($contract_item['ghtk_status'], $thanh_toan_order_status) && in_array($arrParam['ghtk_status'], $thanh_toan_order_status)){
-                $this->zalo_send_notify(ZALO_NOTIFY_CONFIG_THANHTOAN, $numberFormat->convertToInternational($contract_item['phone']), $contract_item);
-            }
-        }
+        $this->check_send_zalo_notify($arrParam, $contract_item);
     }
 
     // webhook cập nhật trạng thái từ ghtk đẩy về crm

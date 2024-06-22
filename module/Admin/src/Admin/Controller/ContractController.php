@@ -1328,6 +1328,8 @@ class ContractController extends ActionController {
                     $this->_params['item'] = $contract;
                     $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem($this->_params, array('task' => 'convert-order'));
 
+                    $this->check_send_zalo_notify($this->_params['data'] ,$contract);
+
                     $this->flashMessenger()->addMessage('Cập nhật dữ liệu thành công');
                     echo 'print';
                     return $this->response;
