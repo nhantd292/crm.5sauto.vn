@@ -537,12 +537,35 @@ class ActionController extends AbstractActionController {
             if($data['unit_transport']){
                 $template_data['unit_transport'] = $unit_arr[$data['unit_transport']];
             }
+            if($code_template == ZALO_NOTIFY_CONFIG_XUATKHO){
+                $location_city          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
+                $location_district      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
+                $location_town          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
+
+                $address            = $data['address'];
+                $location_city      = !empty($data['location_city_id']) ?  ' '.$location_city[$data['location_city_id']]['name'] : '';
+                $location_district  = !empty($data['location_district_id']) ? ' '.$location_district[$data['location_district_id']]['name'] : '';
+                $location_town      = !empty($data['location_town_id']) ?  ' '.$location_town[$data['location_town_id']]['name'] : '';
+
+                $template_data['address'] = $address .$location_town.$location_district.$location_city;
+                
+                $options  = unserialize($data['options']);
+                $products = [];
+                foreach($options['product'] as $item_product) {
+                    $products[] = $item_product['full_name'];
+                }
+                $template_data['products'] = implode(', ', $products);
+            }
 
             $data_send['phone']         = $phone;
             $data_send['template_id']   = $template['template_id'];
             $data_send['template_data'] = $template_data;
             
-            $this->zalo_call('/message/template', $data_send, 'POST');
+            $res = $this->zalo_call('/message/template', $data_send, 'POST');
+//            echo "<pre>";
+//            print_r($res);
+//            echo "</pre>";
+//            exit;
         }
     }
     public function check_send_zalo_notify($arrParam, $contract_item){
