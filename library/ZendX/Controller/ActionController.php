@@ -518,7 +518,6 @@ class ActionController extends AbstractActionController {
         if(in_array($data['sale_branch_id'], $branchs) and $template['status'] == 1){
             $dateFormat = new \ZendX\Functions\Date();
             $unit_arr = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'transport-unit')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
-
             if($data['name']){
                 $template_data['name'] = $data['name'];
             }
@@ -547,7 +546,7 @@ class ActionController extends AbstractActionController {
         }
     }
     public function check_send_zalo_notify($arrParam, $contract_item){
-        if($arrParam['unit_transport'] != $contract_item['unit_transport']){
+        if($arrParam['unit_transport'] != $contract_item['unit_transport'] and !empty($arrParam['unit_transport'])){
             $contract_item['unit_transport'] = $arrParam['unit_transport'];
         }
         $numberFormat = new \ZendX\Functions\Number();
