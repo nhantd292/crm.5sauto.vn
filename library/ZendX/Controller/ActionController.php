@@ -537,7 +537,7 @@ class ActionController extends AbstractActionController {
             if($data['unit_transport']){
                 $template_data['unit_transport'] = $unit_arr[$data['unit_transport']];
             }
-            if($code_template == ZALO_NOTIFY_CONFIG_XUATKHO){
+            if($code_template == ZALO_NOTIFY_CONFIG_XUATKHO || $code_template == ZALO_NOTIFY_CONFIG_DATHANG){
                 $location_city          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 1), array('task' => 'cache'));
                 $location_district      = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 2), array('task' => 'cache'));
                 $location_town          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
