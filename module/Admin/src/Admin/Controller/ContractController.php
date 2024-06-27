@@ -2286,6 +2286,7 @@ class ContractController extends ActionController {
         // Data Export
         $arrData = array(
             array('field' => 'stt', 'title' => 'STT'),
+            array('field' => 'shipped_date', 'type'=>'date', 'title' => 'NGÀY','format'=>'d/m/Y'),
             array('field' => 'code', 'title' => 'Mã đơn hàng'),
             array('field' => 'name', 'title' => 'Tên người nhận(*)'),
             array('field' => 'phone', 'title' => 'Số ĐT ngươi nhận(*)'),
@@ -2361,11 +2362,20 @@ class ContractController extends ActionController {
 
             $startColumn = $config['startColumn'];
             foreach ($arrData AS $key => $data) {
-                $value = $item[$data['field']];
+                switch ($data['type']) {
+                    case 'date':
+//                        $formatDate = $data['format'] ? $data['format'] : 'd/m/Y';
+//                        $value = '\''.date($formatDate,strtotime($item[$data['field']]));// $dateFormat->formatToView($item[$data['field']], $formatDate);
+                        $value = $dateFormat->formatToView($item[$data['field']], 'd/m/Y');
+                        break;
+                    default:
+                        $value = $item[$data['field']];
+                }
                 $objPHPExcel->setActiveSheetIndex($config['sheetData'])->setCellValue($arrColumn[$startColumn] . $startRow, $value);
                 $objPHPExcel->setActiveSheetIndex($config['sheetData'])->getStyle($arrColumn[$startColumn] . $startRow)->getAlignment()->setWrapText(true);
                 $startColumn++;
             }
+
             $startRow++;
             $i++;
         }
