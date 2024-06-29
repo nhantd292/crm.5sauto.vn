@@ -520,6 +520,7 @@ class ActionController extends AbstractActionController {
             $unit_arr = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'transport-unit')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name'));
             if($data['name']){
                 $template_data['name'] = $data['name'];
+                $template_data['customer_name'] = $data['name'];
             }
             if($data['code']){
                 $template_data['order_code'] = $data['code'];
@@ -529,6 +530,7 @@ class ActionController extends AbstractActionController {
             }
             if($data['date']){
                 $template_data['date'] = $dateFormat->formatToView($data['date']);
+                $template_data['order_date'] = $dateFormat->formatToView($data['date']);
             }
             $template_data['status'] = $template['note'];
             if($data['price_total']){
@@ -562,6 +564,7 @@ class ActionController extends AbstractActionController {
             $data_send['template_data'] = $template_data;
             
             $res = $this->zalo_call('/message/template', $data_send, 'POST');
+            return $res;
 //            echo "<pre>";
 //            print_r($res);
 //            echo "</pre>";

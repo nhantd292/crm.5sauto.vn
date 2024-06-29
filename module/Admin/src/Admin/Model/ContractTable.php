@@ -1551,6 +1551,9 @@ class ContractTable extends DefaultTable {
             if($arrData['options']){
                 $data['options'] = serialize($arrData['options']);
             }
+            if($arrData['send_zalo_notifi_care']){
+                $data['send_zalo_notifi_care'] = $arrData['send_zalo_notifi_care'];
+            }
 
             $this->tableGateway->update($data, array('id' => $id));
             return true;

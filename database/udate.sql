@@ -30,3 +30,7 @@
 
 ALTER TABLE `x_contract`
     ADD COLUMN `token` VARCHAR(255) NULL DEFAULT NULL COMMENT 'token, key đơn vị vận chuyển' AFTER `note_accounting`;
+
+ALTER TABLE `x_contract`
+    ADD COLUMN `send_zalo_notifi_care` TINYINT(1) NULL DEFAULT '0' COMMENT 'Đã gửi thành công tin nhắn chăm sóc chưa' AFTER `lock`;
+

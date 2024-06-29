@@ -786,6 +786,49 @@ class ApiController extends ActionController {
         return $response;
     }
 
+    // Tự động gửi tin nhắn zalo chăm sóc khách hàng
+    public function guiTinNhanZaloChamSocAction() {
+        $response = new Response();
+        $sale_time = \ZendX\Functions\CreateArray::create($this->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'sale-time')), array('task' => 'list-all')),array('key' => 'alias', 'value' => 'content'));
+        
+        if(isset($sale_time['zalo-time'])){
+            $timestamp = strtotime("-{$sale_time['zalo-time']} days");
+            $output_date = date('Y-m-d', $timestamp);
+            $where_contract = array(
+                'filter_date_begin'         => $output_date,
+                'filter_date_end'           => $output_date,
+                'filter_date_type'          => "date_success",
+            );
+            $contracts = $this->getServiceLocator()->get('Admin\Model\ContractTable')->listItem(array('ssFilter' => $where_contract), array('task' => 'list-item', 'paginator' => false));
+            $numberFormat = new \ZendX\Functions\Number();
+            $result = [];
+            $number = [];
+            foreach($contracts as $contract_item){
+                if($contract_item['send_zalo_notifi_care'] == 0){
+                    $res = $this->zalo_send_notify(ZALO_NOTIFY_CONFIG_CHAMSOC, $numberFormat->convertToInternational($contract_item['phone']), $contract_item);
+                    $res = json_decode($res, true);
+                    if($res['message'] == "Success"){
+                        $number[] = $contract_item['code'];
+                        $data_update = array(
+                            'id' => $contract_item['id'],
+                            'send_zalo_notifi_care' => 1,
+                        );
+                        $result = $this->getServiceLocator()->get('Admin\Model\ContractTable')->saveItem(array('item'=> $contract_item, 'data' => $data_update), array('task' => 'update-item'));
+                    }
+                    else{
+                        $result[$contract_item['code']] = $res;
+                    }
+                }
+            }
+
+            $response->setStatusCode(Response::STATUS_CODE_200);
+            $response->setContent(json_encode(array('success' => true, 'message' => 'send notify success', 'data_success' => $number, 'data_error' => $result)));
+        }
+
+        header('Content-Type: application/json');
+        return $response;
+    }
+
     public function updateTokenViettelAction() {
         $viettel_key = $this->_params['data']['viettel_key'];
         return $this->updateToken($viettel_key);

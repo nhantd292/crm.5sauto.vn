@@ -2666,6 +2666,28 @@ class ContractController extends ActionController {
         return $viewModel;
     }
 
+    public function transportCancelAction() {
+        if($this->getRequest()->isPost()) {
+            if(!empty($this->_params['data']['cid'])) {
+                $cid = $this->_params['data']['cid'];
+                $cid_update = array();
+                foreach ($cid as $id){
+                    $contract = $this->getTable()->getItem(array('id' => $id));
+                    if(!empty($contract['ghtk_code'])){
+                        $result = json_decode($this->ghtk_call("/services/shipment/cancel/{$contract['ghtk_code']}", [], 'POST', $contract['token']), true);
+                        if($result['success']){
+                            $cid_update[] = $contract['id'];
+                        }
+                    }
+                }
+                $message = 'Đã Hủy giao '. count($cid_update) .' đơn hàng';
+                $this->flashMessenger()->addMessage($message);
+            }
+        }
+
+        $this->goRoute(array('action' => 'index'));
+    }
+
     // Đẩy đơn hàng sang viettel post
     public function sendViettelPostAction() {
         $id_viettel_key = $this->params('id');

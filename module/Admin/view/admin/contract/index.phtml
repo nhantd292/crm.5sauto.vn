@@ -380,6 +380,16 @@
                         'title' => 'Cập nhật số lượng sang kiotviet',
                     ),
                 ) ,
+                array(
+                    'name' => 'transported',
+                    'caption' => 'Hủy giao hàng',
+                    'link' => 'javascript:;',
+                    'icon' => 'fa fa-truck',
+                    'attributes' => array(
+                        'onclick' => 'javascript:updateItem(\'transportCancel\', \'Xác nhận việc Hủy đơn hàng trên đơn vị vận chuyển! <br> Bạn có chắc chắn muốn thực hiện việc hủy các đơn hàng đã chọn không ?\');',
+                        'title' => 'Hủy giao hàng trên đơn vị vận chuyển',
+                    ),
+                ),
 //                array( 'name' => 'hidden', 'caption' => 'Mở khóa', 'link' => 'javascript:;', 'icon' => 'fa fa-unlock-alt', 'attributes' => array('onclick'=>'javascript:contractLock(\'unlock\');')),
             ), 'children-class' => 'dropdown-menu pull-right'
         ),
