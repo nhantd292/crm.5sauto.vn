@@ -564,6 +564,9 @@ class ActionController extends AbstractActionController {
             $data_send['template_data'] = $template_data;
             
             $res = $this->zalo_call('/message/template', $data_send, 'POST');
+            // Tạo kết quả thông báo
+            $this->getServiceLocator()->get('Admin\Model\ZaloNotifyResultTable')->saveItem(array('data' => $data_send, 'res' => json_decode($res, true)), array('task' => 'add-auto'));
+
             return $res;
 //            echo "<pre>";
 //            print_r($res);
@@ -571,6 +574,7 @@ class ActionController extends AbstractActionController {
 //            exit;
         }
     }
+
     public function check_send_zalo_notify($arrParam, $contract_item){
         if($arrParam['unit_transport'] != $contract_item['unit_transport'] and !empty($arrParam['unit_transport'])){
             $contract_item['unit_transport'] = $arrParam['unit_transport'];

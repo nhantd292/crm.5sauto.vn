@@ -68,6 +68,7 @@ return array (
 		    'Admin\Controller\KovDiscounts'           => Controller\KovDiscountsController::class,
 		    'Admin\Controller\ProductReturn'          => Controller\ProductReturnController::class,
 		    'Admin\Controller\ZaloNotifyConfig'       => Controller\ZaloNotifyConfigController::class,
+		    'Admin\Controller\ZaloNotifyResult'       => Controller\ZaloNotifyResultController::class,
 		)
 	),
 	'view_manager' => array(

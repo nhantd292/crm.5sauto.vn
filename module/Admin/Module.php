@@ -332,6 +332,11 @@ class Module {
                     $tableGateway = new TableGateway(TABLE_ZALO_NOTIFY_CONFIG, $adapter, null);
                     return new \Admin\Model\ZaloNotifyConfigTable($tableGateway);
                 },
+                'Admin\Model\ZaloNotifyResultTable'	=> function ($sm) {
+                    $adapter = $sm->get('dbConfig');
+                    $tableGateway = new TableGateway(TABLE_ZALO_NOTIFY_RESULT, $adapter, null);
+                    return new \Admin\Model\ZaloNotifyResultTable($tableGateway);
+                },
                 
                 // Khai báo xác thực đăng nhập
                 'AuthenticateService'	=> function ($sm) {
@@ -597,6 +602,11 @@ class Module {
                 'formAdminZaloNotifyConfig' => function($sm) {
                     $myForm	= new \Admin\Form\ZaloNotifyConfig($sm);
                     $myForm->setInputFilter(new \Admin\Filter\ZaloNotifyConfig());
+                    return $myForm;
+                },
+                'formAdminZaloNotifyResult' => function($sm) {
+                    $myForm	= new \Admin\Form\ZaloNotifyResult($sm);
+                    $myForm->setInputFilter(new \Admin\Filter\ZaloNotifyResult());
                     return $myForm;
                 },
             )
