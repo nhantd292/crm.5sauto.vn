@@ -556,7 +556,8 @@ class ActionController extends AbstractActionController {
                 foreach($options['product'] as $item_product) {
                     $products[] = $item_product['full_name'];
                 }
-                $template_data['products'] = implode(', ', $products);
+                $product_name = implode(', ', $products);
+                $template_data['products'] = strlen($product_name) > 99 ? substr($product_name, 0, 90).'...' : $product_name;
             }
 
             $data_send['phone']         = $phone;
