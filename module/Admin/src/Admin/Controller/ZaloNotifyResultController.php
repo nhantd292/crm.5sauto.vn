@@ -39,6 +39,7 @@ class ZaloNotifyResultController extends ActionController{
         $this->_params['ssFilter']['filter_error']              = $ssFilter->filter_error;
         $this->_params['ssFilter']['filter_date_begin']         = $ssFilter->filter_date_begin;
         $this->_params['ssFilter']['filter_date_end']           = $ssFilter->filter_date_end;
+        $this->_params['ssFilter']['filter_result_error']       = $ssFilter->filter_result_error;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage']               = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : 50;
@@ -68,6 +69,7 @@ class ZaloNotifyResultController extends ActionController{
             $ssFilter->filter_error             = $data['filter_error'];
             $ssFilter->filter_date_begin        = $data['filter_date_begin'];
             $ssFilter->filter_date_end          = $data['filter_date_end'];
+            $ssFilter->filter_result_error      = $data['filter_result_error'];
         }
 
         if (!empty($this->_params['route']['id'])) {

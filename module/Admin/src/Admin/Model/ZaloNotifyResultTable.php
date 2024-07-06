@@ -36,6 +36,10 @@ class ZaloNotifyResultTable extends DefaultTable {
                     $select->where->notEqualTo('result_error', '0');
                 }
 
+                if(isset($ssFilter['filter_result_error'])  && $ssFilter['filter_result_error'] != '') {
+                    $select->where->EqualTo('result_error', $ssFilter['filter_result_error']);
+                }
+
                 if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
                     $select->where->NEST
                         ->like('template_data', '%'. $ssFilter['filter_keyword'] . '%')
@@ -86,6 +90,10 @@ class ZaloNotifyResultTable extends DefaultTable {
     			}
     			if($ssFilter['filter_error'] == 'error') {
     			    $select->where->notEqualTo('result_error', '0');
+    			}
+
+    			if(isset($ssFilter['filter_result_error'])  && $ssFilter['filter_result_error'] != '') {
+    			    $select->where->EqualTo('result_error', $ssFilter['filter_result_error']);
     			}
 
                 if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {

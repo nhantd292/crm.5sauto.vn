@@ -15,7 +15,8 @@
     }
     $elements = array(
         array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
-        array('element' => $myForm->get('filter_error'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_error'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_result_error'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
         array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
@@ -39,7 +40,7 @@
             $created                = $dateFormat->formatToView($item['created'], 'd/m/Y H:i:s');
             $template               = $this->template[$item['template_id']];
             $result_data            = unserialize($item['result_data']);
-            $sent_time              = date('d/m/Y H:i:s', $result_data['sent_time']);
+            $sent_time              = $result_data ? date('d/m/Y H:i:s', $result_data['sent_time']) : '';
             $cid                    = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
             $template_data          = unserialize($item['template_data']);
             $template_data_text     = '';
@@ -54,6 +55,7 @@
             $color = $item['result_error'] == 0 ? 'text-green' : 'text-red';
             $xhtmlItems .= '<tr id="tr_'. $id .'" data-contact="'.$item['contact_id'].'" class="'.$color.'">
     							<td class="text-center">'. $cid .'</td>
+    							<td>'. $controls .'</td>
                                 <td class="text-center">'. $index .'</td>
     							<td>'. $created .'</td>
     							<td>'. $sent_time .'</td>
@@ -62,14 +64,14 @@
     							<td class="text-center">'. $item['result_error'] .'</td>
     							<td>'. $item['result_message'] .'</td>
     							<td>'. $template_data_text .'</td>
-    							<td>'. $controls .'</td>
     						</tr>';
         }
     }
 
     // Head
     $xhtmlHead  = '<tr>';
-    $xhtmlHead .= '<th width="30" class="table-checkbox text-center"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';;
+    $xhtmlHead .= '<th width="30" class="table-checkbox text-center"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th width="10"></th>';
     $xhtmlHead .= '<th width="30" class="text-center">STT</th>';
     $xhtmlHead .= '<th width="100">Ngày tạo</th>';
     $xhtmlHead .= '<th width="100">Thời gian gửi</th>';
@@ -78,7 +80,6 @@
     $xhtmlHead .= '<th width="60" class="text-center">Mã lỗi</th>';
     $xhtmlHead .= '<th width="130">Mô tả lỗi</th>';
     $xhtmlHead .= '<th width="150">Dữ liệu template</th>';
-    $xhtmlHead .= '<th width="10"></th>';
     $xhtmlHead .= '</tr>';
     
     // Control
