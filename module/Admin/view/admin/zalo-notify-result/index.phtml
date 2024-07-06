@@ -40,7 +40,7 @@
             $created                = $dateFormat->formatToView($item['created'], 'd/m/Y H:i:s');
             $template               = $this->template[$item['template_id']];
             $result_data            = unserialize($item['result_data']);
-            $sent_time              = $result_data ? date('d/m/Y H:i:s', $result_data['sent_time']) : '';
+            $sent_time              = $result_data['sent_time'] ? date('d/m/Y H:i:s', (int)($result_data['sent_time']/1000)) : '';
             $cid                    = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
             $template_data          = unserialize($item['template_data']);
             $template_data_text     = '';
