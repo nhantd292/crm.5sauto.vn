@@ -11,6 +11,20 @@ use ZendX\System\UserInfo;
 
 class ZaloNotifyResultController extends ActionController{
 
+    public $_field_name = array(
+        'name' => 'Tên khách hàng',
+        'customer_name' => 'Tên khách hàng',
+        'order_code' => 'Mã đơn hàng',
+        'phone_number' => 'Số điện thoại',
+        'date' => 'Ngày lên đơn',
+        'order_date' => 'Ngày lên đơn',
+        'status' => 'Trạng thái',
+        'price' => 'Tổng tiền hàng',
+        'unit_transport' => 'Đơn vị vận chuyển',
+        'address' => 'Địa chỉ',
+        'products' => 'Sản phẩm'
+    );
+
     public function init() {
         // Thiết lập options
         $this->_options['tableName'] = 'Admin\Model\ZaloNotifyResultTable';
@@ -35,6 +49,7 @@ class ZaloNotifyResultController extends ActionController{
         $this->_params['data'] = array_merge($this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray());
         // Truyển dữ dữ liệu ra ngoài view
         $this->_viewModel['params'] = $this->_params;
+        $this->_viewModel['field_name'] = $this->_field_name;
 
     }
 
@@ -84,17 +99,17 @@ class ZaloNotifyResultController extends ActionController{
     public function formAction() {
         $myForm = new \Admin\Form\ZaloNotifyResult($this);
         $task = 'add-item';
-        $caption = 'Cấu hình thông báo ZALO - Thêm mới';
+        $caption = 'Kết quả thông báo zalo - Thêm mới';
         if(!empty($this->params('id'))) {
             $this->_params['data']['id'] = $this->params('id');
             $item = $this->getTable()->getItem($this->_params['data']);
             if(!empty($item)) {
-                $item['sale_branch_ids'] = explode(',', $item['sale_branch_ids']);
+                $this->_viewModel['item']	    = $item;
                 if(!$this->getRequest()->isPost()){
                     $myForm->setData($item);
                 }
                 $task = 'edit-item';
-                $caption = 'Cấu hình thông báo ZALO - Sửa';
+                $caption = 'Kết quả thông báo zalo - Cập nhật';
             }
         }
 
@@ -103,11 +118,9 @@ class ZaloNotifyResultController extends ActionController{
             $myForm->setData($this->_params['data']);
 
             $controlAction = $this->_params['data']['control-action'];
-            $sale_branch_ids = $this->_params['data']['sale_branch_ids'];
 
             if($myForm->isValid()){
-                $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                $this->_params['data']['sale_branch_ids'] = $sale_branch_ids;
+//                $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
                 $this->_params['item'] = $item;
                 $result = $this->getTable()->saveItem($this->_params, array('task' => $task));
 
@@ -128,77 +141,32 @@ class ZaloNotifyResultController extends ActionController{
         return new ViewModel($this->_viewModel);
     }
 
+    public function resendAction() {
+        if($this->getRequest()->isPost()) {
+            if(!empty($this->_params['data']['cid'])) {
+                $cid = $this->_params['data']['cid'];
+                $cid_update = array();
+                foreach ($cid as $id){
+                    $item = $this->getTable()->getItem(array('id' => $id));
 
-    public function addAction() {
-        $myForm = new \Admin\Form\ZaloNotifyResult($this, array('action' => 'add'));
+                    if($item['result_error'] != 0){
+                        $data_send['phone']         = $item['phone'];
+                        $data_send['template_id']   = $item['template_id'];
+                        $data_send['template_data'] = unserialize($item['template_data']);
 
-        if($this->getRequest()->isPost()){
-            $myForm->setInputFilter(new \Admin\Filter\ZaloNotifyResult());
-            $myForm->setData($this->_params['data']);
-            $controlAction = $this->_params['data']['control-action'];
-            if($myForm->isValid()){
-                $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                $result = $this->getServiceLocator()->get('Admin\Model\MarketingAdsTable')->saveItem($this->_params, array('task' => 'add-item'));
-                $this->flashMessenger()->addMessage('Thêm mới cấu hình thông báo ZALO thành công');
-
-                if($controlAction == 'save-new') {
-                    $this->goRoute(array('action' => 'add'));
-                } else if($controlAction == 'save') {
-                    $this->goRoute(array('action' => 'edit', 'id' => $result));
-                } else {
-                    $this->goRoute();
+                        $res = json_decode($this->zalo_call('/message/template', $data_send, 'POST'), true);
+                        if($res['error'] == 0){
+                            $cid_update[] = $data_send['phone'];
+                        }
+                        $this->getServiceLocator()->get('Admin\Model\ZaloNotifyResultTable')->saveItem(array('item' => $item, 'data' => $data_send, 'res' => $res), array('task' => 'update-item'));
+                    }
                 }
+                $message = 'Đã gửi lại '. count($cid_update) .' thông báo thành công';
+                $this->flashMessenger()->addMessage($message);
             }
         }
 
-        $this->_viewModel['myForm']	    = $myForm;
-        $this->_viewModel['caption']    = 'Thêm mới Cấu hình thông báo ZALO';
-        return new ViewModel($this->_viewModel);
-    }
-
-    public function editAction() {
-        $dateFormat = new \ZendX\Functions\Date();
-        $myForm = $this->getForm();
-        $item_id = $this->params('id');
-        if (!empty($item_id)) {
-            $this->_params['data']['id'] = $item_id;
-            $item = $this->getTable()->getItem($this->_params['data']);
-            if (!empty($item)) {
-                if (!$this->getRequest()->isPost()) {
-                    $item['from_date'] = $dateFormat->formatToView($item['from_date']);
-                    $item['to_date'] = $dateFormat->formatToView($item['to_date']);
-                    $myForm->setData($item);
-                }
-            }
-            else {
-                return $this->redirect()->toRoute('routeAdmin/type', array('controller' => 'notice', 'action' => 'not-found', 'type' => 'not-found'));
-            }
-        }
-        if ($this->getRequest()->isPost()) {
-            $myForm->setInputFilter(new \Admin\Filter\ZaloNotifyResult(array('id' => $this->_params['data']['id'], 'data' => $this->_params['data'], 'route' => $this->_params['route'])));
-            $myForm->setData($this->_params['data']);
-            $controlAction = $this->_params['data']['control-action'];
-
-            if ($myForm->isValid()) {
-                $this->_params['data'] = $myForm->getData(FormInterface::VALUES_AS_ARRAY);
-                $this->_params['item'] = $item;
-                $this->getServiceLocator()->get('Admin\Model\ZaloNotifyResultTable')->saveItem($this->_params, array('task' => 'edit-item'));
-                $this->flashMessenger()->addMessage('Cấu hình thông báo Zalo đã được cập nhật');
-
-                if($controlAction == 'save-new') {
-                    $this->goRoute(array('action' => 'add'));
-                } else if($controlAction == 'save') {
-                    $this->goRoute(array('action' => 'edit', 'id' => $item_id));
-                } else {
-                    $this->goRoute();
-                }
-            }
-        }
-
-        $this->_viewModel['myForm']     = $myForm;
-        $this->_viewModel['item']       = $item;
-        $this->_viewModel['caption']    = 'Sửa cấu hình thông báo Zalo';
-        return new ViewModel($this->_viewModel);
+        $this->goRoute(array('action' => 'index'));
     }
 
     public function deleteAction() {

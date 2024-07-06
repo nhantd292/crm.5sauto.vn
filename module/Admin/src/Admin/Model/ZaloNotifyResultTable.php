@@ -170,6 +170,31 @@ class ZaloNotifyResultTable extends DefaultTable {
 	        $this->tableGateway->insert($data);
             return $id;
 	    }
+
+        if($options['task'] == 'update-item') {
+            $id = $arrItem['id'];
+            $data	= array(
+                'phone'             => $arrData['phone'],
+                'template_id'       => $arrData['template_id'],
+                'template_data'     => serialize($arrData['template_data']),
+                'result_error'      => $res['error'],
+                'result_message'    => $res['message'],
+                'result_data'       => isset($res['data']) ? serialize($res['data']) : '',
+            );
+
+            $this->tableGateway->update($data, array('id' => $id));
+            return $id;
+        }
+
+        if($options['task'] == 'edit-item') {
+            $id = $arrData['id'];
+            $data	= array(
+                'template_data' => serialize($arrData['template_data']),
+            );
+
+            $this->tableGateway->update($data, array('id' => $id));
+            return $id;
+        }
 	}
 	
 	public function changeStatus($arrParam = null, $options = null){
