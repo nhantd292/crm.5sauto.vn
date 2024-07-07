@@ -545,18 +545,20 @@ class ActionController extends AbstractActionController {
                 $location_town          = $this->getServiceLocator()->get('Admin\Model\LocationsTable')->listItem(array('level' => 3), array('task' => 'cache'));
 
                 $address            = $data['address'];
-                $location_city      = !empty($data['location_city_id']) ?  ' '.$location_city[$data['location_city_id']]['name'] : '';
-                $location_district  = !empty($data['location_district_id']) ? ' '.$location_district[$data['location_district_id']]['name'] : '';
-                $location_town      = !empty($data['location_town_id']) ?  ' '.$location_town[$data['location_town_id']]['name'] : '';
+                $location_city      = !empty($data['location_city_id']) ?  ', '.$location_city[$data['location_city_id']]['name'] : '';
+                $location_district  = !empty($data['location_district_id']) ? ', '.$location_district[$data['location_district_id']]['name'] : '';
+                $location_town      = !empty($data['location_town_id']) ?  ', '.$location_town[$data['location_town_id']]['name'] : '';
 
-                $template_data['address'] = $address .$location_town.$location_district.$location_city;
+                $address_full = $address .$location_town.$location_district.$location_city;
+                $template_data['address'] = mb_strlen ($address_full) > 80 ? mb_substr($address_full, 0, 76, "UTF-8").'...' : $address_full;
                 
                 $options  = unserialize($data['options']);
                 $products = [];
                 foreach($options['product'] as $item_product) {
                     $products[] = $item_product['full_name'];
                 }
-                $template_data['products'] = implode(', ', $products);
+                $product_name = implode(', ', $products);
+                $template_data['products'] = mb_strlen ($product_name) > 100 ? mb_substr($product_name, 0, 96, "UTF-8").'...' : $product_name;
             }
 
             $data_send['phone']         = $phone;
@@ -564,13 +566,18 @@ class ActionController extends AbstractActionController {
             $data_send['template_data'] = $template_data;
             
             $res = $this->zalo_call('/message/template', $data_send, 'POST');
-            return $res;
+            // Tạo kết quả thông báo
+            $this->getServiceLocator()->get('Admin\Model\ZaloNotifyResultTable')->saveItem(array('data' => $data_send, 'res' => json_decode($res, true)), array('task' => 'add-auto'));
+
 //            echo "<pre>";
 //            print_r($res);
 //            echo "</pre>";
 //            exit;
+
+            return $res;
         }
     }
+
     public function check_send_zalo_notify($arrParam, $contract_item){
         if($arrParam['unit_transport'] != $contract_item['unit_transport'] and !empty($arrParam['unit_transport'])){
             $contract_item['unit_transport'] = $arrParam['unit_transport'];

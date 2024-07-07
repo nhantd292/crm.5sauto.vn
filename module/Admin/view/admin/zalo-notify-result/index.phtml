@@ -1,0 +1,138 @@
+<?php
+    // Filter
+    $myForm				= $this->myForm;
+    $model = $this->model;
+    $myForm->prepare();
+    $dateFormat = new \ZendX\Functions\Date();
+    $numberFormat = new \ZendX\Functions\Number();
+
+    $userInfo = new \ZendX\System\UserInfo();
+    $curent_user = $userInfo->getUserInfo();
+    $permission_ids = explode(',', $curent_user['permission_ids']);
+    
+    if(count($myForm->get('filter_sale_branch')->getValueOptions()) == 1) {
+        $myForm->get('filter_sale_branch')->setEmptyOption('');
+    }
+    $elements = array(
+        array('element' => $myForm->get('filter_keyword'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_error'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_result_error'), 'boxClass' => 'col-md-3 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_begin'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_date_end'), 'boxClass' => 'col-md-2 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_submit'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('filter_reset'), 'boxClass' => 'col-md-1 col-sm-4 col-xs-6'),
+        array('element' => $myForm->get('order')),
+        array('element' => $myForm->get('order_by')),
+    );
+    $xhtmlFilter = $this->partialLoop($this->params['module'] . '/partial/form-default.phtml', $elements);
+
+    // Danh sách
+    $xhtmlItems = '';
+    
+    if(!empty($this->items)) {
+        $index = 0;
+        $list_item  = $this->items;
+        $total_price = 0;
+        foreach ($list_item AS $item) {
+            $index++;
+            $id                     = $item['id'];
+            $cid                    = $this->xFormInput('cid[]', $item['id'], array('type' => 'checkbox', 'class' => 'checkboxes'));
+            $created                = $dateFormat->formatToView($item['created'], 'd/m/Y H:i:s');
+            $template               = $this->template[$item['template_id']];
+            $result_data            = unserialize($item['result_data']);
+            $sent_time              = $result_data['sent_time'] ? date('d/m/Y H:i:s', (int)($result_data['sent_time']/1000)) : '';
+            $cid                    = @$this->xFormInput('cid[]', $id, array('type' => 'checkbox', 'class' => 'checkboxes'));
+            $template_data          = unserialize($item['template_data']);
+            $template_data_text     = '';
+            foreach($template_data as $key => $value){
+                $template_data_text .= $key.' / '.$this->field_name[$key].': '.$value.'</br>';
+            }
+
+            $linkEdit               = $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'form', 'id' => $id));
+            $controlEdit            = $this->linkAdminHtml($linkEdit, array('type' => 'icon', 'title' => 'Sửa', 'class' => 'btn btn-xs yellow', 'icon' => 'fa fa-edit'));
+
+            $controls       = $controlEdit;
+            $color = $item['result_error'] == 0 ? 'text-green' : 'text-red';
+            $xhtmlItems .= '<tr id="tr_'. $id .'" data-contact="'.$item['contact_id'].'" class="'.$color.'">
+    							<td class="text-center">'. $cid .'</td>
+    							<td>'. $controls .'</td>
+                                <td class="text-center">'. $index .'</td>
+    							<td>'. $created .'</td>
+    							<td>'. $sent_time .'</td>
+    							<td class="text-bold text-center">'. $item['phone'] .'</td>
+    							<td>'. $template .'</td>
+    							<td class="text-center">'. $item['result_error'] .'</td>
+    							<td>'. $item['result_message'] .'</td>
+    							<td>'. $template_data_text .'</td>
+    						</tr>';
+        }
+    }
+
+    // Head
+    $xhtmlHead  = '<tr>';
+    $xhtmlHead .= '<th width="30" class="table-checkbox text-center"><input type="checkbox" class="group-checkable" data-set="#table-manager .checkboxes"/></th>';
+    $xhtmlHead .= '<th width="10"></th>';
+    $xhtmlHead .= '<th width="30" class="text-center">STT</th>';
+    $xhtmlHead .= '<th width="100">Ngày tạo</th>';
+    $xhtmlHead .= '<th width="100">Thời gian gửi</th>';
+    $xhtmlHead .= '<th width="80" class="text-center">Điện thoại</th>';
+    $xhtmlHead .= '<th width="150">Mẫu template</th>';
+    $xhtmlHead .= '<th width="60" class="text-center">Mã lỗi</th>';
+    $xhtmlHead .= '<th width="130">Mô tả lỗi</th>';
+    $xhtmlHead .= '<th width="150">Dữ liệu template</th>';
+    $xhtmlHead .= '</tr>';
+    
+    // Control
+    $arrControl = array(
+        array(
+            'name' => 'tool', 'caption' => 'Công cụ', 'link' => 'javascript:;', 'icon' => 'fa-link', 'attributes' => array( 'class' => 'btn dropdown-toggle', 'data-toggle' => 'dropdown', 'data-hover' => 'dropdown', ),
+            'children' => array(
+                array( 'name' => 'resend', 'caption' => 'Gửi lại thông báo', 'link' => 'javascript:;', 'icon' => 'fa fa-repeat', 'attributes' => array('onclick'=>'javascript:updateItem(\'resend\', \'Bạn có muốn gửi lại những thông báo đã chọn\');')),
+                array( 'name' => 'delete', 'caption' => 'Xóa', 'link' => 'javascript:;', 'icon' => 'fa-trash', 'attributes' => array( 'onclick' => 'javascript:deleteItem(\'multi\', \'all\');' ) ),
+            ),
+            'children-class' => 'dropdown-menu pull-right'
+        ),
+    );
+?>
+<form action="<?php echo $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'filter')); ?>" name="adminFormFilter" id="adminFormFilter" method="post">
+    <div class="page-control">
+    	<div class="title pull-left">
+    		<?php echo $this->caption;?>
+    	</div>
+    	<div class="control pull-right">
+			<?php echo $this->partial($this->params['module'] . '/partial/control-index.phtml', array( 'control' => $arrControl, 'params' => $this->params));?>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+    <?php echo $this->flashMessenger()->render();?>
+    <div class="page-filter">
+    	<div class="row">
+    		<?php echo $xhtmlFilter;?>
+    	</div>
+    </div>
+    <div class="page-content">
+    	<div class="table-manager" id="table-manager">
+<!--    		<div class="table-scrollable table-fixed-head">-->
+    		<div class="table-scrollable">
+    			<table class="table table-striped table-bordered table-hover">
+    				<thead>
+    					<?php echo $xhtmlHead;?>
+    				</thead>
+    				<tbody>
+    					<?php echo $xhtmlItems;?>
+    				</tbody>
+    			</table>
+    		</div>
+    		<?php
+            	echo $this->paginationControl(\ZendX\Paginator\Paginator::createPaginator($this->count, $this->params['paginator']), 'sliding', $this->params['module'] . '/partial/paginator.phtml', array('currentURL' => $this->url('routeAdmin/default', array('controller' => $this->params['controller'], 'action' => 'index')), 'options' => $this->params['paginator']['options'])); 
+            ?>
+    	</div>
+	</div>
+</form>
+
+<!--<style>-->
+<!--    td {-->
+<!--        word-wrap: break-word;-->
+<!--        white-space: normal !important;-->
+<!--    }-->
+<!--</style>-->

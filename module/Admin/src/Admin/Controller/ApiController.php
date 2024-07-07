@@ -829,6 +829,33 @@ class ApiController extends ActionController {
         return $response;
     }
 
+    // Tự động gửi tin nhắn zalo bị lỗi trong khung giờ 22h-6h
+    public function guiTinNhanZalo2206Action() {
+        $response = new Response();
+        $condition = array(
+            'filter_result_error'          => "-133",
+        );
+        $items = $this->getServiceLocator()->get('Admin\Model\ZaloNotifyResultTable')->listItem(array('ssFilter' => $condition), array('task' => 'list-item', 'paginator' => false));
+        foreach($items as $item){
+            if($item['result_error'] == '-133'){
+                $data_send['phone']         = $item['phone'];
+                $data_send['template_id']   = $item['template_id'];
+                $data_send['template_data'] = unserialize($item['template_data']);
+
+                $res = json_decode($this->zalo_call('/message/template', $data_send, 'POST'), true);
+                if($res['error'] == 0){
+                    $cid_update[] = $data_send['phone'];
+                }
+                $this->getServiceLocator()->get('Admin\Model\ZaloNotifyResultTable')->saveItem(array('item' => $item, 'data' => $data_send, 'res' => $res), array('task' => 'update-item'));
+            }
+        }
+
+        $response->setStatusCode(Response::STATUS_CODE_200);
+        $response->setContent(json_encode(array('success' => true, 'message' => 'send notify success', 'data_success' => $cid_update)));
+        header('Content-Type: application/json');
+        return $response;
+    }
+
     public function updateTokenViettelAction() {
         $viettel_key = $this->_params['data']['viettel_key'];
         return $this->updateToken($viettel_key);

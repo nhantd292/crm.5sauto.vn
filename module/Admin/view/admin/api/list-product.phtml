@@ -33,7 +33,7 @@
             $productName = $this->items['kov_status'] ? $this->kovProduct[$item['product_id']]->fullName : $this->product[$item['product_id']]['name'];
             if($view_price_production){
                 $price_production = '<!--<td class="text-right"><span class="mask_currency">'. $item['total_production'] .'</span></td>-->
-    							    <td class="text-right"><span class="mask_currency">'. ($item['capital_default']) .'</span></td>';
+    							    <td class="text-right"><span class="mask_currency">'. ($item['cost_new'] * $item['numbers']) .'</span></td>';
             }
             $item_price = $this->items['kov_status'] ? $item['price'] * $item['numbers'] : $item['price'];
             $xhtmlItems .= '<tr>
