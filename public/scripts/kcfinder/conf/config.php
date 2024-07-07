@@ -15,12 +15,12 @@ $config = array(
     'types' => array(
 
         // (F)CKEditor types
-        'files'   =>  "",
+        'files'   =>  "pdf xls xlsx doc docx rar zip",
         'flash'   =>  "swf",
         'images'  =>  "*img",
 
         // TinyMCE types
-        'file'    =>  "",
+        'file'    =>  "pdf xls xlsx doc docx rar zip",
         'media'   =>  "swf flv avi mpg mpeg qt mov wmv asf rm",
         'image'   =>  "*img",
     ),
@@ -45,7 +45,7 @@ $config = array(
 
     'watermark' => "",
     
-    'maxFilesize' => 1024,
+    'maxFilesize' => 25600,
 
     // PERMISSION SETTINGS
     'dirPerms' => 0755,

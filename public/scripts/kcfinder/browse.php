@@ -12,7 +12,7 @@
   *      @link http://kcfinder.sunhater.com
   */
 
-include_once '../../../public/define.php';
+include_once '../../../define.php';
 include_once PATH_LIBRARY . '/Zend/Loader/AutoloaderFactory.php';
 Zend\Loader\AutoloaderFactory::factory(array(
     'Zend\Loader\StandardAutoloader' => array(
