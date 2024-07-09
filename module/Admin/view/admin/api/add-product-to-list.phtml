@@ -12,13 +12,13 @@ $xhtml = '
         <td class="total">
             <input class="form-control text-right" type="text" name="contract_product[total][]" readonly value="'.number_format($this->product['basePrice']).'">
         </td>
-        <td class="length">
+        <td class="length hidden">
             <input class="form-control text-right w-60 p5" type="number" name="contract_product[length][]" value="'.(int)$size[0].'" required min="1" max="300">
         </td>
-        <td class="width">
+        <td class="width hidden">
             <input class="form-control text-right w-60 p5" type="number" name="contract_product[width][]" value="'.(int)$size[1].'" required min="1" max="300">
         </td>
-        <td class="height">
+        <td class="height hidden">
             <input class="form-control text-right w-60 p5" type="number" name="contract_product[height][]" value="'.(int)$size[2].'" required min="1" max="300">
         </td>
         <td class="weight">
