@@ -69,6 +69,15 @@ class MarketingAdsController extends ActionController{
     }
 
     public function indexAction() {
+
+
+        $sql_count = "SELECT SUM(price) as total_ads FROM x_marketing_ads WHERE marketer_id = '17041642715d7vo0354910' AND from_date >= '2024-03-01' AND to_date <= '2024-03-31'";
+        $count_contact = $this->getServiceLocator()->get('Admin\Model\ContactTable')->report(array('sql' => $sql_count), array('task' => 'query'))->current();
+        echo "<pre>";
+        print_r($count_contact['total_ads']);
+        echo "</pre>";
+        exit;
+
         $curent_user = $this->_userInfo->getUserInfo();
         $permission_ids = explode(',', $curent_user['permission_ids']);
         if(!in_array(SYSTEM, $permission_ids) && !in_array(ADMIN, $permission_ids) && !in_array(MANAGER, $permission_ids)){

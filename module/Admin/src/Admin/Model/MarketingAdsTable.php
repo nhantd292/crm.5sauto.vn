@@ -231,13 +231,29 @@ class MarketingAdsTable extends DefaultTable {
                 $marketer_id        = $data['marketer_id'];
                 $product_group_id   = $data['product_group_id'];
 
-                $sql_count = "select count(id) contact_item from ".TABLE_CONTACT." WHERE date >= '".$from_date."' AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+//                $sql_count = "select count(id) contact_item from ".TABLE_CONTACT." WHERE date >= '".$from_date."' AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+//                $count_contact = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_count)->current();
+//                $contact_count = $count_contact['contact_item'];
+//                $cost_ads           = (int)($data['price'] / $contact_count);
+//
+//                $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$from_date."'
+//                AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+//                $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
+
+
+                $query_date         = $arrItem['from_date'];
+                $firstDayOfMonth    = date('Y-m-01', strtotime($query_date));
+                $lastDayOfMonth     = date('Y-m-t', strtotime($query_date));
+                $sql_sum = "SELECT SUM(price) as total_ads FROM ".TABLE_MARKETING_ADS." WHERE marketer_id = '".$marketer_id."' AND from_date >= '".$firstDayOfMonth."' AND to_date <= '".$lastDayOfMonth."'";
+                $sum_ads = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_sum)->current();
+
+                $sql_count = "select count(id) contact_item from ".TABLE_CONTACT." WHERE date >= '".$firstDayOfMonth."' AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$marketer_id."'";
                 $count_contact = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_count)->current();
                 $contact_count = $count_contact['contact_item'];
-                $cost_ads           = (int)($data['price'] / $contact_count);
+                $cost_ads           = (int)($sum_ads['total_ads'] / $contact_count);
 
-                $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$from_date."' 
-                AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+                $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$firstDayOfMonth."' 
+                AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$marketer_id."'";
                 $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
 	        }
             return $id;
@@ -260,23 +276,49 @@ class MarketingAdsTable extends DefaultTable {
                 $to_date            = $data['to_date'];
                 $marketer_id        = $arrItem['marketer_id'];
                 $product_group_id   = $data['product_group_id'];
+
+
+//                # cập nhật chi phí về 0 cho ác liên hệ
+//                $sql_reset = "UPDATE ".TABLE_CONTACT." SET cost_ads = 0 WHERE date >= '".$arrItem['from_date']."'
+//                    AND date <= '".$arrItem['to_date']." 23:59:59' AND marketer_id ='".$arrItem['marketer_id']."' AND product_group_id = '".$arrItem['product_group_id']."'";
+//                $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_reset);
+//                # Đếm số lượng contact chia chi phí ads
+//                $sql_count = "select count(id) contact_item from ".TABLE_CONTACT." WHERE date >= '".$from_date."' AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+//                $count_contact = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_count)->current();
+//                $contact_count = $count_contact['contact_item'];
+//                $cost_ads           = (int)($data['price'] / $contact_count);
+//                # cập nhật chi phí ads cho contact
+//                $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$from_date."'
+//                    AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+//                $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
+
+                # Tính ngày đầu tiên của tháng và ngày cuối cùng của tháng để chia đều mkt
+                $query_date         = $arrItem['from_date'];
+                $firstDayOfMonth    = date('Y-m-01', strtotime($query_date));
+                $lastDayOfMonth     = date('Y-m-t', strtotime($query_date));
+                $sql_sum = "SELECT SUM(price) as total_ads FROM ".TABLE_MARKETING_ADS." WHERE marketer_id = '".$marketer_id."' AND from_date >= '".$firstDayOfMonth."' AND to_date <= '".$lastDayOfMonth."'";
+                $sum_ads = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_sum)->current();
+
                 # cập nhật chi phí về 0 cho ác liên hệ
-                $sql_reset = "UPDATE ".TABLE_CONTACT." SET cost_ads = 0 WHERE date >= '".$arrItem['from_date']."' 
-                AND date <= '".$arrItem['to_date']." 23:59:59' AND marketer_id ='".$arrItem['marketer_id']."' AND product_group_id = '".$arrItem['product_group_id']."'";
+                $sql_reset = "UPDATE ".TABLE_CONTACT." SET cost_ads = 0 WHERE date >= '".$firstDayOfMonth."' 
+                AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$arrItem['marketer_id'];
                 $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_reset);
+
                 # Đếm số lượng contact chia chi phí ads
-                $sql_count = "select count(id) contact_item from ".TABLE_CONTACT." WHERE date >= '".$from_date."' AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+                $sql_count = "select count(id) contact_item from ".TABLE_CONTACT." WHERE date >= '".$firstDayOfMonth."' AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$marketer_id."'";
                 $count_contact = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_count)->current();
                 $contact_count = $count_contact['contact_item'];
-                $cost_ads           = (int)($data['price'] / $contact_count);
+                $cost_ads           = (int)($sum_ads['total_ads'] / $contact_count);
+
                 # cập nhật chi phí ads cho contact
-                $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$from_date."' 
-                AND date <= '".$to_date." 23:59:59' AND marketer_id ='".$marketer_id."' AND product_group_id = '".$product_group_id."'";
+                $sql_update = "UPDATE ".TABLE_CONTACT." SET cost_ads = ".$cost_ads." WHERE date >= '".$firstDayOfMonth."' 
+                AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$marketer_id."'";
                 $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_update);
 //            }
             return $id;
         }
 	}
+
 	
 	public function changeStatus($arrParam = null, $options = null){
 	    if($options['task'] == 'change-status') {
