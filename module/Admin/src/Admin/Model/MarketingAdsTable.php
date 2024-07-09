@@ -301,7 +301,7 @@ class MarketingAdsTable extends DefaultTable {
 
                 # cập nhật chi phí về 0 cho ác liên hệ
                 $sql_reset = "UPDATE ".TABLE_CONTACT." SET cost_ads = 0 WHERE date >= '".$firstDayOfMonth."' 
-                AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$arrItem['marketer_id'];
+                AND date <= '".$lastDayOfMonth." 23:59:59' AND marketer_id ='".$arrItem['marketer_id']."'";
                 $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql_reset);
 
                 # Đếm số lượng contact chia chi phí ads
