@@ -2,8 +2,10 @@
     $myForm 		= $this->myForm;
 
     $elements 		= array(
-        array('element' => $myForm->get('pick_address_id'), 'label' => 'Kho gửi hàng', 'boxClass' => 'col-md-9', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('pick_address_id'), 'label' => 'Kho gửi hàng', 'boxClass' => 'col-md-6', 'validate' => array('require' => true)),
+        array('element' => $myForm->get('is_freeship'), 'label' => 'Phí ship hàng', 'boxClass' => 'col-md-3', 'validate' => array('require' => true)),
         array('element' => $myForm->get('numbers_data'), 'label' => 'Số lượng đơn hàng', 'boxClass' => 'col-md-3'),
+        array('element' => $myForm->get('tags'), 'label' => 'Ghi chú ship hàng', 'boxClass' => 'col-md-12'),
         array('element' => $myForm->get('list_data_id'), 'label' => 'Danh sách đơn hàng', 'boxClass' => 'col-md-3'),
         array('element' => $myForm->get('modal'), 'validate' => array('require' => true)),
     );
