@@ -68,5 +68,29 @@ class SendGhtk extends Form {
             )
         ));
 
+        $this->add(array(
+            'name'			=> 'is_freeship',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+//                'empty_option'	=> '- Kho gửi hàng -',
+                'disable_inarray_validator' => true,
+                'value_options'	=> array('1' => "Shop trả phí ship", '0' => "Khách trả phí ship"),
+            )
+        ));
+
+        $this->add(array(
+            'name'			=> 'tags',
+            'type'			=> 'MultiCheckbox',
+            'options'		=> array(
+                'label_attributes' => array(
+                    'class'		=> 'checkbox-inline',
+                ),
+                'value_options'	=> \ZendX\Functions\CreateArray::create($sm->getServiceLocator()->get('Admin\Model\DocumentTable')->listItem(array('where' => array('code' => 'ghtk-note')), array('task' => 'cache')), array('key' => 'alias', 'value' => 'name')),
+            ),
+        ));
+
 	}
 }

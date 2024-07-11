@@ -2481,6 +2481,9 @@ class ContractController extends ActionController {
                             
                             $ids = json_decode($this->_params['data']['list_data_id'], true);
                             $pick_address_id = $this->_params['data']['pick_address_id'];
+                            $is_freeship = $this->_params['data']['is_freeship'];
+                            $tags = $this->_params['data']['tags'];
+                            
                             $shops = json_decode($this->ghtk_call("/services/shipment/list_pick_add", [], 'GET', $ghtk_key), true)['data'];
                             foreach($shops as $shop){
                                 if($pick_address_id == $shop['pick_address_id']){
@@ -2601,7 +2604,8 @@ class ContractController extends ActionController {
                                     $order_item['address']   = $contract['address'];
                                     $order_item['hamlet']    = "Khác";
 
-                                    $order_item['is_freeship'] = "1";
+                                    $order_item['is_freeship'] = $is_freeship;
+                                    $order_item['tags'] = $tags;
                                     $order_item['pick_money'] = $contract['price_owed']; // Tiền hàng ship phải thu
                                     $order_item['note'] = $contract['ghtk_note'];
                                     $order_item['value'] = $contract['price_total'] > 0 ? $contract['price_total'] : $total_cost * 2; // giá trị đóng bảo hiểm
