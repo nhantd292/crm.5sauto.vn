@@ -23,13 +23,14 @@ if($this->kov_branch_id){
     $xhtml .= '<div class="pagination">'.$show_infor.$pageText.'</div>';
     $xhtml .= '<div class="listProduct" >';
     foreach ($this->kovProducts as $pro) {
+        $num_status = $pro['inventories'][0]['onHand'] - $pro['inventories'][0]['reserved'] > 0 ? 'Còn hàng' : 'Hết hàng'  ;
         $xhtml .= '<div class="col-xl-2 col-sm-3 col-xs-6 item">
                 <div class="product col-xs-12" data-id="' . $pro['id'] . '" data-branch-id="' . $pro['inventories'][0]['branchId'] . '" >
                     <div class="img col-sm-3 col-xs-3">
                         <img src="' . $pro['images'][0] . '" width="100%">
                     </div>
                     <div class="infor col-sm-9 col-xs-9">
-                        <p class="code-product text-bold">' . $pro['code'] .'</span> (<span class="text-green text-bold">Số Lượng: ' . number_format($pro['inventories'][0]['reserved']).'/'.number_format($pro['inventories'][0]['onHand']) . '</span>)</p>
+                        <p class="code-product text-bold">' . $pro['code'] .'</span> (<span class="text-green text-bold">' . $num_status . '</span>)</p>
                         <p class="name-product">' . $pro['fullName'] . '</p>
                         <p class="price-product">Giá:' . number_format($pro['basePrice']) . '</p>
                         <p class="number-product"></p>
