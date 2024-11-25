@@ -90,7 +90,7 @@
             $shipped_date           = $dateFormat->formatToView($item->shipped_date);
             $contact_date           = $dateFormat->formatToView($item->contact_date, 'd/m/Y H:i');
             $contact_contract_first_date = $dateFormat->formatToView($item->contact_contract_first_date, 'd/m/Y H:i');
-            $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id']? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
+            $contact_phone          = $phone_code && $item->contact_phone && $item->user_id != $curent_user['id'] && $item->created != $curent_user['id'] && $item->care_id != $curent_user['id'] ? substr_replace($item->contact_phone, "***", 4, 3) : $item->contact_phone;
             $contact_name           = $item->contact_name;
             $index_number           = $item->index_number;
             $fee_cod                = number_format($item->price_transport);
