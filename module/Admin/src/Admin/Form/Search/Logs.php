@@ -1,6 +1,7 @@
 <?php
 namespace Admin\Form\Search;
 use \Zend\Form\Form as Form;
+use Zend\Paginator\Adapter\Null;
 
 class Logs extends Form{
     
@@ -27,6 +28,42 @@ class Logs extends Form{
 		        'id'			=> 'filter_keyword',
 		    ),
 		));
+
+        // Bắt đầu từ ngày
+        $this->add(array(
+            'name'			=> 'filter_date_begin',
+            'type'			=> 'Text',
+            'attributes'	=> array(
+                'class'			=> 'form-control date-picker',
+                'placeholder'	=> 'Từ ngày',
+                'autocomplete'  => 'off'
+            )
+        ));
+
+        // Ngày kết thúc
+        $this->add(array(
+            'name'			=> 'filter_date_end',
+            'type'			=> 'Text',
+            'attributes'	=> array(
+                'class'			=> 'form-control date-picker',
+                'placeholder'	=> 'Đến ngày',
+                'autocomplete'  => 'off'
+            )
+        ));
+
+        $users	= \ZendX\Functions\CreateArray::create($sm->get('Admin\Model\UserTable')->listItem(null, array('task' => 'list-all')), array('key' => 'id', 'value' => 'name'));
+
+        $this->add(array(
+            'name'			=> 'filter_user',
+            'type'			=> 'Select',
+            'attributes'	=> array(
+                'class'		=> 'form-control select2 select2_basic',
+            ),
+            'options'		=> array(
+                'empty_option'	=> '- Nhân viên -',
+                'value_options'	=> $users,
+            )
+        ));
 		
 		// Status
 		$this->add(array(

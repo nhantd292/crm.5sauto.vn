@@ -20,7 +20,10 @@ class LogsController extends ActionController {
         $this->_params['ssFilter']['order']             = !empty($ssFilter->order) ? $ssFilter->order : 'DESC';
         $this->_params['ssFilter']['filter_status']     = $ssFilter->filter_status;
         $this->_params['ssFilter']['filter_keyword']    = $ssFilter->filter_keyword;
-        
+        $this->_params['ssFilter']['filter_date_begin'] = $ssFilter->filter_date_begin;
+        $this->_params['ssFilter']['filter_date_end']   = $ssFilter->filter_date_end;
+        $this->_params['ssFilter']['filter_user']       = $ssFilter->filter_user;
+
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage'] = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : 50;
         $this->_paginator['currentPageNumber'] = $this->params()->fromRoute('page', 1);
@@ -44,6 +47,9 @@ class LogsController extends ActionController {
             $ssFilter->order                = $data['order'];
             $ssFilter->filter_status        = $data['filter_status'];
             $ssFilter->filter_keyword       = $data['filter_keyword'];
+            $ssFilter->filter_date_begin    = $data['filter_date_begin'];
+            $ssFilter->filter_date_end      = $data['filter_date_end'];
+            $ssFilter->filter_user          = $data['filter_user'];
         }
     
         $this->goRoute();

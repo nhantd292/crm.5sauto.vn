@@ -14,6 +14,22 @@ class LogsTable extends DefaultTable {
                 $number     = new \ZendX\Functions\Number();
                 
                 $select -> columns(array('count' => new \Zend\Db\Sql\Expression('COUNT(1)')));
+
+                if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                    $select -> where -> NEST
+                        -> greaterThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_begin']))
+                        ->AND
+                        -> lessThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_end']) . ' 23:59:59')
+                        -> UNNEST;
+                } elseif (!empty($ssFilter['filter_date_begin'])) {
+                    $select->where->greaterThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_begin']));
+                } elseif (!empty($ssFilter['filter_date_end'])) {
+                    $select->where->lessThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_end']) . ' 23:59:59');
+                }
+
+                if(!empty($ssFilter['filter_user'])) {
+                    $select -> where -> equalTo('created_by', $ssFilter['filter_user']);
+                }
                 
 	            if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
     			    $filter_keyword = trim($ssFilter['filter_keyword']);
@@ -88,6 +104,22 @@ class LogsTable extends DefaultTable {
     			if(!empty($ssFilter['order_by']) && !empty($ssFilter['order'])) {
     			    $select -> order(array($ssFilter['order_by'] .' '. strtoupper($ssFilter['order'])));
     			}
+
+                if(!empty($ssFilter['filter_date_begin']) && !empty($ssFilter['filter_date_end'])) {
+                    $select -> where -> NEST
+                        -> greaterThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_begin']))
+                        ->AND
+                        -> lessThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_end']) . ' 23:59:59')
+                        -> UNNEST;
+                } elseif (!empty($ssFilter['filter_date_begin'])) {
+                    $select->where->greaterThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_begin']));
+                } elseif (!empty($ssFilter['filter_date_end'])) {
+                    $select->where->lessThanOrEqualTo('created', $date->formatToSearch($ssFilter['filter_date_end']) . ' 23:59:59');
+                }
+
+                if(!empty($ssFilter['filter_user'])) {
+                    $select -> where -> equalTo('created_by', $ssFilter['filter_user']);
+                }
     			
     			if(isset($ssFilter['filter_keyword']) && $ssFilter['filter_keyword'] != '') {
     			    $filter_keyword = trim($ssFilter['filter_keyword']);
@@ -129,7 +161,7 @@ class LogsTable extends DefaultTable {
 		        $select -> where -> equalTo('action', 'Chuyển quản lý');
 		        $select -> where -> NEST
                 		         -> equalTo(TABLE_LOGS .'.contact_id', $arrParam['data']['contact_id'])
-                		         -> OR
+                		         ->OR
                 		         -> like(TABLE_LOGS .'.options', '%'. $arrParam['data']['contact_id'] .'%')
                 		         -> UNNEST;
 		        
