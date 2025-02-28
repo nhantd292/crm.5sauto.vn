@@ -23,6 +23,7 @@ class LogsController extends ActionController {
         $this->_params['ssFilter']['filter_date_begin'] = $ssFilter->filter_date_begin;
         $this->_params['ssFilter']['filter_date_end']   = $ssFilter->filter_date_end;
         $this->_params['ssFilter']['filter_user']       = $ssFilter->filter_user;
+        $this->_params['ssFilter']['filter_exits']      = $ssFilter->filter_exits;
 
         // Thiết lập lại thông số phân trang
         $this->_paginator['itemCountPerPage'] = !empty($ssFilter->pagination_option) ? $ssFilter->pagination_option : 50;
@@ -50,6 +51,7 @@ class LogsController extends ActionController {
             $ssFilter->filter_date_begin    = $data['filter_date_begin'];
             $ssFilter->filter_date_end      = $data['filter_date_end'];
             $ssFilter->filter_user          = $data['filter_user'];
+            $ssFilter->filter_exits         = $data['filter_exits'];
         }
     
         $this->goRoute();

@@ -8,7 +8,8 @@ class LogsTable extends DefaultTable {
 
     public function countItem($arrParam = null, $options = null){
 	    if($options['task'] == 'list-item') {
-	        $result	= $this->tableGateway->select(function (Select $select) use ($arrParam, $options){
+            $check_phone = 0;
+	        $result	= $this->tableGateway->select(function (Select $select) use (&$check_phone, $arrParam, $options){
                 $ssFilter   = $arrParam['ssFilter'];
                 $date       = new \ZendX\Functions\Date();
                 $number     = new \ZendX\Functions\Number();
@@ -57,7 +58,16 @@ class LogsTable extends DefaultTable {
                     			            -> UNNEST;
     			    }
     			}
-            })->current();
+
+                if(!empty($ssFilter['filter_exits'])) {
+                    $check_phone = 1;
+                    $select->group("phone");
+                }
+            });
+	        if ($check_phone)
+	            return $result->count();
+	        else
+	            $result = $result->current();
 	    }
 	    
 	    if($options['task'] == 'list-ajax-parent') {
@@ -147,6 +157,10 @@ class LogsTable extends DefaultTable {
                     			            -> UNNEST;
     			    }
     			}
+
+                if(!empty($ssFilter['filter_exits'])) {
+                    $select->group("phone");
+                }
     		});
 		}
 		

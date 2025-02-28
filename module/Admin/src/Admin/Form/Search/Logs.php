@@ -67,6 +67,19 @@ class Logs extends Form{
 		
 		// Status
 		$this->add(array(
+		    'name'			=> 'filter_exits',
+		    'type'			=> 'Select',
+		    'attributes'	=> array(
+		        'class'		=> 'form-control select2 select2_basic',
+		    ),
+		    'options'		=> array(
+		        'empty_option'	=> '- Không check Trùng SĐT -',
+		        'value_options'	=> array( 1	=> 'Check trùng sđt'),
+		    )
+		));
+
+		// Status
+		$this->add(array(
 		    'name'			=> 'filter_status',
 		    'type'			=> 'Select',
 		    'attributes'	=> array(
